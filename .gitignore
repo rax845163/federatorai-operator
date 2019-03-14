@@ -1,3 +1,11 @@
+# Temporary Build Files
+build/_output
+build/_test
+
+# server auth directory
+/server/
+
+### Go ###
 # Binaries for programs and plugins
 *.exe
 *.exe~
