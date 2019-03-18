@@ -1,0 +1,19 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: alameda-datahub-kroos-tutorial
+rules:
+# Permission for query prometheus under namespace openshift-monitoring 
+- apiGroups: 
+  - ""
+  resources: 
+  - namespaces
+  verbs: 
+  - get
+- apiGroups:
+  - autoscaling.containers.ai
+  resources:
+  - alamedarecommendations
+  verbs:
+  - get
+  - update

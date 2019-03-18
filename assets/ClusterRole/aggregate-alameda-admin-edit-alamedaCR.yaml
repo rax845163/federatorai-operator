@@ -1,0 +1,26 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aggregate-alameda-admin-edit-alameda
+  labels:
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+    rbac.authorization.k8s.io/aggregate-to-edit: "true"
+rules:
+- apiGroups:
+  - autoscaling.containers.ai
+  resources:
+  - alamedascalers
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+- apiGroups:
+  - autoscaling.containers.ai
+  resources:
+  - alamedarecommendations
+  verbs:
+  - get
+  - list
+  - watch

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alameda-datahub
+  namespace: kroos-tutorial
+  annotations:
+    description: Defines how to deploy the application alameda-datahub
+    template.alpha.openshift.io/wait-for-ready: 'true'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alameda-datahub
+  template:
+    metadata:
+      name: alameda-datahub
+      labels:
+        app: alameda-datahub
+    spec:
+      containers:
+      - name: alameda-datahub
+        image: quay.io/prophetstor/alameda-datahub-rhel:v0.3.6
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 100m
+            memory: 150Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        env:
+        - name: ALAMEDA_DATAHUB_INFLUXDB_ADDRESS
+          value: https://alameda-influxdb.kroos-tutorial.svc:8086
+        - name: ALAMEDA_DATAHUB_INFLUXDB_USERNAME
+          value: admin
+        - name: ALAMEDA_DATAHUB_INFLUXDB_PASSWORD
+          value: adminpass
+        - name: ALAMEDA_DATAHUB_PROMETHEUS_URL
+          value: https://prometheus-k8s.openshift-monitoring.svc:9091
+      serviceAccount: alameda-datahub
+      serviceAccountName: alameda-datahub

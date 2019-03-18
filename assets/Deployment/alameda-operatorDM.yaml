@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alameda-operator
+  namespace: kroos-tutorial
+  annotations:
+    description: Defines how to deploy the application alameda-operator
+    template.alpha.openshift.io/wait-for-ready: 'true'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alameda-operator
+  template:
+    metadata:
+      name: alameda-operator
+      labels:
+        app: alameda-operator
+    spec:
+      containers:
+      - name: alameda-operator
+        image: quay.io/prophetstor/alameda-operator-rhel:v0.3.6
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 20m
+            memory: 40Mi
+          requests:
+            cpu: 10m
+            memory: 20Mi
+        env:
+        - name: ALAMEDA_OPERATOR_DATAHUB_ADDRESS
+          value: "alameda-datahub.kroos-tutorial.svc:50050"
+      serviceAccount: alameda-operator
+      serviceAccountName: alameda-operator    

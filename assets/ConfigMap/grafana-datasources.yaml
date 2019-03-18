@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: kroos-tutorial
+data:
+  prometheus.yaml: |-
+    {
+        "apiVersion": 1,
+        "datasources": [
+            {
+                "orgId": 1,
+                "name": "InfluxDB",                  
+                "type": "influxdb",
+                "access": "proxy",
+                "url": "https://alameda-influxdb.kroos-tutorial.svc:8086",
+                "password": "adminpass",
+                "user": "admin",
+                "database": "_internal",
+                "basicAuth": false,
+                "isDefault": true,
+                "jsonData": {
+                  "tlsSkipVerify": true
+                },
+                "readOnly": false
+            }
+        ]
+    }      

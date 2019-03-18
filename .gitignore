@@ -12,6 +12,7 @@ build/_test
 *.dll
 *.so
 *.dylib
+debug
 
 # Test binary, build with `go test -c`
 *.test

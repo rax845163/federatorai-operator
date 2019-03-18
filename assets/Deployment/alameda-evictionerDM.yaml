@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alameda-evictioner
+  namespace: kroos-tutorial
+  annotations:
+    description: Defines how to deploy the alameda-evictioner
+    template.alpha.openshift.io/wait-for-ready: 'true'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alameda-evictioner
+  template:
+    metadata:
+      name: alameda-evictioner
+      labels:
+        app: alameda-evictioner
+    spec:
+      containers:
+      - name: alameda-evictioner
+        image: quay.io/prophetstor/alameda-evictioner-rhel:v0.3.6
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 60m
+            memory: 90Mi
+          requests:
+            cpu: 45m
+            memory: 75Mi
+        env:
+        - name: ALAMEDA_EVICTIONER_DATAHUB_ADDRESS
+          value: "alameda-datahub.kroos-tutorial.svc:50050"
+        - name: ALAMEDA_EVICTIONER_EVICTION_ENABLE
+          value: "false"
+      serviceAccount: alameda-evictioner
+      serviceAccountName: alameda-evictioner

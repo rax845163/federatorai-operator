@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.alpha.openshift.io/serving-cert-secret-name: alameda-datahub-tls
+  labels:
+    app: alameda-influxdb
+  name: alameda-influxdb
+  namespace: kroos-tutorial
+spec:
+  ports:
+  - port: 8086
+    targetPort: 8086
+  selector:
+    app: alameda-influxdb
