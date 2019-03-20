@@ -50,6 +50,8 @@ func Asset(name string) ([]byte, error) {
 }
 
 var _bindata = map[string]func() (*asset, error){
+	"../../assets/CustomResourceDefinition/alamedarecommendationsCRD.yaml": alamedarecommendationsCRDYaml,
+	"../../assets/CustomResourceDefinition/alamedascalersCRD.yaml":         alamedascalersCRDYaml,
 	"../../assets/ClusterRoleBinding/alameda-datahubCRB.yaml":              alamedadatahubCRBYaml,
 	"../../assets/ClusterRoleBinding/alameda-operatorCRB.yaml":             alamedaoperatorCRBYaml,
 	"../../assets/ClusterRoleBinding/alameda-evictionerCRB.yaml":           alamedaevictionerCRBYaml,
@@ -77,6 +79,7 @@ var _bindata = map[string]func() (*asset, error){
 	"../../assets/Deployment/alameda-influxdbDM.yaml":                      alamedainfluxdbDMYaml,
 	"../../assets/Deployment/alameda-grafanaDM.yaml":                       alamedagrafanaDMYaml,
 	/**********************************************************************************************/
+
 	"../../manifests/TestCrds.yaml":              manifestsCronTabcrdYaml,
 	"../../manifests/deployment.yaml":            manifestsDeploymentYaml,
 	"../../manifests/serviceaccount.yaml":        manifestsServiceaccountYaml,
@@ -103,14 +106,11 @@ func ReadYamlFile(file_location string) []byte {
 	fileSize := fileinfo.Size()
 	buffer := make([]byte, fileSize)
 
-	//bytesread, err := file.Read(buffer)
 	_, err = file.Read(buffer)
 	if err != nil {
 		log.Fatal(err)
 	}
-	//bufr := bytes.NewReader(buffer)
-	//fmt.Println("bytes read:", bytesread)
-	//fmt.Println("bytestream to string:", string(buffer))
+
 	return buffer
 }
 
@@ -320,6 +320,33 @@ func manifestsPersistentVolumeClaimYaml() (*asset, error) {
 
 //manifestsPersistentVolumeClaimYaml
 
+func alamedarecommendationsCRDYamlBytes() ([]byte, error) {
+	return ReadYamlFile("../../assets/CustomResourceDefinition/alamedarecommendationsCRD.yaml"), nil
+}
+func alamedarecommendationsCRDYaml() (*asset, error) {
+	bytes, err := alamedarecommendationsCRDYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "../../assets/CustomResourceDefinition/alamedarecommendationsCRD.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+func alamedascalersCRDYamlBytes() ([]byte, error) {
+	return ReadYamlFile("../../assets/CustomResourceDefinition/alamedascalersCRD.yaml"), nil
+}
+func alamedascalersCRDYaml() (*asset, error) {
+	bytes, err := alamedascalersCRDYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "../../assets/CustomResourceDefinition/alamedascalersCRD.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 func alamedadatahubCRBYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/ClusterRoleBinding/alameda-datahubCRB.yaml"), nil
 	//return _manifestsSecretTokenYaml, nil
@@ -509,12 +536,6 @@ func admissioncontrollerSAYaml() (*asset, error) {
 	return a, nil
 }
 
-/*
-"../../assets/ServiceAccount/alameda-datahubSA.yaml":              alamedadatahubSAYaml,
-	"../../assets/ServiceAccount/alameda-operatorSA.yaml":             alamedaoperatorSAYaml,
-	"../../assets/ServiceAccount/alameda-evictionerSA.yaml":           alamedaevictionerSAYaml,
-	"../../assets/ServiceAccount/admission-controllerSA.yaml":         admissioncontrollerSAYaml,
-*/
 func grafanadatasourcesCMYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/ConfigMap/grafana-datasources.yaml"), nil
 	//return _manifestsSecretTokenYaml, nil
@@ -533,7 +554,7 @@ func grafanadatasourcesCMYaml() (*asset, error) {
 
 func myalamedainfluxdbPVCYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml"), nil
-	//return _manifestsSecretTokenYaml, nil
+
 }
 
 func myalamedainfluxdbPVCYaml() (*asset, error) {
@@ -548,7 +569,7 @@ func myalamedainfluxdbPVCYaml() (*asset, error) {
 }
 func myalamedagrafanaPVCYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/PersistentVolumeClaim/my-alamedagrafanaPVC.yaml"), nil
-	//return _manifestsSecretTokenYaml, nil
+
 }
 
 func myalamedagrafanaPVCYaml() (*asset, error) {
@@ -564,7 +585,7 @@ func myalamedagrafanaPVCYaml() (*asset, error) {
 
 func alamedadatahubSVYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/Service/alameda-datahubSV.yaml"), nil
-	//return _manifestsSecretTokenYaml, nil
+
 }
 
 func alamedadatahubSVYaml() (*asset, error) {
@@ -579,7 +600,7 @@ func alamedadatahubSVYaml() (*asset, error) {
 }
 func admissioncontrollerSVYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/Service/admission-controllerSV.yaml"), nil
-	//return _manifestsSecretTokenYaml, nil
+
 }
 
 func admissioncontrollerSVYaml() (*asset, error) {
@@ -594,7 +615,7 @@ func admissioncontrollerSVYaml() (*asset, error) {
 }
 func alamedainfluxdbSVYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/Service/alameda-influxdbSV.yaml"), nil
-	//return _manifestsSecretTokenYaml, nil
+
 }
 
 func alamedainfluxdbSVYaml() (*asset, error) {
@@ -609,7 +630,7 @@ func alamedainfluxdbSVYaml() (*asset, error) {
 }
 func alamedagrafanaSVYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/Service/alameda-grafanaSV.yaml"), nil
-	//return _manifestsSecretTokenYaml, nil
+
 }
 
 func alamedagrafanaSVYaml() (*asset, error) {
@@ -625,7 +646,7 @@ func alamedagrafanaSVYaml() (*asset, error) {
 
 func alamedadatahubDMYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/Deployment/alameda-datahubDM.yaml"), nil
-	//return _manifestsDeploymentYamlYaml, nil
+
 }
 
 func alamedadatahubDMYaml() (*asset, error) {
@@ -640,7 +661,7 @@ func alamedadatahubDMYaml() (*asset, error) {
 }
 func alamedaoperatorDMYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/Deployment/alameda-operatorDM.yaml"), nil
-	//return _manifestsDeploymentYamlYaml, nil
+
 }
 
 func alamedaoperatorDMYaml() (*asset, error) {
@@ -655,7 +676,7 @@ func alamedaoperatorDMYaml() (*asset, error) {
 }
 func alamedaevictionerDMYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/Deployment/alameda-evictionerDM.yaml"), nil
-	//return _manifestsDeploymentYamlYaml, nil
+
 }
 
 func alamedaevictionerDMYaml() (*asset, error) {
@@ -670,7 +691,7 @@ func alamedaevictionerDMYaml() (*asset, error) {
 }
 func admissioncontrollerDMYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/Deployment/admission-controllerDM.yaml"), nil
-	//return _manifestsDeploymentYamlYaml, nil
+
 }
 
 func admissioncontrollerDMYaml() (*asset, error) {
@@ -685,7 +706,7 @@ func admissioncontrollerDMYaml() (*asset, error) {
 }
 func alamedainfluxdbDMYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/Deployment/alameda-influxdbDM.yaml"), nil
-	//return _manifestsDeploymentYamlYaml, nil
+
 }
 
 func alamedainfluxdbDMYaml() (*asset, error) {
@@ -700,7 +721,7 @@ func alamedainfluxdbDMYaml() (*asset, error) {
 }
 func alamedagrafanaDMYamlBytes() ([]byte, error) {
 	return ReadYamlFile("../../assets/Deployment/alameda-grafanaDM.yaml"), nil
-	//return _manifestsDeploymentYamlYaml, nil
+
 }
 
 func alamedagrafanaDMYaml() (*asset, error) {
@@ -714,11 +735,3 @@ func alamedagrafanaDMYaml() (*asset, error) {
 	return a, nil
 }
 
-/*
-	"../../assets/Deployment/alameda-datahubDM.yaml":                       alamedadatahubDMYaml,
-	"../../assets/Deployment/alameda-operatorDM.yaml":                      alamedaoperatorDMYaml,
-	"../../assets/Deployment/alameda-evictionerDM.yaml":                    alamedaevictionerDMYaml,
-	"../../assets/Deployment/admission-controllerDM.yaml":                  admissioncontrollerDMYaml,
-	"../../assets/Deployment/alameda-influxdbDM.yaml":                      alamedainfluxdbDMYaml,
-	"../../assets/Deployment/alameda-grafanaDM.yaml":                       alamedagrafanaDMYaml,
-*/
