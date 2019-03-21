@@ -9,10 +9,10 @@ import (
 
 	"github.com/containers-ai/federatorai-operator/pkg/apis"
 	"github.com/containers-ai/federatorai-operator/pkg/controller"
+	"github.com/containers-ai/federatorai-operator/pkg/version"
 	"github.com/operator-framework/operator-sdk/pkg/leader"
 	"github.com/operator-framework/operator-sdk/pkg/log/zap"
 	"github.com/operator-framework/operator-sdk/pkg/metrics"
-	sdkVersion "github.com/operator-framework/operator-sdk/version"
 	"github.com/spf13/pflag"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
@@ -31,7 +31,7 @@ var log = logf.Log.WithName("cmd")
 func printVersion() {
 	log.Info(fmt.Sprintf("Go Version: %s", runtime.Version()))
 	log.Info(fmt.Sprintf("Go OS/Arch: %s/%s", runtime.GOOS, runtime.GOARCH))
-	log.Info(fmt.Sprintf("Version of operator-sdk: %v", sdkVersion.Version))
+	log.Info(fmt.Sprintf("Version of operator-sdk: %v", version.String))
 }
 
 var namespace = "kroos-tutorial"
