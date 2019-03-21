@@ -23,3 +23,17 @@ func ApplyCustomResourceDefinition(client apiextclientv1beta1.CustomResourceDefi
 	log.Info("Found CRD", "CustomResourceDefinition.Name", required.Name)
 	return nil, false, err
 }
+func DeleteCustomResourceDefinition(client apiextclientv1beta1.CustomResourceDefinitionsGetter, required *apiextv1beta1.CustomResourceDefinition) (*apiextv1beta1.CustomResourceDefinition, bool, error) {
+	existing, err := client.CustomResourceDefinitions().Get(required.Name, metav1.GetOptions{})
+	if apierrors.IsNotFound(err) {
+		log.Info("Not Found CRD", "CustomResourceDefinition.Name", required.Name)
+		return nil, false, err
+	}
+	if err != nil {
+		return nil, false, err
+	} else {
+		log.Info("Found CRD And Delete", "CustomResourceDefinition.Name", required.Name)
+		err = client.CustomResourceDefinitions().Delete(existing.Name, nil)
+	}
+	return nil, false, err
+}
