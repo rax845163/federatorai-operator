@@ -1,0 +1,5 @@
+watch-namespace: "" # Set empty to watch all namespaces of resources
+
+metrics:
+  port: 8383
+ 
