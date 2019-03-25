@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -13,10 +12,11 @@ import (
 	fedOperator "github.com/containers-ai/federatorai-operator"
 	"github.com/containers-ai/federatorai-operator/pkg/apis"
 	"github.com/containers-ai/federatorai-operator/pkg/controller"
+	fedOperatorLog "github.com/containers-ai/federatorai-operator/pkg/log"
 	"github.com/containers-ai/federatorai-operator/pkg/version"
 	"github.com/operator-framework/operator-sdk/pkg/leader"
-	"github.com/operator-framework/operator-sdk/pkg/log/zap"
 	"github.com/operator-framework/operator-sdk/pkg/metrics"
+	"github.com/pkg/errors"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
@@ -46,6 +46,7 @@ func init() {
 
 	initFlags()
 	initConfiguration()
+	initLogger()
 }
 
 func initFlags() {
@@ -53,7 +54,6 @@ func initFlags() {
 	federatoraiOperatorFlagSet.Int32Var(&metricsPort, "metrics.port", 8383, "port to export metrics data")
 	federatoraiOperatorFlagSet.StringVar(&configurationFilePath, "config", "/etc/federatorai/operator/operator.yml", "File path to federatorai-operator coniguration")
 
-	pflag.CommandLine.AddFlagSet(zap.FlagSet())
 	pflag.CommandLine.AddFlagSet(federatoraiOperatorFlagSet)
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 
@@ -92,6 +92,16 @@ func mergeViperValueWithDefaultConfig() {
 	}
 }
 
+func initLogger() {
+
+	logger, err := fedOperatorLog.NewZaprLogger(fedOperatorConfig.Log)
+	if err != nil {
+		panic(err)
+	}
+
+	logf.SetLogger(logger)
+}
+
 func printVersion() {
 	log.Info(fmt.Sprintf("Go Version: %s", runtime.Version()))
 	log.Info(fmt.Sprintf("Go OS/Arch: %s/%s", runtime.GOOS, runtime.GOARCH))
@@ -107,16 +117,6 @@ func printConfiguration() {
 }
 
 func main() {
-
-	// Use a zap logr.Logger implementation. If none of the zap
-	// flags are configured (or if the zap flag set is not being
-	// used), this defaults to a production zap logger.
-	//
-	// The logger instantiated here can be changed to any logger
-	// implementing the logr.Logger interface. This logger will
-	// be propagated through the whole operator, generating
-	// uniform and structured logs.
-	logf.SetLogger(zap.Logger())
 
 	printVersion()
 	printConfiguration()
