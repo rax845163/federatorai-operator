@@ -8,6 +8,9 @@ BUILD_DEST  ?= bin/federatorai-operator
 MUTABLE_TAG ?= latest
 IMAGE        = federatorai-operator
 
+FIRST_GOPATH:=$(firstword $(subst :, ,$(shell go env GOPATH)))
+GOBINDATA_BIN=$(FIRST_GOPATH)/bin/go-bindata
+
 ifeq ($(DBG),1)
 GOGCFLAGS ?= -gcflags=all="-N -l"
 endif
@@ -24,8 +27,20 @@ else
   IMAGE_BUILD_CMD = docker build
 endif
 
+pkg/assets/bindata-test.go: $(GOBINDATA_BIN)
+	# Using "-modtime 1" to make generate target deterministic. It sets all file time stamps to unix timestamp 1
+	cd assets && $(GOBINDATA_BIN) -pkg assets -o ../$@ \
+		ClusterRole/... \
+		ClusterRoleBinding/... \
+		ConfigMap/... \
+		CustomResourceDefinition/... \
+		Deployment/... \
+		PersistentVolumeClaim/... \
+		Service/... \
+		ServiceAccount/...
+
 .PHONY: depend
-depend:
+depend: $(GOBINDATA_BIN)
 	dep version || go get -u github.com/golang/dep/cmd/dep
 	dep ensure
 
@@ -64,6 +79,9 @@ fmt: ## Go fmt your code
 .PHONY: vet
 vet: ## Apply go vet to all go files
 	hack/go-vet.sh ./...
+
+$(GOBINDATA_BIN):
+	go get -u github.com/jteeuwen/go-bindata/...
 
 .PHONY: help
 help:
