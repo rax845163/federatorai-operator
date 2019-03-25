@@ -78,44 +78,46 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	// TODO(user): Modify this to be the types you create that are owned by the primary resource
 	// Watch for changes to secondary resource Pods and requeue the owner AlamedaService
 	/*
-	err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
-		IsController: true,
-		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-	})
-	if err != nil {
-		return err
-	}
+		err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
+			IsController: true,
+			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
+		})
+		if err != nil {
+			return err
+		}
 
-	err = c.Watch(&source.Kind{Type: &corev1.ServiceAccount{}}, &handler.EnqueueRequestForOwner{
-		IsController: true,
-		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-	})
-	if err != nil {
-		return err
-	}
 
-	err = c.Watch(&source.Kind{Type: &corev1.ConfigMap{}}, &handler.EnqueueRequestForOwner{
-		IsController: true,
-		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-	})
-	if err != nil {
-		return err
-	}
+		err = c.Watch(&source.Kind{Type: &corev1.ServiceAccount{}}, &handler.EnqueueRequestForOwner{
+			IsController: true,
+			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
+		})
+		if err != nil {
+			return err
+		}
 
-	err = c.Watch(&source.Kind{Type: &corev1.Service{}}, &handler.EnqueueRequestForOwner{
-		IsController: true,
-		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-	})
-	if err != nil {
-		return err
-	}
-	err = c.Watch(&source.Kind{Type: &corev1.PersistentVolumeClaim{}}, &handler.EnqueueRequestForOwner{
-		IsController: true,
-		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-	})
-	if err != nil {
-		return err
-	}
+		err = c.Watch(&source.Kind{Type: &corev1.ConfigMap{}}, &handler.EnqueueRequestForOwner{
+			IsController: true,
+			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
+		})
+		if err != nil {
+			return err
+		}
+
+		err = c.Watch(&source.Kind{Type: &corev1.Service{}}, &handler.EnqueueRequestForOwner{
+			IsController: true,
+			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
+		})
+		if err != nil {
+			return err
+		}
+		err = c.Watch(&source.Kind{Type: &corev1.PersistentVolumeClaim{}}, &handler.EnqueueRequestForOwner{
+			IsController: true,
+			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
+		})
+		if err != nil {
+			return err
+		}
+
 	*/
 	return nil
 }
@@ -177,7 +179,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		r.UninstallServiceAccount(instance)
 		r.UninstallClusterRole(instance)
 		r.UninstallClusterRoleBinding(instance)
-		r.DeleteRegisterTestsCRD()
+		//r.DeleteRegisterTestsCRD()
 		//r.DeleteNameSpace()
 	}
 	return reconcile.Result{}, nil
@@ -202,8 +204,11 @@ func (r *ReconcileAlamedaService) CreateNameSpace() {
 	}
 }
 func (r *ReconcileAlamedaService) RegisterTestsCRD() {
-	file_location := []string{"../../manifests/TestCrds.yaml"} //"../../assets/CustomResourceDefinition/alamedarecommendationsCRD.yaml",
-	//"../../assets/CustomResourceDefinition/alamedascalersCRD.yaml",
+	file_location := []string{ //"../../manifests/TestCrds.yaml"
+		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
+		"CustomResourceDefinition/alamedascalersCRD.yaml",
+	}
+
 
 	for _, file_str := range file_location {
 		crd := component.RegistryCustomResourceDefinition(file_str)
@@ -211,10 +216,18 @@ func (r *ReconcileAlamedaService) RegisterTestsCRD() {
 	}
 }
 func (r *ReconcileAlamedaService) InstallClusterRoleBinding(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
-	file_location := []string{"../../assets/ClusterRoleBinding/alameda-datahubCRB.yaml",
-		"../../assets/ClusterRoleBinding/alameda-operatorCRB.yaml",
-		"../../assets/ClusterRoleBinding/alameda-evictionerCRB.yaml",
-		"../../assets/ClusterRoleBinding/admission-controllerCRB.yaml"}
+	file_location := []string{"ClusterRoleBinding/alameda-datahubCRB.yaml",
+		"ClusterRoleBinding/alameda-operatorCRB.yaml",
+		"ClusterRoleBinding/alameda-evictionerCRB.yaml",
+		"ClusterRoleBinding/admission-controllerCRB.yaml"}
+	/*
+
+				"ClusterRoleBinding/admission-controllerCRB.yaml": clusterrolebindingAdmissionControllercrbYaml,
+		"ClusterRoleBinding/alameda-datahubCRB.yaml": clusterrolebindingAlamedaDatahubcrbYaml,
+		"ClusterRoleBinding/alameda-evictionerCRB.yaml": clusterrolebindingAlamedaEvictionercrbYaml,
+		"ClusterRoleBinding/alameda-operatorCRB.yaml": clusterrolebindingAlamedaOperatorcrbYaml,
+	*/
+
 	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
 	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
@@ -239,11 +252,12 @@ func (r *ReconcileAlamedaService) InstallClusterRoleBinding(instance *federatora
 }
 
 func (r *ReconcileAlamedaService) InstallClusterRole(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
-	file_location := []string{"../../assets/ClusterRole/alameda-datahubCR.yaml",
-		"../../assets/ClusterRole/alameda-operatorCR.yaml",
-		"../../assets/ClusterRole/alameda-evictionerCR.yaml",
-		"../../assets/ClusterRole/admission-controllerCR.yaml",
-		"../../assets/ClusterRole/aggregate-alameda-admin-edit-alamedaCR.yaml"}
+	file_location := []string{"ClusterRole/alameda-datahubCR.yaml",
+		"ClusterRole/alameda-operatorCR.yaml",
+		"ClusterRole/alameda-evictionerCR.yaml",
+		"ClusterRole/admission-controllerCR.yaml",
+		"ClusterRole/aggregate-alameda-admin-edit-alamedaCR.yaml"}
+
 	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
 	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
@@ -268,10 +282,11 @@ func (r *ReconcileAlamedaService) InstallClusterRole(instance *federatoraiv1alph
 }
 
 func (r *ReconcileAlamedaService) InstallServiceAccount(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
-	file_location := []string{"../../assets/ServiceAccount/alameda-datahubSA.yaml",
-		"../../assets/ServiceAccount/alameda-operatorSA.yaml",
-		"../../assets/ServiceAccount/alameda-evictionerSA.yaml",
-		"../../assets/ServiceAccount/admission-controllerSA.yaml"}
+	file_location := []string{"ServiceAccount/alameda-datahubSA.yaml",
+		"ServiceAccount/alameda-operatorSA.yaml",
+		"ServiceAccount/alameda-evictionerSA.yaml",
+		"ServiceAccount/admission-controllerSA.yaml"}
+
 	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
 	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
@@ -296,7 +311,8 @@ func (r *ReconcileAlamedaService) InstallServiceAccount(instance *federatoraiv1a
 }
 
 func (r *ReconcileAlamedaService) InstallConfigMap(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
-	file_location := []string{"../../assets/ConfigMap/grafana-datasources.yaml"}
+	file_location := []string{"ConfigMap/grafana-datasources.yaml"}
+
 	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
 	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
@@ -320,8 +336,9 @@ func (r *ReconcileAlamedaService) InstallConfigMap(instance *federatoraiv1alpha1
 	log.Info("Install ConfigMap OK")
 }
 func (r *ReconcileAlamedaService) InstallPersistentVolumeClaim(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
-	file_location := []string{"../../assets/PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
-		"../../assets/PersistentVolumeClaim/my-alamedagrafanaPVC.yaml"}
+	file_location := []string{"PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
+		"PersistentVolumeClaim/my-alamedagrafanaPVC.yaml"}
+
 	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
 	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
@@ -346,10 +363,18 @@ func (r *ReconcileAlamedaService) InstallPersistentVolumeClaim(instance *federat
 }
 
 func (r *ReconcileAlamedaService) InstallService(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
-	file_location := []string{"../../assets/Service/alameda-datahubSV.yaml",
-		"../../assets/Service/admission-controllerSV.yaml",
-		"../../assets/Service/alameda-influxdbSV.yaml",
-		"../../assets/Service/alameda-grafanaSV.yaml"}
+	file_location := []string{"Service/alameda-datahubSV.yaml",
+		"Service/admission-controllerSV.yaml",
+		"Service/alameda-influxdbSV.yaml",
+		"Service/alameda-grafanaSV.yaml"}
+	/*
+				"Service/admission-controllerSV.yaml":                     serviceAdmissionControllersvYaml,
+		"Service/alameda-datahubSV.yaml":                          serviceAlamedaDatahubsvYaml,
+		"Service/alameda-grafanaSV.yaml":                          serviceAlamedaGrafanasvYaml,
+		"Service/alameda-influxdbSV.yaml":                         serviceAlamedaInfluxdbsvYaml,
+
+	*/
+
 	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
 	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
@@ -376,12 +401,13 @@ func (r *ReconcileAlamedaService) InstallService(instance *federatoraiv1alpha1.A
 }
 
 func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
-	file_location := []string{"../../assets/Deployment/alameda-datahubDM.yaml",
-		"../../assets/Deployment/alameda-operatorDM.yaml",
-		"../../assets/Deployment/alameda-evictionerDM.yaml",
-		"../../assets/Deployment/admission-controllerDM.yaml",
-		"../../assets/Deployment/alameda-influxdbDM.yaml",
-		"../../assets/Deployment/alameda-grafanaDM.yaml"}
+	file_location := []string{"Deployment/alameda-datahubDM.yaml",
+		"Deployment/alameda-operatorDM.yaml",
+		"Deployment/alameda-evictionerDM.yaml",
+		"Deployment/admission-controllerDM.yaml",
+		"Deployment/alameda-influxdbDM.yaml",
+		"Deployment/alameda-grafanaDM.yaml"}
+
 	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
 	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	/*for _, v := range asp.Guicomponent {
@@ -418,7 +444,6 @@ func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha
 					log.Error(err, "Fail Update Resource Deployment", "ResourceDep.Name", ComponentA_dep.Name)
 				}
 				log.Info("Successfully Update Resource Deployment", "ResourceDep.Name", ComponentA_dep.Name)
-				
 			}
 			update = false
 		}
@@ -426,12 +451,12 @@ func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha
 	log.Info("Install Deployment OK")
 }
 func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/Deployment/alameda-datahubDM.yaml",
-		"../../assets/Deployment/alameda-operatorDM.yaml",
-		"../../assets/Deployment/alameda-evictionerDM.yaml",
-		"../../assets/Deployment/admission-controllerDM.yaml",
-		"../../assets/Deployment/alameda-influxdbDM.yaml",
-		"../../assets/Deployment/alameda-grafanaDM.yaml"}
+	file_location := [...]string{"Deployment/alameda-datahubDM.yaml",
+		"Deployment/alameda-operatorDM.yaml",
+		"Deployment/alameda-evictionerDM.yaml",
+		"Deployment/admission-controllerDM.yaml",
+		"Deployment/alameda-influxdbDM.yaml",
+		"Deployment/alameda-grafanaDM.yaml"}
 	for _, file_str := range file_location {
 		ComponentA_dep := component.NewDeployment(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_dep, r.scheme); err != nil {
@@ -452,10 +477,10 @@ func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alp
 	}
 }
 func (r *ReconcileAlamedaService) UninstallService(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/Service/alameda-datahubSV.yaml",
-		"../../assets/Service/admission-controllerSV.yaml",
-		"../../assets/Service/alameda-influxdbSV.yaml",
-		"../../assets/Service/alameda-grafanaSV.yaml"}
+	file_location := [...]string{"Service/alameda-datahubSV.yaml",
+		"Service/admission-controllerSV.yaml",
+		"Service/alameda-influxdbSV.yaml",
+		"Service/alameda-grafanaSV.yaml"}
 	for _, file_str := range file_location {
 		ComponentA_sv := component.NewService(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_sv, r.scheme); err != nil {
@@ -476,8 +501,8 @@ func (r *ReconcileAlamedaService) UninstallService(instance *federatoraiv1alpha1
 	}
 }
 func (r *ReconcileAlamedaService) UninstallPersistentVolumeClaim(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
-		"../../assets/PersistentVolumeClaim/my-alamedagrafanaPVC.yaml"}
+	file_location := [...]string{"PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
+		"PersistentVolumeClaim/my-alamedagrafanaPVC.yaml"}
 	for _, file_str := range file_location {
 		ComponentA_pvc := component.NewPersistentVolumeClaim(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_pvc, r.scheme); err != nil {
@@ -498,7 +523,7 @@ func (r *ReconcileAlamedaService) UninstallPersistentVolumeClaim(instance *feder
 	}
 }
 func (r *ReconcileAlamedaService) UninstallConfigMap(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/ConfigMap/grafana-datasources.yaml"}
+	file_location := [...]string{"ConfigMap/grafana-datasources.yaml"}
 	for _, file_str := range file_location {
 		ComponentA_cm := component.NewConfigMap(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_cm, r.scheme); err != nil {
@@ -519,10 +544,10 @@ func (r *ReconcileAlamedaService) UninstallConfigMap(instance *federatoraiv1alph
 	}
 }
 func (r *ReconcileAlamedaService) UninstallServiceAccount(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/ServiceAccount/alameda-datahubSA.yaml",
-		"../../assets/ServiceAccount/alameda-operatorSA.yaml",
-		"../../assets/ServiceAccount/alameda-evictionerSA.yaml",
-		"../../assets/ServiceAccount/admission-controllerSA.yaml"}
+	file_location := [...]string{"ServiceAccount/alameda-datahubSA.yaml",
+		"ServiceAccount/alameda-operatorSA.yaml",
+		"ServiceAccount/alameda-evictionerSA.yaml",
+		"ServiceAccount/admission-controllerSA.yaml"}
 	for _, file_str := range file_location {
 		ComponentA_sa := component.NewServiceAccount(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_sa, r.scheme); err != nil {
@@ -543,11 +568,11 @@ func (r *ReconcileAlamedaService) UninstallServiceAccount(instance *federatoraiv
 	}
 }
 func (r *ReconcileAlamedaService) UninstallClusterRole(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/ClusterRole/alameda-datahubCR.yaml",
-		"../../assets/ClusterRole/alameda-operatorCR.yaml",
-		"../../assets/ClusterRole/alameda-evictionerCR.yaml",
-		"../../assets/ClusterRole/admission-controllerCR.yaml",
-		"../../assets/ClusterRole/aggregate-alameda-admin-edit-alamedaCR.yaml"}
+	file_location := [...]string{"ClusterRole/alameda-datahubCR.yaml",
+		"ClusterRole/alameda-operatorCR.yaml",
+		"ClusterRole/alameda-evictionerCR.yaml",
+		"ClusterRole/admission-controllerCR.yaml",
+		"ClusterRole/aggregate-alameda-admin-edit-alamedaCR.yaml"}
 	for _, file_str := range file_location {
 		ComponentA_cr := component.NewClusterRole(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_cr, r.scheme); err != nil {
@@ -568,10 +593,10 @@ func (r *ReconcileAlamedaService) UninstallClusterRole(instance *federatoraiv1al
 	}
 }
 func (r *ReconcileAlamedaService) UninstallClusterRoleBinding(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/ClusterRoleBinding/alameda-datahubCRB.yaml",
-		"../../assets/ClusterRoleBinding/alameda-operatorCRB.yaml",
-		"../../assets/ClusterRoleBinding/alameda-evictionerCRB.yaml",
-		"../../assets/ClusterRoleBinding/admission-controllerCRB.yaml"}
+	file_location := [...]string{"ClusterRoleBinding/alameda-datahubCRB.yaml",
+		"ClusterRoleBinding/alameda-operatorCRB.yaml",
+		"ClusterRoleBinding/alameda-evictionerCRB.yaml",
+		"ClusterRoleBinding/admission-controllerCRB.yaml"}
 	for _, file_str := range file_location {
 		ComponentA_crb := component.NewClusterRoleBinding(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_crb, r.scheme); err != nil {

@@ -22,10 +22,11 @@ func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *Al
 	}
 	var guicomponent = make([]string, 4)
 	if !instance.Spec.EnableGUI {
-		guicomponent = append(guicomponent, "../../assets/PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
-		guicomponent = append(guicomponent, "../../assets/ConfigMap/grafana-datasources.yaml")
-		guicomponent = append(guicomponent, "../../assets/Deployment/alameda-grafanaDM.yaml")
-		guicomponent = append(guicomponent, "../../assets/Service/alameda-grafanaSV.yaml")
+		guicomponent = append(guicomponent, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
+		guicomponent = append(guicomponent, "ConfigMap/grafana-datasources.yaml")
+		guicomponent = append(guicomponent, "Deployment/alameda-grafanaDM.yaml")
+		guicomponent = append(guicomponent, "Service/alameda-grafanaSV.yaml")
+
 
 		asp.Guicomponent = guicomponent
 	} else {
@@ -33,15 +34,16 @@ func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *Al
 	}
 	var excutioncomponent = make([]string, 4)
 	if !instance.Spec.EnableExecution {
-		excutioncomponent = append(excutioncomponent, "../../assets/ClusterRoleBinding/admission-controllerCRB.yaml")
-		excutioncomponent = append(excutioncomponent, "../../assets/ClusterRoleBinding/alameda-evictionerCRB.yaml")
-		excutioncomponent = append(excutioncomponent, "../../assets/ClusterRole/admission-controllerCR.yaml")
-		excutioncomponent = append(excutioncomponent, "../../assets/ClusterRole/alameda-evictionerCR.yaml")
-		excutioncomponent = append(excutioncomponent, "../../assets/Deployment/admission-controllerDM.yaml")
-		excutioncomponent = append(excutioncomponent, "../../assets/Deployment/alameda-evictionerDM.yaml")
-		excutioncomponent = append(excutioncomponent, "../../assets/Service/admission-controllerSV.yaml")
-		excutioncomponent = append(excutioncomponent, "../../assets/ServiceAccount/admission-controllerSA.yaml")
-		excutioncomponent = append(excutioncomponent, "../../assets/ServiceAccount/alameda-evictionerSA.yaml")
+		excutioncomponent = append(excutioncomponent, "ClusterRoleBinding/admission-controllerCRB.yaml")
+		excutioncomponent = append(excutioncomponent, "ClusterRoleBinding/alameda-evictionerCRB.yaml")
+		excutioncomponent = append(excutioncomponent, "ClusterRole/admission-controllerCR.yaml")
+		excutioncomponent = append(excutioncomponent, "ClusterRole/alameda-evictionerCR.yaml")
+		excutioncomponent = append(excutioncomponent, "Deployment/admission-controllerDM.yaml")
+		excutioncomponent = append(excutioncomponent, "Deployment/alameda-evictionerDM.yaml")
+		excutioncomponent = append(excutioncomponent, "Service/admission-controllerSV.yaml")
+		excutioncomponent = append(excutioncomponent, "ServiceAccount/admission-controllerSA.yaml")
+		excutioncomponent = append(excutioncomponent, "ServiceAccount/alameda-evictionerSA.yaml")
+
 		asp.Excutioncomponent = excutioncomponent
 	} else {
 		asp.Excutioncomponent = nil
