@@ -4,6 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
+	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/enable"
+	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/imageversion"
+
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
@@ -70,9 +74,10 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err != nil {
 		return err
 	}
-
+	
 	// TODO(user): Modify this to be the types you create that are owned by the primary resource
 	// Watch for changes to secondary resource Pods and requeue the owner AlamedaService
+	/*
 	err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
 		IsController: true,
 		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
@@ -111,7 +116,7 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err != nil {
 		return err
 	}
-
+	*/
 	return nil
 }
 
@@ -152,16 +157,18 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		return reconcile.Result{}, err
 	}
 	fmt.Printf("AlamedaService.Spec: %v\n", instance.Spec)
-	if instance.Spec.AlmedaInstallOrUninstall {
+	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
+	fmt.Printf("asp: %v\n", asp)
+	if asp.AlmedaInstallOrUninstall {
 		//r.CreateNameSpace()
 		r.RegisterTestsCRD()
-		r.InstallClusterRoleBinding(instance)
-		r.InstallClusterRole(instance)
-		r.InstallServiceAccount(instance)
-		r.InstallConfigMap(instance)
-		r.InstallPersistentVolumeClaim(instance)
-		r.InstallService(instance)
-		r.InstallDeployment(instance)
+		r.InstallClusterRoleBinding(instance, asp)
+		r.InstallClusterRole(instance, asp)
+		r.InstallServiceAccount(instance, asp)
+		r.InstallConfigMap(instance, asp)
+		r.InstallPersistentVolumeClaim(instance, asp)
+		r.InstallService(instance, asp)
+		r.InstallDeployment(instance, asp)
 	} else {
 		r.UninstallDeployment(instance)
 		r.UninstallService(instance)
@@ -195,7 +202,7 @@ func (r *ReconcileAlamedaService) CreateNameSpace() {
 	}
 }
 func (r *ReconcileAlamedaService) RegisterTestsCRD() {
-	file_location := [...]string{"../../manifests/TestCrds.yaml"} //"../../assets/CustomResourceDefinition/alamedarecommendationsCRD.yaml",
+	file_location := []string{"../../manifests/TestCrds.yaml"} //"../../assets/CustomResourceDefinition/alamedarecommendationsCRD.yaml",
 	//"../../assets/CustomResourceDefinition/alamedascalersCRD.yaml",
 
 	for _, file_str := range file_location {
@@ -203,11 +210,13 @@ func (r *ReconcileAlamedaService) RegisterTestsCRD() {
 		_, _, _ = resourceapply.ApplyCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
 	}
 }
-func (r *ReconcileAlamedaService) InstallClusterRoleBinding(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/ClusterRoleBinding/alameda-datahubCRB.yaml",
+func (r *ReconcileAlamedaService) InstallClusterRoleBinding(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
+	file_location := []string{"../../assets/ClusterRoleBinding/alameda-datahubCRB.yaml",
 		"../../assets/ClusterRoleBinding/alameda-operatorCRB.yaml",
 		"../../assets/ClusterRoleBinding/alameda-evictionerCRB.yaml",
 		"../../assets/ClusterRoleBinding/admission-controllerCRB.yaml"}
+	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
+	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
 		ComponentA_crb := component.NewClusterRoleBinding(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_crb, r.scheme); err != nil {
@@ -229,12 +238,14 @@ func (r *ReconcileAlamedaService) InstallClusterRoleBinding(instance *federatora
 	log.Info("Install ClusterRoleBinding OK")
 }
 
-func (r *ReconcileAlamedaService) InstallClusterRole(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/ClusterRole/alameda-datahubCR.yaml",
+func (r *ReconcileAlamedaService) InstallClusterRole(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
+	file_location := []string{"../../assets/ClusterRole/alameda-datahubCR.yaml",
 		"../../assets/ClusterRole/alameda-operatorCR.yaml",
 		"../../assets/ClusterRole/alameda-evictionerCR.yaml",
 		"../../assets/ClusterRole/admission-controllerCR.yaml",
 		"../../assets/ClusterRole/aggregate-alameda-admin-edit-alamedaCR.yaml"}
+	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
+	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
 		ComponentA_cr := component.NewClusterRole(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_cr, r.scheme); err != nil {
@@ -256,11 +267,13 @@ func (r *ReconcileAlamedaService) InstallClusterRole(instance *federatoraiv1alph
 	log.Info("Install ClusterRole OK")
 }
 
-func (r *ReconcileAlamedaService) InstallServiceAccount(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/ServiceAccount/alameda-datahubSA.yaml",
+func (r *ReconcileAlamedaService) InstallServiceAccount(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
+	file_location := []string{"../../assets/ServiceAccount/alameda-datahubSA.yaml",
 		"../../assets/ServiceAccount/alameda-operatorSA.yaml",
 		"../../assets/ServiceAccount/alameda-evictionerSA.yaml",
 		"../../assets/ServiceAccount/admission-controllerSA.yaml"}
+	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
+	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
 		ComponentA_sa := component.NewServiceAccount(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_sa, r.scheme); err != nil {
@@ -282,8 +295,10 @@ func (r *ReconcileAlamedaService) InstallServiceAccount(instance *federatoraiv1a
 	log.Info("Install ServiceAccount OK")
 }
 
-func (r *ReconcileAlamedaService) InstallConfigMap(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/ConfigMap/grafana-datasources.yaml"}
+func (r *ReconcileAlamedaService) InstallConfigMap(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
+	file_location := []string{"../../assets/ConfigMap/grafana-datasources.yaml"}
+	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
+	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
 		ComponentA_cm := component.NewConfigMap(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_cm, r.scheme); err != nil {
@@ -304,9 +319,11 @@ func (r *ReconcileAlamedaService) InstallConfigMap(instance *federatoraiv1alpha1
 	}
 	log.Info("Install ConfigMap OK")
 }
-func (r *ReconcileAlamedaService) InstallPersistentVolumeClaim(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
+func (r *ReconcileAlamedaService) InstallPersistentVolumeClaim(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
+	file_location := []string{"../../assets/PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
 		"../../assets/PersistentVolumeClaim/my-alamedagrafanaPVC.yaml"}
+	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
+	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
 		ComponentA_pvc := component.NewPersistentVolumeClaim(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_pvc, r.scheme); err != nil {
@@ -328,11 +345,13 @@ func (r *ReconcileAlamedaService) InstallPersistentVolumeClaim(instance *federat
 	log.Info("Install PersistentVolumeClaim OK")
 }
 
-func (r *ReconcileAlamedaService) InstallService(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/Service/alameda-datahubSV.yaml",
+func (r *ReconcileAlamedaService) InstallService(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
+	file_location := []string{"../../assets/Service/alameda-datahubSV.yaml",
 		"../../assets/Service/admission-controllerSV.yaml",
 		"../../assets/Service/alameda-influxdbSV.yaml",
 		"../../assets/Service/alameda-grafanaSV.yaml"}
+	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
+	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
 		ComponentA_sv := component.NewService(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_sv, r.scheme); err != nil {
@@ -356,13 +375,21 @@ func (r *ReconcileAlamedaService) InstallService(instance *federatoraiv1alpha1.A
 
 }
 
-func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha1.AlamedaService) {
-	file_location := [...]string{"../../assets/Deployment/alameda-datahubDM.yaml",
+func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.Alamedaserviceparamter) {
+	file_location := []string{"../../assets/Deployment/alameda-datahubDM.yaml",
 		"../../assets/Deployment/alameda-operatorDM.yaml",
 		"../../assets/Deployment/alameda-evictionerDM.yaml",
 		"../../assets/Deployment/admission-controllerDM.yaml",
 		"../../assets/Deployment/alameda-influxdbDM.yaml",
 		"../../assets/Deployment/alameda-grafanaDM.yaml"}
+	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
+	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
+	/*for _, v := range asp.Guicomponent {
+		index := indexOf(v, file_location)
+		if index != -1 {
+			file_location = append(file_location[:index], file_location[index+1:]...)
+		}
+	}*/
 	for _, file_str := range file_location {
 		ComponentA_dep := component.NewDeployment(file_str)
 		if err := controllerutil.SetControllerReference(instance, ComponentA_dep, r.scheme); err != nil {
@@ -373,6 +400,8 @@ func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: ComponentA_dep.Name, Namespace: ComponentA_dep.Namespace}, found_ComponentA_dep)
 		if err != nil && errors.IsNotFound(err) {
 			log.Info("Creating a new Resource Deployment... ", "ResourceDep.Name", ComponentA_dep.Name)
+			ComponentA_dep = imageversion.ProcessImageVersion(ComponentA_dep, asp.Version)
+			fmt.Print("%q\n", ComponentA_dep.Spec.Template.Spec.Containers[0].Image)
 			err = r.client.Create(context.TODO(), ComponentA_dep)
 			if err != nil {
 				log.Error(err, "Fail Creating Resource Deployment", "ResourceDep.Name", ComponentA_dep.Name)
@@ -380,6 +409,18 @@ func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha
 			log.Info("Successfully Creating Resource Deployment", "ResourceDep.Name", ComponentA_dep.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource Deployment", "ResourceDep.Name", ComponentA_dep.Name)
+		} else {
+			update := imageversion.MatchImageVersion(ComponentA_dep, asp.Version)
+			if update {
+				ComponentA_dep = imageversion.ProcessImageVersion(ComponentA_dep, asp.Version)
+				err = r.client.Update(context.TODO(), ComponentA_dep)
+				if err != nil {
+					log.Error(err, "Fail Update Resource Deployment", "ResourceDep.Name", ComponentA_dep.Name)
+				}
+				log.Info("Successfully Update Resource Deployment", "ResourceDep.Name", ComponentA_dep.Name)
+				
+			}
+			update = false
 		}
 	}
 	log.Info("Install Deployment OK")
