@@ -6,7 +6,7 @@ metadata:
   labels:
     app: admission-controller
   name: admission-controller
-  namespace: kroos-tutorial
+  namespace: federatorai
 spec:
   ports:
   - port: 443

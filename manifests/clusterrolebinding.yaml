@@ -1,12 +1,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: kroos-controller-kroos-tutorial
+  name: federatorai-kroos-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: kroos-controller-kroos-tutorial
+  name: federatorai-kroos-controller
 subjects:
 - kind: ServiceAccount
-  name: kroos-controller
-  namespace: kroos-tutorial
+  name: federatorai-kroos-controller
+  namespace: federatorai

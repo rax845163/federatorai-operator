@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: alameda-operator
-  namespace: kroos-tutorial
+  namespace: federatorai
   annotations:
     description: Defines how to deploy the application alameda-operator
     template.alpha.openshift.io/wait-for-ready: 'true'
@@ -30,6 +30,6 @@ spec:
             memory: 20Mi
         env:
         - name: ALAMEDA_OPERATOR_DATAHUB_ADDRESS
-          value: "alameda-datahub.kroos-tutorial.svc:50050"
+          value: "alameda-datahub.federatorai.svc:50050"
       serviceAccount: alameda-operator
       serviceAccountName: alameda-operator    

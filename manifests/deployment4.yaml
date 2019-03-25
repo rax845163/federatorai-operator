@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web4
-  namespace: kroos-tutorial
+  namespace: federatorai
   labels:
     app: web
 spec:

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: alameda-grafana
-  namespace: kroos-tutorial
+  namespace: federatorai
   annotations:
     description: Defines how to deploy the application grafana
     template.alpha.openshift.io/wait-for-ready: 'true'

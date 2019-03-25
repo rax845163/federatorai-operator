@@ -2,6 +2,7 @@ package alamedaservice
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/enable"
@@ -270,6 +271,7 @@ func (r *ReconcileAlamedaService) InstallServiceAccount(instance *federatoraiv1a
 		"ServiceAccount/alameda-operatorSA.yaml",
 		"ServiceAccount/alameda-evictionerSA.yaml",
 		"ServiceAccount/admission-controllerSA.yaml"}
+
 	FileLocation = enable.DeleteGUIYAML(FileLocation, asp.Guicomponent)
 	FileLocation = enable.DeleteExcutionYAML(FileLocation, asp.Excutioncomponent)
 	for _, FileStr := range FileLocation {
@@ -278,6 +280,7 @@ func (r *ReconcileAlamedaService) InstallServiceAccount(instance *federatoraiv1a
 			log.Error(err, "Fail ResourceSA SetControllerReference")
 		}
 		found_sa := &corev1.ServiceAccount{}
+
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sa.Name, Namespace: Resource_sa.Namespace}, found_sa)
 		if err != nil && errors.IsNotFound(err) {
 			log.Info("Creating a new Resource ServiceAccount... ", "ResourceSA.Name", Resource_sa.Name)

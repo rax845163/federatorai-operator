@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: admission-controller
-  namespace: kroos-tutorial
+  namespace: federatorai
   annotations:
     description: Defines how to deploy the admission-controller
     template.alpha.openshift.io/wait-for-ready: 'true'
@@ -34,7 +34,7 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         - name: ALAMEDA_ADMCTL_DATAHUB_ADDRESS
-          value: "alameda-datahub.kroos-tutorial.svc:50050"
+          value: "alameda-datahub.federatorai.svc:50050"
         - name: ALAMEDA_ADMCTL_ENABLE
           value: 'false'
         - name: ALAMEDA_ADMCTL_TLS_CERT_FILE

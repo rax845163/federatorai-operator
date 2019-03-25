@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-datasources
-  namespace: kroos-tutorial
+  namespace: federatorai
 data:
   prometheus.yaml: |-
     {
@@ -13,7 +13,7 @@ data:
                 "name": "InfluxDB",                  
                 "type": "influxdb",
                 "access": "proxy",
-                "url": "https://alameda-influxdb.kroos-tutorial.svc:8086",
+                "url": "https://alameda-influxdb.federatorai.svc:8086",
                 "password": "adminpass",
                 "user": "admin",
                 "database": "_internal",

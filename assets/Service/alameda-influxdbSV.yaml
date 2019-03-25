@@ -6,7 +6,7 @@ metadata:
   labels:
     app: alameda-influxdb
   name: alameda-influxdb
-  namespace: kroos-tutorial
+  namespace: federatorai
 spec:
   ports:
   - port: 8086

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: example
-  namespace: kroos-tutorial
+  namespace: federatorai
 data:
   example.property.1: hello
   example.property.2: world

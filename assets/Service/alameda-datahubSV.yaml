@@ -4,7 +4,7 @@ metadata:
   labels:
     app: alameda-datahub
   name: alameda-datahub
-  namespace: kroos-tutorial
+  namespace: federatorai
 spec:
   ports:
   - name: grpc

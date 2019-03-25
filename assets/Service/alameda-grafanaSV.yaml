@@ -4,7 +4,7 @@ metadata:
   labels:
     app: alameda-grafana
   name: alameda-grafana
-  namespace: kroos-tutorial
+  namespace: federatorai
 spec:
   ports:
   - port: 3000
