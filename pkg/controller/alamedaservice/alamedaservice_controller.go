@@ -2,7 +2,6 @@ package alamedaservice
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/enable"
@@ -74,7 +73,7 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err != nil {
 		return err
 	}
-	
+
 	// TODO(user): Modify this to be the types you create that are owned by the primary resource
 	// Watch for changes to secondary resource Pods and requeue the owner AlamedaService
 	/*
@@ -158,9 +157,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		// Error reading the object - requeue the request.
 		return reconcile.Result{}, err
 	}
-	fmt.Printf("AlamedaService.Spec: %v\n", instance.Spec)
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
-	fmt.Printf("asp: %v\n", asp)
 	if asp.AlmedaInstallOrUninstall {
 		//r.CreateNameSpace()
 		r.RegisterTestsCRD()
@@ -208,7 +205,6 @@ func (r *ReconcileAlamedaService) RegisterTestsCRD() {
 		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
 		"CustomResourceDefinition/alamedascalersCRD.yaml",
 	}
-
 
 	for _, file_str := range file_location {
 		crd := component.RegistryCustomResourceDefinition(file_str)
@@ -367,14 +363,6 @@ func (r *ReconcileAlamedaService) InstallService(instance *federatoraiv1alpha1.A
 		"Service/admission-controllerSV.yaml",
 		"Service/alameda-influxdbSV.yaml",
 		"Service/alameda-grafanaSV.yaml"}
-	/*
-				"Service/admission-controllerSV.yaml":                     serviceAdmissionControllersvYaml,
-		"Service/alameda-datahubSV.yaml":                          serviceAlamedaDatahubsvYaml,
-		"Service/alameda-grafanaSV.yaml":                          serviceAlamedaGrafanasvYaml,
-		"Service/alameda-influxdbSV.yaml":                         serviceAlamedaInfluxdbsvYaml,
-
-	*/
-
 	file_location = enable.DeleteGUIYAML(file_location, asp.Guicomponent)
 	file_location = enable.DeleteExcutionYAML(file_location, asp.Excutioncomponent)
 	for _, file_str := range file_location {
@@ -427,7 +415,6 @@ func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha
 		if err != nil && errors.IsNotFound(err) {
 			log.Info("Creating a new Resource Deployment... ", "ResourceDep.Name", ComponentA_dep.Name)
 			ComponentA_dep = imageversion.ProcessImageVersion(ComponentA_dep, asp.Version)
-			fmt.Print("%q\n", ComponentA_dep.Spec.Template.Spec.Containers[0].Image)
 			err = r.client.Create(context.TODO(), ComponentA_dep)
 			if err != nil {
 				log.Error(err, "Fail Creating Resource Deployment", "ResourceDep.Name", ComponentA_dep.Name)
@@ -445,7 +432,6 @@ func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha
 				}
 				log.Info("Successfully Update Resource Deployment", "ResourceDep.Name", ComponentA_dep.Name)
 			}
-			update = false
 		}
 	}
 	log.Info("Install Deployment OK")
