@@ -279,6 +279,7 @@ func (r *ReconcileAlamedaService) InstallServiceAccount(instance *federatoraiv1a
 		if err := controllerutil.SetControllerReference(instance, Resource_sa, r.scheme); err != nil {
 			log.Error(err, "Fail ResourceSA SetControllerReference")
 		}
+		Resource_sa.Namespace = instance.Namespace
 		found_sa := &corev1.ServiceAccount{}
 
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sa.Name, Namespace: Resource_sa.Namespace}, found_sa)
@@ -305,6 +306,7 @@ func (r *ReconcileAlamedaService) InstallConfigMap(instance *federatoraiv1alpha1
 		if err := controllerutil.SetControllerReference(instance, Resource_cm, r.scheme); err != nil {
 			log.Error(err, "Fail ResourceCM SetControllerReference")
 		}
+		Resource_cm.Namespace = instance.Namespace
 		found_cm := &corev1.ConfigMap{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_cm.Name, Namespace: Resource_cm.Namespace}, found_cm)
 		if err != nil && errors.IsNotFound(err) {
@@ -330,6 +332,7 @@ func (r *ReconcileAlamedaService) InstallPersistentVolumeClaim(instance *federat
 		if err := controllerutil.SetControllerReference(instance, Resource_pvc, r.scheme); err != nil {
 			log.Error(err, "Fail ResourcePVC SetControllerReference")
 		}
+		Resource_pvc.Namespace = instance.Namespace
 		found_pvc := &corev1.PersistentVolumeClaim{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_pvc.Name, Namespace: Resource_pvc.Namespace}, found_pvc)
 		if err != nil && errors.IsNotFound(err) {
@@ -359,6 +362,7 @@ func (r *ReconcileAlamedaService) InstallService(instance *federatoraiv1alpha1.A
 			log.Error(err, "Fail ResourceSV SetControllerReference")
 
 		}
+		Resource_sv.Namespace = instance.Namespace
 		found_sv := &corev1.Service{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sv.Name, Namespace: Resource_sv.Namespace}, found_sv)
 		if err != nil && errors.IsNotFound(err) {
@@ -391,6 +395,7 @@ func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha
 			log.Error(err, "Fail ResourceDep SetControllerReference")
 
 		}
+		Resource_dep.Namespace = instance.Namespace
 		found_dep := &appsv1.Deployment{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_dep.Name, Namespace: Resource_dep.Namespace}, found_dep)
 		if err != nil && errors.IsNotFound(err) {
@@ -432,6 +437,7 @@ func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alp
 		if err := controllerutil.SetControllerReference(instance, Resource_dep, r.scheme); err != nil {
 			log.Error(err, "Fail ResourceDep SetControllerReference")
 		}
+		Resource_dep.Namespace = instance.Namespace
 		found_dep := &appsv1.Deployment{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_dep.Name, Namespace: Resource_dep.Namespace}, found_dep)
 		if err != nil && errors.IsNotFound(err) {
@@ -456,6 +462,7 @@ func (r *ReconcileAlamedaService) UninstallService(instance *federatoraiv1alpha1
 		if err := controllerutil.SetControllerReference(instance, Resource_sv, r.scheme); err != nil {
 			log.Error(err, "Fail ResourceSV SetControllerReference")
 		}
+		Resource_sv.Namespace = instance.Namespace
 		found_sv := &corev1.Service{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sv.Name, Namespace: Resource_sv.Namespace}, found_sv)
 		if err != nil && errors.IsNotFound(err) {
@@ -478,6 +485,7 @@ func (r *ReconcileAlamedaService) UninstallPersistentVolumeClaim(instance *feder
 		if err := controllerutil.SetControllerReference(instance, Resource_pvc, r.scheme); err != nil {
 			log.Error(err, "Fail ResourcePVC SetControllerReference")
 		}
+		Resource_pvc.Namespace = instance.Namespace
 		found_pvc := &corev1.PersistentVolumeClaim{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_pvc.Name, Namespace: Resource_pvc.Namespace}, found_pvc)
 		if err != nil && errors.IsNotFound(err) {
@@ -499,6 +507,7 @@ func (r *ReconcileAlamedaService) UninstallConfigMap(instance *federatoraiv1alph
 		if err := controllerutil.SetControllerReference(instance, Resource_cm, r.scheme); err != nil {
 			log.Error(err, "Fail ResourceCM SetControllerReference")
 		}
+		Resource_cm.Namespace = instance.Namespace
 		found_cm := &corev1.ConfigMap{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_cm.Name, Namespace: Resource_cm.Namespace}, found_cm)
 		if err != nil && errors.IsNotFound(err) {
@@ -523,6 +532,7 @@ func (r *ReconcileAlamedaService) UninstallServiceAccount(instance *federatoraiv
 		if err := controllerutil.SetControllerReference(instance, Resource_sa, r.scheme); err != nil {
 			log.Error(err, "Fail ResourceSA SetControllerReference")
 		}
+		Resource_sa.Namespace = instance.Namespace
 		found_sa := &corev1.ServiceAccount{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sa.Name, Namespace: Resource_sa.Namespace}, found_sa)
 		if err != nil && errors.IsNotFound(err) {
