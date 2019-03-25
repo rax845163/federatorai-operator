@@ -10,10 +10,11 @@ import (
 // AlamedaServiceSpec defines the desired state of AlamedaService
 // +k8s:openapi-gen=true
 type AlamedaServiceSpec struct {
-	AlmedaInstallOrUninstall bool
-	EnableExecution          bool
-	EnableGUI                bool
-	Version                  string
+	AlmedaInstallOrUninstall bool   `json:"almedainstalloruninstall"`
+	EnableExecution          bool   `json:"enableexecution"`
+	EnableGUI                bool   `json:"enablegui"`
+	Version                  string `json:"version"`
+	PrometheusService        string `json:"prometheusservice"`
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html

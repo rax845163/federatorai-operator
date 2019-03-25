@@ -4,21 +4,23 @@ import (
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 )
 
-type Alamedaserviceparamter struct {
+type AlamedaServiceParamter struct {
 	AlmedaInstallOrUninstall bool
 	EnableExecution          bool
 	EnableGUI                bool
 	Version                  string
+	PrometheusService        string
 	Guicomponent             []string
 	Excutioncomponent        []string
 }
 
-func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *Alamedaserviceparamter {
-	asp := &Alamedaserviceparamter{
+func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *AlamedaServiceParamter {
+	asp := &AlamedaServiceParamter{
 		AlmedaInstallOrUninstall: instance.Spec.AlmedaInstallOrUninstall,
 		EnableExecution:          instance.Spec.EnableExecution,
 		EnableGUI:                instance.Spec.EnableGUI,
 		Version:                  instance.Spec.Version,
+		PrometheusService:        instance.Spec.PrometheusService,
 	}
 	var guicomponent = make([]string, 4)
 	if !instance.Spec.EnableGUI {
@@ -26,7 +28,6 @@ func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *Al
 		guicomponent = append(guicomponent, "ConfigMap/grafana-datasources.yaml")
 		guicomponent = append(guicomponent, "Deployment/alameda-grafanaDM.yaml")
 		guicomponent = append(guicomponent, "Service/alameda-grafanaSV.yaml")
-
 
 		asp.Guicomponent = guicomponent
 	} else {
@@ -43,7 +44,6 @@ func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *Al
 		excutioncomponent = append(excutioncomponent, "Service/admission-controllerSV.yaml")
 		excutioncomponent = append(excutioncomponent, "ServiceAccount/admission-controllerSA.yaml")
 		excutioncomponent = append(excutioncomponent, "ServiceAccount/alameda-evictionerSA.yaml")
-
 		asp.Excutioncomponent = excutioncomponent
 	} else {
 		asp.Excutioncomponent = nil
