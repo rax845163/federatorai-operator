@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 func isProphetstorImage(dep *appsv1.Deployment) bool {
@@ -86,3 +87,41 @@ func MatchAlamedaServiceParamter(dep *appsv1.Deployment, version string, prometh
 	}
 	return false
 }
+func MatchPVC(dep *appsv1.Deployment, claimName string) bool {
+	if flag := isPVC(dep); flag == true && dep.Spec.Template.Spec.Volumes[0].VolumeSource.PersistentVolumeClaim != nil {
+		if dep.Spec.Template.Spec.Volumes[0].VolumeSource.PersistentVolumeClaim.ClaimName != claimName {
+			return true
+		}
+	}
+	return false
+}
+func isPVC(dep *appsv1.Deployment) bool {
+	if len(dep.Spec.Template.Spec.Volumes) > 0 {
+		if dep.Spec.Template.Spec.Volumes[0].Name == "grafana-storage" {
+			return true
+		}
+	}
+	return false
+}
+func ProcessPVC(dep *appsv1.Deployment, claimname string) *appsv1.Deployment {
+	if flag := isPVC(dep); flag == true && claimname != "" {
+		pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: claimname}
+		vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+		dep.Spec.Template.Spec.Volumes[0].VolumeSource = vs
+	}
+	return dep
+}
+
+/*
+func isPrometheusService(dep *appsv1.Deployment) (bool, int) {
+	if len(dep.Spec.Template.Spec.Containers[0].Env) > 0 {
+		for index, value := range dep.Spec.Template.Spec.Containers[0].Env {
+			if value.Name == "ALAMEDA_DATAHUB_PROMETHEUS_URL" {
+				return true, index
+			}
+		}
+		return false, 0
+	}
+	return false, 0
+}
+*/

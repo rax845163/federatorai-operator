@@ -18,6 +18,7 @@ type AlamedaServiceSpec struct {
 	EnableGUI                bool   `json:"enablegui"`
 	Version                  string `json:"version"`
 	PrometheusService        string `json:"prometheusservice"`
+	PersistentVolumeClaim    string `json:"persistentvolumeclaim"`
 }
 
 // AlamedaServiceStatus defines the observed state of AlamedaService

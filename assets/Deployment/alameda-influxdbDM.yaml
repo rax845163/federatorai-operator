@@ -50,8 +50,7 @@ spec:
           subPath: influxdb
       volumes:
       - name: influxdb-storage
-        persistentVolumeClaim:
-          claimName: 'my-alameda.influxdb.pvc'
+        emptyDir: {}
       - name: alameda-datahub-tls
         secret:
           secretName: alameda-datahub-tls

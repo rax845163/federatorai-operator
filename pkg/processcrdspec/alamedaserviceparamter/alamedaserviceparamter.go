@@ -10,6 +10,7 @@ type AlamedaServiceParamter struct {
 	EnableGUI                bool
 	Version                  string
 	PrometheusService        string
+	PersistentVolumeClaim    string
 	Guicomponent             []string
 	Excutioncomponent        []string
 }
@@ -21,6 +22,7 @@ func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *Al
 		EnableGUI:                instance.Spec.EnableGUI,
 		Version:                  instance.Spec.Version,
 		PrometheusService:        instance.Spec.PrometheusService,
+		PersistentVolumeClaim:    instance.Spec.PersistentVolumeClaim,
 	}
 	var guicomponent = make([]string, 4)
 	if !instance.Spec.EnableGUI {

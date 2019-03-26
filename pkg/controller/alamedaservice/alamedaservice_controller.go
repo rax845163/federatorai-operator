@@ -163,7 +163,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		r.InstallClusterRole(instance, asp)
 		r.InstallServiceAccount(instance, asp)
 		r.InstallConfigMap(instance, asp)
-		r.InstallPersistentVolumeClaim(instance, asp)
+		//r.InstallPersistentVolumeClaim(instance, asp)
 		r.InstallService(instance, asp)
 		r.InstallDeployment(instance, asp)
 		if !asp.EnableExecution || !asp.EnableGUI { // if EnableExecution Or EnableGUI has been changed to false
@@ -179,7 +179,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	} else {
 		r.UninstallDeployment(instance)
 		r.UninstallService(instance)
-		r.UninstallPersistentVolumeClaim(instance)
+		//r.UninstallPersistentVolumeClaim(instance)
 		r.UninstallConfigMap(instance)
 		r.UninstallServiceAccount(instance)
 		r.UninstallClusterRole(instance)
@@ -237,13 +237,13 @@ func (r *ReconcileAlamedaService) InstallClusterRoleBinding(instance *federatora
 			err = r.client.Create(context.TODO(), Resource_crb)
 			if err != nil {
 				log.Error(err, "Fail Creating Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb.Name)
+			} else {
+				log.Info("Successfully Creating Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb.Name)
 			}
-			log.Info("Successfully Creating Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb.Name)
 		}
 	}
-	log.Info("Install ClusterRoleBinding OK")
 }
 
 func (r *ReconcileAlamedaService) InstallClusterRole(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
@@ -266,13 +266,13 @@ func (r *ReconcileAlamedaService) InstallClusterRole(instance *federatoraiv1alph
 			err = r.client.Create(context.TODO(), Resource_cr)
 			if err != nil {
 				log.Error(err, "Fail Creating Resource ClusterRole", "ResourceCR.Name", Resource_cr.Name)
+			} else {
+				log.Info("Successfully Creating Resource ClusterRole", "ResourceCR.Name", Resource_cr.Name)
 			}
-			log.Info("Successfully Creating Resource ClusterRole", "ResourceCR.Name", Resource_cr.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource ClusterRole", "ResourceCR.Name", Resource_cr.Name)
 		}
 	}
-	log.Info("Install ClusterRole OK")
 }
 
 func (r *ReconcileAlamedaService) InstallServiceAccount(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
@@ -297,13 +297,13 @@ func (r *ReconcileAlamedaService) InstallServiceAccount(instance *federatoraiv1a
 			err = r.client.Create(context.TODO(), Resource_sa)
 			if err != nil {
 				log.Error(err, "Fail Creating Resource ServiceAccount", "ResourceSA.Name", Resource_sa.Name)
+			} else {
+				log.Info("Successfully Creating Resource ServiceAccount", "ResourceSA.Name", Resource_sa.Name)
 			}
-			log.Info("Successfully Creating Resource ServiceAccount", "ResourceSA.Name", Resource_sa.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource ServiceAccount", "ResourceSA.Name", Resource_sa.Name)
 		}
 	}
-	log.Info("Install ServiceAccount OK")
 }
 
 func (r *ReconcileAlamedaService) InstallConfigMap(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
@@ -323,13 +323,13 @@ func (r *ReconcileAlamedaService) InstallConfigMap(instance *federatoraiv1alpha1
 			err = r.client.Create(context.TODO(), Resource_cm)
 			if err != nil {
 				log.Error(err, "Fail Creating Resource ConfigMap", "ResourceCM.Name", Resource_cm.Name)
+			} else {
+				log.Info("Successfully Creating Resource ConfigMap", "ResourceCM.Name", Resource_cm.Name)
 			}
-			log.Info("Successfully Creating Resource ConfigMap", "ResourceCM.Name", Resource_cm.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource ConfigMap", "ResourceCM.Name", Resource_cm.Name)
 		}
 	}
-	log.Info("Install ConfigMap OK")
 }
 func (r *ReconcileAlamedaService) InstallPersistentVolumeClaim(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
 	FileLocation := []string{"PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
@@ -349,13 +349,13 @@ func (r *ReconcileAlamedaService) InstallPersistentVolumeClaim(instance *federat
 			err = r.client.Create(context.TODO(), Resource_pvc)
 			if err != nil {
 				log.Error(err, "Fail Creating Resource PersistentVolumeClaim", "ResourcePVC.Name", Resource_pvc.Name)
+			} else {
+				log.Info("Successfully Creating Resource PersistentVolumeClaim", "ResourcePVC.Name", Resource_pvc.Name)
 			}
-			log.Info("Successfully Creating Resource PersistentVolumeClaim", "ResourcePVC.Name", Resource_pvc.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource PersistentVolumeClaim", "ResourcePVC.Name", Resource_pvc.Name)
 		}
 	}
-	log.Info("Install PersistentVolumeClaim OK")
 }
 
 func (r *ReconcileAlamedaService) InstallService(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
@@ -369,7 +369,6 @@ func (r *ReconcileAlamedaService) InstallService(instance *federatoraiv1alpha1.A
 		Resource_sv := component.NewService(FileStr)
 		if err := controllerutil.SetControllerReference(instance, Resource_sv, r.scheme); err != nil {
 			log.Error(err, "Fail ResourceSV SetControllerReference")
-
 		}
 		Resource_sv.Namespace = instance.Namespace
 		found_sv := &corev1.Service{}
@@ -379,14 +378,13 @@ func (r *ReconcileAlamedaService) InstallService(instance *federatoraiv1alpha1.A
 			err = r.client.Create(context.TODO(), Resource_sv)
 			if err != nil {
 				log.Error(err, "Fail Creating Resource Service", "ResourceSV.Name", Resource_sv.Name)
+			} else {
+				log.Info("Successfully Creating Resource Service", "ResourceSV.Name", Resource_sv.Name)
 			}
-			log.Info("Successfully Creating Resource Service", "ResourceSV.Name", Resource_sv.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource Service", "ResourceSV.Name", Resource_sv.Name)
 		}
 	}
-	log.Info("Install Service OK")
-
 }
 
 func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
@@ -414,13 +412,15 @@ func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha
 			err = r.client.Create(context.TODO(), Resource_dep)
 			if err != nil {
 				log.Error(err, "Fail Creating Resource Deployment", "ResourceDep.Name", Resource_dep.Name)
+			} else {
+				log.Info("Successfully Creating Resource Deployment", "ResourceDep.Name", Resource_dep.Name)
 			}
-			log.Info("Successfully Creating Resource Deployment", "ResourceDep.Name", Resource_dep.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource Deployment", "ResourceDep.Name", Resource_dep.Name)
 		} else {
 			update := updateparamter.MatchAlamedaServiceParamter(found_dep, asp.Version, asp.PrometheusService)
 			if update {
+				log.Info("Update Resource Deployment:", "ResourceDep.Name", found_dep.Name)
 				found_dep = updateparamter.ProcessImageVersion(found_dep, asp.Version)
 				found_dep = updateparamter.ProcessPrometheusService(found_dep, asp.PrometheusService)
 				err = r.client.Update(context.TODO(), found_dep)
@@ -428,11 +428,9 @@ func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha
 					log.Error(err, "Fail Update Resource Deployment", "ResourceDep.Name", found_dep.Name)
 				}
 				log.Info("Successfully Update Resource Deployment", "ResourceDep.Name", found_dep.Name)
-
 			}
 		}
 	}
-	log.Info("Install Deployment OK")
 }
 func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alpha1.AlamedaService) {
 	FileLocation := [...]string{"Deployment/alameda-datahubDM.yaml",

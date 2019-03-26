@@ -39,8 +39,7 @@ spec:
             name: grafana-datasources
       volumes:
         - name: grafana-storage
-          persistentVolumeClaim:
-            claimName: 'my-alameda.grafana.pvc'
+          emptyDir: {}
         - configMap:
             defaultMode: 420
             name: grafana-datasources
