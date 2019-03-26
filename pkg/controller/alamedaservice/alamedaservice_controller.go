@@ -9,15 +9,12 @@ import (
 
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
-	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	rbacv1 "k8s.io/api/rbac/v1"
 	apiextension "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 
 	"k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
+	//metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
@@ -33,10 +30,10 @@ import (
 )
 
 var (
-	_           reconcile.Reconciler = &ReconcileAlamedaService{}
-	log                              = logf.Log.WithName("controller_alamedaservice")
-	name                             = "kroos-installnamespace"
-	gracePeriod                      = int64(3)
+	_   reconcile.Reconciler = &ReconcileAlamedaService{}
+	log                      = logf.Log.WithName("controller_alamedaservice")
+	//name                             = "kroos-installnamespace"
+	gracePeriod = int64(3)
 )
 
 /**
@@ -150,160 +147,29 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			// Request object not found, could have been deleted after reconcile request.
 			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 			// Return and don't requeue
+			r.UninstallDeployment(instance)
+			r.UninstallService(instance)
+			r.UninstallConfigMap(instance)
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
 		return reconcile.Result{}, err
 	}
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
-	if asp.AlmedaInstallOrUninstall {
-		//r.CreateNameSpace()
-		r.RegisterTestsCRD()
-		r.InstallClusterRoleBinding(instance, asp)
-		r.InstallClusterRole(instance, asp)
-		r.InstallServiceAccount(instance, asp)
-		r.InstallConfigMap(instance, asp)
-		//r.InstallPersistentVolumeClaim(instance, asp)
-		r.InstallService(instance, asp)
-		r.InstallDeployment(instance, asp)
-		if !asp.EnableExecution || !asp.EnableGUI { // if EnableExecution Or EnableGUI has been changed to false
-			if !asp.EnableExecution {
-				log.Info("EnableExecution has been changed to false")
-				r.UninstallExcutionComponent(instance)
-			}
-			if !asp.EnableGUI {
-				log.Info("EnableGUI has been changed to false")
-				r.UninstallGUIComponent(instance)
-			}
+	r.InstallConfigMap(instance, asp)
+	r.InstallService(instance, asp)
+	r.InstallDeployment(instance, asp)
+	if !asp.EnableExecution || !asp.EnableGUI { // if EnableExecution Or EnableGUI has been changed to false
+		if !asp.EnableExecution {
+			log.Info("EnableExecution has been changed to false")
+			r.UninstallExcutionComponent(instance)
 		}
-	} else {
-		r.UninstallDeployment(instance)
-		r.UninstallService(instance)
-		//r.UninstallPersistentVolumeClaim(instance)
-		r.UninstallConfigMap(instance)
-		r.UninstallServiceAccount(instance)
-		r.UninstallClusterRole(instance)
-		r.UninstallClusterRoleBinding(instance)
-		//r.DeleteRegisterTestsCRD()
-		//r.DeleteNameSpace()
+		if !asp.EnableGUI {
+			log.Info("EnableGUI has been changed to false")
+			r.UninstallGUIComponent(instance)
+		}
 	}
 	return reconcile.Result{}, nil
-}
-
-func (r *ReconcileAlamedaService) CreateNameSpace() {
-	_, err := r.kubeClient.Core().Namespaces().Get(name, metav1.GetOptions{})
-	if err != nil && errors.IsNotFound(err) {
-		log.Info("Creating NameSpace", "NameSpace.Name", name)
-		_, err = r.kubeClient.Core().Namespaces().Create(&corev1.Namespace{
-			ObjectMeta: metav1.ObjectMeta{
-				Name: name,
-			},
-		})
-
-		if err != nil {
-			log.Error(err, "failed to create namespace with name", "NameSpace.Name", name)
-		}
-		log.Info("Successfully Creating NameSpace", "NameSpace.Name", name)
-	} else {
-		log.Info("Found NameSpace", "NameSpace.Name", name)
-	}
-}
-func (r *ReconcileAlamedaService) RegisterTestsCRD() {
-	FileLocation := []string{ //"../../manifests/TestCrds.yaml" ,
-		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
-		"CustomResourceDefinition/alamedascalersCRD.yaml",
-	}
-	for _, FileStr := range FileLocation {
-		crd := component.RegistryCustomResourceDefinition(FileStr)
-		_, _, _ = resourceapply.ApplyCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
-	}
-}
-func (r *ReconcileAlamedaService) InstallClusterRoleBinding(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
-	FileLocation := []string{"ClusterRoleBinding/alameda-datahubCRB.yaml",
-		"ClusterRoleBinding/alameda-operatorCRB.yaml",
-		"ClusterRoleBinding/alameda-evictionerCRB.yaml",
-		"ClusterRoleBinding/admission-controllerCRB.yaml"}
-	FileLocation = enable.IgnoreGUIYAML(FileLocation, asp.Guicomponent)
-	FileLocation = enable.IgnoreExcutionYAML(FileLocation, asp.Excutioncomponent)
-	for _, FileStr := range FileLocation {
-		Resource_crb := component.NewClusterRoleBinding(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_crb, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceCRB SetControllerReference")
-		}
-		found_crb := &rbacv1.ClusterRoleBinding{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_crb.Name}, found_crb)
-		if err != nil && errors.IsNotFound(err) {
-			log.Info("Creating a new Resource ClusterRoleBinding... ", "ResourceCRB.Name", Resource_crb.Name)
-			err = r.client.Create(context.TODO(), Resource_crb)
-			if err != nil {
-				log.Error(err, "Fail Creating Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb.Name)
-			} else {
-				log.Info("Successfully Creating Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb.Name)
-			}
-		} else if err != nil {
-			log.Error(err, "Not Found Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb.Name)
-		}
-	}
-}
-
-func (r *ReconcileAlamedaService) InstallClusterRole(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
-	FileLocation := []string{"ClusterRole/alameda-datahubCR.yaml",
-		"ClusterRole/alameda-operatorCR.yaml",
-		"ClusterRole/alameda-evictionerCR.yaml",
-		"ClusterRole/admission-controllerCR.yaml",
-		"ClusterRole/aggregate-alameda-admin-edit-alamedaCR.yaml"}
-	FileLocation = enable.IgnoreGUIYAML(FileLocation, asp.Guicomponent)
-	FileLocation = enable.IgnoreExcutionYAML(FileLocation, asp.Excutioncomponent)
-	for _, FileStr := range FileLocation {
-		Resource_cr := component.NewClusterRole(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_cr, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceCR SetControllerReference")
-		}
-		found_cr := &rbacv1.ClusterRole{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_cr.Name}, found_cr)
-		if err != nil && errors.IsNotFound(err) {
-			log.Info("Creating a new Resource ClusterRole... ", "ResourceCR.Name", Resource_cr.Name)
-			err = r.client.Create(context.TODO(), Resource_cr)
-			if err != nil {
-				log.Error(err, "Fail Creating Resource ClusterRole", "ResourceCR.Name", Resource_cr.Name)
-			} else {
-				log.Info("Successfully Creating Resource ClusterRole", "ResourceCR.Name", Resource_cr.Name)
-			}
-		} else if err != nil {
-			log.Error(err, "Not Found Resource ClusterRole", "ResourceCR.Name", Resource_cr.Name)
-		}
-	}
-}
-
-func (r *ReconcileAlamedaService) InstallServiceAccount(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
-	FileLocation := []string{"ServiceAccount/alameda-datahubSA.yaml",
-		"ServiceAccount/alameda-operatorSA.yaml",
-		"ServiceAccount/alameda-evictionerSA.yaml",
-		"ServiceAccount/admission-controllerSA.yaml"}
-
-	FileLocation = enable.IgnoreGUIYAML(FileLocation, asp.Guicomponent)
-	FileLocation = enable.IgnoreExcutionYAML(FileLocation, asp.Excutioncomponent)
-	for _, FileStr := range FileLocation {
-		Resource_sa := component.NewServiceAccount(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_sa, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceSA SetControllerReference")
-		}
-		Resource_sa.Namespace = instance.Namespace
-		found_sa := &corev1.ServiceAccount{}
-
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sa.Name, Namespace: Resource_sa.Namespace}, found_sa)
-		if err != nil && errors.IsNotFound(err) {
-			log.Info("Creating a new Resource ServiceAccount... ", "ResourceSA.Name", Resource_sa.Name)
-			err = r.client.Create(context.TODO(), Resource_sa)
-			if err != nil {
-				log.Error(err, "Fail Creating Resource ServiceAccount", "ResourceSA.Name", Resource_sa.Name)
-			} else {
-				log.Info("Successfully Creating Resource ServiceAccount", "ResourceSA.Name", Resource_sa.Name)
-			}
-		} else if err != nil {
-			log.Error(err, "Not Found Resource ServiceAccount", "ResourceSA.Name", Resource_sa.Name)
-		}
-	}
 }
 
 func (r *ReconcileAlamedaService) InstallConfigMap(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
@@ -529,109 +395,13 @@ func (r *ReconcileAlamedaService) UninstallConfigMap(instance *federatoraiv1alph
 		}
 	}
 }
-func (r *ReconcileAlamedaService) UninstallServiceAccount(instance *federatoraiv1alpha1.AlamedaService) {
-	FileLocation := [...]string{"ServiceAccount/alameda-datahubSA.yaml",
-		"ServiceAccount/alameda-operatorSA.yaml",
-		"ServiceAccount/alameda-evictionerSA.yaml",
-		"ServiceAccount/admission-controllerSA.yaml"}
-	for _, FileStr := range FileLocation {
-		Resource_sa := component.NewServiceAccount(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_sa, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceSA SetControllerReference")
-		}
-		Resource_sa.Namespace = instance.Namespace
-		found_sa := &corev1.ServiceAccount{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sa.Name, Namespace: Resource_sa.Namespace}, found_sa)
-		if err != nil && errors.IsNotFound(err) {
-			log.Info("Cluster IsNotFound Resource ServiceAccount", "ResourceSA.Name", Resource_sa.Name)
-		} else if err != nil {
-			log.Error(err, "Not Found Resource ServiceAccount", "ResourceSA.Name", Resource_sa)
-		} else {
-			err = r.client.Delete(context.TODO(), found_sa)
-			if err != nil {
-				log.Error(err, "Fail Delete Resource ServiceAccount", "ResourceSA.Name", found_sa)
-			}
-		}
-	}
-}
-func (r *ReconcileAlamedaService) UninstallClusterRole(instance *federatoraiv1alpha1.AlamedaService) {
-	FileLocation := [...]string{"ClusterRole/alameda-datahubCR.yaml",
-		"ClusterRole/alameda-operatorCR.yaml",
-		"ClusterRole/alameda-evictionerCR.yaml",
-		"ClusterRole/admission-controllerCR.yaml",
-		"ClusterRole/aggregate-alameda-admin-edit-alamedaCR.yaml"}
-	for _, FileStr := range FileLocation {
-		Resource_cr := component.NewClusterRole(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_cr, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceCR SetControllerReference")
-		}
-		found_cr := &rbacv1.ClusterRole{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_cr.Name}, found_cr)
-		if err != nil && errors.IsNotFound(err) {
-			log.Info("Cluster IsNotFound Resource ClusterRole", "ResourceCR.Name", Resource_cr.Name)
-		} else if err != nil {
-			log.Error(err, "Not Found Resource ClusterRole", "ResourceCR.Name", Resource_cr)
-		} else {
-			err = r.client.Delete(context.TODO(), found_cr)
-			if err != nil {
-				log.Error(err, "Fail Delete Resource ClusterRole", "ResourceCR.Name", found_cr)
-			}
-		}
-	}
-}
-func (r *ReconcileAlamedaService) UninstallClusterRoleBinding(instance *federatoraiv1alpha1.AlamedaService) {
-	FileLocation := [...]string{"ClusterRoleBinding/alameda-datahubCRB.yaml",
-		"ClusterRoleBinding/alameda-operatorCRB.yaml",
-		"ClusterRoleBinding/alameda-evictionerCRB.yaml",
-		"ClusterRoleBinding/admission-controllerCRB.yaml"}
-	for _, FileStr := range FileLocation {
-		Resource_crb := component.NewClusterRoleBinding(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_crb, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceCRB SetControllerReference")
-		}
-		found_crb := &rbacv1.ClusterRoleBinding{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_crb.Name}, found_crb)
-		if err != nil && errors.IsNotFound(err) {
-			log.Info("Cluster IsNotFound Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb.Name)
-		} else if err != nil {
-			log.Error(err, "Not Found Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb)
-		} else {
-			err = r.client.Delete(context.TODO(), found_crb)
-			if err != nil {
-				log.Error(err, "Fail Delete Resource ClusterRoleBinding", "ResourceCRB.Name", found_crb)
-			}
-		}
-	}
-}
-func (r *ReconcileAlamedaService) DeleteRegisterTestsCRD() {
-	FileLocation := [...]string{ //"../../manifests/TestCrds.yaml",
-		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
-		"CustomResourceDefinition/alamedascalersCRD.yaml",
-	}
 
-	for _, FileStr := range FileLocation {
-		crd := component.RegistryCustomResourceDefinition(FileStr)
-		_, _, _ = resourceapply.DeleteCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
-	}
-}
-func (r *ReconcileAlamedaService) DeleteNameSpace() {
-	_, err := r.kubeClient.Core().Namespaces().Get(name, metav1.GetOptions{})
-	if err != nil && errors.IsNotFound(err) {
-		log.Info("Cluster IsNotFound Resource Namespaces", "NameSpace.Name", name)
-	} else if err != nil {
-		log.Error(err, "Not Found Resource Namespaces", "NameSpace.Name", name)
-	} else {
-		err = r.kubeClient.Core().Namespaces().Delete(name, &metav1.DeleteOptions{})
-		if err != nil {
-			log.Error(err, "Fail Delete Resource Namespaces", "NameSpace.Name", name)
-		}
-	}
-}
 func (r *ReconcileAlamedaService) UninstallGUIComponent(instance *federatoraiv1alpha1.AlamedaService) {
 	Resource_dep := component.NewDeployment("Deployment/alameda-grafanaDM.yaml")
 	if err := controllerutil.SetControllerReference(instance, Resource_dep, r.scheme); err != nil {
 		log.Error(err, "Fail ResourceDep SetControllerReference")
 	}
+	Resource_dep.Namespace = instance.Namespace
 	found_dep := &appsv1.Deployment{}
 	err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_dep.Name, Namespace: Resource_dep.Namespace}, found_dep)
 	if err != nil && errors.IsNotFound(err) {
@@ -648,6 +418,7 @@ func (r *ReconcileAlamedaService) UninstallGUIComponent(instance *federatoraiv1a
 	if err := controllerutil.SetControllerReference(instance, Resource_sv, r.scheme); err != nil {
 		log.Error(err, "Fail ResourceSV SetControllerReference")
 	}
+	Resource_sv.Namespace = instance.Namespace
 	found_sv := &corev1.Service{}
 	err = r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sv.Name, Namespace: Resource_sv.Namespace}, found_sv)
 	if err != nil && errors.IsNotFound(err) {
@@ -664,6 +435,7 @@ func (r *ReconcileAlamedaService) UninstallGUIComponent(instance *federatoraiv1a
 	if err := controllerutil.SetControllerReference(instance, Resource_cm, r.scheme); err != nil {
 		log.Error(err, "Fail ResourceCM SetControllerReference")
 	}
+	Resource_cm.Namespace = instance.Namespace
 	found_cm := &corev1.ConfigMap{}
 	err = r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_cm.Name, Namespace: Resource_cm.Namespace}, found_cm)
 	if err != nil && errors.IsNotFound(err) {
@@ -676,22 +448,6 @@ func (r *ReconcileAlamedaService) UninstallGUIComponent(instance *federatoraiv1a
 			log.Error(err, "Fail Delete Resource ConfigMap", "ResourceCM.Name", found_cm)
 		}
 	}
-	Resource_pvc := component.NewPersistentVolumeClaim("PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
-	if err := controllerutil.SetControllerReference(instance, Resource_pvc, r.scheme); err != nil {
-		log.Error(err, "Fail ResourcePVC SetControllerReference")
-	}
-	found_pvc := &corev1.PersistentVolumeClaim{}
-	err = r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_pvc.Name, Namespace: Resource_pvc.Namespace}, found_pvc)
-	if err != nil && errors.IsNotFound(err) {
-		log.Info("Cluster IsNotFound Resource PersistentVolumeClaim", "ResourcePVC.Name", Resource_pvc.Name)
-	} else if err != nil {
-		log.Error(err, "Not Found Resource PersistentVolumeClaim", "ResourcePVC.Name", Resource_pvc)
-	} else {
-		err = r.client.Delete(context.TODO(), found_pvc)
-		if err != nil {
-			log.Error(err, "Fail Delete Resource PersistentVolumeClaim", "ResourcePVC.Name", found_pvc)
-		}
-	}
 }
 func (r *ReconcileAlamedaService) UninstallExcutionComponent(instance *federatoraiv1alpha1.AlamedaService) {
 	FileLocation := [...]string{"Deployment/admission-controllerDM.yaml",
@@ -701,6 +457,7 @@ func (r *ReconcileAlamedaService) UninstallExcutionComponent(instance *federator
 		if err := controllerutil.SetControllerReference(instance, Resource_dep, r.scheme); err != nil {
 			log.Error(err, "Fail ResourceDep SetControllerReference")
 		}
+		Resource_dep.Namespace = instance.Namespace
 		found_dep := &appsv1.Deployment{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_dep.Name, Namespace: Resource_dep.Namespace}, found_dep)
 		if err != nil && errors.IsNotFound(err) {
@@ -718,6 +475,7 @@ func (r *ReconcileAlamedaService) UninstallExcutionComponent(instance *federator
 	if err := controllerutil.SetControllerReference(instance, Resource_sv, r.scheme); err != nil {
 		log.Error(err, "Fail ResourceSV SetControllerReference")
 	}
+	Resource_sv.Namespace = instance.Namespace
 	found_sv := &corev1.Service{}
 	err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sv.Name, Namespace: Resource_sv.Namespace}, found_sv)
 	if err != nil && errors.IsNotFound(err) {
@@ -730,105 +488,6 @@ func (r *ReconcileAlamedaService) UninstallExcutionComponent(instance *federator
 			log.Error(err, "Fail Delete Resource Service", "ResourceSV.Name", found_sv)
 		}
 	}
-	FileLocation = [...]string{"ServiceAccount/alameda-evictionerSA.yaml",
-		"ServiceAccount/admission-controllerSA.yaml"}
-	for _, FileStr := range FileLocation {
-		Resource_sa := component.NewServiceAccount(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_sa, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceSA SetControllerReference")
-		}
-		found_sa := &corev1.ServiceAccount{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sa.Name, Namespace: Resource_sa.Namespace}, found_sa)
-		if err != nil && errors.IsNotFound(err) {
-			log.Info("Cluster IsNotFound Resource ServiceAccount", "ResourceSA.Name", Resource_sa.Name)
-		} else if err != nil {
-			log.Error(err, "Not Found Resource ServiceAccount", "ResourceSA.Name", Resource_sa)
-		} else {
-			err = r.client.Delete(context.TODO(), found_sa)
-			if err != nil {
-				log.Error(err, "Fail Delete Resource ServiceAccount", "ResourceSA.Name", found_sa)
-			}
-		}
-	}
-	FileLocation = [...]string{"ClusterRole/alameda-evictionerCR.yaml",
-		"ClusterRole/admission-controllerCR.yaml",
-	}
-	for _, FileStr := range FileLocation {
-		Resource_cr := component.NewClusterRole(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_cr, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceCR SetControllerReference")
-		}
-		found_cr := &rbacv1.ClusterRole{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_cr.Name}, found_cr)
-		if err != nil && errors.IsNotFound(err) {
-			log.Info("Cluster IsNotFound Resource ClusterRole", "ResourceCR.Name", Resource_cr.Name)
-		} else if err != nil {
-			log.Error(err, "Not Found Resource ClusterRole", "ResourceCR.Name", Resource_cr)
-		} else {
-			err = r.client.Delete(context.TODO(), found_cr)
-			if err != nil {
-				log.Error(err, "Fail Delete Resource ClusterRole", "ResourceCR.Name", found_cr)
-			}
-		}
-	}
-	FileLocation = [...]string{"ClusterRoleBinding/alameda-evictionerCRB.yaml",
-		"ClusterRoleBinding/admission-controllerCRB.yaml"}
-	for _, FileStr := range FileLocation {
-		Resource_crb := component.NewClusterRoleBinding(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_crb, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceCRB SetControllerReference")
-		}
-		found_crb := &rbacv1.ClusterRoleBinding{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_crb.Name}, found_crb)
-		if err != nil && errors.IsNotFound(err) {
-			log.Info("Cluster IsNotFound Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb.Name)
-		} else if err != nil {
-			log.Error(err, "Not Found Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb)
-		} else {
-			err = r.client.Delete(context.TODO(), found_crb)
-			if err != nil {
-				log.Error(err, "Fail Delete Resource ClusterRoleBinding", "ResourceCRB.Name", found_crb)
-			}
-		}
-	}
 }
-
-// newDeploymentForCR returns a busybox Deployment with the same name/namespace as the cr
-/*
-func newDeploymentForCR(cr *federatoraiv1alpha1.AlamedaService) *appsv1.Deployment {
-	labels := map[string]string{
-		"app": cr.Name,
-	}
-
-	dep := &appsv1.Deployment{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "apps/v1",
-			Kind:       "Deployment",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      cr.Name + "-deployment",
-			Namespace: cr.Namespace,
-		},
-		Spec: appsv1.DeploymentSpec{
-			Replicas: int32Ptr(1),
-			Selector: &metav1.LabelSelector{
-				MatchLabels: labels,
-			},
-			Template: corev1.PodTemplateSpec{
-				ObjectMeta: metav1.ObjectMeta{
-					Labels: labels,
-				},
-				Spec: corev1.PodSpec{
-					Containers: []corev1.Container{{
-						Image: "nginx",
-						Name:  "nginx",
-
-					}},
-				},
-			},
-		},
-	}
-	return dep
-}*/
 
 func int32Ptr(i int32) *int32 { return &i }

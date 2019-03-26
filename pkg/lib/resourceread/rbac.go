@@ -13,31 +13,30 @@ var (
 
 func init() {
 	if err := rbacv1.AddToScheme(rbacScheme); err != nil {
-		panic(err)
+		log.Error(err, "Fail AddToScheme")
 	}
 }
 
-func ReadClusterRoleBindingV1OrDie(objBytes []byte) *rbacv1.ClusterRoleBinding {
+func ReadClusterRoleBindingV1(objBytes []byte) *rbacv1.ClusterRoleBinding {
 	requiredObj, err := runtime.Decode(rbacCodecs.UniversalDecoder(rbacv1.SchemeGroupVersion), objBytes)
 	if err != nil {
-		panic(err)
+		log.Error(err, "Fail ReadClusterRoleBindingV1")
 	}
 	return requiredObj.(*rbacv1.ClusterRoleBinding)
 }
 
-func ReadRoleBindingV1OrDie(objBytes []byte) *rbacv1.RoleBinding {
+func ReadRoleBindingV1(objBytes []byte) *rbacv1.RoleBinding {
 	requiredObj, err := runtime.Decode(rbacCodecs.UniversalDecoder(rbacv1.SchemeGroupVersion), objBytes)
 	if err != nil {
-		panic(err)
+		log.Error(err, "Fail ReadRoleBindingV1")
 	}
 	return requiredObj.(*rbacv1.RoleBinding)
 }
 
-func ReadClusterRoleV1OrDie(objBytes []byte) *rbacv1.ClusterRole {
+func ReadClusterRoleV1(objBytes []byte) *rbacv1.ClusterRole {
 	requiredObj, err := runtime.Decode(rbacCodecs.UniversalDecoder(rbacv1.SchemeGroupVersion), objBytes)
 	if err != nil {
-		log.Error(err, "Fail ReadClusterRoleV1OrDie")
-
+		log.Error(err, "Fail ReadClusterRoleV1")
 	}
 	return requiredObj.(*rbacv1.ClusterRole)
 }

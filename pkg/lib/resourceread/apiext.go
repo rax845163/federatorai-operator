@@ -17,10 +17,10 @@ func init() {
 	}
 }
 
-func ReadCustomResourceDefinitionV1Beta1OrDie(objBytes []byte) *apiextv1beta1.CustomResourceDefinition {
+func ReadCustomResourceDefinitionV1Beta1(objBytes []byte) *apiextv1beta1.CustomResourceDefinition {
 	requiredObj, err := runtime.Decode(apiExtensionsCodecs.UniversalDecoder(apiextv1beta1.SchemeGroupVersion), objBytes)
 	if err != nil {
-		log.Error(err, "Failed to ReadCustomResourceDefinitionV1Beta1OrDie")
+		log.Error(err, "Failed to ReadCustomResourceDefinitionV1Beta1")
 	}
 	return requiredObj.(*apiextv1beta1.CustomResourceDefinition)
 }
