@@ -147,9 +147,9 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			// Request object not found, could have been deleted after reconcile request.
 			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 			// Return and don't requeue
-			r.UninstallDeployment(instance)
-			r.UninstallService(instance)
-			r.UninstallConfigMap(instance)
+			//r.UninstallDeployment(instance)
+			//r.UninstallService(instance)
+			//r.UninstallConfigMap(instance)
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
@@ -489,5 +489,3 @@ func (r *ReconcileAlamedaService) UninstallExcutionComponent(instance *federator
 		}
 	}
 }
-
-func int32Ptr(i int32) *int32 { return &i }

@@ -26,7 +26,7 @@ func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *Al
 	}
 	var guicomponent = make([]string, 0)
 	if !instance.Spec.EnableGUI {
-		guicomponent = append(guicomponent, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
+		//guicomponent = append(guicomponent, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
 		guicomponent = append(guicomponent, "ConfigMap/grafana-datasources.yaml")
 		guicomponent = append(guicomponent, "Deployment/alameda-grafanaDM.yaml")
 		guicomponent = append(guicomponent, "Service/alameda-grafanaSV.yaml")

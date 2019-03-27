@@ -5,6 +5,11 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
+)
+
+var (
+	log = logf.Log.WithName("controller_alamedaservice")
 )
 
 func isProphetstorImage(dep *appsv1.Deployment) bool {
@@ -16,10 +21,12 @@ func isProphetstorImage(dep *appsv1.Deployment) bool {
 }
 
 func ProcessImageVersion(dep *appsv1.Deployment, version string) *appsv1.Deployment {
+	log.V(1).Info("ProcessImageVersion", "AlamedaServiceImageVersion", version)
 	if isProphetstorImage(dep) {
 		s := strings.Split(dep.Spec.Template.Spec.Containers[0].Image, ":")
-		if len(s) != 0 {
+		if len(s) != 0 && version != "" {
 			dep.Spec.Template.Spec.Containers[0].Image = s[0] + ":" + version
+			log.V(1).Info("ProcessImageVersion", "AlamedaComponentDep.Containers.Image", dep.Spec.Template.Spec.Containers[0].Image)
 		}
 	}
 	return dep
@@ -37,7 +44,7 @@ func getImageVersion(dep *appsv1.Deployment) string {
 }
 
 func MatchImageVersion(dep *appsv1.Deployment, version string) bool {
-	if getImageVersion(dep) != version && isProphetstorImage(dep) {
+	if (getImageVersion(dep) != version && version != "") && isProphetstorImage(dep) {
 		return true
 	} else {
 		return false
@@ -57,8 +64,10 @@ func isPrometheusService(dep *appsv1.Deployment) (bool, int) {
 }
 
 func ProcessPrometheusService(dep *appsv1.Deployment, prometheusservice string) *appsv1.Deployment {
-	if flag, index := isPrometheusService(dep); flag == true {
+	log.V(1).Info("ProcessPrometheusService", "AlamedaServicePrometheusService", prometheusservice)
+	if flag, index := isPrometheusService(dep); flag == true && prometheusservice != "" {
 		dep.Spec.Template.Spec.Containers[0].Env[index].Value = prometheusservice
+		log.V(1).Info("ProcessPrometheusService", "DatahubDep.Env.ALAMEDA_DATAHUB_PROMETHEUS_URL", dep.Spec.Template.Spec.Containers[0].Env[index].Value)
 	}
 	return dep
 }
@@ -74,7 +83,7 @@ func getPrometheusService(dep *appsv1.Deployment) (string, bool) {
 }
 
 func MatchPrometheusService(dep *appsv1.Deployment, prometheusservice string) bool {
-	if clusterprometheusservice, flag := getPrometheusService(dep); clusterprometheusservice != prometheusservice && flag {
+	if clusterprometheusservice, flag := getPrometheusService(dep); (clusterprometheusservice != prometheusservice && prometheusservice != "") && flag {
 		return true
 	} else {
 		return false
@@ -82,6 +91,7 @@ func MatchPrometheusService(dep *appsv1.Deployment, prometheusservice string) bo
 }
 
 func MatchAlamedaServiceParamter(dep *appsv1.Deployment, version string, prometheusservice string) bool {
+	log.V(1).Info("MatchAlamedaServiceParamter", "ComponentDeployment", dep.Name, "MatchImageVersion", MatchImageVersion(dep, version), "MatchPrometheusService", MatchPrometheusService(dep, prometheusservice))
 	if MatchImageVersion(dep, version) || MatchPrometheusService(dep, prometheusservice) {
 		return true
 	}

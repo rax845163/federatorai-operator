@@ -25,7 +25,6 @@ func NewClusterRole(str string) *rbacv1.ClusterRole {
 	crByte, err := assets.Asset(str)
 	if err != nil {
 		log.Error(err, "Failed to Test create clusterrole")
-
 	}
 	cr := resourceread.ReadClusterRoleV1(crByte)
 	return cr
