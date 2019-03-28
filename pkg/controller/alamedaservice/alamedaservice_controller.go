@@ -2,18 +2,20 @@ package alamedaservice
 
 import (
 	"context"
+	"time"
 
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateparamter"
+	"github.com/pkg/errors"
 
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	apiextension "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
-
-	"k8s.io/apimachinery/pkg/api/errors"
-	//metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	k8sErrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
@@ -26,6 +28,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+)
+
+const (
+	alamedaServiceLockName = "alamedaservice-lock"
 )
 
 var (
@@ -142,7 +148,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	instance := &federatoraiv1alpha1.AlamedaService{}
 	err := r.client.Get(context.TODO(), request.NamespacedName, instance)
 	if err != nil {
-		if errors.IsNotFound(err) {
+		if k8sErrors.IsNotFound(err) {
 			// Request object not found, could have been deleted after reconcile request.
 			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 			// Return and don't requeue
@@ -155,6 +161,28 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		// Error reading the object - requeue the request.
 		return reconcile.Result{}, err
 	}
+
+	needToReconsile, err := r.needToReconsile(instance)
+	if err != nil {
+		log.Error(err, "check if AlamedaService needs to reconsile failed", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name)
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+
+	if !needToReconsile {
+		log.Info("AlamedaService doe not need to reconsile", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name)
+		err := r.syncAlamedaServiceActive(instance, false)
+		if err != nil {
+			log.Error(err, "reconsile AlamedaService failed", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name)
+			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+		}
+		return reconcile.Result{}, nil
+	}
+
+	if err := r.syncAlamedaServiceActive(instance, true); err != nil {
+		log.Error(err, "reconsile AlamedaService failed", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name)
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
 	installResource := asp.GetInstallResource()
 	r.syncConfigMap(instance, asp, installResource)
@@ -183,7 +211,7 @@ func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.Al
 		resourceCM.Namespace = instance.Namespace
 		foundCM := &corev1.ConfigMap{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCM.Name, Namespace: resourceCM.Namespace}, foundCM)
-		if err != nil && errors.IsNotFound(err) {
+		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Creating a new Resource ConfigMap... ", "resourceCM.Name", resourceCM.Name)
 			err = r.client.Create(context.TODO(), resourceCM)
 			if err != nil {
@@ -206,7 +234,7 @@ func (r *ReconcileAlamedaService) syncService(instance *federatoraiv1alpha1.Alam
 		resourceSV.Namespace = instance.Namespace
 		foundSV := &corev1.Service{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSV.Name, Namespace: resourceSV.Namespace}, foundSV)
-		if err != nil && errors.IsNotFound(err) {
+		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Creating a new Resource Service... ", "resourceSV.Name", resourceSV.Name)
 			err = r.client.Create(context.TODO(), resourceSV)
 			if err != nil {
@@ -230,7 +258,7 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 		resourceDep.Namespace = instance.Namespace
 		foundDep := &appsv1.Deployment{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
-		if err != nil && errors.IsNotFound(err) {
+		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Creating a new Resource Deployment... ", "resourceDep.Name", resourceDep.Name)
 			resourceDep = updateparamter.ProcessImageVersion(resourceDep, asp.Version)
 			resourceDep = updateparamter.ProcessPrometheusService(resourceDep, asp.PrometheusService)
@@ -266,7 +294,7 @@ func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alp
 		resourceDep.Namespace = instance.Namespace
 		foundDep := &appsv1.Deployment{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
-		if err != nil && errors.IsNotFound(err) {
+		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Cluster IsNotFound Resource Deployment", "resourceDep.Name", resourceDep.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource Deployment", "resourceDep.Name", resourceDep)
@@ -287,7 +315,7 @@ func (r *ReconcileAlamedaService) UninstallService(instance *federatoraiv1alpha1
 		resourceSV.Namespace = instance.Namespace
 		foundSV := &corev1.Service{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSV.Name, Namespace: resourceSV.Namespace}, foundSV)
-		if err != nil && errors.IsNotFound(err) {
+		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Cluster IsNotFound Resource Service", "resourceSV.Name", resourceSV.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource Service", "resourceSV.Name", resourceSV)
@@ -308,7 +336,7 @@ func (r *ReconcileAlamedaService) UninstallConfigMap(instance *federatoraiv1alph
 		resourceCM.Namespace = instance.Namespace
 		foundCM := &corev1.ConfigMap{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCM.Name, Namespace: resourceCM.Namespace}, foundCM)
-		if err != nil && errors.IsNotFound(err) {
+		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Cluster IsNotFound Resource ConfigMap", "resourceCM.Name", resourceCM.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource ConfigMap", "resourceCM.Name", resourceCM)
@@ -330,7 +358,7 @@ func (r *ReconcileAlamedaService) UninstallGUIComponent(instance *federatoraiv1a
 		resourceDep.Namespace = instance.Namespace
 		foundDep := &appsv1.Deployment{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
-		if err != nil && errors.IsNotFound(err) {
+		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Cluster IsNotFound Resource Deployment", "resourceDep.Name", resourceDep.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource Deployment", "resourceDep.Name", resourceDep)
@@ -349,7 +377,7 @@ func (r *ReconcileAlamedaService) UninstallGUIComponent(instance *federatoraiv1a
 		resourceSV.Namespace = instance.Namespace
 		foundSV := &corev1.Service{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSV.Name, Namespace: resourceSV.Namespace}, foundSV)
-		if err != nil && errors.IsNotFound(err) {
+		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Cluster IsNotFound Resource Service", "resourceSV.Name", resourceSV.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource Service", "resourceSV.Name", resourceSV)
@@ -368,7 +396,7 @@ func (r *ReconcileAlamedaService) UninstallGUIComponent(instance *federatoraiv1a
 		resourceCM.Namespace = instance.Namespace
 		foundCM := &corev1.ConfigMap{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCM.Name, Namespace: resourceCM.Namespace}, foundCM)
-		if err != nil && errors.IsNotFound(err) {
+		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Cluster IsNotFound Resource ConfigMap", "resourceCM.Name", resourceCM.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource ConfigMap", "resourceCM.Name", resourceCM)
@@ -389,7 +417,7 @@ func (r *ReconcileAlamedaService) UninstallExcutionComponent(instance *federator
 		resourceDep.Namespace = instance.Namespace
 		foundDep := &appsv1.Deployment{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
-		if err != nil && errors.IsNotFound(err) {
+		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Cluster IsNotFound Resource Deployment", "resourceDep.Name", resourceDep.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource Deployment", "resourceDep.Name", resourceDep)
@@ -408,7 +436,7 @@ func (r *ReconcileAlamedaService) UninstallExcutionComponent(instance *federator
 		resourceSV.Namespace = instance.Namespace
 		foundSV := &corev1.Service{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSV.Name, Namespace: resourceSV.Namespace}, foundSV)
-		if err != nil && errors.IsNotFound(err) {
+		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Cluster IsNotFound Resource Service", "resourceSV.Name", resourceSV.Name)
 		} else if err != nil {
 			log.Error(err, "Not Found Resource Service", "resourceSV.Name", resourceSV)
@@ -419,4 +447,104 @@ func (r *ReconcileAlamedaService) UninstallExcutionComponent(instance *federator
 			}
 		}
 	}
+}
+
+func (r *ReconcileAlamedaService) needToReconsile(alamedaService *federatoraiv1alpha1.AlamedaService) (bool, error) {
+
+	lock, err := r.getAlamedaServiceLock(alamedaService.Namespace, alamedaServiceLockName)
+	if err == nil {
+		if lockIsOwnedByAlamedaService(lock, alamedaService) {
+			return true, nil
+		} else {
+			return false, nil
+		}
+	} else if k8sErrors.IsNotFound(err) {
+		err = r.createAlamedaServiceLock(alamedaService)
+		if err == nil {
+			return true, nil
+		} else if k8sErrors.IsAlreadyExists(err) {
+			return false, nil
+		} else if err != nil {
+			return false, errors.Wrap(err, "check if needs to reconsile failed")
+		}
+	} else if err != nil {
+		return false, errors.Wrap(err, "check if needs to reconsile failed")
+	}
+
+	return false, nil
+}
+
+func (r *ReconcileAlamedaService) getAlamedaServiceLock(ns, name string) (rbacv1.ClusterRole, error) {
+
+	lock := rbacv1.ClusterRole{}
+	err := r.client.Get(context.Background(), types.NamespacedName{Name: name}, &lock)
+	if err != nil {
+		if k8sErrors.IsNotFound(err) {
+			return lock, err
+		} else {
+			return lock, errors.Errorf("get AlamedaService lock failed: %s", err.Error())
+		}
+	}
+
+	return lock, nil
+}
+
+func (r *ReconcileAlamedaService) createAlamedaServiceLock(alamedaService *federatoraiv1alpha1.AlamedaService) error {
+
+	lock := rbacv1.ClusterRole{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: alamedaServiceLockName,
+		},
+	}
+	if err := controllerutil.SetControllerReference(alamedaService, &lock, r.scheme); err != nil {
+		return errors.Errorf("create AlamedaService lock failed: %s", err)
+	}
+
+	err := r.client.Create(context.Background(), &lock)
+	if err != nil {
+		if k8sErrors.IsAlreadyExists(err) {
+			return err
+		} else {
+			return errors.Errorf("create AlamedaService lock failed: %s", err.Error())
+		}
+	}
+
+	return nil
+}
+
+func (r *ReconcileAlamedaService) syncAlamedaServiceActive(alamedaService *federatoraiv1alpha1.AlamedaService, active bool) error {
+
+	copyAlamedaService := alamedaService.DeepCopy()
+
+	if active {
+		copyAlamedaService.Status.Conditions = []federatoraiv1alpha1.AlamedaServiceStatusCondition{
+			federatoraiv1alpha1.AlamedaServiceStatusCondition{
+				Paused: !active,
+			},
+		}
+	} else {
+		copyAlamedaService.Status.Conditions = []federatoraiv1alpha1.AlamedaServiceStatusCondition{
+			federatoraiv1alpha1.AlamedaServiceStatusCondition{
+				Paused:  !active,
+				Message: "Other AlamedaService is active.",
+			},
+		}
+	}
+
+	if err := r.client.Update(context.Background(), copyAlamedaService); err != nil {
+		return errors.Errorf("update AlamedaService active failed: %s", err.Error())
+	}
+
+	return nil
+}
+
+func lockIsOwnedByAlamedaService(lock rbacv1.ClusterRole, alamedaService *federatoraiv1alpha1.AlamedaService) bool {
+
+	for _, ownerReference := range lock.OwnerReferences {
+		if ownerReference.UID == alamedaService.UID {
+			return true
+		}
+	}
+
+	return false
 }

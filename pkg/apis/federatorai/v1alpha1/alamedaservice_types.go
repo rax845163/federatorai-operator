@@ -27,6 +27,16 @@ type AlamedaServiceStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html
+
+	Conditions []AlamedaServiceStatusCondition `json:"conditions"`
+}
+
+type AlamedaServiceStatusCondition struct {
+
+	// Represents whether any actions on the underlaying managed objects are
+	// being performed. Only delete actions will be performed.
+	Paused  bool   `json:"paused"`
+	Message string `json:"message"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
