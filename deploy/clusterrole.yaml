@@ -1,0 +1,17 @@
+apiVersion: authorization.openshift.io/v1
+kind: ClusterRole
+metadata:
+  name: federatorai-operator
+rules:
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - clusterroles
+  verbs:
+  - create
+- apiGroups:
+  - federatorai.containers.ai
+  resources:
+  - 'alamedaservices/finalizers'
+  verbs:
+  - '*'
