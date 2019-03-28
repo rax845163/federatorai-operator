@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: alameda-operator
   namespace: federatorai
+  label:
+    app: alameda
+    component: alameda-operator
   annotations:
     description: Defines how to deploy the application alameda-operator
     template.alpha.openshift.io/wait-for-ready: 'true'

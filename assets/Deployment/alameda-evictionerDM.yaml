@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: alameda-evictioner
   namespace: federatorai
+  label:
+    app: alameda
+    component: alameda-evictioner
   annotations:
     description: Defines how to deploy the alameda-evictioner
     template.alpha.openshift.io/wait-for-ready: 'true'

@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: admission-controller
   namespace: federatorai
+  label:
+    app: alameda
+    component: admission-controller
   annotations:
     description: Defines how to deploy the admission-controller
     template.alpha.openshift.io/wait-for-ready: 'true'

@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: alameda-datahub
   namespace: federatorai
+  label:
+    app: alameda
+    component: alameda-datahub
   annotations:
     description: Defines how to deploy the application alameda-datahub
     template.alpha.openshift.io/wait-for-ready: 'true'

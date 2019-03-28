@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: alameda-influxdb
   namespace: federatorai
+  label:
+    app: alameda
+    component: alameda-influxdb
   annotations:
     description: Defines how to deploy the application influxdb
     template.alpha.openshift.io/wait-for-ready: 'true'
