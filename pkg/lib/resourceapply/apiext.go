@@ -1,10 +1,13 @@
 package resourceapply
 
 import (
+	"time"
+
 	apiextv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	apiextclientv1beta1 "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/wait"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 )
 
@@ -15,6 +18,19 @@ func ApplyCustomResourceDefinition(client apiextclientv1beta1.CustomResourceDefi
 	if apierrors.IsNotFound(err) {
 		log.Info("Not Found CRD And Create", "CustomResourceDefinition.Name", required.Name)
 		actual, err := client.CustomResourceDefinitions().Create(required)
+		err = wait.Poll(500*time.Millisecond, 30*time.Second, func() (bool, error) {
+			_, getErr := client.CustomResourceDefinitions().Get(required.Name, metav1.GetOptions{})
+			if getErr != nil {
+				log.Info("Fail wait CRD", "CRD.Name", required.Name)
+				return false, getErr
+			} else {
+				log.Info("Get CRD Ok", "CRD.Name", required.Name)
+				return true, nil
+			}
+		})
+		if err != nil {
+			log.Error(err, "Polling CRD Fail", "CRD.Name", required.Name)
+		}
 		return actual, true, err
 	}
 	if err != nil {

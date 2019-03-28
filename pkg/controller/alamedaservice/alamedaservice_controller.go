@@ -6,6 +6,8 @@ import (
 
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
+	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
+
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateparamter"
 	"github.com/pkg/errors"
@@ -148,6 +150,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			//r.UninstallDeployment(instance,uninstallResource)
 			//r.UninstallService(instance,uninstallResource)
 			//r.UninstallConfigMap(instance,uninstallResource)
+			r.DeleteRegisterTestsCRD()
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
@@ -174,7 +177,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.Error(err, "reconsile AlamedaService failed", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name)
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-
+	r.RegisterTestsCRD()
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
 	installResource := asp.GetInstallResource()
 	r.syncConfigMap(instance, asp, installResource)
@@ -193,7 +196,27 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	return reconcile.Result{}, nil
 }
+func (r *ReconcileAlamedaService) RegisterTestsCRD() {
+	fileLocation := []string{
+		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
+		"CustomResourceDefinition/alamedascalersCRD.yaml",
+	}
+	for _, fileString := range fileLocation {
+		crd := component.RegistryCustomResourceDefinition(fileString)
+		_, _, _ = resourceapply.ApplyCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
+	}
+}
+func (r *ReconcileAlamedaService) DeleteRegisterTestsCRD() {
+	fileLocation := [...]string{
+		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
+		"CustomResourceDefinition/alamedascalersCRD.yaml",
+	}
 
+	for _, fileString := range fileLocation {
+		crd := component.RegistryCustomResourceDefinition(fileString)
+		_, _, _ = resourceapply.DeleteCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
+	}
+}
 func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) {
 	for _, fileString := range resource.ConfigMapList {
 		resourceCM := component.NewConfigMap(fileString)
