@@ -4,21 +4,21 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/utils"
 )
 
-func IgnoreGUIYAML(FileLocation []string, Guicomponent []string) []string {
-	for _, v := range Guicomponent {
-		index := utils.IndexOf(v, FileLocation)
+func IgnoreGUIYAML(fileLocation []string, guicomponent []string) []string {
+	for _, v := range guicomponent {
+		index := utils.IndexOf(v, fileLocation)
 		if index != -1 {
-			FileLocation = append(FileLocation[:index], FileLocation[index+1:]...)
+			fileLocation = append(fileLocation[:index], fileLocation[index+1:]...)
 		}
 	}
-	return FileLocation
+	return fileLocation
 }
-func IgnoreExcutionYAML(FileLocation []string, Excutioncomponent []string) []string {
+func IgnoreExcutionYAML(fileLocation []string, Excutioncomponent []string) []string {
 	for _, v := range Excutioncomponent {
-		index := utils.IndexOf(v, FileLocation)
+		index := utils.IndexOf(v, fileLocation)
 		if index != -1 {
-			FileLocation = append(FileLocation[:index], FileLocation[index+1:]...)
+			fileLocation = append(fileLocation[:index], fileLocation[index+1:]...)
 		}
 	}
-	return FileLocation
+	return fileLocation
 }

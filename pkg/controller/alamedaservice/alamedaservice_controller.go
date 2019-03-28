@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
-	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/enable"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateparamter"
 
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
@@ -147,345 +146,277 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			// Request object not found, could have been deleted after reconcile request.
 			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 			// Return and don't requeue
-			//r.UninstallDeployment(instance)
-			//r.UninstallService(instance)
-			//r.UninstallConfigMap(instance)
+			//uninstallResource := alamedaserviceparamter.GetUnInstallResource()
+			//r.UninstallDeployment(instance,uninstallResource)
+			//r.UninstallService(instance,uninstallResource)
+			//r.UninstallConfigMap(instance,uninstallResource)
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
 		return reconcile.Result{}, err
 	}
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
-	r.InstallConfigMap(instance, asp)
-	r.InstallService(instance, asp)
-	r.InstallDeployment(instance, asp)
-	if !asp.EnableExecution || !asp.EnableGUI { // if EnableExecution Or EnableGUI has been changed to false
-		if !asp.EnableExecution {
-			log.Info("EnableExecution has been changed to false")
-			r.UninstallExcutionComponent(instance)
-		}
-		if !asp.EnableGUI {
-			log.Info("EnableGUI has been changed to false")
-			r.UninstallGUIComponent(instance)
-		}
+	installResource := asp.GetInstallResource()
+	r.syncConfigMap(instance, asp, installResource)
+	r.syncService(instance, asp, installResource)
+	r.syncDeployment(instance, asp, installResource)
+	// if EnableExecution Or EnableGUI has been changed to false
+	if !asp.EnableExecution {
+		log.Info("EnableExecution has been changed to false")
+		excutionResource := alamedaserviceparamter.GetExcutionResource()
+		r.UninstallExcutionComponent(instance, excutionResource)
+	}
+	if !asp.EnableGUI {
+		log.Info("EnableGUI has been changed to false")
+		guiResource := alamedaserviceparamter.GetGUIResource()
+		r.UninstallGUIComponent(instance, guiResource)
 	}
 	return reconcile.Result{}, nil
 }
 
-func (r *ReconcileAlamedaService) InstallConfigMap(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
-	FileLocation := []string{"ConfigMap/grafana-datasources.yaml"}
-	FileLocation = enable.IgnoreGUIYAML(FileLocation, asp.Guicomponent)
-	FileLocation = enable.IgnoreExcutionYAML(FileLocation, asp.Excutioncomponent)
-	for _, FileStr := range FileLocation {
-		Resource_cm := component.NewConfigMap(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_cm, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceCM SetControllerReference")
+func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) {
+	for _, fileString := range resource.ConfigMapList {
+		resourceCM := component.NewConfigMap(fileString)
+		if err := controllerutil.SetControllerReference(instance, resourceCM, r.scheme); err != nil {
+			log.Error(err, "Fail resourceCM SetControllerReference")
 		}
-		Resource_cm.Namespace = instance.Namespace
-		found_cm := &corev1.ConfigMap{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_cm.Name, Namespace: Resource_cm.Namespace}, found_cm)
+		resourceCM.Namespace = instance.Namespace
+		foundCM := &corev1.ConfigMap{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCM.Name, Namespace: resourceCM.Namespace}, foundCM)
 		if err != nil && errors.IsNotFound(err) {
-			log.Info("Creating a new Resource ConfigMap... ", "ResourceCM.Name", Resource_cm.Name)
-			err = r.client.Create(context.TODO(), Resource_cm)
+			log.Info("Creating a new Resource ConfigMap... ", "resourceCM.Name", resourceCM.Name)
+			err = r.client.Create(context.TODO(), resourceCM)
 			if err != nil {
-				log.Error(err, "Fail Creating Resource ConfigMap", "ResourceCM.Name", Resource_cm.Name)
+				log.Error(err, "Fail Creating Resource ConfigMap", "resourceCM.Name", resourceCM.Name)
 			} else {
-				log.Info("Successfully Creating Resource ConfigMap", "ResourceCM.Name", Resource_cm.Name)
+				log.Info("Successfully Creating Resource ConfigMap", "resourceCM.Name", resourceCM.Name)
 			}
 		} else if err != nil {
-			log.Error(err, "Not Found Resource ConfigMap", "ResourceCM.Name", Resource_cm.Name)
-		}
-	}
-}
-func (r *ReconcileAlamedaService) InstallPersistentVolumeClaim(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
-	FileLocation := []string{"PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
-		"PersistentVolumeClaim/my-alamedagrafanaPVC.yaml"}
-	FileLocation = enable.IgnoreGUIYAML(FileLocation, asp.Guicomponent)
-	FileLocation = enable.IgnoreExcutionYAML(FileLocation, asp.Excutioncomponent)
-	for _, FileStr := range FileLocation {
-		Resource_pvc := component.NewPersistentVolumeClaim(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_pvc, r.scheme); err != nil {
-			log.Error(err, "Fail ResourcePVC SetControllerReference")
-		}
-		Resource_pvc.Namespace = instance.Namespace
-		found_pvc := &corev1.PersistentVolumeClaim{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_pvc.Name, Namespace: Resource_pvc.Namespace}, found_pvc)
-		if err != nil && errors.IsNotFound(err) {
-			log.Info("Creating a new Resource PersistentVolumeClaim... ", "ResourcePVC.Name", Resource_pvc.Name)
-			err = r.client.Create(context.TODO(), Resource_pvc)
-			if err != nil {
-				log.Error(err, "Fail Creating Resource PersistentVolumeClaim", "ResourcePVC.Name", Resource_pvc.Name)
-			} else {
-				log.Info("Successfully Creating Resource PersistentVolumeClaim", "ResourcePVC.Name", Resource_pvc.Name)
-			}
-		} else if err != nil {
-			log.Error(err, "Not Found Resource PersistentVolumeClaim", "ResourcePVC.Name", Resource_pvc.Name)
+			log.Error(err, "Not Found Resource ConfigMap", "resourceCM.Name", resourceCM.Name)
 		}
 	}
 }
 
-func (r *ReconcileAlamedaService) InstallService(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
-	FileLocation := []string{"Service/alameda-datahubSV.yaml",
-		"Service/admission-controllerSV.yaml",
-		"Service/alameda-influxdbSV.yaml",
-		"Service/alameda-grafanaSV.yaml"}
-	FileLocation = enable.IgnoreGUIYAML(FileLocation, asp.Guicomponent)
-	FileLocation = enable.IgnoreExcutionYAML(FileLocation, asp.Excutioncomponent)
-	for _, FileStr := range FileLocation {
-		Resource_sv := component.NewService(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_sv, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceSV SetControllerReference")
+func (r *ReconcileAlamedaService) syncService(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) {
+	for _, fileString := range resource.ServiceList {
+		resourceSV := component.NewService(fileString)
+		if err := controllerutil.SetControllerReference(instance, resourceSV, r.scheme); err != nil {
+			log.Error(err, "Fail resourceSV SetControllerReference")
 		}
-		Resource_sv.Namespace = instance.Namespace
-		found_sv := &corev1.Service{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sv.Name, Namespace: Resource_sv.Namespace}, found_sv)
+		resourceSV.Namespace = instance.Namespace
+		foundSV := &corev1.Service{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSV.Name, Namespace: resourceSV.Namespace}, foundSV)
 		if err != nil && errors.IsNotFound(err) {
-			log.Info("Creating a new Resource Service... ", "ResourceSV.Name", Resource_sv.Name)
-			err = r.client.Create(context.TODO(), Resource_sv)
+			log.Info("Creating a new Resource Service... ", "resourceSV.Name", resourceSV.Name)
+			err = r.client.Create(context.TODO(), resourceSV)
 			if err != nil {
-				log.Error(err, "Fail Creating Resource Service", "ResourceSV.Name", Resource_sv.Name)
+				log.Error(err, "Fail Creating Resource Service", "resourceSV.Name", resourceSV.Name)
 			} else {
-				log.Info("Successfully Creating Resource Service", "ResourceSV.Name", Resource_sv.Name)
+				log.Info("Successfully Creating Resource Service", "resourceSV.Name", resourceSV.Name)
 			}
 		} else if err != nil {
-			log.Error(err, "Not Found Resource Service", "ResourceSV.Name", Resource_sv.Name)
+			log.Error(err, "Not Found Resource Service", "resourceSV.Name", resourceSV.Name)
 		}
 	}
 }
 
-func (r *ReconcileAlamedaService) InstallDeployment(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter) {
-	FileLocation := []string{"Deployment/alameda-datahubDM.yaml",
-		"Deployment/alameda-operatorDM.yaml",
-		"Deployment/alameda-evictionerDM.yaml",
-		"Deployment/admission-controllerDM.yaml",
-		"Deployment/alameda-influxdbDM.yaml",
-		"Deployment/alameda-grafanaDM.yaml"}
-	FileLocation = enable.IgnoreGUIYAML(FileLocation, asp.Guicomponent)
-	FileLocation = enable.IgnoreExcutionYAML(FileLocation, asp.Excutioncomponent)
-	for _, FileStr := range FileLocation {
-		Resource_dep := component.NewDeployment(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_dep, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceDep SetControllerReference")
+func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) {
+	for _, fileString := range resource.DeploymentList {
+		resourceDep := component.NewDeployment(fileString)
+		if err := controllerutil.SetControllerReference(instance, resourceDep, r.scheme); err != nil {
+			log.Error(err, "Fail resourceDep SetControllerReference")
 
 		}
-		Resource_dep.Namespace = instance.Namespace
-		found_dep := &appsv1.Deployment{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_dep.Name, Namespace: Resource_dep.Namespace}, found_dep)
+		resourceDep.Namespace = instance.Namespace
+		foundDep := &appsv1.Deployment{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
 		if err != nil && errors.IsNotFound(err) {
-			log.Info("Creating a new Resource Deployment... ", "ResourceDep.Name", Resource_dep.Name)
-			Resource_dep = updateparamter.ProcessImageVersion(Resource_dep, asp.Version)
-			Resource_dep = updateparamter.ProcessPrometheusService(Resource_dep, asp.PrometheusService)
-			err = r.client.Create(context.TODO(), Resource_dep)
+			log.Info("Creating a new Resource Deployment... ", "resourceDep.Name", resourceDep.Name)
+			resourceDep = updateparamter.ProcessImageVersion(resourceDep, asp.Version)
+			resourceDep = updateparamter.ProcessPrometheusService(resourceDep, asp.PrometheusService)
+			err = r.client.Create(context.TODO(), resourceDep)
 			if err != nil {
-				log.Error(err, "Fail Creating Resource Deployment", "ResourceDep.Name", Resource_dep.Name)
+				log.Error(err, "Fail Creating Resource Deployment", "resourceDep.Name", resourceDep.Name)
 			} else {
-				log.Info("Successfully Creating Resource Deployment", "ResourceDep.Name", Resource_dep.Name)
+				log.Info("Successfully Creating Resource Deployment", "resourceDep.Name", resourceDep.Name)
 			}
 		} else if err != nil {
-			log.Error(err, "Not Found Resource Deployment", "ResourceDep.Name", Resource_dep.Name)
+			log.Error(err, "Not Found Resource Deployment", "resourceDep.Name", resourceDep.Name)
 		} else {
-			update := updateparamter.MatchAlamedaServiceParamter(found_dep, asp.Version, asp.PrometheusService)
+			update := updateparamter.MatchAlamedaServiceParamter(foundDep, asp.Version, asp.PrometheusService)
 			if update {
-				log.Info("Update Resource Deployment:", "ResourceDep.Name", found_dep.Name)
-				found_dep = updateparamter.ProcessImageVersion(found_dep, asp.Version)
-				found_dep = updateparamter.ProcessPrometheusService(found_dep, asp.PrometheusService)
-				err = r.client.Update(context.TODO(), found_dep)
+				log.Info("Update Resource Deployment:", "resourceDep.Name", foundDep.Name)
+				foundDep = updateparamter.ProcessImageVersion(foundDep, asp.Version)
+				foundDep = updateparamter.ProcessPrometheusService(foundDep, asp.PrometheusService)
+				err = r.client.Update(context.TODO(), foundDep)
 				if err != nil {
-					log.Error(err, "Fail Update Resource Deployment", "ResourceDep.Name", found_dep.Name)
+					log.Error(err, "Fail Update Resource Deployment", "resourceDep.Name", foundDep.Name)
 				}
-				log.Info("Successfully Update Resource Deployment", "ResourceDep.Name", found_dep.Name)
+				log.Info("Successfully Update Resource Deployment", "resourceDep.Name", foundDep.Name)
 			}
 		}
 	}
 }
-func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alpha1.AlamedaService) {
-	FileLocation := [...]string{"Deployment/alameda-datahubDM.yaml",
-		"Deployment/alameda-operatorDM.yaml",
-		"Deployment/alameda-evictionerDM.yaml",
-		"Deployment/admission-controllerDM.yaml",
-		"Deployment/alameda-influxdbDM.yaml",
-		"Deployment/alameda-grafanaDM.yaml"}
-	for _, FileStr := range FileLocation {
-		Resource_dep := component.NewDeployment(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_dep, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceDep SetControllerReference")
+func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) {
+	for _, fileString := range resource.DeploymentList {
+		resourceDep := component.NewDeployment(fileString)
+		if err := controllerutil.SetControllerReference(instance, resourceDep, r.scheme); err != nil {
+			log.Error(err, "Fail resourceDep SetControllerReference")
 		}
-		Resource_dep.Namespace = instance.Namespace
-		found_dep := &appsv1.Deployment{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_dep.Name, Namespace: Resource_dep.Namespace}, found_dep)
+		resourceDep.Namespace = instance.Namespace
+		foundDep := &appsv1.Deployment{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
 		if err != nil && errors.IsNotFound(err) {
-			log.Info("Cluster IsNotFound Resource Deployment", "ResourceDep.Name", Resource_dep.Name)
+			log.Info("Cluster IsNotFound Resource Deployment", "resourceDep.Name", resourceDep.Name)
 		} else if err != nil {
-			log.Error(err, "Not Found Resource Deployment", "ResourceDep.Name", Resource_dep)
+			log.Error(err, "Not Found Resource Deployment", "resourceDep.Name", resourceDep)
 		} else {
-			err = r.client.Delete(context.TODO(), found_dep)
+			err = r.client.Delete(context.TODO(), foundDep)
 			if err != nil {
-				log.Error(err, "Fail Delete Resource Deployment", "ResourceDep.Name", found_dep)
+				log.Error(err, "Fail Delete Resource Deployment", "resourceDep.Name", foundDep)
 			}
 		}
 	}
 }
-func (r *ReconcileAlamedaService) UninstallService(instance *federatoraiv1alpha1.AlamedaService) {
-	FileLocation := [...]string{"Service/alameda-datahubSV.yaml",
-		"Service/admission-controllerSV.yaml",
-		"Service/alameda-influxdbSV.yaml",
-		"Service/alameda-grafanaSV.yaml"}
-	for _, FileStr := range FileLocation {
-		Resource_sv := component.NewService(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_sv, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceSV SetControllerReference")
+func (r *ReconcileAlamedaService) UninstallService(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) {
+	for _, fileString := range resource.ServiceList {
+		resourceSV := component.NewService(fileString)
+		if err := controllerutil.SetControllerReference(instance, resourceSV, r.scheme); err != nil {
+			log.Error(err, "Fail resourceSV SetControllerReference")
 		}
-		Resource_sv.Namespace = instance.Namespace
-		found_sv := &corev1.Service{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sv.Name, Namespace: Resource_sv.Namespace}, found_sv)
+		resourceSV.Namespace = instance.Namespace
+		foundSV := &corev1.Service{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSV.Name, Namespace: resourceSV.Namespace}, foundSV)
 		if err != nil && errors.IsNotFound(err) {
-			log.Info("Cluster IsNotFound Resource Service", "ResourceSV.Name", Resource_sv.Name)
+			log.Info("Cluster IsNotFound Resource Service", "resourceSV.Name", resourceSV.Name)
 		} else if err != nil {
-			log.Error(err, "Not Found Resource Service", "ResourceSV.Name", Resource_sv)
+			log.Error(err, "Not Found Resource Service", "resourceSV.Name", resourceSV)
 		} else {
-			err = r.client.Delete(context.TODO(), found_sv)
+			err = r.client.Delete(context.TODO(), foundSV)
 			if err != nil {
-				log.Error(err, "Fail Delete Resource Service", "ResourceSV.Name", found_sv)
+				log.Error(err, "Fail Delete Resource Service", "resourceSV.Name", foundSV)
 			}
 		}
 	}
 }
-func (r *ReconcileAlamedaService) UninstallPersistentVolumeClaim(instance *federatoraiv1alpha1.AlamedaService) {
-	FileLocation := [...]string{"PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
-		"PersistentVolumeClaim/my-alamedagrafanaPVC.yaml"}
-	for _, FileStr := range FileLocation {
-		Resource_pvc := component.NewPersistentVolumeClaim(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_pvc, r.scheme); err != nil {
-			log.Error(err, "Fail ResourcePVC SetControllerReference")
+func (r *ReconcileAlamedaService) UninstallConfigMap(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) {
+	for _, fileString := range resource.ConfigMapList {
+		resourceCM := component.NewConfigMap(fileString)
+		if err := controllerutil.SetControllerReference(instance, resourceCM, r.scheme); err != nil {
+			log.Error(err, "Fail resourceCM SetControllerReference")
 		}
-		Resource_pvc.Namespace = instance.Namespace
-		found_pvc := &corev1.PersistentVolumeClaim{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_pvc.Name, Namespace: Resource_pvc.Namespace}, found_pvc)
+		resourceCM.Namespace = instance.Namespace
+		foundCM := &corev1.ConfigMap{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCM.Name, Namespace: resourceCM.Namespace}, foundCM)
 		if err != nil && errors.IsNotFound(err) {
-			log.Info("Cluster IsNotFound Resource PersistentVolumeClaim", "ResourcePVC.Name", Resource_pvc.Name)
+			log.Info("Cluster IsNotFound Resource ConfigMap", "resourceCM.Name", resourceCM.Name)
 		} else if err != nil {
-			log.Error(err, "Not Found Resource PersistentVolumeClaim", "ResourcePVC.Name", Resource_pvc)
+			log.Error(err, "Not Found Resource ConfigMap", "resourceCM.Name", resourceCM)
 		} else {
-			err = r.client.Delete(context.TODO(), found_pvc)
+			err = r.client.Delete(context.TODO(), foundCM)
 			if err != nil {
-				log.Error(err, "Fail Delete Resource PersistentVolumeClaim", "ResourcePVC.Name", found_pvc)
-			}
-		}
-	}
-}
-func (r *ReconcileAlamedaService) UninstallConfigMap(instance *federatoraiv1alpha1.AlamedaService) {
-	FileLocation := [...]string{"ConfigMap/grafana-datasources.yaml"}
-	for _, FileStr := range FileLocation {
-		Resource_cm := component.NewConfigMap(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_cm, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceCM SetControllerReference")
-		}
-		Resource_cm.Namespace = instance.Namespace
-		found_cm := &corev1.ConfigMap{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_cm.Name, Namespace: Resource_cm.Namespace}, found_cm)
-		if err != nil && errors.IsNotFound(err) {
-			log.Info("Cluster IsNotFound Resource ConfigMap", "ResourceCM.Name", Resource_cm.Name)
-		} else if err != nil {
-			log.Error(err, "Not Found Resource ConfigMap", "ResourceCM.Name", Resource_cm)
-		} else {
-			err = r.client.Delete(context.TODO(), found_cm)
-			if err != nil {
-				log.Error(err, "Fail Delete Resource ConfigMap", "ResourceCM.Name", found_cm)
+				log.Error(err, "Fail Delete Resource ConfigMap", "resourceCM.Name", foundCM)
 			}
 		}
 	}
 }
 
-func (r *ReconcileAlamedaService) UninstallGUIComponent(instance *federatoraiv1alpha1.AlamedaService) {
-	Resource_dep := component.NewDeployment("Deployment/alameda-grafanaDM.yaml")
-	if err := controllerutil.SetControllerReference(instance, Resource_dep, r.scheme); err != nil {
-		log.Error(err, "Fail ResourceDep SetControllerReference")
-	}
-	Resource_dep.Namespace = instance.Namespace
-	found_dep := &appsv1.Deployment{}
-	err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_dep.Name, Namespace: Resource_dep.Namespace}, found_dep)
-	if err != nil && errors.IsNotFound(err) {
-		log.Info("Cluster IsNotFound Resource Deployment", "ResourceDep.Name", Resource_dep.Name)
-	} else if err != nil {
-		log.Error(err, "Not Found Resource Deployment", "ResourceDep.Name", Resource_dep)
-	} else {
-		err = r.client.Delete(context.TODO(), found_dep)
-		if err != nil {
-			log.Error(err, "Fail Delete Resource Deployment", "ResourceDep.Name", found_dep)
+func (r *ReconcileAlamedaService) UninstallGUIComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) {
+	for _, fileString := range resource.DeploymentList {
+		resourceDep := component.NewDeployment(fileString)
+		if err := controllerutil.SetControllerReference(instance, resourceDep, r.scheme); err != nil {
+			log.Error(err, "Fail resourceDep SetControllerReference")
 		}
-	}
-	Resource_sv := component.NewService("Service/alameda-grafanaSV.yaml")
-	if err := controllerutil.SetControllerReference(instance, Resource_sv, r.scheme); err != nil {
-		log.Error(err, "Fail ResourceSV SetControllerReference")
-	}
-	Resource_sv.Namespace = instance.Namespace
-	found_sv := &corev1.Service{}
-	err = r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sv.Name, Namespace: Resource_sv.Namespace}, found_sv)
-	if err != nil && errors.IsNotFound(err) {
-		log.Info("Cluster IsNotFound Resource Service", "ResourceSV.Name", Resource_sv.Name)
-	} else if err != nil {
-		log.Error(err, "Not Found Resource Service", "ResourceSV.Name", Resource_sv)
-	} else {
-		err = r.client.Delete(context.TODO(), found_sv)
-		if err != nil {
-			log.Error(err, "Fail Delete Resource Service", "ResourceSV.Name", found_sv)
-		}
-	}
-	Resource_cm := component.NewConfigMap("ConfigMap/grafana-datasources.yaml")
-	if err := controllerutil.SetControllerReference(instance, Resource_cm, r.scheme); err != nil {
-		log.Error(err, "Fail ResourceCM SetControllerReference")
-	}
-	Resource_cm.Namespace = instance.Namespace
-	found_cm := &corev1.ConfigMap{}
-	err = r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_cm.Name, Namespace: Resource_cm.Namespace}, found_cm)
-	if err != nil && errors.IsNotFound(err) {
-		log.Info("Cluster IsNotFound Resource ConfigMap", "ResourceCM.Name", Resource_cm.Name)
-	} else if err != nil {
-		log.Error(err, "Not Found Resource ConfigMap", "ResourceCM.Name", Resource_cm)
-	} else {
-		err = r.client.Delete(context.TODO(), found_cm)
-		if err != nil {
-			log.Error(err, "Fail Delete Resource ConfigMap", "ResourceCM.Name", found_cm)
-		}
-	}
-}
-func (r *ReconcileAlamedaService) UninstallExcutionComponent(instance *federatoraiv1alpha1.AlamedaService) {
-	FileLocation := [...]string{"Deployment/admission-controllerDM.yaml",
-		"Deployment/alameda-evictionerDM.yaml"}
-	for _, FileStr := range FileLocation {
-		Resource_dep := component.NewDeployment(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_dep, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceDep SetControllerReference")
-		}
-		Resource_dep.Namespace = instance.Namespace
-		found_dep := &appsv1.Deployment{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_dep.Name, Namespace: Resource_dep.Namespace}, found_dep)
+		resourceDep.Namespace = instance.Namespace
+		foundDep := &appsv1.Deployment{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
 		if err != nil && errors.IsNotFound(err) {
-			log.Info("Cluster IsNotFound Resource Deployment", "ResourceDep.Name", Resource_dep.Name)
+			log.Info("Cluster IsNotFound Resource Deployment", "resourceDep.Name", resourceDep.Name)
 		} else if err != nil {
-			log.Error(err, "Not Found Resource Deployment", "ResourceDep.Name", Resource_dep)
+			log.Error(err, "Not Found Resource Deployment", "resourceDep.Name", resourceDep)
 		} else {
-			err = r.client.Delete(context.TODO(), found_dep)
+			err = r.client.Delete(context.TODO(), foundDep)
 			if err != nil {
-				log.Error(err, "Fail Delete Resource Deployment", "ResourceDep.Name", found_dep)
+				log.Error(err, "Fail Delete Resource Deployment", "resourceDep.Name", foundDep)
 			}
 		}
 	}
-	Resource_sv := component.NewService("Service/admission-controllerSV.yaml")
-	if err := controllerutil.SetControllerReference(instance, Resource_sv, r.scheme); err != nil {
-		log.Error(err, "Fail ResourceSV SetControllerReference")
+	for _, fileString := range resource.ServiceList {
+		resourceSV := component.NewService(fileString)
+		if err := controllerutil.SetControllerReference(instance, resourceSV, r.scheme); err != nil {
+			log.Error(err, "Fail resourceSV SetControllerReference")
+		}
+		resourceSV.Namespace = instance.Namespace
+		foundSV := &corev1.Service{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSV.Name, Namespace: resourceSV.Namespace}, foundSV)
+		if err != nil && errors.IsNotFound(err) {
+			log.Info("Cluster IsNotFound Resource Service", "resourceSV.Name", resourceSV.Name)
+		} else if err != nil {
+			log.Error(err, "Not Found Resource Service", "resourceSV.Name", resourceSV)
+		} else {
+			err = r.client.Delete(context.TODO(), foundSV)
+			if err != nil {
+				log.Error(err, "Fail Delete Resource Service", "resourceSV.Name", foundSV)
+			}
+		}
 	}
-	Resource_sv.Namespace = instance.Namespace
-	found_sv := &corev1.Service{}
-	err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sv.Name, Namespace: Resource_sv.Namespace}, found_sv)
-	if err != nil && errors.IsNotFound(err) {
-		log.Info("Cluster IsNotFound Resource Service", "ResourceSV.Name", Resource_sv.Name)
-	} else if err != nil {
-		log.Error(err, "Not Found Resource Service", "ResourceSV.Name", Resource_sv)
-	} else {
-		err = r.client.Delete(context.TODO(), found_sv)
-		if err != nil {
-			log.Error(err, "Fail Delete Resource Service", "ResourceSV.Name", found_sv)
+	for _, fileString := range resource.ConfigMapList {
+		resourceCM := component.NewConfigMap(fileString)
+		if err := controllerutil.SetControllerReference(instance, resourceCM, r.scheme); err != nil {
+			log.Error(err, "Fail resourceCM SetControllerReference")
+		}
+		resourceCM.Namespace = instance.Namespace
+		foundCM := &corev1.ConfigMap{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCM.Name, Namespace: resourceCM.Namespace}, foundCM)
+		if err != nil && errors.IsNotFound(err) {
+			log.Info("Cluster IsNotFound Resource ConfigMap", "resourceCM.Name", resourceCM.Name)
+		} else if err != nil {
+			log.Error(err, "Not Found Resource ConfigMap", "resourceCM.Name", resourceCM)
+		} else {
+			err = r.client.Delete(context.TODO(), foundCM)
+			if err != nil {
+				log.Error(err, "Fail Delete Resource ConfigMap", "resourceCM.Name", foundCM)
+			}
+		}
+	}
+}
+func (r *ReconcileAlamedaService) UninstallExcutionComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) {
+	for _, fileString := range resource.DeploymentList {
+		resourceDep := component.NewDeployment(fileString)
+		if err := controllerutil.SetControllerReference(instance, resourceDep, r.scheme); err != nil {
+			log.Error(err, "Fail resourceDep SetControllerReference")
+		}
+		resourceDep.Namespace = instance.Namespace
+		foundDep := &appsv1.Deployment{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
+		if err != nil && errors.IsNotFound(err) {
+			log.Info("Cluster IsNotFound Resource Deployment", "resourceDep.Name", resourceDep.Name)
+		} else if err != nil {
+			log.Error(err, "Not Found Resource Deployment", "resourceDep.Name", resourceDep)
+		} else {
+			err = r.client.Delete(context.TODO(), foundDep)
+			if err != nil {
+				log.Error(err, "Fail Delete Resource Deployment", "resourceDep.Name", foundDep)
+			}
+		}
+	}
+	for _, fileString := range resource.ServiceList {
+		resourceSV := component.NewService(fileString)
+		if err := controllerutil.SetControllerReference(instance, resourceSV, r.scheme); err != nil {
+			log.Error(err, "Fail resourceSV SetControllerReference")
+		}
+		resourceSV.Namespace = instance.Namespace
+		foundSV := &corev1.Service{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSV.Name, Namespace: resourceSV.Namespace}, foundSV)
+		if err != nil && errors.IsNotFound(err) {
+			log.Info("Cluster IsNotFound Resource Service", "resourceSV.Name", resourceSV.Name)
+		} else if err != nil {
+			log.Error(err, "Not Found Resource Service", "resourceSV.Name", resourceSV)
+		} else {
+			err = r.client.Delete(context.TODO(), foundSV)
+			if err != nil {
+				log.Error(err, "Fail Delete Resource Service", "resourceSV.Name", foundSV)
+			}
 		}
 	}
 }
