@@ -284,7 +284,6 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 			update := updateparamter.MatchAlamedaServiceParamter(foundDep, asp.Version, asp.PrometheusService)
 			if update {
 				log.Info("Update Resource Deployment:", "resourceDep.Name", foundDep.Name)
-				foundDep = updateenvvar.AssignDeployment(foundDep, instance.Namespace)
 				foundDep = updateparamter.ProcessImageVersion(foundDep, asp.Version)
 				foundDep = updateparamter.ProcessPrometheusService(foundDep, asp.PrometheusService)
 				err = r.client.Update(context.TODO(), foundDep)
