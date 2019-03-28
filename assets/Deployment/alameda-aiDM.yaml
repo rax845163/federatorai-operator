@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alameda-ai
+  namespace: federatorai
+  label:
+    app: alameda
+    component: alameda-ai
+  annotations:
+    description: Defines how to deploy the application alameda-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alameda-ai
+  template:
+    metadata:
+      name: alameda-ai
+      labels:
+        app: alameda-ai
+    spec:
+      containers:
+      - name: alameda-ai-engine
+        image: quay.io/prophetstor/alameda-ai:v0.3.6
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 50051
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 4000m
+            memory: 450Mi
+          requests:
+            cpu: 2000m
+            memory: 250Mi
+        env:
+        - name: OPERATOR_ADDRESS
+          value: "alameda-operator.federatorai.svc:50050"
+        - name: DATAHUB_ADDRESS
+          value: "alameda-datahub.federatorai.svc:50050"
+        volumeMounts:
+          - mountPath: /var/log
+            name: alameda-ai-log-storage
+            subPath: alameda-ai
+      volumes:
+        - name: alameda-ai-log-storage
+          emptyDir: {}
+      serviceAccount: alameda-ai
+      serviceAccountName: alameda-ai

@@ -4,12 +4,11 @@ import (
 	"context"
 	"time"
 
+	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
+	"github.com/containers-ai/federatorai-operator/pkg/component"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateparamter"
 	"github.com/pkg/errors"
-
-	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
-	"github.com/containers-ai/federatorai-operator/pkg/component"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -19,7 +18,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
-
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -40,11 +38,6 @@ var (
 	//name                             = "kroos-installnamespace"
 	gracePeriod = int64(3)
 )
-
-/**
-* USER ACTION REQUIRED: This is a scaffold file intended for the user to modify with their own Controller
-* business logic.  Delete these comments after modifying this file.*
- */
 
 // Add creates a new AlamedaService Controller and adds it to the Manager. The Manager will set fields on the Controller
 // and Start it when the Manager is Started.
@@ -138,7 +131,6 @@ type ReconcileAlamedaService struct {
 // Note:
 // The Controller will requeue the Request to be processed again if the returned error is non-nil or
 // Result.Requeue is true, otherwise upon completion it will remove the work from the queue.
-
 func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcile.Result, error) {
 
 	reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
@@ -285,6 +277,7 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 		}
 	}
 }
+
 func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) {
 	for _, fileString := range resource.DeploymentList {
 		resourceDep := component.NewDeployment(fileString)
@@ -306,6 +299,7 @@ func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alp
 		}
 	}
 }
+
 func (r *ReconcileAlamedaService) UninstallService(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) {
 	for _, fileString := range resource.ServiceList {
 		resourceSV := component.NewService(fileString)
@@ -327,6 +321,7 @@ func (r *ReconcileAlamedaService) UninstallService(instance *federatoraiv1alpha1
 		}
 	}
 }
+
 func (r *ReconcileAlamedaService) UninstallConfigMap(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) {
 	for _, fileString := range resource.ConfigMapList {
 		resourceCM := component.NewConfigMap(fileString)
@@ -408,6 +403,7 @@ func (r *ReconcileAlamedaService) UninstallGUIComponent(instance *federatoraiv1a
 		}
 	}
 }
+
 func (r *ReconcileAlamedaService) UninstallExcutionComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) {
 	for _, fileString := range resource.DeploymentList {
 		resourceDep := component.NewDeployment(fileString)

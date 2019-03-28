@@ -14,7 +14,8 @@ var (
 
 	depList = []string{"Deployment/alameda-datahubDM.yaml",
 		"Deployment/alameda-operatorDM.yaml",
-		"Deployment/alameda-influxdbDM.yaml"}
+		"Deployment/alameda-influxdbDM.yaml",
+		"Deployment/alameda-aiDM.yaml"}
 
 	guiList = []string{"ConfigMap/grafana-datasources.yaml",
 		"Deployment/alameda-grafanaDM.yaml",
@@ -38,6 +39,7 @@ type AlamedaServiceParamter struct {
 	Guicomponent          []string
 	Excutioncomponent     []string
 }
+
 type Resource struct {
 	ConfigMapList  []string
 	ServiceList    []string
@@ -67,6 +69,7 @@ func GetExcutionResource() *Resource {
 		DeploymentList: excDep,
 	}
 }
+
 func GetGUIResource() *Resource {
 	var guiDep = make([]string, 0)
 	var guiCM = make([]string, 0)
@@ -90,6 +93,7 @@ func GetGUIResource() *Resource {
 		DeploymentList: guiDep,
 	}
 }
+
 func GetUnInstallResource() *Resource {
 	return &Resource{
 		ConfigMapList:  cmList,
@@ -97,6 +101,7 @@ func GetUnInstallResource() *Resource {
 		DeploymentList: depList,
 	}
 }
+
 func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 	cm := cmList
 	sv := svList
@@ -131,6 +136,7 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		DeploymentList: dep,
 	}
 }
+
 func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *AlamedaServiceParamter {
 	asp := &AlamedaServiceParamter{
 		//AlmedaInstallOrUninstall: instance.Spec.AlmedaInstallOrUninstall,
