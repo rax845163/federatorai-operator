@@ -2,7 +2,7 @@ DBG         ?= 0
 PROJECT     ?= federatorai-operator
 ORG_PATH    ?= github.com/containers-ai
 REPO_PATH   ?= $(ORG_PATH)/$(PROJECT)
-VERSION     ?= $(shell git describe --always --dirty --abbrev=7)
+VERSION     = $(shell git rev-parse --abbrev-ref HEAD)-$(shell git rev-parse --short HEAD)$(TMP_VERSION_SUFFIX)$(shell git diff --quiet || echo '-dirty')
 LD_FLAGS    ?= -X $(REPO_PATH)/pkg/version.Raw=$(VERSION)
 BUILD_DEST  ?= bin/federatorai-operator
 MUTABLE_TAG ?= latest

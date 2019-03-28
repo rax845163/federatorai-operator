@@ -2,9 +2,6 @@ package version
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/blang/semver"
 )
 
 var (
@@ -13,7 +10,8 @@ var (
 	Raw = "v0.0.0-was-not-built-properly"
 
 	// Version is semver representation of the version.
-	Version = semver.MustParse(strings.TrimLeft(Raw, "v"))
+	// Version = semver.MustParse(strings.TrimLeft(Raw, "v"))
+	Version string
 
 	// String is the human-friendly representation of the version.
 	String = fmt.Sprintf("federatorai-operator %s", Raw)
