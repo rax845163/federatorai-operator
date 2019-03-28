@@ -7,6 +7,10 @@ import (
 )
 
 var (
+	crdList = []string{
+		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
+		"CustomResourceDefinition/alamedascalersCRD.yaml",
+	}
 	cmList = []string{}
 
 	svList = []string{"Service/alameda-datahubSV.yaml",
@@ -29,6 +33,7 @@ var (
 
 type AlamedaServiceParamter struct {
 	//AlmedaInstallOrUninstall bool
+	NameSpace             string
 	EnableExecution       bool
 	EnableGUI             bool
 	Version               string
@@ -41,9 +46,10 @@ type AlamedaServiceParamter struct {
 }
 
 type Resource struct {
-	ConfigMapList  []string
-	ServiceList    []string
-	DeploymentList []string
+	CustomResourceDefinitionList []string
+	ConfigMapList                []string
+	ServiceList                  []string
+	DeploymentList               []string
 }
 
 func GetExcutionResource() *Resource {
@@ -96,13 +102,15 @@ func GetGUIResource() *Resource {
 
 func GetUnInstallResource() *Resource {
 	return &Resource{
-		ConfigMapList:  cmList,
-		ServiceList:    svList,
-		DeploymentList: depList,
+		CustomResourceDefinitionList: crdList,
+		ConfigMapList:                cmList,
+		ServiceList:                  svList,
+		DeploymentList:               depList,
 	}
 }
 
 func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
+	crd := crdList
 	cm := cmList
 	sv := svList
 	dep := depList
@@ -131,15 +139,17 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		dep = enable.IgnoreExcutionYAML(dep, asp.Excutioncomponent)
 	*/
 	return &Resource{
-		ConfigMapList:  cm,
-		ServiceList:    sv,
-		DeploymentList: dep,
+		CustomResourceDefinitionList: crd,
+		ConfigMapList:                cm,
+		ServiceList:                  sv,
+		DeploymentList:               dep,
 	}
 }
 
 func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *AlamedaServiceParamter {
 	asp := &AlamedaServiceParamter{
 		//AlmedaInstallOrUninstall: instance.Spec.AlmedaInstallOrUninstall,
+		NameSpace:             instance.Namespace,
 		EnableExecution:       instance.Spec.EnableExecution,
 		EnableGUI:             instance.Spec.EnableGUI,
 		Version:               instance.Spec.Version,

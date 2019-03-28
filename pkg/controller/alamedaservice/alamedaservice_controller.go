@@ -9,6 +9,7 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
 
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
+	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateenvvar"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateparamter"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
@@ -146,11 +147,11 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			// Request object not found, could have been deleted after reconcile request.
 			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 			// Return and don't requeue
-			//uninstallResource := alamedaserviceparamter.GetUnInstallResource()
+			uninstallResource := alamedaserviceparamter.GetUnInstallResource()
 			//r.UninstallDeployment(instance,uninstallResource)
 			//r.UninstallService(instance,uninstallResource)
 			//r.UninstallConfigMap(instance,uninstallResource)
-			r.DeleteRegisterTestsCRD()
+			r.DeleteRegisterTestsCRD(uninstallResource)
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
@@ -177,9 +178,9 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.Error(err, "reconsile AlamedaService failed", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name)
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-	r.RegisterTestsCRD()
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
 	installResource := asp.GetInstallResource()
+	r.RegisterTestsCRD(installResource)
 	r.syncConfigMap(instance, asp, installResource)
 	r.syncService(instance, asp, installResource)
 	r.syncDeployment(instance, asp, installResource)
@@ -196,23 +197,14 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	return reconcile.Result{}, nil
 }
-func (r *ReconcileAlamedaService) RegisterTestsCRD() {
-	fileLocation := []string{
-		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
-		"CustomResourceDefinition/alamedascalersCRD.yaml",
-	}
-	for _, fileString := range fileLocation {
+func (r *ReconcileAlamedaService) RegisterTestsCRD(resource *alamedaserviceparamter.Resource) {
+	for _, fileString := range resource.CustomResourceDefinitionList {
 		crd := component.RegistryCustomResourceDefinition(fileString)
 		_, _, _ = resourceapply.ApplyCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
 	}
 }
-func (r *ReconcileAlamedaService) DeleteRegisterTestsCRD() {
-	fileLocation := [...]string{
-		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
-		"CustomResourceDefinition/alamedascalersCRD.yaml",
-	}
-
-	for _, fileString := range fileLocation {
+func (r *ReconcileAlamedaService) DeleteRegisterTestsCRD(resource *alamedaserviceparamter.Resource) {
+	for _, fileString := range resource.CustomResourceDefinitionList {
 		crd := component.RegistryCustomResourceDefinition(fileString)
 		_, _, _ = resourceapply.DeleteCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
 	}
@@ -225,9 +217,11 @@ func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.Al
 		}
 		resourceCM.Namespace = instance.Namespace
 		foundCM := &corev1.ConfigMap{}
+
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCM.Name, Namespace: resourceCM.Namespace}, foundCM)
 		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Creating a new Resource ConfigMap... ", "resourceCM.Name", resourceCM.Name)
+			resourceCM = updateenvvar.AssignConfigMap(resourceCM, instance.Namespace)
 			err = r.client.Create(context.TODO(), resourceCM)
 			if err != nil {
 				log.Error(err, "Fail Creating Resource ConfigMap", "resourceCM.Name", resourceCM.Name)
@@ -275,6 +269,7 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
 		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Creating a new Resource Deployment... ", "resourceDep.Name", resourceDep.Name)
+			resourceDep = updateenvvar.AssignDeployment(resourceDep, instance.Namespace)
 			resourceDep = updateparamter.ProcessImageVersion(resourceDep, asp.Version)
 			resourceDep = updateparamter.ProcessPrometheusService(resourceDep, asp.PrometheusService)
 			err = r.client.Create(context.TODO(), resourceDep)
@@ -289,6 +284,7 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 			update := updateparamter.MatchAlamedaServiceParamter(foundDep, asp.Version, asp.PrometheusService)
 			if update {
 				log.Info("Update Resource Deployment:", "resourceDep.Name", foundDep.Name)
+				foundDep = updateenvvar.AssignDeployment(foundDep, instance.Namespace)
 				foundDep = updateparamter.ProcessImageVersion(foundDep, asp.Version)
 				foundDep = updateparamter.ProcessPrometheusService(foundDep, asp.PrometheusService)
 				err = r.client.Update(context.TODO(), foundDep)
