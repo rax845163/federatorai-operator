@@ -141,7 +141,7 @@ func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *Al
 		Version:               instance.Spec.Version,
 		PrometheusService:     instance.Spec.PrometheusService,
 		PersistentVolumeClaim: instance.Spec.PersistentVolumeClaim,
-		GuiFlag:               instance.Spec.EnableExecution,
+		GuiFlag:               instance.Spec.EnableGUI,
 		ExcutionFlag:          instance.Spec.EnableExecution,
 	}
 	return asp
