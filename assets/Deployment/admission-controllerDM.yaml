@@ -39,7 +39,7 @@ spec:
         - name: ALAMEDA_ADMCTL_DATAHUB_ADDRESS
           value: "alameda-datahub.federatorai.svc:50050"
         - name: ALAMEDA_ADMCTL_ENABLE
-          value: 'false'
+          value: 'true'
         - name: ALAMEDA_ADMCTL_TLS_CERT_FILE
           value: /etc/tls-certs/tls.crt
         - name: ALAMEDA_ADMCTL_TLS_PRIVATE_KEY_FILE
