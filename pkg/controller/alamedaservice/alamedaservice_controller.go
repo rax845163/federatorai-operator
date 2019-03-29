@@ -148,15 +148,16 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			// Request object not found, could have been deleted after reconcile request.
 			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 			// Return and don't requeue
-			uninstallResource := alamedaserviceparamter.GetUnInstallResource()
+			// uninstallResource := alamedaserviceparamter.GetUnInstallResource()
 			//r.UninstallDeployment(instance,uninstallResource)
 			//r.UninstallService(instance,uninstallResource)
 			//r.UninstallConfigMap(instance,uninstallResource)
-			r.DeleteRegisterTestsCRD(uninstallResource)
+			// r.DeleteRegisterTestsCRD(uninstallResource)
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
-		return reconcile.Result{}, err
+		log.V(-1).Info("get AlamedaService failed, retry reconciling", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, err
 	}
 
 	needToReconsile, err := r.needToReconsile(instance)
