@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: alameda-operator
   namespace: federatorai
-  label:
+  labels:
     app: alameda
     component: alameda-operator
   annotations:

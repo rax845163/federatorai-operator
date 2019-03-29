@@ -124,20 +124,6 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		dep = append(dep, "Deployment/admission-controllerDM.yaml")
 		dep = append(dep, "Deployment/alameda-evictionerDM.yaml")
 	}
-	/*
-		cm := make([]string, len(cmList))
-		copy(cm, cmList)
-		cm = enable.IgnoreGUIYAML(cm, asp.Guicomponent)
-		cm = enable.IgnoreExcutionYAML(cm, asp.Excutioncomponent)
-		sv := make([]string, len(svList))
-		copy(sv, svList)
-		sv = enable.IgnoreGUIYAML(sv, asp.Guicomponent)
-		sv = enable.IgnoreExcutionYAML(sv, asp.Excutioncomponent)
-		dep := make([]string, len(depList))
-		copy(dep, depList)
-		dep = enable.IgnoreGUIYAML(dep, asp.Guicomponent)
-		dep = enable.IgnoreExcutionYAML(dep, asp.Excutioncomponent)
-	*/
 	return &Resource{
 		CustomResourceDefinitionList: crd,
 		ConfigMapList:                cm,
@@ -158,21 +144,5 @@ func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *Al
 		GuiFlag:               instance.Spec.EnableExecution,
 		ExcutionFlag:          instance.Spec.EnableExecution,
 	}
-	/*
-		var guiComponent = make([]string, len(guiList))
-		if !instance.Spec.EnableGUI {
-			copy(guiComponent, guiList)
-			asp.Guicomponent = guiComponent
-		} else {
-			asp.Guicomponent = nil
-		}
-		var excutionComponent = make([]string, len(excutionList))
-		if !instance.Spec.EnableExecution {
-			copy(excutionComponent, excutionList)
-			asp.Excutioncomponent = excutionComponent
-		} else {
-			asp.Excutioncomponent = nil
-		}
-	*/
 	return asp
 }

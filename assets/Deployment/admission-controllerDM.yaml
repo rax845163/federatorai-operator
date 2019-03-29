@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: admission-controller
   namespace: federatorai
-  label:
+  labels:
     app: alameda
     component: admission-controller
   annotations:

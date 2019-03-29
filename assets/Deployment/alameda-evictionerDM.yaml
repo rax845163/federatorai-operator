@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: alameda-evictioner
   namespace: federatorai
-  label:
+  labels:
     app: alameda
     component: alameda-evictioner
   annotations:

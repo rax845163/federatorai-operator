@@ -12,7 +12,16 @@ import (
 
 var log = logf.Log.WithName("controller_alamedaservice")
 
-func NewClusterRoleBinding(str string) *rbacv1.ClusterRoleBinding {
+type ComponentConfig struct {
+	NameSpace string
+}
+
+func NewComponentConfig(ns string) *ComponentConfig {
+	return &ComponentConfig{
+		NameSpace: ns,
+	}
+}
+func (c ComponentConfig) NewClusterRoleBinding(str string) *rbacv1.ClusterRoleBinding {
 	crbByte, err := assets.Asset(str)
 	if err != nil {
 		log.Error(err, "Failed to Test create clusterrolebinding")
@@ -21,7 +30,7 @@ func NewClusterRoleBinding(str string) *rbacv1.ClusterRoleBinding {
 	crb := resourceread.ReadClusterRoleBindingV1(crbByte)
 	return crb
 }
-func NewClusterRole(str string) *rbacv1.ClusterRole {
+func (c ComponentConfig) NewClusterRole(str string) *rbacv1.ClusterRole {
 	crByte, err := assets.Asset(str)
 	if err != nil {
 		log.Error(err, "Failed to Test create clusterrole")
@@ -29,53 +38,58 @@ func NewClusterRole(str string) *rbacv1.ClusterRole {
 	cr := resourceread.ReadClusterRoleV1(crByte)
 	return cr
 }
-func NewServiceAccount(str string) *corev1.ServiceAccount {
+func (c ComponentConfig) NewServiceAccount(str string) *corev1.ServiceAccount {
 	saByte, err := assets.Asset(str)
 	if err != nil {
 		log.Error(err, "Failed to Test create serviceaccount")
 
 	}
 	sa := resourceread.ReadServiceAccountV1(saByte)
+	sa.Namespace = c.NameSpace
 	return sa
 }
-func NewConfigMap(str string) *corev1.ConfigMap {
+func (c ComponentConfig) NewConfigMap(str string) *corev1.ConfigMap {
 	cmByte, err := assets.Asset(str)
 	if err != nil {
 		log.Error(err, "Failed to Test create configmap")
 
 	}
 	cm := resourceread.ReadConfigMapV1(cmByte)
+	cm.Namespace = c.NameSpace
 	return cm
 }
-func NewPersistentVolumeClaim(str string) *corev1.PersistentVolumeClaim {
+func (c ComponentConfig) NewPersistentVolumeClaim(str string) *corev1.PersistentVolumeClaim {
 	pvcByte, err := assets.Asset(str)
 	if err != nil {
 		log.Error(err, "Failed to Test create persistentvolumeclaim")
 
 	}
 	pvc := resourceread.ReadPersistentVolumeClaimV1(pvcByte)
+	pvc.Namespace = c.NameSpace
 	return pvc
 }
-func NewService(str string) *corev1.Service {
+func (c ComponentConfig) NewService(str string) *corev1.Service {
 	svByte, err := assets.Asset(str)
 	if err != nil {
 		log.Error(err, "Failed to Test create service")
 
 	}
 	sv := resourceread.ReadServiceV1(svByte)
+	sv.Namespace = c.NameSpace
 	return sv
 }
-func NewDeployment(str string) *appsv1.Deployment {
+func (c ComponentConfig) NewDeployment(str string) *appsv1.Deployment {
 	deploymentBytes, err := assets.Asset(str)
 	if err != nil {
 		log.Error(err, "Failed to Test create deployment")
 
 	}
 	d := resourceread.ReadDeploymentV1(deploymentBytes)
+	d.Namespace = c.NameSpace
 	return d
 }
 
-func RegistryCustomResourceDefinition(str string) *apiextv1beta1.CustomResourceDefinition {
+func (c ComponentConfig) RegistryCustomResourceDefinition(str string) *apiextv1beta1.CustomResourceDefinition {
 	crdBytes, err := assets.Asset(str)
 	if err != nil {
 		log.Error(err, "Failed to Test create testcrd")

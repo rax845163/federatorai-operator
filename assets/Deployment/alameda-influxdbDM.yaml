@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: alameda-influxdb
   namespace: federatorai
-  label:
+  labels:
     app: alameda
     component: alameda-influxdb
   annotations:

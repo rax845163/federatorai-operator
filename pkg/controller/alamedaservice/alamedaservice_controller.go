@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
-	"github.com/containers-ai/federatorai-operator/pkg/component"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
 
+	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
+	"github.com/containers-ai/federatorai-operator/pkg/component"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateenvvar"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateparamter"
@@ -32,14 +32,15 @@ import (
 )
 
 const (
-	alamedaServiceLockName = "alamedaservice-lock"
+	alamedaServiceLockName = "alamedaservice-lock-kroos"
 )
 
 var (
 	_   reconcile.Reconciler = &ReconcileAlamedaService{}
 	log                      = logf.Log.WithName("controller_alamedaservice")
 	//name                             = "kroos-installnamespace"
-	gracePeriod = int64(3)
+	gracePeriod     = int64(3)
+	componentConfig = &component.ComponentConfig{}
 )
 
 // Add creates a new AlamedaService Controller and adds it to the Manager. The Manager will set fields on the Controller
@@ -181,6 +182,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
 	installResource := asp.GetInstallResource()
 	r.RegisterTestsCRD(installResource)
+	componentConfig = component.NewComponentConfig(instance.Namespace)
 	if err := r.syncConfigMap(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync configMap failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -214,23 +216,23 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 }
 func (r *ReconcileAlamedaService) RegisterTestsCRD(resource *alamedaserviceparamter.Resource) {
 	for _, fileString := range resource.CustomResourceDefinitionList {
-		crd := component.RegistryCustomResourceDefinition(fileString)
+		crd := componentConfig.RegistryCustomResourceDefinition(fileString)
 		_, _, _ = resourceapply.ApplyCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
 	}
 }
 func (r *ReconcileAlamedaService) DeleteRegisterTestsCRD(resource *alamedaserviceparamter.Resource) {
 	for _, fileString := range resource.CustomResourceDefinitionList {
-		crd := component.RegistryCustomResourceDefinition(fileString)
+		crd := componentConfig.RegistryCustomResourceDefinition(fileString)
 		_, _, _ = resourceapply.DeleteCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
 	}
 }
 func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.ConfigMapList {
-		resourceCM := component.NewConfigMap(fileString)
+		resourceCM := componentConfig.NewConfigMap(fileString)
 		if err := controllerutil.SetControllerReference(instance, resourceCM, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceCM SetControllerReference: %s", err.Error())
 		}
-		resourceCM.Namespace = instance.Namespace
+		//resourceCM.Namespace = instance.Namespace
 		foundCM := &corev1.ConfigMap{}
 
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCM.Name, Namespace: resourceCM.Namespace}, foundCM)
@@ -252,11 +254,11 @@ func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.Al
 
 func (r *ReconcileAlamedaService) syncService(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.ServiceList {
-		resourceSV := component.NewService(fileString)
+		resourceSV := componentConfig.NewService(fileString)
 		if err := controllerutil.SetControllerReference(instance, resourceSV, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceSV SetControllerReference: %s", err.Error())
 		}
-		resourceSV.Namespace = instance.Namespace
+		//resourceSV.Namespace = instance.Namespace
 		foundSV := &corev1.Service{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSV.Name, Namespace: resourceSV.Namespace}, foundSV)
 		if err != nil && k8sErrors.IsNotFound(err) {
@@ -276,11 +278,11 @@ func (r *ReconcileAlamedaService) syncService(instance *federatoraiv1alpha1.Alam
 
 func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.DeploymentList {
-		resourceDep := component.NewDeployment(fileString)
+		resourceDep := componentConfig.NewDeployment(fileString)
 		if err := controllerutil.SetControllerReference(instance, resourceDep, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceDep SetControllerReference: %s", err.Error())
 		}
-		resourceDep.Namespace = instance.Namespace
+		//resourceDep.Namespace = instance.Namespace
 		foundDep := &appsv1.Deployment{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
 		if err != nil && k8sErrors.IsNotFound(err) {
@@ -316,8 +318,8 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 
 	for _, fileString := range resource.DeploymentList {
-		resourceDep := component.NewDeployment(fileString)
-		resourceDep.Namespace = instance.Namespace
+		resourceDep := componentConfig.NewDeployment(fileString)
+		//resourceDep.Namespace = instance.Namespace
 		err := r.client.Delete(context.TODO(), resourceDep)
 		if err != nil && k8sErrors.IsNotFound(err) {
 			return nil
@@ -332,8 +334,8 @@ func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alp
 func (r *ReconcileAlamedaService) UninstallService(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 
 	for _, fileString := range resource.ServiceList {
-		resourceSVC := component.NewService(fileString)
-		resourceSVC.Namespace = instance.Namespace
+		resourceSVC := componentConfig.NewService(fileString)
+		//resourceSVC.Namespace = instance.Namespace
 		err := r.client.Delete(context.TODO(), resourceSVC)
 		if err != nil && k8sErrors.IsNotFound(err) {
 			return nil
@@ -348,8 +350,8 @@ func (r *ReconcileAlamedaService) UninstallService(instance *federatoraiv1alpha1
 func (r *ReconcileAlamedaService) UninstallConfigMap(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 
 	for _, fileString := range resource.ConfigMapList {
-		resourceCM := component.NewConfigMap(fileString)
-		resourceCM.Namespace = instance.Namespace
+		resourceCM := componentConfig.NewConfigMap(fileString)
+		//resourceCM.Namespace = instance.Namespace
 		err := r.client.Delete(context.TODO(), resourceCM)
 		if err != nil && k8sErrors.IsNotFound(err) {
 			return nil

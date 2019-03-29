@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: alameda-ai
   namespace: federatorai
-  label:
+  labels:
     app: alameda
     component: alameda-ai
   annotations:

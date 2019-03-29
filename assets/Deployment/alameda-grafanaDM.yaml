@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: alameda-grafana
   namespace: federatorai
-  label:
+  labels:
     app: alameda
     component: alameda-grafana
   annotations:
