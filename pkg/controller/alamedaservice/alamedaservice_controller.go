@@ -181,7 +181,9 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
 	installResource := asp.GetInstallResource()
-	r.RegisterTestsCRD(installResource)
+	if err = r.RegisterTestsCRD(installResource); err != nil {
+		log.Error(err, "create crd failed")
+	}
 	componentConfig = component.NewComponentConfig(instance.Namespace)
 	if err := r.syncConfigMap(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync configMap failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
@@ -214,11 +216,15 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	return reconcile.Result{}, nil
 }
-func (r *ReconcileAlamedaService) RegisterTestsCRD(resource *alamedaserviceparamter.Resource) {
+func (r *ReconcileAlamedaService) RegisterTestsCRD(resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.CustomResourceDefinitionList {
 		crd := componentConfig.RegistryCustomResourceDefinition(fileString)
-		_, _, _ = resourceapply.ApplyCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
+		_, err := resourceapply.ApplyCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
+		if err != nil {
+			return errors.Wrapf(err, "RegisterTestsCRD faild: CustomResourceDefinition.Name: %s", crd.Name)
+		}
 	}
+	return nil
 }
 func (r *ReconcileAlamedaService) DeleteRegisterTestsCRD(resource *alamedaserviceparamter.Resource) {
 	for _, fileString := range resource.CustomResourceDefinitionList {
