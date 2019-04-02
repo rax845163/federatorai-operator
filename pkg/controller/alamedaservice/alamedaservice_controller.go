@@ -181,16 +181,16 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
 	componentConfig.SetNameSpace(instance.Namespace)
 	installResource := asp.GetInstallResource()
-	
+
 	if err = r.syncCustomResourceDefinition(installResource); err != nil {
 		log.Error(err, "create crd failed")
 	}
-	
+
 	if err := r.syncClusterRole(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync clusterRole failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-	
+
 	if err := r.syncServiceAccount(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync serviceAccount failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -372,9 +372,8 @@ func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.Al
 			err = r.client.Create(context.TODO(), resourceCM)
 			if err != nil {
 				return errors.Errorf("create configMap %s/%s failed: %s", resourceCM.Namespace, resourceCM.Name, err.Error())
-			} else {
-				log.Info("Successfully Creating Resource ConfigMap", "resourceCM.Name", resourceCM.Name)
 			}
+			log.Info("Successfully Creating Resource ConfigMap", "resourceCM.Name", resourceCM.Name)
 		} else if err != nil {
 			return errors.Errorf("get configMap %s/%s failed: %s", resourceCM.Namespace, resourceCM.Name, err.Error())
 		}
@@ -396,9 +395,8 @@ func (r *ReconcileAlamedaService) syncService(instance *federatoraiv1alpha1.Alam
 			err = r.client.Create(context.TODO(), resourceSV)
 			if err != nil {
 				return errors.Errorf("create service %s/%s failed: %s", resourceSV.Namespace, resourceSV.Name, err.Error())
-			} else {
-				log.Info("Successfully Creating Resource Service", "resourceSV.Name", resourceSV.Name)
 			}
+			log.Info("Successfully Creating Resource Service", "resourceSV.Name", resourceSV.Name)
 		} else if err != nil {
 			return errors.Errorf("get service %s/%s failed: %s", resourceSV.Namespace, resourceSV.Name, err.Error())
 		}
@@ -423,24 +421,24 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 			err = r.client.Create(context.TODO(), resourceDep)
 			if err != nil {
 				return errors.Errorf("create deployment %s/%s failed: %s", resourceDep.Namespace, resourceDep.Name, err.Error())
-			} else {
-				log.Info("Successfully Creating Resource Deployment", "resourceDep.Name", resourceDep.Name)
 			}
+			log.Info("Successfully Creating Resource Deployment", "resourceDep.Name", resourceDep.Name)
 		} else if err != nil {
 			return errors.Errorf("get deployment %s/%s failed: %s", resourceDep.Namespace, resourceDep.Name, err.Error())
-		} else {
-			update := updateparamter.MatchAlamedaServiceParamter(foundDep, asp.Version, asp.PrometheusService)
-			if update {
-				log.Info("Update Resource Deployment:", "resourceDep.Name", foundDep.Name)
-				foundDep = updateparamter.ProcessImageVersion(foundDep, asp.Version)
-				foundDep = updateparamter.ProcessPrometheusService(foundDep, asp.PrometheusService)
-				err = r.client.Update(context.TODO(), foundDep)
-				if err != nil {
-					return errors.Errorf("update deployment %s/%s failed: %s", foundDep.Namespace, foundDep.Name, err.Error())
-				}
-				log.Info("Successfully Update Resource Deployment", "resourceDep.Name", foundDep.Name)
-			}
 		}
+
+		misMatch := updateparamter.MisMatchAlamedaServiceParamter(foundDep, asp.Version, asp.PrometheusService)
+		if misMatch {
+			log.Info("Update Resource Deployment:", "resourceDep.Name", foundDep.Name)
+			foundDep = updateparamter.ProcessImageVersion(foundDep, asp.Version)
+			foundDep = updateparamter.ProcessPrometheusService(foundDep, asp.PrometheusService)
+			err = r.client.Update(context.TODO(), foundDep)
+			if err != nil {
+				return errors.Errorf("update deployment %s/%s failed: %s", foundDep.Namespace, foundDep.Name, err.Error())
+			}
+			log.Info("Successfully Update Resource Deployment", "resourceDep.Name", foundDep.Name)
+		}
+
 	}
 	return nil
 }

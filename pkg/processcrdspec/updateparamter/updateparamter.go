@@ -43,7 +43,7 @@ func getImageVersion(dep *appsv1.Deployment) string {
 	return version
 }
 
-func MatchImageVersion(dep *appsv1.Deployment, version string) bool {
+func MisMatchImageVersion(dep *appsv1.Deployment, version string) bool {
 	if (getImageVersion(dep) != version && version != "") && isProphetstorImage(dep) {
 		return true
 	} else {
@@ -82,22 +82,26 @@ func getPrometheusService(dep *appsv1.Deployment) (string, bool) {
 	return prometheusservice, flag
 }
 
-func MatchPrometheusService(dep *appsv1.Deployment, prometheusservice string) bool {
-	if clusterprometheusservice, flag := getPrometheusService(dep); (clusterprometheusservice != prometheusservice && prometheusservice != "") && flag {
-		return true
-	} else {
-		return false
-	}
-}
-
-func MatchAlamedaServiceParamter(dep *appsv1.Deployment, version string, prometheusservice string) bool {
-	log.V(1).Info("MatchAlamedaServiceParamter", "ComponentDeployment", dep.Name, "MatchImageVersion", MatchImageVersion(dep, version), "MatchPrometheusService", MatchPrometheusService(dep, prometheusservice))
-	if MatchImageVersion(dep, version) || MatchPrometheusService(dep, prometheusservice) {
+func MisMatchPrometheusService(dep *appsv1.Deployment, prometheusservice string) bool {
+	if clusterPrometheusService, flag := getPrometheusService(dep); (clusterPrometheusService != prometheusservice && prometheusservice != "") && flag {
 		return true
 	}
 	return false
 }
-func MatchPVC(dep *appsv1.Deployment, claimName string) bool {
+
+func MisMatchAlamedaServiceParamter(dep *appsv1.Deployment, version string, prometheusservice string) bool {
+	misMatchIV := MisMatchImageVersion(dep, version)
+	micMatchPS := MisMatchPrometheusService(dep, prometheusservice)
+
+	log.V(1).Info("MisMatchAlamedaServiceParamter", "ComponentDeployment", dep.Name, "MatchImageVersion", misMatchIV, "MatchPrometheusService", micMatchPS)
+
+	if misMatchIV || micMatchPS {
+		return true
+	}
+	return false
+}
+
+func MisMatchPVC(dep *appsv1.Deployment, claimName string) bool {
 	if flag := isPVC(dep); flag == true && dep.Spec.Template.Spec.Volumes[0].VolumeSource.PersistentVolumeClaim != nil {
 		if dep.Spec.Template.Spec.Volumes[0].VolumeSource.PersistentVolumeClaim.ClaimName != claimName {
 			return true
@@ -105,6 +109,7 @@ func MatchPVC(dep *appsv1.Deployment, claimName string) bool {
 	}
 	return false
 }
+
 func isPVC(dep *appsv1.Deployment) bool {
 	if len(dep.Spec.Template.Spec.Volumes) > 0 {
 		if dep.Spec.Template.Spec.Volumes[0].Name == "grafana-storage" {
@@ -113,6 +118,7 @@ func isPVC(dep *appsv1.Deployment) bool {
 	}
 	return false
 }
+
 func ProcessPVC(dep *appsv1.Deployment, claimname string) *appsv1.Deployment {
 	if flag := isPVC(dep); flag == true && claimname != "" {
 		pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: claimname}
