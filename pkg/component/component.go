@@ -28,6 +28,7 @@ func (c ComponentConfig) NewClusterRoleBinding(str string) *rbacv1.ClusterRoleBi
 
 	}
 	crb := resourceread.ReadClusterRoleBindingV1(crbByte)
+	crb.Subjects[0].Namespace = c.NameSpace
 	return crb
 }
 func (c ComponentConfig) NewClusterRole(str string) *rbacv1.ClusterRole {

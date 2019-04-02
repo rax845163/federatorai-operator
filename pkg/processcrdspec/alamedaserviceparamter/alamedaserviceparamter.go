@@ -7,6 +7,18 @@ import (
 )
 
 var (
+	crbList = []string{"ClusterRoleBinding/alameda-datahubCRB.yaml",
+		"ClusterRoleBinding/alameda-operatorCRB.yaml",
+	}
+	crList = []string{"ClusterRole/alameda-datahubCR.yaml",
+		"ClusterRole/alameda-operatorCR.yaml",
+		"ClusterRole/aggregate-alameda-admin-edit-alamedaCR.yaml",
+	}
+
+	saList = []string{"ServiceAccount/alameda-datahubSA.yaml",
+		"ServiceAccount/alameda-operatorSA.yaml",
+		"ServiceAccount/alameda-aiSA.yaml",
+	}
 	crdList = []string{
 		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
 		"CustomResourceDefinition/alamedascalersCRD.yaml",
@@ -46,6 +58,9 @@ type AlamedaServiceParamter struct {
 }
 
 type Resource struct {
+	ClusterRoleBinding           []string
+	ClusterRole                  []string
+	ServiceAccount               []string
 	CustomResourceDefinitionList []string
 	ConfigMapList                []string
 	ServiceList                  []string
@@ -53,12 +68,21 @@ type Resource struct {
 }
 
 func GetExcutionResource() *Resource {
+	var guicrb = make([]string, 0)
+	var guicr = make([]string, 0)
+	var guisa = make([]string, 0)
 	var excDep = make([]string, 0)
 	var excCM = make([]string, 0)
 	var excSV = make([]string, 0)
 	for _, str := range excutionList {
 		if len(strings.Split(str, "/")) > 0 {
 			switch resource := strings.Split(str, "/")[0]; resource {
+			case "ClusterRoleBinding":
+				guicrb = append(guicrb, str)
+			case "ClusterRole":
+				guicr = append(guicr, str)
+			case "ServiceAccount":
+				guisa = append(guisa, str)
 			case "ConfigMap":
 				excCM = append(excCM, str)
 			case "Service":
@@ -70,19 +94,31 @@ func GetExcutionResource() *Resource {
 		}
 	}
 	return &Resource{
-		ConfigMapList:  excCM,
-		ServiceList:    excSV,
-		DeploymentList: excDep,
+		ClusterRoleBinding: guicrb,
+		ClusterRole:        guicr,
+		ServiceAccount:     guisa,
+		ConfigMapList:      excCM,
+		ServiceList:        excSV,
+		DeploymentList:     excDep,
 	}
 }
 
 func GetGUIResource() *Resource {
+	var guicrb = make([]string, 0)
+	var guicr = make([]string, 0)
+	var guisa = make([]string, 0)
 	var guiDep = make([]string, 0)
 	var guiCM = make([]string, 0)
 	var guiSV = make([]string, 0)
 	for _, str := range guiList {
 		if len(strings.Split(str, "/")) > 0 {
 			switch resource := strings.Split(str, "/")[0]; resource {
+			case "ClusterRoleBinding":
+				guicrb = append(guicrb, str)
+			case "ClusterRole":
+				guicr = append(guicr, str)
+			case "ServiceAccount":
+				guisa = append(guisa, str)
 			case "ConfigMap":
 				guiCM = append(guiCM, str)
 			case "Service":
@@ -94,14 +130,20 @@ func GetGUIResource() *Resource {
 		}
 	}
 	return &Resource{
-		ConfigMapList:  guiCM,
-		ServiceList:    guiSV,
-		DeploymentList: guiDep,
+		ClusterRoleBinding: guicrb,
+		ClusterRole:        guicr,
+		ServiceAccount:     guisa,
+		ConfigMapList:      guiCM,
+		ServiceList:        guiSV,
+		DeploymentList:     guiDep,
 	}
 }
 
 func GetUnInstallResource() *Resource {
 	return &Resource{
+		ClusterRoleBinding:           crbList,
+		ClusterRole:                  crList,
+		ServiceAccount:               saList,
 		CustomResourceDefinitionList: crdList,
 		ConfigMapList:                cmList,
 		ServiceList:                  svList,
@@ -110,6 +152,9 @@ func GetUnInstallResource() *Resource {
 }
 
 func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
+	crb := crbList
+	cr := crList
+	sa := saList
 	crd := crdList
 	cm := cmList
 	sv := svList
@@ -120,11 +165,20 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		dep = append(dep, "Deployment/alameda-grafanaDM.yaml")
 	}
 	if asp.ExcutionFlag {
+		crb = append(crb, "ClusterRoleBinding/alameda-evictionerCRB.yaml")
+		crb = append(crb, "ClusterRoleBinding/admission-controllerCRB.yaml")
+		cr = append(cr, "ClusterRole/alameda-evictionerCR.yaml")
+		cr = append(cr, "ClusterRole/admission-controllerCR.yaml")
+		sa = append(sa, "ServiceAccount/alameda-evictionerSA.yaml")
+		sa = append(sa, "ServiceAccount/admission-controllerSA.yaml")
 		sv = append(sv, "Service/admission-controllerSV.yaml")
 		dep = append(dep, "Deployment/admission-controllerDM.yaml")
 		dep = append(dep, "Deployment/alameda-evictionerDM.yaml")
 	}
 	return &Resource{
+		ClusterRoleBinding:           crb,
+		ClusterRole:                  cr,
+		ServiceAccount:               sa,
 		CustomResourceDefinitionList: crd,
 		ConfigMapList:                cm,
 		ServiceList:                  sv,
