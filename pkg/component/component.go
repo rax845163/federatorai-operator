@@ -28,6 +28,11 @@ func NewComponentConfig(ns string) *ComponentConfig {
 		NameSpace: ns,
 	}
 }
+
+func (c *ComponentConfig) SetNameSpace(ns string) {
+	c.NameSpace = ns
+}
+
 func (c ComponentConfig) NewClusterRoleBinding(str string) *rbacv1.ClusterRoleBinding {
 	crbByte, err := assets.Asset(str)
 	if err != nil {

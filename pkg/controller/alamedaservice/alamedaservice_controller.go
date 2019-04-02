@@ -35,11 +35,9 @@ const (
 )
 
 var (
-	_   reconcile.Reconciler = &ReconcileAlamedaService{}
-	log                      = logf.Log.WithName("controller_alamedaservice")
-	//name                             = "kroos-installnamespace"
-	gracePeriod     = int64(3)
-	componentConfig = &component.ComponentConfig{}
+	_               reconcile.Reconciler = &ReconcileAlamedaService{}
+	log                                  = logf.Log.WithName("controller_alamedaservice")
+	componentConfig                      = &component.ComponentConfig{}
 )
 
 // Add creates a new AlamedaService Controller and adds it to the Manager. The Manager will set fields on the Controller
@@ -148,10 +146,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 			// Return and don't requeue
 			// uninstallResource := alamedaserviceparamter.GetUnInstallResource()
-			//r.UninstallDeployment(instance,uninstallResource)
-			//r.UninstallService(instance,uninstallResource)
-			//r.UninstallConfigMap(instance,uninstallResource)
-			// r.DeleteRegisterTestsCRD(uninstallResource)
+			// r.UninstallDeployment(instance,uninstallResource)
+			// r.UninstallService(instance,uninstallResource)
+			// r.UninstallConfigMap(instance,uninstallResource)
+			// r.uninstallCustomResourceDefinition(uninstallResource)
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
@@ -159,17 +157,17 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, err
 	}
 
-	needToReconsile, err := r.needToReconsile(instance)
+	needToReconcile, err := r.needToReconcile(instance)
 	if err != nil {
-		log.V(-1).Info("check if AlamedaService needs to reconsile failed, retry reconciling", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		log.V(-1).Info("check if AlamedaService needs to reconcile failed, retry reconciling", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 
-	if !needToReconsile {
-		log.Info("AlamedaService doe not need to reconsile", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name)
+	if !needToReconcile {
+		log.Info("AlamedaService doe not need to reconcile", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name)
 		err := r.syncAlamedaServiceActive(instance, false)
 		if err != nil {
-			log.V(-1).Info("reconsile AlamedaService failed", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+			log.V(-1).Info("reconcile AlamedaService failed", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
 		return reconcile.Result{}, nil
@@ -181,23 +179,28 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
+	componentConfig.SetNameSpace(instance.Namespace)
 	installResource := asp.GetInstallResource()
-	if err = r.RegisterTestsCRD(installResource); err != nil {
+	
+	if err = r.syncCustomResourceDefinition(installResource); err != nil {
 		log.Error(err, "create crd failed")
 	}
-	componentConfig = component.NewComponentConfig(instance.Namespace)
-	if err := r.syncClusterRoleBinding(instance, asp, installResource); err != nil {
-		log.V(-1).Info("sync clusterRoleBinding failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
-	}
+	
 	if err := r.syncClusterRole(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync clusterRole failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
+	
 	if err := r.syncServiceAccount(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync serviceAccount failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
+
+	if err := r.syncClusterRoleBinding(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync clusterRoleBinding failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+
 	if err := r.createSecret(instance, asp, installResource); err != nil {
 		log.V(-1).Info("create secret failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -218,7 +221,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	if !asp.EnableExecution {
 		log.Info("EnableExecution has been changed to false")
 		excutionResource := alamedaserviceparamter.GetExcutionResource()
-		if err := r.UninstallExecutionComponent(instance, excutionResource); err != nil {
+		if err := r.uninstallExecutionComponent(instance, excutionResource); err != nil {
 			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
@@ -226,7 +229,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	if !asp.EnableGUI {
 		log.Info("EnableGUI has been changed to false")
 		guiResource := alamedaserviceparamter.GetGUIResource()
-		if err := r.UninstallGUIComponent(instance, guiResource); err != nil {
+		if err := r.uninstallGUIComponent(instance, guiResource); err != nil {
 			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
@@ -234,23 +237,24 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	return reconcile.Result{}, nil
 }
 
-func (r *ReconcileAlamedaService) RegisterTestsCRD(resource *alamedaserviceparamter.Resource) error {
+func (r *ReconcileAlamedaService) syncCustomResourceDefinition(resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.CustomResourceDefinitionList {
 		crd := componentConfig.RegistryCustomResourceDefinition(fileString)
 		_, err := resourceapply.ApplyCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
 		if err != nil {
-			return errors.Wrapf(err, "RegisterTestsCRD faild: CustomResourceDefinition.Name: %s", crd.Name)
+			return errors.Wrapf(err, "syncCustomResourceDefinition faild: CustomResourceDefinition.Name: %s", crd.Name)
 		}
 	}
 	return nil
 }
 
-func (r *ReconcileAlamedaService) DeleteRegisterTestsCRD(resource *alamedaserviceparamter.Resource) {
+func (r *ReconcileAlamedaService) uninstallCustomResourceDefinition(resource *alamedaserviceparamter.Resource) {
 	for _, fileString := range resource.CustomResourceDefinitionList {
 		crd := componentConfig.RegistryCustomResourceDefinition(fileString)
 		_, _, _ = resourceapply.DeleteCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
 	}
 }
+
 func (r *ReconcileAlamedaService) syncClusterRoleBinding(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, FileStr := range resource.ClusterRoleBinding {
 		resourceCRB := componentConfig.NewClusterRoleBinding(FileStr)
@@ -272,6 +276,7 @@ func (r *ReconcileAlamedaService) syncClusterRoleBinding(instance *federatoraiv1
 	}
 	return nil
 }
+
 func (r *ReconcileAlamedaService) syncClusterRole(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, FileStr := range resource.ClusterRole {
 		resourceCR := componentConfig.NewClusterRole(FileStr)
@@ -440,7 +445,7 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 	return nil
 }
 
-func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+func (r *ReconcileAlamedaService) uninstallDeployment(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 
 	for _, fileString := range resource.DeploymentList {
 		resourceDep := componentConfig.NewDeployment(fileString)
@@ -456,7 +461,7 @@ func (r *ReconcileAlamedaService) UninstallDeployment(instance *federatoraiv1alp
 	return nil
 }
 
-func (r *ReconcileAlamedaService) UninstallService(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+func (r *ReconcileAlamedaService) uninstallService(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 
 	for _, fileString := range resource.ServiceList {
 		resourceSVC := componentConfig.NewService(fileString)
@@ -472,7 +477,7 @@ func (r *ReconcileAlamedaService) UninstallService(instance *federatoraiv1alpha1
 	return nil
 }
 
-func (r *ReconcileAlamedaService) UninstallConfigMap(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+func (r *ReconcileAlamedaService) uninstallConfigMap(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 
 	for _, fileString := range resource.ConfigMapList {
 		resourceCM := componentConfig.NewConfigMap(fileString)
@@ -488,56 +493,52 @@ func (r *ReconcileAlamedaService) UninstallConfigMap(instance *federatoraiv1alph
 	return nil
 }
 
-func (r *ReconcileAlamedaService) UninstallGUIComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+func (r *ReconcileAlamedaService) uninstallGUIComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 
-	if err := r.UninstallDeployment(instance, resource); err != nil {
+	if err := r.uninstallDeployment(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
 
-	if err := r.UninstallService(instance, resource); err != nil {
+	if err := r.uninstallService(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
 
-	if err := r.UninstallConfigMap(instance, resource); err != nil {
+	if err := r.uninstallConfigMap(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
 
 	return nil
 }
 
-func (r *ReconcileAlamedaService) UninstallExecutionComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+func (r *ReconcileAlamedaService) uninstallExecutionComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 
-	if err := r.UninstallDeployment(instance, resource); err != nil {
+	if err := r.uninstallDeployment(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall execution component failed")
 	}
 
-	if err := r.UninstallService(instance, resource); err != nil {
+	if err := r.uninstallService(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall execution component failed")
 	}
 
 	return nil
 }
 
-func (r *ReconcileAlamedaService) needToReconsile(alamedaService *federatoraiv1alpha1.AlamedaService) (bool, error) {
+func (r *ReconcileAlamedaService) needToReconcile(alamedaService *federatoraiv1alpha1.AlamedaService) (bool, error) {
 
-	lock, err := r.getAlamedaServiceLock(alamedaService.Namespace, alamedaServiceLockName)
-	if err == nil {
+	lock, lockErr := r.getAlamedaServiceLock(alamedaService.Namespace, alamedaServiceLockName)
+	if lockErr == nil {
 		if lockIsOwnedByAlamedaService(lock, alamedaService) {
 			return true, nil
-		} else {
-			return false, nil
 		}
-	} else if k8sErrors.IsNotFound(err) {
-		err = r.createAlamedaServiceLock(alamedaService)
+	} else if k8sErrors.IsNotFound(lockErr) {
+		err := r.createAlamedaServiceLock(alamedaService)
 		if err == nil {
 			return true, nil
-		} else if k8sErrors.IsAlreadyExists(err) {
-			return false, nil
-		} else if err != nil {
-			return false, errors.Wrap(err, "check if needs to reconsile failed")
+		} else if !k8sErrors.IsAlreadyExists(err) {
+			return false, errors.Wrap(err, "check if needs to reconcile failed")
 		}
-	} else if err != nil {
-		return false, errors.Wrap(err, "check if needs to reconsile failed")
+	} else if lockErr != nil {
+		return false, errors.Wrap(lockErr, "check if needs to reconcile failed")
 	}
 
 	return false, nil
@@ -550,9 +551,8 @@ func (r *ReconcileAlamedaService) getAlamedaServiceLock(ns, name string) (rbacv1
 	if err != nil {
 		if k8sErrors.IsNotFound(err) {
 			return lock, err
-		} else {
-			return lock, errors.Errorf("get AlamedaService lock failed: %s", err.Error())
 		}
+		return lock, errors.Errorf("get AlamedaService lock failed: %s", err.Error())
 	}
 
 	return lock, nil
@@ -573,9 +573,8 @@ func (r *ReconcileAlamedaService) createAlamedaServiceLock(alamedaService *feder
 	if err != nil {
 		if k8sErrors.IsAlreadyExists(err) {
 			return err
-		} else {
-			return errors.Errorf("create AlamedaService lock failed: %s", err.Error())
 		}
+		return errors.Errorf("create AlamedaService lock failed: %s", err.Error())
 	}
 
 	return nil
