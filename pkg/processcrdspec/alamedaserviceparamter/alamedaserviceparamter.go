@@ -41,6 +41,11 @@ var (
 		"Deployment/alameda-evictionerDM.yaml",
 		"Service/admission-controllerSV.yaml",
 	}
+
+	secretList = []string{
+		"Secret/admission-controller-tls.yaml",
+		"Secret/alameda-influxdb.yaml",
+	}
 )
 
 type AlamedaServiceParamter struct {
@@ -65,6 +70,7 @@ type Resource struct {
 	ConfigMapList                []string
 	ServiceList                  []string
 	DeploymentList               []string
+	SecretList                   []string
 }
 
 func GetExcutionResource() *Resource {
@@ -148,6 +154,7 @@ func GetUnInstallResource() *Resource {
 		ConfigMapList:                cmList,
 		ServiceList:                  svList,
 		DeploymentList:               depList,
+		SecretList:                   secretList,
 	}
 }
 
@@ -159,11 +166,14 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 	cm := cmList
 	sv := svList
 	dep := depList
+	secrets := secretList
+
 	if asp.GuiFlag {
 		cm = append(cm, "ConfigMap/grafana-datasources.yaml")
 		sv = append(sv, "Service/alameda-grafanaSV.yaml")
 		dep = append(dep, "Deployment/alameda-grafanaDM.yaml")
 	}
+
 	if asp.ExcutionFlag {
 		crb = append(crb, "ClusterRoleBinding/alameda-evictionerCRB.yaml")
 		crb = append(crb, "ClusterRoleBinding/admission-controllerCRB.yaml")
@@ -175,6 +185,7 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		dep = append(dep, "Deployment/admission-controllerDM.yaml")
 		dep = append(dep, "Deployment/alameda-evictionerDM.yaml")
 	}
+
 	return &Resource{
 		ClusterRoleBinding:           crb,
 		ClusterRole:                  cr,
@@ -183,6 +194,7 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		ConfigMapList:                cm,
 		ServiceList:                  sv,
 		DeploymentList:               dep,
+		SecretList:                   secrets,
 	}
 }
 

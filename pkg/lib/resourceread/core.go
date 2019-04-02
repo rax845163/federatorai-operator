@@ -1,6 +1,7 @@
 package resourceread
 
 import (
+	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
@@ -41,12 +42,16 @@ func ReadServiceV1(objBytes []byte) *corev1.Service {
 	return requiredObj.(*corev1.Service)
 }
 
-func ReadSecretV1(objBytes []byte) *corev1.Secret {
+func ReadSecretV1(objBytes []byte) (*corev1.Secret, error) {
 	requiredObj, err := runtime.Decode(coreCodecs.UniversalDecoder(corev1.SchemeGroupVersion), objBytes)
 	if err != nil {
-		log.Error(err, "Fail ReadSecretV1")
+		return nil, errors.Errorf("failed to read core v1 secret: %s", err.Error())
 	}
-	return requiredObj.(*corev1.Secret)
+	secret, ok := requiredObj.(*corev1.Secret)
+	if !ok {
+		return nil, errors.Errorf("failed to read core v1 secret")
+	}
+	return secret, nil
 }
 
 func ReadPersistentVolumeClaimV1(objBytes []byte) *corev1.PersistentVolumeClaim {

@@ -45,7 +45,7 @@ spec:
         - name: ALAMEDA_ADMCTL_TLS_PRIVATE_KEY_FILE
           value: /etc/tls-certs/tls.key
         - name: ALAMEDA_ADMCTL_CA_CERT_FILE
-          value: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
+          value: /etc/tls-certs/ca.crt
         volumeMounts:
         - mountPath: /etc/tls-certs
           name: tls-certs

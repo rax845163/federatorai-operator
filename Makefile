@@ -27,6 +27,7 @@ else
   IMAGE_BUILD_CMD = docker build
 endif
 
+.PHONY: pkg/assets/bindata.go
 pkg/assets/bindata.go: $(GOBINDATA_BIN)
 	# Using "-modtime 1" to make generate target deterministic. It sets all file time stamps to unix timestamp 1
 	cd assets && $(GOBINDATA_BIN) -pkg assets -o ../$@ \
@@ -35,6 +36,10 @@ pkg/assets/bindata.go: $(GOBINDATA_BIN)
 		Deployment/... \
 		PersistentVolumeClaim/... \
 		Service/... \
+		Secret/... \
+		ServiceAccount/... \
+		ClusterRole/... \
+		ClusterRoleBinding/... \
 
 .PHONY: depend
 depend: $(GOBINDATA_BIN)

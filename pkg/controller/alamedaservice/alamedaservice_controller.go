@@ -4,10 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
-
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
+	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateenvvar"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateparamter"
@@ -180,6 +179,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("sync AlamedaService failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
+
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
 	installResource := asp.GetInstallResource()
 	if err = r.RegisterTestsCRD(installResource); err != nil {
@@ -198,7 +198,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("sync serviceAccount failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-
+	if err := r.createSecret(instance, asp, installResource); err != nil {
+		log.V(-1).Info("create secret failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
 	if err := r.syncConfigMap(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync configMap failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -241,6 +244,7 @@ func (r *ReconcileAlamedaService) RegisterTestsCRD(resource *alamedaserviceparam
 	}
 	return nil
 }
+
 func (r *ReconcileAlamedaService) DeleteRegisterTestsCRD(resource *alamedaserviceparamter.Resource) {
 	for _, fileString := range resource.CustomResourceDefinitionList {
 		crd := componentConfig.RegistryCustomResourceDefinition(fileString)
@@ -313,6 +317,40 @@ func (r *ReconcileAlamedaService) syncServiceAccount(instance *federatoraiv1alph
 	}
 	return nil
 }
+
+func (r *ReconcileAlamedaService) createSecret(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+
+	secret, err := componentConfig.NewAdmissionControllerSecret()
+	if err != nil {
+		return errors.Errorf("build secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
+	if err := controllerutil.SetControllerReference(instance, secret, r.scheme); err != nil {
+		return errors.Errorf("set controller reference to secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
+	err = r.client.Create(context.TODO(), secret)
+	if err != nil && k8sErrors.IsAlreadyExists(err) {
+		log.Info("create secret failed: secret is already exists", "secret.Namespace", secret.Namespace, "secret.Name", secret.Name)
+	} else if err != nil {
+		return errors.Errorf("get secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
+
+	secret, err = componentConfig.NewInfluxDBSecret()
+	if err != nil {
+		return errors.Errorf("build secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
+	if err := controllerutil.SetControllerReference(instance, secret, r.scheme); err != nil {
+		return errors.Errorf("set controller reference to secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
+	err = r.client.Create(context.TODO(), secret)
+	if err != nil && k8sErrors.IsAlreadyExists(err) {
+		log.Info("create secret failed: secret is already exists", "secret.Namespace", secret.Namespace, "secret.Name", secret.Name)
+	} else if err != nil {
+		return errors.Errorf("get secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
+
+	return nil
+}
+
 func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.ConfigMapList {
 		resourceCM := componentConfig.NewConfigMap(fileString)

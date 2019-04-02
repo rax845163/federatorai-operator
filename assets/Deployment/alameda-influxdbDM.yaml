@@ -46,7 +46,7 @@ spec:
           value: "userpass"
         volumeMounts:
         - mountPath: /etc/tls/private
-          name: alameda-datahub-tls
+          name: alameda-influxdb-tls
           readOnly: false
         - mountPath: /var/lib/influxdb
           name: influxdb-storage
@@ -54,6 +54,6 @@ spec:
       volumes:
       - name: influxdb-storage
         emptyDir: {}
-      - name: alameda-datahub-tls
+      - name: alameda-influxdb-tls
         secret:
-          secretName: alameda-datahub-tls
+          secretName: alameda-influxdb-tls
