@@ -186,9 +186,19 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.Error(err, "create crd failed")
 	}
 	componentConfig = component.NewComponentConfig(instance.Namespace)
-	r.InstallClusterRoleBinding(instance, asp, installResource)
-	r.InstallClusterRole(instance, asp, installResource)
-	r.InstallServiceAccount(instance, asp, installResource)
+	if err := r.syncClusterRoleBinding(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync clusterRoleBinding failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+	if err := r.syncClusterRole(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync clusterRole failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+	if err := r.syncServiceAccount(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync serviceAccount failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+
 	if err := r.syncConfigMap(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync configMap failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -237,71 +247,71 @@ func (r *ReconcileAlamedaService) DeleteRegisterTestsCRD(resource *alamedaservic
 		_, _, _ = resourceapply.DeleteCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
 	}
 }
-func (r *ReconcileAlamedaService) InstallClusterRoleBinding(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) {
+func (r *ReconcileAlamedaService) syncClusterRoleBinding(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, FileStr := range resource.ClusterRoleBinding {
-		Resource_crb := componentConfig.NewClusterRoleBinding(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_crb, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceCRB SetControllerReference")
+		resourceCRB := componentConfig.NewClusterRoleBinding(FileStr)
+		if err := controllerutil.SetControllerReference(instance, resourceCRB, r.scheme); err != nil {
+			return errors.Errorf("Fail resourceCRB SetControllerReference: %s", err.Error())
 		}
-		found_crb := &rbacv1.ClusterRoleBinding{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_crb.Name}, found_crb)
+		foundCRB := &rbacv1.ClusterRoleBinding{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCRB.Name}, foundCRB)
 		if err != nil && k8sErrors.IsNotFound(err) {
-			log.Info("Creating a new Resource ClusterRoleBinding... ", "ResourceCRB.Name", Resource_crb.Name)
-			err = r.client.Create(context.TODO(), Resource_crb)
+			log.Info("Creating a new Resource ClusterRoleBinding... ", "resourceCRB.Name", resourceCRB.Name)
+			err = r.client.Create(context.TODO(), resourceCRB)
 			if err != nil {
-				log.Error(err, "Fail Creating Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb.Name)
+				return errors.Errorf("create clusterRoleBinding %s/%s failed: %s", resourceCRB.Namespace, resourceCRB.Name, err.Error())
 			}
-			log.Info("Successfully Creating Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb.Name)
+			log.Info("Successfully Creating Resource ClusterRoleBinding", "resourceCRB.Name", resourceCRB.Name)
 		} else if err != nil {
-			log.Error(err, "Not Found Resource ClusterRoleBinding", "ResourceCRB.Name", Resource_crb.Name)
+			return errors.Errorf("get clusterRoleBinding %s/%s failed: %s", resourceCRB.Namespace, resourceCRB.Name, err.Error())
 		}
 	}
-	log.Info("Install ClusterRoleBinding OK")
+	return nil
 }
-func (r *ReconcileAlamedaService) InstallClusterRole(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) {
+func (r *ReconcileAlamedaService) syncClusterRole(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, FileStr := range resource.ClusterRole {
-		Resource_cr := componentConfig.NewClusterRole(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_cr, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceCR SetControllerReference")
+		resourceCR := componentConfig.NewClusterRole(FileStr)
+		if err := controllerutil.SetControllerReference(instance, resourceCR, r.scheme); err != nil {
+			return errors.Errorf("Fail resourceCR SetControllerReference: %s", err.Error())
 		}
-		found_cr := &rbacv1.ClusterRole{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_cr.Name}, found_cr)
+		foundCR := &rbacv1.ClusterRole{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCR.Name}, foundCR)
 		if err != nil && k8sErrors.IsNotFound(err) {
-			log.Info("Creating a new Resource ClusterRole... ", "ResourceCR.Name", Resource_cr.Name)
-			err = r.client.Create(context.TODO(), Resource_cr)
+			log.Info("Creating a new Resource ClusterRole... ", "resourceCR.Name", resourceCR.Name)
+			err = r.client.Create(context.TODO(), resourceCR)
 			if err != nil {
-				log.Error(err, "Fail Creating Resource ClusterRole", "ResourceCR.Name", Resource_cr.Name)
+				return errors.Errorf("create clusterRole %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
 			}
-			log.Info("Successfully Creating Resource ClusterRole", "ResourceCR.Name", Resource_cr.Name)
+			log.Info("Successfully Creating Resource ClusterRole", "resourceCR.Name", resourceCR.Name)
 		} else if err != nil {
-			log.Error(err, "Not Found Resource ClusterRole", "ResourceCR.Name", Resource_cr.Name)
+			return errors.Errorf("get clusterRole %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
 		}
 	}
-	log.Info("Install ClusterRole OK")
+	return nil
 }
 
-func (r *ReconcileAlamedaService) InstallServiceAccount(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) {
+func (r *ReconcileAlamedaService) syncServiceAccount(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, FileStr := range resource.ServiceAccount {
-		Resource_sa := componentConfig.NewServiceAccount(FileStr)
-		if err := controllerutil.SetControllerReference(instance, Resource_sa, r.scheme); err != nil {
-			log.Error(err, "Fail ResourceSA SetControllerReference")
+		resourceSA := componentConfig.NewServiceAccount(FileStr)
+		if err := controllerutil.SetControllerReference(instance, resourceSA, r.scheme); err != nil {
+			return errors.Errorf("Fail resourceSA SetControllerReference: %s", err.Error())
 		}
-		Resource_sa.Namespace = instance.Namespace
-		found_sa := &corev1.ServiceAccount{}
+		resourceSA.Namespace = instance.Namespace
+		foundSA := &corev1.ServiceAccount{}
 
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: Resource_sa.Name, Namespace: Resource_sa.Namespace}, found_sa)
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSA.Name, Namespace: resourceSA.Namespace}, foundSA)
 		if err != nil && k8sErrors.IsNotFound(err) {
-			log.Info("Creating a new Resource ServiceAccount... ", "ResourceSA.Name", Resource_sa.Name)
-			err = r.client.Create(context.TODO(), Resource_sa)
+			log.Info("Creating a new Resource ServiceAccount... ", "resourceSA.Name", resourceSA.Name)
+			err = r.client.Create(context.TODO(), resourceSA)
 			if err != nil {
-				log.Error(err, "Fail Creating Resource ServiceAccount", "ResourceSA.Name", Resource_sa.Name)
+				return errors.Errorf("create serviceAccount %s/%s failed: %s", resourceSA.Namespace, resourceSA.Name, err.Error())
 			}
-			log.Info("Successfully Creating Resource ServiceAccount", "ResourceSA.Name", Resource_sa.Name)
+			log.Info("Successfully Creating Resource ServiceAccount", "resourceSA.Name", resourceSA.Name)
 		} else if err != nil {
-			log.Error(err, "Not Found Resource ServiceAccount", "ResourceSA.Name", Resource_sa.Name)
+			return errors.Errorf("get serviceAccount %s/%s failed: %s", resourceSA.Namespace, resourceSA.Name, err.Error())
 		}
 	}
-	log.Info("Install ServiceAccount OK")
+	return nil
 }
 func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.ConfigMapList {

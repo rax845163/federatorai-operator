@@ -1,6 +1,8 @@
 package component
 
 import (
+	"strings"
+
 	"github.com/containers-ai/federatorai-operator/pkg/assets"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceread"
 	appsv1 "k8s.io/api/apps/v1"
@@ -28,6 +30,7 @@ func (c ComponentConfig) NewClusterRoleBinding(str string) *rbacv1.ClusterRoleBi
 
 	}
 	crb := resourceread.ReadClusterRoleBindingV1(crbByte)
+	crb.Name = strings.Replace(crb.Name, strings.Split(crb.Name, "-")[0], c.NameSpace, -1)
 	crb.Subjects[0].Namespace = c.NameSpace
 	return crb
 }
