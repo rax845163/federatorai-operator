@@ -6,7 +6,8 @@ VERSION     = $(shell git rev-parse --abbrev-ref HEAD)-$(shell git rev-parse --s
 LD_FLAGS    ?= -X $(REPO_PATH)/pkg/version.Raw=$(VERSION)
 BUILD_DEST  ?= bin/federatorai-operator
 MUTABLE_TAG ?= latest
-IMAGE        = federatorai-operator
+IMAGE		= federatorai-operator
+IMAGE_TAG	?= $(shell git describe --always --dirty --abbrev=7)
 
 FIRST_GOPATH:=$(firstword $(subst :, ,$(shell go env GOPATH)))
 GOBINDATA_BIN=$(FIRST_GOPATH)/bin/go-bindata
@@ -56,11 +57,11 @@ build: ## build binaries
 
 .PHONY: images
 images: ## Create images
-	$(IMAGE_BUILD_CMD) -t "$(IMAGE):$(VERSION)" -t "$(IMAGE):$(MUTABLE_TAG)" ./
+	$(IMAGE_BUILD_CMD) -t "$(IMAGE):$(IMAGE_TAG)" -t "$(IMAGE):$(MUTABLE_TAG)" ./
 
 .PHONY: push
 push:
-	docker push "$(IMAGE):$(VERSION)"
+	docker push "$(IMAGE):$(IMAGE_TAG)"
 	docker push "$(IMAGE):$(MUTABLE_TAG)"
 
 .PHONY: check
