@@ -423,6 +423,7 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 				return errors.Errorf("create deployment %s/%s failed: %s", resourceDep.Namespace, resourceDep.Name, err.Error())
 			}
 			log.Info("Successfully Creating Resource Deployment", "resourceDep.Name", resourceDep.Name)
+			continue
 		} else if err != nil {
 			return errors.Errorf("get deployment %s/%s failed: %s", resourceDep.Namespace, resourceDep.Name, err.Error())
 		}
