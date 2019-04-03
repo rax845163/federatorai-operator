@@ -41,6 +41,7 @@ func (c ComponentConfig) NewClusterRoleBinding(str string) *rbacv1.ClusterRoleBi
 	}
 	crb := resourceread.ReadClusterRoleBindingV1(crbByte)
 	crb.Name = strings.Replace(crb.Name, strings.Split(crb.Name, "-")[0], c.NameSpace, -1)
+	crb.RoleRef.Name = crb.Name
 	crb.Subjects[0].Namespace = c.NameSpace
 	return crb
 }
@@ -50,6 +51,7 @@ func (c ComponentConfig) NewClusterRole(str string) *rbacv1.ClusterRole {
 		log.Error(err, "Failed to Test create clusterrole")
 	}
 	cr := resourceread.ReadClusterRoleV1(crByte)
+	cr.Name = strings.Replace(cr.Name, strings.Split(cr.Name, "-")[0], c.NameSpace, -1)
 	return cr
 }
 func (c ComponentConfig) NewServiceAccount(str string) *corev1.ServiceAccount {
