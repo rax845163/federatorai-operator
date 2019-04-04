@@ -33,14 +33,17 @@ pkg/assets/bindata.go: $(GOBINDATA_BIN)
 	# Using "-modtime 1" to make generate target deterministic. It sets all file time stamps to unix timestamp 1
 	cd assets && $(GOBINDATA_BIN) -pkg assets -o ../$@ \
 		CustomResourceDefinition/... \
+		ClusterRole/... \
+		ServiceAccount/... \
+		ClusterRoleBinding/... \
+		Secret/... \
 		ConfigMap/... \
-		Deployment/... \
 		PersistentVolumeClaim/... \
 		Service/... \
-		Secret/... \
-		ServiceAccount/... \
-		ClusterRole/... \
-		ClusterRoleBinding/... \
+		Deployment/... \
+		
+		
+
 
 .PHONY: depend
 depend: $(GOBINDATA_BIN)
@@ -84,7 +87,7 @@ vet: ## Apply go vet to all go files
 	hack/go-vet.sh ./...
 
 $(GOBINDATA_BIN):
-	go get -u github.com/jteeuwen/go-bindata/...
+	go get -u github.com/shuLhan/go-bindata/...
 
 .PHONY: help
 help:
