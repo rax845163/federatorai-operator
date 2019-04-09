@@ -9,6 +9,7 @@ import (
 )
 
 var (
+	//the source file has no value
 	resourceEmpty = func(value interface{}) bool {
 		switch v := value.(type) {
 		case corev1.Protocol:
@@ -36,6 +37,7 @@ var (
 		}
 		return false
 	}
+	//okd default value
 	okdServiceDefaultProtocol                 corev1.Protocol = corev1.ProtocolTCP
 	okdServiceDefaultTargetPort                               = func(port int32) int32 { return port }
 	okdDeploymentDefaultDefaultMode           *int32          = func(i int32) *int32 { return &i }(420)
@@ -43,142 +45,152 @@ var (
 	log                                                       = logf.Log.WithName("controller_alamedaservice")
 )
 
-func MatchResourceService(foundSv, resourceSv *corev1.Service) bool {
+func MisMatchResourceConfigMap(clusterCM, sourceCM *corev1.ConfigMap) bool {
 	modify := false
-	if !equality.Semantic.DeepEqual(foundSv.Labels, resourceSv.Labels) {
+	if !equality.Semantic.DeepEqual(clusterCM.Data, sourceCM.Data) {
+		modify = true
+		log.V(-1).Info("change Data")
+		clusterCM.Data = sourceCM.Data
+	}
+	return modify
+}
+func MisMatchResourceService(clusterSv, sourceSv *corev1.Service) bool {
+	modify := false
+	if !equality.Semantic.DeepEqual(clusterSv.Labels, sourceSv.Labels) {
 		modify = true
 		log.V(-1).Info("change Labels")
-		foundSv.Labels = resourceSv.Labels
+		clusterSv.Labels = sourceSv.Labels
 	}
-	for index, value := range resourceSv.Spec.Ports {
+	for index, value := range sourceSv.Spec.Ports {
 		if resourceEmpty(value.Protocol) {
-			resourceSv.Spec.Ports[index].Protocol = okdServiceDefaultProtocol
+			sourceSv.Spec.Ports[index].Protocol = okdServiceDefaultProtocol
 		}
 		if resourceEmpty(value.TargetPort.IntVal) {
-			resourceSv.Spec.Ports[index].TargetPort.IntVal = okdServiceDefaultTargetPort(resourceSv.Spec.Ports[index].Port)
+			sourceSv.Spec.Ports[index].TargetPort.IntVal = okdServiceDefaultTargetPort(sourceSv.Spec.Ports[index].Port)
 		}
 	}
-	if !equality.Semantic.DeepEqual(foundSv.Spec.Ports, resourceSv.Spec.Ports) {
+
+	if !equality.Semantic.DeepEqual(clusterSv.Spec.Ports, sourceSv.Spec.Ports) {
 		modify = true
 
 		log.V(-1).Info("change Ports")
-		foundSv.Spec.Ports = resourceSv.Spec.Ports
+		clusterSv.Spec.Ports = sourceSv.Spec.Ports
 	}
-	if !equality.Semantic.DeepEqual(foundSv.Spec.Selector, resourceSv.Spec.Selector) {
+	if !equality.Semantic.DeepEqual(clusterSv.Spec.Selector, sourceSv.Spec.Selector) {
 		modify = true
 		log.V(-1).Info("change Selector")
-		foundSv.Spec.Selector = resourceSv.Spec.Selector
+		clusterSv.Spec.Selector = sourceSv.Spec.Selector
 	}
 	return modify
 }
 
-func MatchResourceDeployment(foundDep, resourceDep *appsv1.Deployment) bool {
+func MisMatchResourceDeployment(clusterDep, sourceDep *appsv1.Deployment) bool {
 	modify := false
-	if !equality.Semantic.DeepEqual(foundDep.Labels, resourceDep.Labels) {
+	if !equality.Semantic.DeepEqual(clusterDep.Labels, sourceDep.Labels) {
 		modify = true
 		log.V(-1).Info("change Labels")
-		foundDep.Labels = resourceDep.Labels
+		clusterDep.Labels = sourceDep.Labels
 	}
-	matchSelectorAndReplicas(&modify, &foundDep.Spec, &resourceDep.Spec)
-	matchTemplate(&modify, &foundDep.Spec.Template, &resourceDep.Spec.Template)
+	misMatchSelectorAndReplicas(&modify, &clusterDep.Spec, &sourceDep.Spec)
+	misMatchTemplate(&modify, &clusterDep.Spec.Template, &sourceDep.Spec.Template)
 	return modify
 }
-func matchSelectorAndReplicas(modify *bool, foundDep, resourceDep *appsv1.DeploymentSpec) {
-	if !equality.Semantic.DeepEqual(foundDep.Selector, resourceDep.Selector) {
+func misMatchSelectorAndReplicas(modify *bool, clusterDep, sourceDep *appsv1.DeploymentSpec) {
+	if !equality.Semantic.DeepEqual(clusterDep.Selector, sourceDep.Selector) {
 		*modify = true
 		log.V(-1).Info("change Selector")
-		foundDep.Selector = resourceDep.Selector
+		clusterDep.Selector = sourceDep.Selector
 	}
-	if !equality.Semantic.DeepEqual(foundDep.Replicas, resourceDep.Replicas) {
+	if !equality.Semantic.DeepEqual(clusterDep.Replicas, sourceDep.Replicas) {
 		*modify = true
 		log.V(-1).Info("change Replicas")
-		foundDep.Replicas = resourceDep.Replicas
+		clusterDep.Replicas = sourceDep.Replicas
 	}
 }
-func matchTemplate(modify *bool, foundDep, resourceDep *corev1.PodTemplateSpec) {
-	matchTemplateObjectMeta(modify, &foundDep.ObjectMeta, &resourceDep.ObjectMeta)
-	matchTemplatePodSpec(modify, &foundDep.Spec, &resourceDep.Spec)
+func misMatchTemplate(modify *bool, clusterDep, sourceDep *corev1.PodTemplateSpec) {
+	misMatchTemplateObjectMeta(modify, &clusterDep.ObjectMeta, &sourceDep.ObjectMeta)
+	misMatchTemplatePodSpec(modify, &clusterDep.Spec, &sourceDep.Spec)
 }
-func matchTemplateObjectMeta(modify *bool, foundDep, resourceDep *metav1.ObjectMeta) {
-	if foundDep.Name != resourceDep.Name {
+func misMatchTemplateObjectMeta(modify *bool, clusterDep, sourceDep *metav1.ObjectMeta) {
+	if clusterDep.Name != sourceDep.Name {
 		*modify = true
 		log.V(-1).Info("change TemplateObjectMetaName")
-		foundDep.Name = resourceDep.Name
+		clusterDep.Name = sourceDep.Name
 	}
-	if !equality.Semantic.DeepEqual(foundDep.Labels, resourceDep.Labels) {
+	if !equality.Semantic.DeepEqual(clusterDep.Labels, sourceDep.Labels) {
 		*modify = true
 		log.V(-1).Info("change TemplateObjectMetaLabels")
-		foundDep.Labels = resourceDep.Labels
+		clusterDep.Labels = sourceDep.Labels
 	}
 }
-func matchTemplatePodSpec(modify *bool, foundDep, resourceDep *corev1.PodSpec) {
-	if foundDep.ServiceAccountName != resourceDep.ServiceAccountName {
+func misMatchTemplatePodSpec(modify *bool, clusterDep, sourceDep *corev1.PodSpec) {
+	if clusterDep.ServiceAccountName != sourceDep.ServiceAccountName {
 		*modify = true
 		log.V(-1).Info("change ServiceAccountName")
-		foundDep.ServiceAccountName = resourceDep.ServiceAccountName
+		clusterDep.ServiceAccountName = sourceDep.ServiceAccountName
 	}
-	for resourceIndex, resourceContainerValue := range resourceDep.Containers {
-		for foundIndex, foundContainerValue := range foundDep.Containers {
-			if foundContainerValue.Name == resourceContainerValue.Name {
-				if foundDep.Containers[foundIndex].Image != resourceDep.Containers[resourceIndex].Image {
+	for sourceIndex, sourceContainerValue := range sourceDep.Containers {
+		for clusterIndex, clusterContainerValue := range clusterDep.Containers {
+			if clusterContainerValue.Name == sourceContainerValue.Name {
+				if clusterDep.Containers[clusterIndex].Image != sourceDep.Containers[sourceIndex].Image {
 					*modify = true
 					log.V(-1).Info("change Image")
-					foundDep.Containers[foundIndex].Image = resourceDep.Containers[resourceIndex].Image
+					clusterDep.Containers[clusterIndex].Image = sourceDep.Containers[sourceIndex].Image
 				}
-				if foundDep.Containers[foundIndex].ImagePullPolicy != resourceDep.Containers[resourceIndex].ImagePullPolicy {
+				if clusterDep.Containers[clusterIndex].ImagePullPolicy != sourceDep.Containers[sourceIndex].ImagePullPolicy {
 					*modify = true
 					log.V(-1).Info("change ImagePullPolicy")
-					foundDep.Containers[foundIndex].ImagePullPolicy = resourceDep.Containers[resourceIndex].ImagePullPolicy
+					clusterDep.Containers[clusterIndex].ImagePullPolicy = sourceDep.Containers[sourceIndex].ImagePullPolicy
 				}
-				if !equality.Semantic.DeepEqual(foundDep.Containers[foundIndex].Ports, resourceDep.Containers[resourceIndex].Ports) {
+				if !equality.Semantic.DeepEqual(clusterDep.Containers[clusterIndex].Ports, sourceDep.Containers[sourceIndex].Ports) {
 					*modify = true
 					log.V(-1).Info("change Ports")
-					foundDep.Containers[foundIndex].Ports = resourceDep.Containers[resourceIndex].Ports
+					clusterDep.Containers[clusterIndex].Ports = sourceDep.Containers[sourceIndex].Ports
 				}
-				if !equality.Semantic.DeepEqual(foundDep.Containers[foundIndex].Resources, resourceDep.Containers[resourceIndex].Resources) {
+				if !equality.Semantic.DeepEqual(clusterDep.Containers[clusterIndex].Resources, sourceDep.Containers[sourceIndex].Resources) {
 					*modify = true
 					log.V(-1).Info("change Resources")
-					foundDep.Containers[foundIndex].Resources = resourceDep.Containers[resourceIndex].Resources
+					clusterDep.Containers[clusterIndex].Resources = sourceDep.Containers[sourceIndex].Resources
 				}
-				if !equality.Semantic.DeepEqual(foundDep.Containers[foundIndex].VolumeMounts, resourceDep.Containers[resourceIndex].VolumeMounts) {
+				if !equality.Semantic.DeepEqual(clusterDep.Containers[clusterIndex].VolumeMounts, sourceDep.Containers[sourceIndex].VolumeMounts) {
 					*modify = true
 					log.V(-1).Info("change VolumeMounts")
-					foundDep.Containers[foundIndex].VolumeMounts = resourceDep.Containers[resourceIndex].VolumeMounts
+					clusterDep.Containers[clusterIndex].VolumeMounts = sourceDep.Containers[sourceIndex].VolumeMounts
 				}
-				for index, value := range resourceDep.Containers[resourceIndex].Env {
+				for index, value := range sourceDep.Containers[sourceIndex].Env {
 					if value.ValueFrom != nil {
 						if value.ValueFrom.FieldRef != nil {
 							if resourceEmpty(value.ValueFrom.FieldRef.APIVersion) {
-								resourceDep.Containers[resourceIndex].Env[index].ValueFrom.FieldRef.APIVersion = okdDeploymentDefaultEnvFieldRefAPIVersion
+								sourceDep.Containers[sourceIndex].Env[index].ValueFrom.FieldRef.APIVersion = okdDeploymentDefaultEnvFieldRefAPIVersion
 							}
 						}
 					}
 				}
-				if !equality.Semantic.DeepEqual(foundDep.Containers[foundIndex].Env, resourceDep.Containers[resourceIndex].Env) {
+				if !equality.Semantic.DeepEqual(clusterDep.Containers[clusterIndex].Env, sourceDep.Containers[sourceIndex].Env) {
 					*modify = true
 					log.V(-1).Info("change Env")
-					foundDep.Containers[foundIndex].Env = resourceDep.Containers[resourceIndex].Env
+					clusterDep.Containers[clusterIndex].Env = sourceDep.Containers[sourceIndex].Env
 				}
 			}
 		}
 	}
-	for resourceIndex, resourceVolumeValue := range resourceDep.Volumes {
-		for foundIndex, foundVolumeValue := range foundDep.Volumes {
-			if foundVolumeValue.Name == resourceVolumeValue.Name {
-				if resourceDep.Volumes[resourceIndex].VolumeSource.Secret != nil {
-					if resourceEmpty(resourceDep.Volumes[resourceIndex].VolumeSource.Secret.DefaultMode) {
-						resourceDep.Volumes[resourceIndex].VolumeSource.Secret.DefaultMode = okdDeploymentDefaultDefaultMode
+	for sourceIndex, sourceVolumeValue := range sourceDep.Volumes {
+		for clusterIndex, clusterVolumeValue := range clusterDep.Volumes {
+			if clusterVolumeValue.Name == sourceVolumeValue.Name {
+				if sourceDep.Volumes[sourceIndex].VolumeSource.Secret != nil {
+					if resourceEmpty(sourceDep.Volumes[sourceIndex].VolumeSource.Secret.DefaultMode) {
+						sourceDep.Volumes[sourceIndex].VolumeSource.Secret.DefaultMode = okdDeploymentDefaultDefaultMode
 					}
 				}
-				if resourceDep.Volumes[resourceIndex].VolumeSource.ConfigMap != nil {
-					if resourceEmpty(resourceDep.Volumes[resourceIndex].VolumeSource.ConfigMap.DefaultMode) {
-						resourceDep.Volumes[resourceIndex].VolumeSource.ConfigMap.DefaultMode = okdDeploymentDefaultDefaultMode
+				if sourceDep.Volumes[sourceIndex].VolumeSource.ConfigMap != nil {
+					if resourceEmpty(sourceDep.Volumes[sourceIndex].VolumeSource.ConfigMap.DefaultMode) {
+						sourceDep.Volumes[sourceIndex].VolumeSource.ConfigMap.DefaultMode = okdDeploymentDefaultDefaultMode
 					}
 				}
-				if !equality.Semantic.DeepEqual(foundDep.Volumes[foundIndex].VolumeSource, resourceDep.Volumes[resourceIndex].VolumeSource) {
+				if !equality.Semantic.DeepEqual(clusterDep.Volumes[clusterIndex].VolumeSource, sourceDep.Volumes[sourceIndex].VolumeSource) {
 					*modify = true
 					log.V(-1).Info("change VolumeSource")
-					foundDep.Volumes[foundIndex].VolumeSource = resourceDep.Volumes[resourceIndex].VolumeSource
+					clusterDep.Volumes[clusterIndex].VolumeSource = sourceDep.Volumes[sourceIndex].VolumeSource
 				}
 			}
 		}

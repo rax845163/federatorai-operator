@@ -63,7 +63,14 @@ func isPrometheusService(dep *appsv1.Deployment) (bool, int) {
 	return false, 0
 }
 
-func ProcessPrometheusService(dep *appsv1.Deployment, prometheusservice string) *appsv1.Deployment {
+func ProcessConfigMapsPrometheusService(cm *corev1.ConfigMap, prometheusservice string) *corev1.ConfigMap {
+	log.V(1).Info("ProcessPrometheusService", "AlamedaServicePrometheusService", prometheusservice)
+	if strings.Contains(cm.Data["prometheus.yaml"], "https://prometheus-k8s.openshift-monitoring.svc:9091") && prometheusservice != "" {
+		cm.Data["prometheus.yaml"] = strings.Replace(cm.Data["prometheus.yaml"], "https://prometheus-k8s.openshift-monitoring.svc:9091", prometheusservice, -1)
+	}
+	return cm
+}
+func ProcessDeploymentsPrometheusService(dep *appsv1.Deployment, prometheusservice string) *appsv1.Deployment {
 	log.V(1).Info("ProcessPrometheusService", "AlamedaServicePrometheusService", prometheusservice)
 	if flag, index := isPrometheusService(dep); flag == true && prometheusservice != "" {
 		dep.Spec.Template.Spec.Containers[0].Env[index].Value = prometheusservice

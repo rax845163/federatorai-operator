@@ -10,6 +10,7 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateenvvar"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateparamter"
+	"github.com/containers-ai/federatorai-operator/pkg/updateresource"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -69,49 +70,27 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err != nil {
 		return err
 	}
-
-	// TODO(user): Modify this to be the types you create that are owned by the primary resource
-	// Watch for changes to secondary resource Pods and requeue the owner AlamedaService
-	/*
-		err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
-			IsController: true,
-			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-		})
-		if err != nil {
-			return err
-		}
-
-		err = c.Watch(&source.Kind{Type: &corev1.ServiceAccount{}}, &handler.EnqueueRequestForOwner{
-			IsController: true,
-			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-		})
-		if err != nil {
-			return err
-		}
-
-		err = c.Watch(&source.Kind{Type: &corev1.ConfigMap{}}, &handler.EnqueueRequestForOwner{
-			IsController: true,
-			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-		})
-		if err != nil {
-			return err
-		}
-
-		err = c.Watch(&source.Kind{Type: &corev1.Service{}}, &handler.EnqueueRequestForOwner{
-			IsController: true,
-			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-		})
-		if err != nil {
-			return err
-		}
-		err = c.Watch(&source.Kind{Type: &corev1.PersistentVolumeClaim{}}, &handler.EnqueueRequestForOwner{
-			IsController: true,
-			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-		})
-		if err != nil {
-			return err
-		}
-	*/
+	err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
+		IsController: true,
+		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
+	})
+	if err != nil {
+		return err
+	}
+	err = c.Watch(&source.Kind{Type: &corev1.ConfigMap{}}, &handler.EnqueueRequestForOwner{
+		IsController: true,
+		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
+	})
+	if err != nil {
+		return err
+	}
+	err = c.Watch(&source.Kind{Type: &corev1.Service{}}, &handler.EnqueueRequestForOwner{
+		IsController: true,
+		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
+	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -362,13 +341,14 @@ func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.Al
 		if err := controllerutil.SetControllerReference(instance, resourceCM, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceCM SetControllerReference: %s", err.Error())
 		}
-		//resourceCM.Namespace = instance.Namespace
+		//process resource configmap into desire configmap
+		resourceCM = updateenvvar.AssignConfigMap(resourceCM, instance.Namespace)
+		resourceCM = updateparamter.ProcessConfigMapsPrometheusService(resourceCM, asp.PrometheusService)
 		foundCM := &corev1.ConfigMap{}
 
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCM.Name, Namespace: resourceCM.Namespace}, foundCM)
 		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Creating a new Resource ConfigMap... ", "resourceCM.Name", resourceCM.Name)
-			resourceCM = updateenvvar.AssignConfigMap(resourceCM, instance.Namespace)
 			err = r.client.Create(context.TODO(), resourceCM)
 			if err != nil {
 				return errors.Errorf("create configMap %s/%s failed: %s", resourceCM.Namespace, resourceCM.Name, err.Error())
@@ -376,6 +356,15 @@ func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.Al
 			log.Info("Successfully Creating Resource ConfigMap", "resourceCM.Name", resourceCM.Name)
 		} else if err != nil {
 			return errors.Errorf("get configMap %s/%s failed: %s", resourceCM.Namespace, resourceCM.Name, err.Error())
+		} else {
+			if updateresource.MisMatchResourceConfigMap(foundCM, resourceCM) {
+				log.Info("Update Resource Service:", "foundCM.Name", foundCM.Name)
+				err = r.client.Update(context.TODO(), foundCM)
+				if err != nil {
+					return errors.Errorf("update configMap %s/%s failed: %s", foundCM.Namespace, foundCM.Name, err.Error())
+				}
+				log.Info("Successfully Update Resource CinfigMap", "resourceCM.Name", foundCM.Name)
+			}
 		}
 	}
 	return nil
@@ -399,6 +388,15 @@ func (r *ReconcileAlamedaService) syncService(instance *federatoraiv1alpha1.Alam
 			log.Info("Successfully Creating Resource Service", "resourceSV.Name", resourceSV.Name)
 		} else if err != nil {
 			return errors.Errorf("get service %s/%s failed: %s", resourceSV.Namespace, resourceSV.Name, err.Error())
+		} else {
+			if updateresource.MisMatchResourceService(foundSV, resourceSV) {
+				log.Info("Update Resource Service:", "foundSV.Name", foundSV.Name)
+				err = r.client.Update(context.TODO(), foundSV)
+				if err != nil {
+					return errors.Errorf("update service %s/%s failed: %s", foundSV.Namespace, foundSV.Name, err.Error())
+				}
+				log.Info("Successfully Update Resource Service", "resourceSV.Name", foundSV.Name)
+			}
 		}
 	}
 	return nil
@@ -410,14 +408,14 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 		if err := controllerutil.SetControllerReference(instance, resourceDep, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceDep SetControllerReference: %s", err.Error())
 		}
-		//resourceDep.Namespace = instance.Namespace
+		//process resource deployment into desire deployment
+		resourceDep = updateenvvar.AssignDeployment(resourceDep, instance.Namespace)
+		resourceDep = updateparamter.ProcessImageVersion(resourceDep, asp.Version)
+		resourceDep = updateparamter.ProcessDeploymentsPrometheusService(resourceDep, asp.PrometheusService)
 		foundDep := &appsv1.Deployment{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
 		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Creating a new Resource Deployment... ", "resourceDep.Name", resourceDep.Name)
-			resourceDep = updateenvvar.AssignDeployment(resourceDep, instance.Namespace)
-			resourceDep = updateparamter.ProcessImageVersion(resourceDep, asp.Version)
-			resourceDep = updateparamter.ProcessPrometheusService(resourceDep, asp.PrometheusService)
 			err = r.client.Create(context.TODO(), resourceDep)
 			if err != nil {
 				return errors.Errorf("create deployment %s/%s failed: %s", resourceDep.Namespace, resourceDep.Name, err.Error())
@@ -426,18 +424,16 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 			continue
 		} else if err != nil {
 			return errors.Errorf("get deployment %s/%s failed: %s", resourceDep.Namespace, resourceDep.Name, err.Error())
-		}
-
-		misMatch := updateparamter.MisMatchAlamedaServiceParamter(foundDep, asp.Version, asp.PrometheusService)
-		if misMatch {
-			log.Info("Update Resource Deployment:", "resourceDep.Name", foundDep.Name)
-			foundDep = updateparamter.ProcessImageVersion(foundDep, asp.Version)
-			foundDep = updateparamter.ProcessPrometheusService(foundDep, asp.PrometheusService)
-			err = r.client.Update(context.TODO(), foundDep)
-			if err != nil {
-				return errors.Errorf("update deployment %s/%s failed: %s", foundDep.Namespace, foundDep.Name, err.Error())
+		} else {
+			//misMatch := updateparamter.MisMatchAlamedaServiceParamter(foundDep, asp.Version, asp.PrometheusService)
+			if updateresource.MisMatchResourceDeployment(foundDep, resourceDep) {
+				log.Info("Update Resource Deployment:", "resourceDep.Name", foundDep.Name)
+				err = r.client.Update(context.TODO(), foundDep)
+				if err != nil {
+					return errors.Errorf("update deployment %s/%s failed: %s", foundDep.Namespace, foundDep.Name, err.Error())
+				}
+				log.Info("Successfully Update Resource Deployment", "resourceDep.Name", foundDep.Name)
 			}
-			log.Info("Successfully Update Resource Deployment", "resourceDep.Name", foundDep.Name)
 		}
 
 	}
