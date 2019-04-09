@@ -31,6 +31,17 @@ spec:
           requests:
             cpu: 10m
             memory: 20Mi
+         volumeMounts:
+        - name: podinfo
+          mountPath: /etc/podinfo
+          readOnly: false
+      volumes:
+      - name: podinfo
+        downwardAPI:
+          items:
+          - path: "labels"
+            fieldRef:
+              fieldPath: metadata.labels
         env:
         - name: ALAMEDA_OPERATOR_DATAHUB_ADDRESS
           value: "alameda-datahub.federatorai.svc:50050"

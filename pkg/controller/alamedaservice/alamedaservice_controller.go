@@ -70,10 +70,11 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err != nil {
 		return err
 	}
-	err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
-		IsController: true,
-		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-	})
+	/*
+		err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
+			IsController: true,
+			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
+		})*/
 	if err != nil {
 		return err
 	}
