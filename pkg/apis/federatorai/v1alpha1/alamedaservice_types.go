@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -14,11 +15,25 @@ type AlamedaServiceSpec struct {
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html
 	//AlmedaInstallOrUninstall bool   `json:"almedainstalloruninstall"`
-	EnableExecution       bool   `json:"enableexecution"`
-	EnableGUI             bool   `json:"enablegui"`
-	Version               string `json:"version"`
-	PrometheusService     string `json:"prometheusservice"`
-	PersistentVolumeClaim string `json:"persistentvolumeclaim"`
+	EnableExecution       bool                             `json:"enableexecution"`
+	EnableGUI             bool                             `json:"enablegui"`
+	Version               string                           `json:"version"`
+	PrometheusService     string                           `json:"prometheusservice"`
+	PersistentVolumeClaim string                           `json:"persistentvolumeclaim"`
+	InfluxdbPVCSet        AlamedaServiceSpecInfluxdbPVCSet `json:"influxdbpvcset"`
+	GrafanaPVCSet         AlamedaServiceSpecGrafanaPVCSet  `json:"grafanapvcset"`
+}
+type AlamedaServiceSpecInfluxdbPVCSet struct {
+	Flag bool `json:"flag"`
+	//AccessModes          []corev1.PersistentVolumeAccessMode `json:"accessmodes"`
+	//ResourceRequirements corev1.ResourceRequirements         `json:"resources"`
+	Spec corev1.PersistentVolumeClaimSpec `json:"spec"`
+}
+type AlamedaServiceSpecGrafanaPVCSet struct {
+	Flag bool `json:"flag"`
+	//AccessModes          []corev1.PersistentVolumeAccessMode `json:"accessmodes"`
+	//ResourceRequirements corev1.ResourceRequirements         `json:"resources"`
+	Spec corev1.PersistentVolumeClaimSpec `json:"spec"`
 }
 
 // AlamedaServiceStatus defines the observed state of AlamedaService

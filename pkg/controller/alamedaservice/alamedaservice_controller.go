@@ -7,9 +7,8 @@ import (
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
+	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
-	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateenvvar"
-	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/updateresource"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
@@ -185,6 +184,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("create secret failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
+	if err := r.createPersistentVolumeClaim(instance, asp, installResource); err != nil {
+		log.V(-1).Info("create PersistentVolumeClaim failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
 	if err := r.syncConfigMap(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync configMap failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -210,6 +213,13 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.Info("EnableGUI has been changed to false")
 		guiResource := alamedaserviceparamter.GetGUIResource()
 		if err := r.uninstallGUIComponent(instance, guiResource); err != nil {
+			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+		}
+	}
+	if !asp.InfluxdbPVCSet.Flag || !asp.GrafanaPVCSet.Flag {
+		pvcResource := asp.GetPVCResource()
+		if err := r.uninstallPersistentVolumeClaim(instance, pvcResource); err != nil {
 			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
@@ -285,7 +295,6 @@ func (r *ReconcileAlamedaService) syncServiceAccount(instance *federatoraiv1alph
 		if err := controllerutil.SetControllerReference(instance, resourceSA, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceSA SetControllerReference: %s", err.Error())
 		}
-		resourceSA.Namespace = instance.Namespace
 		foundSA := &corev1.ServiceAccount{}
 
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSA.Name, Namespace: resourceSA.Namespace}, foundSA)
@@ -303,8 +312,31 @@ func (r *ReconcileAlamedaService) syncServiceAccount(instance *federatoraiv1alph
 	return nil
 }
 
-func (r *ReconcileAlamedaService) createSecret(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+func (r *ReconcileAlamedaService) createPersistentVolumeClaim(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+	for _, FileStr := range resource.PersistentVolumeClaimList {
+		resourcePVC := componentConfig.NewPersistentVolumeClaim(FileStr)
+		//process resource configmap into desire configmap
+		resourcePVC = processcrdspec.ParamterToPersistentVolumeClaim(resourcePVC, asp)
+		if err := controllerutil.SetControllerReference(instance, resourcePVC, r.scheme); err != nil {
+			return errors.Errorf("Fail resourcePVC SetControllerReference: %s", err.Error())
+		}
+		foundPVC := &corev1.PersistentVolumeClaim{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourcePVC.Name, Namespace: resourcePVC.Namespace}, foundPVC)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			log.Info("Creating a new Resource PersistentVolumeClaim... ", "resourcePVC.Name", resourcePVC.Name)
+			err = r.client.Create(context.TODO(), resourcePVC)
+			if err != nil {
+				return errors.Errorf("create PersistentVolumeClaim %s/%s failed: %s", resourcePVC.Namespace, resourcePVC.Name, err.Error())
+			}
+			log.Info("Successfully Creating Resource PersistentVolumeClaim", "resourcePVC.Name", resourcePVC.Name)
+		} else if err != nil {
+			return errors.Errorf("get PersistentVolumeClaim %s/%s failed: %s", resourcePVC.Namespace, resourcePVC.Name, err.Error())
+		}
+	}
+	return nil
+}
 
+func (r *ReconcileAlamedaService) createSecret(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	secret, err := componentConfig.NewAdmissionControllerSecret()
 	if err != nil {
 		return errors.Errorf("build secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
@@ -343,10 +375,8 @@ func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.Al
 			return errors.Errorf("Fail resourceCM SetControllerReference: %s", err.Error())
 		}
 		//process resource configmap into desire configmap
-		resourceCM = updateenvvar.AssignConfigMap(resourceCM, instance.Namespace)
-		resourceCM = updateparamter.ProcessConfigMapsPrometheusService(resourceCM, asp.PrometheusService)
+		resourceCM = processcrdspec.ParamterToConfigMap(resourceCM, asp)
 		foundCM := &corev1.ConfigMap{}
-
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCM.Name, Namespace: resourceCM.Namespace}, foundCM)
 		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Creating a new Resource ConfigMap... ", "resourceCM.Name", resourceCM.Name)
@@ -377,7 +407,6 @@ func (r *ReconcileAlamedaService) syncService(instance *federatoraiv1alpha1.Alam
 		if err := controllerutil.SetControllerReference(instance, resourceSV, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceSV SetControllerReference: %s", err.Error())
 		}
-		//resourceSV.Namespace = instance.Namespace
 		foundSV := &corev1.Service{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSV.Name, Namespace: resourceSV.Namespace}, foundSV)
 		if err != nil && k8sErrors.IsNotFound(err) {
@@ -414,9 +443,7 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 			return errors.Errorf("Fail resourceDep SetControllerReference: %s", err.Error())
 		}
 		//process resource deployment into desire deployment
-		resourceDep = updateenvvar.AssignDeployment(resourceDep, instance.Namespace)
-		resourceDep = updateparamter.ProcessImageVersion(resourceDep, asp.Version)
-		resourceDep = updateparamter.ProcessDeploymentsPrometheusService(resourceDep, asp.PrometheusService)
+		resourceDep = processcrdspec.ParamterToDeployment(resourceDep, asp)
 		foundDep := &appsv1.Deployment{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
 		if err != nil && k8sErrors.IsNotFound(err) {
@@ -430,7 +457,6 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 		} else if err != nil {
 			return errors.Errorf("get deployment %s/%s failed: %s", resourceDep.Namespace, resourceDep.Name, err.Error())
 		} else {
-			//misMatch := updateparamter.MisMatchAlamedaServiceParamter(foundDep, asp.Version, asp.PrometheusService)
 			if updateresource.MisMatchResourceDeployment(foundDep, resourceDep) {
 				log.Info("Update Resource Deployment:", "resourceDep.Name", foundDep.Name)
 				err = r.client.Update(context.TODO(), foundDep)
@@ -449,7 +475,6 @@ func (r *ReconcileAlamedaService) uninstallDeployment(instance *federatoraiv1alp
 
 	for _, fileString := range resource.DeploymentList {
 		resourceDep := componentConfig.NewDeployment(fileString)
-		//resourceDep.Namespace = instance.Namespace
 		err := r.client.Delete(context.TODO(), resourceDep)
 		if err != nil && k8sErrors.IsNotFound(err) {
 			return nil
@@ -465,7 +490,6 @@ func (r *ReconcileAlamedaService) uninstallService(instance *federatoraiv1alpha1
 
 	for _, fileString := range resource.ServiceList {
 		resourceSVC := componentConfig.NewService(fileString)
-		//resourceSVC.Namespace = instance.Namespace
 		err := r.client.Delete(context.TODO(), resourceSVC)
 		if err != nil && k8sErrors.IsNotFound(err) {
 			return nil
@@ -481,7 +505,6 @@ func (r *ReconcileAlamedaService) uninstallConfigMap(instance *federatoraiv1alph
 
 	for _, fileString := range resource.ConfigMapList {
 		resourceCM := componentConfig.NewConfigMap(fileString)
-		//resourceCM.Namespace = instance.Namespace
 		err := r.client.Delete(context.TODO(), resourceCM)
 		if err != nil && k8sErrors.IsNotFound(err) {
 			return nil
@@ -520,6 +543,19 @@ func (r *ReconcileAlamedaService) uninstallExecutionComponent(instance *federato
 		return errors.Wrapf(err, "uninstall execution component failed")
 	}
 
+	return nil
+}
+
+func (r *ReconcileAlamedaService) uninstallPersistentVolumeClaim(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+	for _, fileString := range resource.PersistentVolumeClaimList {
+		resourcePVC := componentConfig.NewPersistentVolumeClaim(fileString)
+		err := r.client.Delete(context.TODO(), resourcePVC)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			return nil
+		} else if err != nil {
+			return errors.Errorf("delete PersistentVolumeClaim %s/%s failed: %s", resourcePVC.Namespace, resourcePVC.Name, err.Error())
+		}
+	}
 	return nil
 }
 

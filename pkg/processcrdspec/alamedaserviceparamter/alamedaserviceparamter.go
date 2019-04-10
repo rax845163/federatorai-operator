@@ -3,6 +3,7 @@ package alamedaserviceparamter
 import (
 	"strings"
 
+	"github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 )
 
@@ -46,10 +47,13 @@ var (
 		"Secret/admission-controller-tls.yaml",
 		"Secret/alameda-influxdb.yaml",
 	}
+	pvcList = []string{
+		"PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
+		"PersistentVolumeClaim/my-alamedagrafanaPVC.yaml",
+	}
 )
 
 type AlamedaServiceParamter struct {
-	//AlmedaInstallOrUninstall bool
 	NameSpace             string
 	EnableExecution       bool
 	EnableGUI             bool
@@ -60,6 +64,8 @@ type AlamedaServiceParamter struct {
 	ExcutionFlag          bool
 	Guicomponent          []string
 	Excutioncomponent     []string
+	InfluxdbPVCSet        v1alpha1.AlamedaServiceSpecInfluxdbPVCSet
+	GrafanaPVCSet         v1alpha1.AlamedaServiceSpecGrafanaPVCSet
 }
 
 type Resource struct {
@@ -71,6 +77,7 @@ type Resource struct {
 	ServiceList                  []string
 	DeploymentList               []string
 	SecretList                   []string
+	PersistentVolumeClaimList    []string
 }
 
 func GetExcutionResource() *Resource {
@@ -106,6 +113,19 @@ func GetExcutionResource() *Resource {
 		ConfigMapList:      excCM,
 		ServiceList:        excSV,
 		DeploymentList:     excDep,
+	}
+}
+
+func (asp AlamedaServiceParamter) GetPVCResource() *Resource {
+	pvc := []string{}
+	if !asp.InfluxdbPVCSet.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml")
+	}
+	if !asp.GrafanaPVCSet.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
+	}
+	return &Resource{
+		PersistentVolumeClaimList: pvc,
 	}
 }
 
@@ -155,6 +175,7 @@ func GetUnInstallResource() *Resource {
 		ServiceList:                  svList,
 		DeploymentList:               depList,
 		SecretList:                   secretList,
+		PersistentVolumeClaimList:    pvcList,
 	}
 }
 
@@ -167,6 +188,7 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 	sv := svList
 	dep := depList
 	secrets := secretList
+	pvc := []string{}
 
 	if asp.GuiFlag {
 		cm = append(cm, "ConfigMap/grafana-datasources.yaml")
@@ -185,7 +207,12 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		dep = append(dep, "Deployment/admission-controllerDM.yaml")
 		dep = append(dep, "Deployment/alameda-evictionerDM.yaml")
 	}
-
+	if asp.InfluxdbPVCSet.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml")
+	}
+	if asp.GrafanaPVCSet.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
+	}
 	return &Resource{
 		ClusterRoleBinding:           crb,
 		ClusterRole:                  cr,
@@ -195,6 +222,7 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		ServiceList:                  sv,
 		DeploymentList:               dep,
 		SecretList:                   secrets,
+		PersistentVolumeClaimList:    pvc,
 	}
 }
 
@@ -209,6 +237,8 @@ func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *Al
 		PersistentVolumeClaim: instance.Spec.PersistentVolumeClaim,
 		GuiFlag:               instance.Spec.EnableGUI,
 		ExcutionFlag:          instance.Spec.EnableExecution,
+		InfluxdbPVCSet:        instance.Spec.InfluxdbPVCSet,
+		GrafanaPVCSet:         instance.Spec.GrafanaPVCSet,
 	}
 	return asp
 }

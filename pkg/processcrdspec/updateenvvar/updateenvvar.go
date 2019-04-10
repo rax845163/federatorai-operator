@@ -10,7 +10,7 @@ import (
 func AssignNameSpace(ns string) {
 
 }
-func AssignDeployment(dep *appsv1.Deployment, ns string) *appsv1.Deployment {
+func AssignServiceToDeployment(dep *appsv1.Deployment, ns string) *appsv1.Deployment {
 	if len(dep.Spec.Template.Spec.Containers[0].Env) > 0 {
 		for index, value := range dep.Spec.Template.Spec.Containers[0].Env {
 			if strings.Contains(value.String(), "federatorai.svc") {
@@ -20,7 +20,7 @@ func AssignDeployment(dep *appsv1.Deployment, ns string) *appsv1.Deployment {
 	}
 	return dep
 }
-func AssignConfigMap(cm *corev1.ConfigMap, ns string) *corev1.ConfigMap {
+func AssignServiceToConfigMap(cm *corev1.ConfigMap, ns string) *corev1.ConfigMap {
 	if strings.Contains(cm.Data["prometheus.yaml"], "federatorai.svc") {
 		cm.Data["prometheus.yaml"] = strings.Replace(cm.Data["prometheus.yaml"], "federatorai.svc", ns+".svc", -1)
 	}
