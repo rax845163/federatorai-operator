@@ -187,6 +187,18 @@ func misMatchTemplatePodSpec(modify *bool, clusterDep, sourceDep *corev1.PodSpec
 						sourceDep.Volumes[sourceIndex].VolumeSource.ConfigMap.DefaultMode = okdDeploymentDefaultDefaultMode
 					}
 				}
+				if sourceDep.Volumes[sourceIndex].VolumeSource.DownwardAPI != nil {
+					if resourceEmpty(sourceDep.Volumes[sourceIndex].VolumeSource.DownwardAPI.DefaultMode) {
+						sourceDep.Volumes[sourceIndex].VolumeSource.DownwardAPI.DefaultMode = okdDeploymentDefaultDefaultMode
+					}
+					for itemsIndex, _ := range sourceDep.Volumes[sourceIndex].VolumeSource.DownwardAPI.Items {
+						if sourceDep.Volumes[sourceIndex].VolumeSource.DownwardAPI.Items[itemsIndex].FieldRef != nil {
+							if resourceEmpty(sourceDep.Volumes[sourceIndex].VolumeSource.DownwardAPI.Items[itemsIndex].FieldRef.APIVersion) {
+								sourceDep.Volumes[sourceIndex].VolumeSource.DownwardAPI.Items[itemsIndex].FieldRef.APIVersion = okdDeploymentDefaultEnvFieldRefAPIVersion
+							}
+						}
+					}
+				}
 				if !equality.Semantic.DeepEqual(clusterDep.Volumes[clusterIndex].VolumeSource, sourceDep.Volumes[sourceIndex].VolumeSource) {
 					*modify = true
 					log.V(-1).Info("change VolumeSource")
