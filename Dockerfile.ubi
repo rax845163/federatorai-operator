@@ -1,11 +1,11 @@
-FROM registry.svc.ci.openshift.org/openshift/release:golang-1.10 AS builder
+FROM openshift/origin-release:golang-1.11 as builder
 WORKDIR /go/src/github.com/containers-ai/federatorai-operator
 COPY . .
 ENV NO_DOCKER=1
 ENV BUILD_DEST=/go/bin/federatorai-operator
 RUN unset VERSION && make build
 
-FROM registry.access.redhat.com/ubi7-dev-preview/ubi-minimal:7.6
+FROM registry.access.redhat.com/ubi8-dev-preview/ubi-minimal:8.0
 COPY --from=builder /go/bin/federatorai-operator /usr/bin/
 COPY --from=builder /go/src/github.com/containers-ai/federatorai-operator/etc/operator.yml /etc/federatorai/operator/operator.yml
 # COPY --from=builder /go/src/github.com/containers-ai/federatorai-operator/install /manifests
