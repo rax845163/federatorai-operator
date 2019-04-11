@@ -14,6 +14,7 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/controller"
 	fedOperatorLog "github.com/containers-ai/federatorai-operator/pkg/log"
 	"github.com/containers-ai/federatorai-operator/pkg/version"
+	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
 	"github.com/operator-framework/operator-sdk/pkg/leader"
 	"github.com/operator-framework/operator-sdk/pkg/metrics"
 	"github.com/pkg/errors"
@@ -40,6 +41,8 @@ var (
 	fedOperatorConfig fedOperator.Config
 
 	log = logf.Log.WithName("manager")
+
+	watchNamespace = ""
 )
 
 func init() {
@@ -66,6 +69,9 @@ func initConfiguration() {
 
 	initViperSetting()
 	mergeViperValueWithDefaultConfig()
+
+	watchNamespace, _ = os.LookupEnv(k8sutil.WatchNamespaceEnvVar)
+	fedOperatorConfig.WatchNamespace = watchNamespace
 }
 
 func initViperSetting() {
