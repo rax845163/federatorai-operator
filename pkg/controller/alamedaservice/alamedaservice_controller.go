@@ -392,9 +392,13 @@ func (r *ReconcileAlamedaService) syncService(instance *federatoraiv1alpha1.Alam
 		} else {
 			if updateresource.MisMatchResourceService(foundSV, resourceSV) {
 				log.Info("Update Resource Service:", "foundSV.Name", foundSV.Name)
-				err = r.client.Update(context.TODO(), foundSV)
+				err = r.client.Delete(context.TODO(), foundSV)
 				if err != nil {
-					return errors.Errorf("update service %s/%s failed: %s", foundSV.Namespace, foundSV.Name, err.Error())
+					return errors.Errorf("delete service %s/%s failed: %s", foundSV.Namespace, foundSV.Name, err.Error())
+				}
+				err = r.client.Create(context.TODO(), resourceSV)
+				if err != nil {
+					return errors.Errorf("create service %s/%s failed: %s", foundSV.Namespace, foundSV.Name, err.Error())
 				}
 				log.Info("Successfully Update Resource Service", "resourceSV.Name", foundSV.Name)
 			}
