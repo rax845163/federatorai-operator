@@ -1,4 +1,4 @@
-watch-namespace: "kroos-tutorial" # Set empty to watch all namespaces of resources
+watch-namespace: "" # Set empty to watch all namespaces of resources
 
 metrics:
   port: 8383
