@@ -23,9 +23,6 @@ spec:
       - name: alameda-ai-engine
         image: quay.io/prophetstor/alameda-ai:v0.3.6
         imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 50051
-          protocol: TCP
         resources:
           limits:
             cpu: 4000m
