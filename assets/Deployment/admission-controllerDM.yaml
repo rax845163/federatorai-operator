@@ -52,7 +52,6 @@ spec:
           readOnly: false
         - mountPath: /var/log
           name:  admission-controller-log-storage
-          subPath:  admission-controller
       volumes:
       - name:  admission-controller-log-storage
         emptyDir: {}

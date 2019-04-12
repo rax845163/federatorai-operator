@@ -38,7 +38,6 @@ spec:
         volumeMounts:
           - mountPath: /var/log
             name: alameda-ai-log-storage
-            subPath: alameda-ai
       volumes:
         - name: alameda-ai-log-storage
           emptyDir: {}

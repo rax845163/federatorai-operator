@@ -40,8 +40,6 @@ spec:
           readOnly: false
         - mountPath: /var/log
           name:  alameda-operator-log-storage
-          subPath:  alameda-operator
-      
       volumes:
       - name:  alameda-operator-log-storage
         emptyDir: {}

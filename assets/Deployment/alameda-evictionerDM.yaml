@@ -39,7 +39,6 @@ spec:
         volumeMounts:
         - mountPath: /var/log
           name:  alameda-evictioner-log-storage
-          subPath:  alameda-evictioner
       volumes:
       - name:  alameda-evictioner-log-storage
         emptyDir: {}

@@ -41,9 +41,8 @@ spec:
         - name: ALAMEDA_DATAHUB_PROMETHEUS_URL
           value: https://prometheus-k8s.openshift-monitoring.svc:9091
         volumeMounts:
-        - mountPath: /var/log
-          name:  alameda-datahub-log-storage
-          subPath:  alameda-datahub
+          - mountPath: /var/log
+            name:  alameda-datahub-log-storage
       volumes:
       - name:  alameda-datahub-log-storage
         emptyDir: {}
