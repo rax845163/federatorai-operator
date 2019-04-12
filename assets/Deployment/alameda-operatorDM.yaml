@@ -38,7 +38,13 @@ spec:
         - name: podinfo
           mountPath: /etc/podinfo
           readOnly: false
+        - mountPath: /var/log
+          name:  alameda-operator-log-storage
+          subPath:  alameda-operator
+      
       volumes:
+      - name:  alameda-operator-log-storage
+        emptyDir: {}
       - name: podinfo
         downwardAPI:
           items:

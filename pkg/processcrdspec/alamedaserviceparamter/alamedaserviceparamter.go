@@ -50,22 +50,32 @@ var (
 	pvcList = []string{
 		"PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
 		"PersistentVolumeClaim/my-alamedagrafanaPVC.yaml",
+		"PersistentVolumeClaim/alameda-ai-log.yaml",
+		"PersistentVolumeClaim/alameda-operator-log.yaml",
+		"PersistentVolumeClaim/alameda-datahub-log.yaml",
+		"PersistentVolumeClaim/alameda-evictioner-log.yaml",
+		"PersistentVolumeClaim/admission-controller-log.yaml",
 	}
 )
 
 type AlamedaServiceParamter struct {
-	NameSpace             string
-	EnableExecution       bool
-	EnableGUI             bool
-	Version               string
-	PrometheusService     string
-	PersistentVolumeClaim string
-	GuiFlag               bool
-	ExcutionFlag          bool
-	Guicomponent          []string
-	Excutioncomponent     []string
-	InfluxdbPVCSet        v1alpha1.AlamedaServiceSpecInfluxdbPVCSet
-	GrafanaPVCSet         v1alpha1.AlamedaServiceSpecGrafanaPVCSet
+	NameSpace              string
+	EnableExecution        bool
+	EnableGUI              bool
+	Version                string
+	PrometheusService      string
+	PersistentVolumeClaim  string
+	GuiFlag                bool
+	ExcutionFlag           bool
+	Guicomponent           []string
+	Excutioncomponent      []string
+	InfluxdbPVCSet         v1alpha1.AlamedaServiceSpecInfluxdbPVCSet
+	GrafanaPVCSet          v1alpha1.AlamedaServiceSpecGrafanaPVCSet
+	AlamedaAILog           v1alpha1.AlamedaAILog
+	AlamedaOperatorLog     v1alpha1.AlamedaOperatorLog
+	AlamedaDatahubLog      v1alpha1.AlamedaDatahubLog
+	AlamedaEvictionerLog   v1alpha1.AlamedaEvictionerLog
+	AdmissionControllerLog v1alpha1.AdmissionControllerLog
 }
 
 type Resource struct {
@@ -123,6 +133,21 @@ func (asp AlamedaServiceParamter) GetPVCResource() *Resource {
 	}
 	if !asp.GrafanaPVCSet.Flag {
 		pvc = append(pvc, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
+	}
+	if !asp.AlamedaAILog.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/alameda-ai-log.yaml")
+	}
+	if !asp.AlamedaOperatorLog.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/alameda-operator-log.yaml")
+	}
+	if !asp.AlamedaDatahubLog.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/alameda-datahub-log.yaml")
+	}
+	if !asp.AlamedaEvictionerLog.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/alameda-evictioner-log.yaml")
+	}
+	if !asp.AdmissionControllerLog.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/admission-controller-log.yaml")
 	}
 	return &Resource{
 		PersistentVolumeClaimList: pvc,
@@ -213,6 +238,21 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 	if asp.GrafanaPVCSet.Flag {
 		pvc = append(pvc, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
 	}
+	if asp.AlamedaAILog.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/alameda-ai-log.yaml")
+	}
+	if asp.AlamedaOperatorLog.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/alameda-operator-log.yaml")
+	}
+	if asp.AlamedaDatahubLog.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/alameda-datahub-log.yaml")
+	}
+	if asp.AlamedaEvictionerLog.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/alameda-evictioner-log.yaml")
+	}
+	if asp.AdmissionControllerLog.Flag {
+		pvc = append(pvc, "PersistentVolumeClaim/admission-controller-log.yaml")
+	}
 	return &Resource{
 		ClusterRoleBinding:           crb,
 		ClusterRole:                  cr,
@@ -229,16 +269,21 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 func NewAlamedaServiceParamter(instance *federatoraiv1alpha1.AlamedaService) *AlamedaServiceParamter {
 	asp := &AlamedaServiceParamter{
 		//AlmedaInstallOrUninstall: instance.Spec.AlmedaInstallOrUninstall,
-		NameSpace:             instance.Namespace,
-		EnableExecution:       instance.Spec.EnableExecution,
-		EnableGUI:             instance.Spec.EnableGUI,
-		Version:               instance.Spec.Version,
-		PrometheusService:     instance.Spec.PrometheusService,
-		PersistentVolumeClaim: instance.Spec.PersistentVolumeClaim,
-		GuiFlag:               instance.Spec.EnableGUI,
-		ExcutionFlag:          instance.Spec.EnableExecution,
-		InfluxdbPVCSet:        instance.Spec.InfluxdbPVCSet,
-		GrafanaPVCSet:         instance.Spec.GrafanaPVCSet,
+		NameSpace:              instance.Namespace,
+		EnableExecution:        instance.Spec.EnableExecution,
+		EnableGUI:              instance.Spec.EnableGUI,
+		Version:                instance.Spec.Version,
+		PrometheusService:      instance.Spec.PrometheusService,
+		PersistentVolumeClaim:  instance.Spec.PersistentVolumeClaim,
+		GuiFlag:                instance.Spec.EnableGUI,
+		ExcutionFlag:           instance.Spec.EnableExecution,
+		InfluxdbPVCSet:         instance.Spec.InfluxdbPVCSet,
+		GrafanaPVCSet:          instance.Spec.GrafanaPVCSet,
+		AlamedaAILog:           instance.Spec.AlamedaAILog,
+		AlamedaOperatorLog:     instance.Spec.AlamedaOperatorLog,
+		AlamedaDatahubLog:      instance.Spec.AlamedaDatahubLog,
+		AlamedaEvictionerLog:   instance.Spec.AlamedaEvictionerLog,
+		AdmissionControllerLog: instance.Spec.AdmissionControllerLog,
 	}
 	return asp
 }

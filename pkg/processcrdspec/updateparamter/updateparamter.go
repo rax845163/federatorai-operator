@@ -109,6 +109,7 @@ func MisMatchAlamedaServiceParamter(dep *appsv1.Deployment, version string, prom
 	return false
 }
 
+/*
 func isGrafanaPVC(dep *appsv1.Deployment) (bool, string) {
 	if len(dep.Spec.Template.Spec.Volumes) > 0 {
 		if dep.Spec.Template.Spec.Volumes[0].Name == "grafana-storage" {
@@ -125,6 +126,7 @@ func isInfluxDBPVC(dep *appsv1.Deployment) (bool, string) {
 	}
 	return false, ""
 }
+
 func ProcessDepPVC(dep *appsv1.Deployment, influxdbFlag, grafanaFlag bool) *appsv1.Deployment {
 	if flag, claimname := isGrafanaPVC(dep); flag == true && claimname != "" && grafanaFlag {
 		pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: claimname}
@@ -137,12 +139,111 @@ func ProcessDepPVC(dep *appsv1.Deployment, influxdbFlag, grafanaFlag bool) *apps
 		dep.Spec.Template.Spec.Volumes[0].VolumeSource = vs
 	}
 	return dep
+}*/
+func ProcessDepPVC(dep *appsv1.Deployment, index int, value interface{}) *appsv1.Deployment {
+	switch v := value.(type) {
+	case v1alpha1.AlamedaAILog:
+		{
+			if v.Flag {
+				pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "alameda-ai.pvc"}
+				vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+				dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+			}
+		}
+	case v1alpha1.AlamedaDatahubLog:
+		{
+			if v.Flag {
+				pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "alameda-datahub.pvc"}
+				vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+				dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+			}
+		}
+	case v1alpha1.AlamedaOperatorLog:
+		{
+			if v.Flag {
+				pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "alameda-operator.pvc"}
+				vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+				dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+			}
+
+		}
+	case v1alpha1.AlamedaEvictionerLog:
+		{
+			if v.Flag {
+				pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "alameda-evictioner.pvc"}
+				vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+				dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+			}
+
+		}
+	case v1alpha1.AdmissionControllerLog:
+		{
+			if v.Flag {
+				pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "admission-controller.pvc"}
+				vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+				dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+			}
+
+		}
+	case v1alpha1.AlamedaServiceSpecInfluxdbPVCSet:
+		{
+			if v.Flag {
+				pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "my-alameda.influxdb.pvc"}
+				vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+				dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+			}
+
+		}
+	case v1alpha1.AlamedaServiceSpecGrafanaPVCSet:
+		{
+			if v.Flag {
+				pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "my-alameda.grafana.pvc"}
+				vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+				dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+			}
+
+		}
+	}
+	return dep
 }
-func ProcessGrafanaPVC(pvc *corev1.PersistentVolumeClaim, grafanaSet v1alpha1.AlamedaServiceSpecGrafanaPVCSet) *corev1.PersistentVolumeClaim {
-	pvc.Spec = grafanaSet.Spec
-	return pvc
-}
-func ProcessInfluxDBPVC(pvc *corev1.PersistentVolumeClaim, influxdbSet v1alpha1.AlamedaServiceSpecInfluxdbPVCSet) *corev1.PersistentVolumeClaim {
-	pvc.Spec = influxdbSet.Spec
+
+func ProcessComponentLogPVC(pvc *corev1.PersistentVolumeClaim, value interface{}) *corev1.PersistentVolumeClaim {
+	switch v := value.(type) {
+	case v1alpha1.AlamedaAILog:
+		{
+			pvc.Spec = v.Spec
+			return pvc
+		}
+	case v1alpha1.AlamedaDatahubLog:
+		{
+			pvc.Spec = v.Spec
+			return pvc
+		}
+	case v1alpha1.AlamedaOperatorLog:
+		{
+			pvc.Spec = v.Spec
+			return pvc
+		}
+	case v1alpha1.AlamedaEvictionerLog:
+		{
+			pvc.Spec = v.Spec
+			return pvc
+		}
+	case v1alpha1.AdmissionControllerLog:
+		{
+			pvc.Spec = v.Spec
+			return pvc
+		}
+	case v1alpha1.AlamedaServiceSpecInfluxdbPVCSet:
+		{
+			pvc.Spec = v.Spec
+			return pvc
+		}
+	case v1alpha1.AlamedaServiceSpecGrafanaPVCSet:
+		{
+			pvc.Spec = v.Spec
+			return pvc
+		}
+	}
 	return pvc
 }
