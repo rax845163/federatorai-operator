@@ -50,9 +50,9 @@ spec:
         - mountPath: /etc/tls-certs
           name: tls-certs
           readOnly: false
-        - mountPath: /var/log
+        - mountPath: /var/log/alameda
           name:  admission-controller-log-storage
-      volumes:
+      volumes: 
       - name:  admission-controller-log-storage
         emptyDir: {}
       - name: tls-certs
