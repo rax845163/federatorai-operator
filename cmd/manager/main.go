@@ -71,7 +71,7 @@ func initConfiguration() {
 	mergeViperValueWithDefaultConfig()
 
 	watchNamespace, _ = os.LookupEnv(k8sutil.WatchNamespaceEnvVar)
-	fedOperatorConfig.WatchNamespace = watchNamespace
+	//fedOperatorConfig.WatchNamespace = watchNamespace
 }
 
 func initViperSetting() {

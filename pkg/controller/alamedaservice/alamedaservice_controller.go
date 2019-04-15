@@ -33,7 +33,7 @@ import (
 )
 
 const (
-	alamedaServiceLockName = "alamedaservice-lock"
+	alamedaServiceLockName = "alamedaservice-lock-kroos"
 )
 
 var (

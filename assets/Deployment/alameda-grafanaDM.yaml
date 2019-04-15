@@ -89,5 +89,5 @@ spec:
             - key: dashboardproviders.yaml
               path: dashboardproviders.yaml
           name: dashboardproviders
-      serviceAccount: alameda-datahub
-      serviceAccountName: alameda-datahub
+      serviceAccount: alameda-grafana
+      serviceAccountName: alameda-grafana

@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: federatorai-alameda-grafana
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: federatorai-alameda-grafana
+subjects:
+- kind: ServiceAccount
+  name: alameda-grafana
+  namespace: federatorai

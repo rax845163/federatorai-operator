@@ -217,6 +217,9 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 	pvc := []string{}
 
 	if asp.GuiFlag {
+		crb = append(crb, "ClusterRoleBinding/alameda-grafanaCRB.yaml")
+		cr = append(cr, "ClusterRole/alameda-grafanaCR.yaml")
+		sa = append(sa, "ServiceAccount/alameda-grafanaSA.yaml")
 		cm = append(cm, "ConfigMap/grafana-datasources.yaml")
 		sv = append(sv, "Service/alameda-grafanaSV.yaml")
 		dep = append(dep, "Deployment/alameda-grafanaDM.yaml")
