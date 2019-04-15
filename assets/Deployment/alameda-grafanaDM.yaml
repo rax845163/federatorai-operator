@@ -19,6 +19,17 @@ spec:
       labels:
         app: alameda-grafana
     spec:
+      initContainers:
+      - name: test123
+        image: "nginx"
+        command: ["sh","/shell/execute_shell.sh"]
+        volumeMounts:
+        - mountPath: /shell
+          name: execute-shell
+        - mountPath: /datasources
+          name: datasources
+        - mountPath: /etc/grafana/provisioning/datasources
+          name: prometheus-datasource
       containers:
       - name: grafana
         image: grafana/grafana:5.4.3
@@ -37,13 +48,46 @@ spec:
         volumeMounts:
           - mountPath: /var/lib/grafana
             name: grafana-storage
-            subPath: grafana
+            subpath: grafana
+          - mountPath: /var/lib/grafana/dashboards/alameda
+            name: dashboards-json
           - mountPath: /etc/grafana/provisioning/datasources
-            name: grafana-datasources
+            name: prometheus-datasource
+          - mountPath: /etc/grafana/provisioning/dashboards
+            name: dashboardproviders 
       volumes:
+        - name: prometheus-datasource
+          emptyDir: {}
         - name: grafana-storage
           emptyDir: {}
         - configMap:
-            defaultMode: 420
+            items:
+            - key: execute_shell.sh
+              path: execute_shell.sh
             name: grafana-datasources
-          name: grafana-datasources 
+          name: execute-shell
+        - configMap:
+            defaultMode: 420
+            items:
+            - key: prometheus.yaml
+              path: prometheus.yaml
+            name: grafana-datasources
+          name: datasources
+        - configMap:
+            name: grafana-datasources
+            items:
+            - key: clusterhealth.json
+              path: clusterhealth.json
+            - key: nodehealth.json
+              path: nodehealth.json
+            - key: prediction.json
+              path: prediction.json
+          name: dashboards-json
+        - configMap:
+            name: grafana-datasources
+            items:
+            - key: dashboardproviders.yaml
+              path: dashboardproviders.yaml
+          name: dashboardproviders
+      serviceAccount: alameda-datahub
+      serviceAccountName: alameda-datahub
