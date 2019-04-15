@@ -3,52 +3,39 @@ kind: Role
 metadata:
   creationTimestamp: null
   name: federatorai-operator
+  namespace: federatorai
 rules:
+# following is taken from Federatorai-operator CSV v0.0.1 permissions section
 - apiGroups:
   - ""
   resources:
-  - pods
-  - services
+  - configmaps
+  - events
   - endpoints
   - persistentvolumeclaims
-  - events
-  - configmaps
+  - pods
   - secrets
+  - services
   verbs:
-  - '*'
-- apiGroups:
-  - ""
-  resources:
-  - namespaces
-  verbs:
-  - get
+  - "*"
 - apiGroups:
   - apps
   resources:
-  - deployments
   - daemonsets
-  - replicasets
   - statefulsets
   verbs:
-  - '*'
-- apiGroups:
-  - monitoring.coreos.com
-  resources:
-  - servicemonitors
-  verbs:
-  - get
-  - create
+  - "*"
 - apiGroups:
   - apps
-  resourceNames:
-  - federatorai-operator
   resources:
   - deployments/finalizers
   verbs:
   - update
 - apiGroups:
-  - federatorai.containers.ai
+  - monitoring.coreos.com
   resources:
-  - '*'
+  - servicemonitors
   verbs:
-  - '*'
+  - create
+  - get
+

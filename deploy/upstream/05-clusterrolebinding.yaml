@@ -5,7 +5,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: federatorai-operator
-  # namespace: 
+  namespace: federatorai
 roleRef:
   kind: ClusterRole
   name: federatorai-operator
