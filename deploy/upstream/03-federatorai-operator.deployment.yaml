@@ -22,7 +22,7 @@ spec:
       containers:
         - name: federatorai-operator
           # Replace this with the built image name
-          image: federatorai-operator:latest
+          image: quay.io/prophetstor/federatorai-operator-ubi:latest
           imagePullPolicy: Always
           command:
           - federatorai-operator
