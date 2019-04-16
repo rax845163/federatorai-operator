@@ -31,12 +31,14 @@ Here lists the global section schema:
   This field is string type. It sets the image hub where the Alameda components are pull from.
 - imageBase  
   This field is string type. It sets the base images what the Alameda components are on top of. Currently Alameda may built from rhel, ubi and alpine image bases.
+- imagePullPolicy  
+  This field is string type. It follows the K8s [image spec](https://kubernetes.io/docs/concepts/containers/images/) of container to pull images. Default is *IfNotPresent*
 - version  
   This field is string type. It sets the version tag of Alameda component images.
 > **Note:** The image location to be pulled is devided by field *imageHub*, *imageBase* and version with format "*imageHub*/<component name>-*imageBase*:*version*"
 - prometheusservice  
-  This field is string type. It tells datahub where the Prometheus is to retrieve pods/nodes peformance metrics data.
-- storage  
+  This field is string type. It tells datahub and Grafana where the Prometheus is to retrieve pods/nodes peformance metrics data.
+- storages  
   This field is a list of storage schema. If provides volume settings which apply to each Alameda component.
 
 And here lists the storage schema:
@@ -48,18 +50,20 @@ And here lists the storage schema:
   This field is integer type and is mandatory if type is *pvc*. It claims a persistent volume from K8s with the size.
 - class  
   This field is string type and is mandatory if type is *pvc*. It claims a persistent volume from K8s of the class.
-- accessModes  
-  This field is string type. Is shows how the claimed volume is mounted. Default is *[ReadWriteOnce]*
+- accessMode  
+  This field is string type. Is shows how the claimed volume is mounted. Default is *ReadWriteOnce*
 
 ### Section Schema for Each Component
 
 Here lists the schema for each component:
 - image  
   This field is a string type. It sets the image name to be pulled.
+- imagePullPolicy  
+  This field is string type. It follows the K8s [image spec](https://kubernetes.io/docs/concepts/containers/images/) of container to pull images.
 - version  
   This field is a string type. It sets the version tag of image to be pulled.
 > **Note:** The image location to be pulled is devided by field *image* and version with format "*image*:*version*"
-- storage  
+- storages  
   This is also the storage schema described above.
   
 
@@ -79,7 +83,7 @@ spec:
   imageBase: ubi                ## for alameda components. (exclude grafana and influxdb)
   version: latest               ## for alameda components. (exclude grafana and influxdb)
   prometheusservice: https://prometheus-k8s.openshift-monitoring:9091
-  storage:                      ## see following details for where it is used in each component
+  storages:                     ## see following details for where it is used in each component
     - usage: log                ## storage for log, or data
       type: ephemeral           ## default is ephemeral means emptyDir. pvc means persistent volume claim
     - usage: data               ## storage for log, or data
@@ -111,7 +115,7 @@ spec:
   imageBase: ubi                ## for alameda components. (exclude grafana and influxdb)
   version: v0.3.7               ## for alameda components. (exclude grafana and influxdb)
   prometheusservice: https://prometheus-k8s.openshift-monitoring:9091
-  storage:                      ## see following details for where it is used in each component
+  storages:                     ## see following details for where it is used in each component
     - usage: log                ## storage for log, or data
       type: ephemeral           ## default is ephemeral means emptyDir. pvc means persistent volume claim
     - usage: data               ## storage for log, or data
@@ -126,7 +130,7 @@ spec:
     image: quay.io/prophetstor/alameda-ai
     version: latest
     imagePullPolicy: Always
-    storage:
+    storages:
       usage: log      ## for path /var/log/alameda
       type: pvc
       size: 10Gi
@@ -135,7 +139,7 @@ spec:
   alameda-grafana:
     image: grafana/grafana
     version: 5.4.3
-    storage:
+    storages:
       usage: data     ## for path /var/lib/grafana
       type: pvc
       size: 1Gi
@@ -144,7 +148,7 @@ spec:
   alameda-influxdb:
     image: influxdb
     version: 1.7-alpine
-    storage:
+    storages:
       usage: data     ## for path /var/lib/influxdb
       type: pvc
       size: 20Gi
