@@ -444,8 +444,18 @@ func bindataServiceAccountAdmissioncontrollerSAyaml() (*asset, error) {
 		name: "ServiceAccount/admission-controllerSA.yaml",
 		size: 99,
 		md5checksum: "",
+<<<<<<< HEAD
 		mode: os.FileMode(420),
 		modTime: time.Unix(1554806736, 0),
+=======
+<<<<<<< HEAD
+		mode:        os.FileMode(438),
+		modTime:     time.Unix(1553562565, 0),
+=======
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555409413, 0),
+>>>>>>> change get token containers image
+>>>>>>> change get token containers image
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -654,8 +664,18 @@ func bindataClusterRoleBindingAlamedadatahubCRByaml() (*asset, error) {
 		name: "ClusterRoleBinding/alameda-datahubCRB.yaml",
 		size: 296,
 		md5checksum: "",
+<<<<<<< HEAD
 		mode: os.FileMode(420),
 		modTime: time.Unix(1554806736, 0),
+=======
+<<<<<<< HEAD
+		mode:        os.FileMode(438),
+		modTime:     time.Unix(1553562565, 0),
+=======
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555409413, 0),
+>>>>>>> change get token containers image
+>>>>>>> change get token containers image
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1108,8 +1128,18 @@ func bindataConfigMapGrafanadatasourcesyaml() (*asset, error) {
 		name: "ConfigMap/grafana-datasources.yaml",
 		size: 100595,
 		md5checksum: "",
+<<<<<<< HEAD
 		mode: os.FileMode(420),
 		modTime: time.Unix(1555896018, 0),
+=======
+<<<<<<< HEAD
+		mode:        os.FileMode(438),
+		modTime:     time.Unix(1555313970, 0),
+=======
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555409413, 0),
+>>>>>>> change get token containers image
+>>>>>>> change get token containers image
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1288,8 +1318,18 @@ func bindataPersistentVolumeClaimAlamedaoperatorlogyaml() (*asset, error) {
 		name: "PersistentVolumeClaim/alameda-operator-log.yaml",
 		size: 194,
 		md5checksum: "",
+<<<<<<< HEAD
 		mode: os.FileMode(420),
 		modTime: time.Unix(1555895623, 0),
+=======
+<<<<<<< HEAD
+		mode:        os.FileMode(438),
+		modTime:     time.Unix(1555315031, 0),
+=======
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555409413, 0),
+>>>>>>> change get token containers image
+>>>>>>> change get token containers image
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1559,8 +1599,18 @@ func bindataDeploymentAdmissioncontrollerDMyaml() (*asset, error) {
 		name: "Deployment/admission-controllerDM.yaml",
 		size: 1836,
 		md5checksum: "",
+<<<<<<< HEAD
 		mode: os.FileMode(420),
 		modTime: time.Unix(1555895623, 0),
+=======
+<<<<<<< HEAD
+		mode:        os.FileMode(438),
+		modTime:     time.Unix(1555082471, 0),
+=======
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555409413, 0),
+>>>>>>> change get token containers image
+>>>>>>> change get token containers image
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1607,8 +1657,18 @@ func bindataDeploymentAlamedaaiDMyaml() (*asset, error) {
 		name: "Deployment/alameda-aiDM.yaml",
 		size: 1130,
 		md5checksum: "",
+<<<<<<< HEAD
 		mode: os.FileMode(420),
 		modTime: time.Unix(1555895623, 0),
+=======
+<<<<<<< HEAD
+		mode:        os.FileMode(438),
+		modTime:     time.Unix(1555082471, 0),
+=======
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555409413, 0),
+>>>>>>> change get token containers image
+>>>>>>> change get token containers image
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1659,8 +1719,18 @@ func bindataDeploymentAlamedadatahubDMyaml() (*asset, error) {
 		name: "Deployment/alameda-datahubDM.yaml",
 		size: 1438,
 		md5checksum: "",
+<<<<<<< HEAD
 		mode: os.FileMode(420),
 		modTime: time.Unix(1555895623, 0),
+=======
+<<<<<<< HEAD
+		mode:        os.FileMode(438),
+		modTime:     time.Unix(1555082471, 0),
+=======
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555409413, 0),
+>>>>>>> change get token containers image
+>>>>>>> change get token containers image
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1708,8 +1778,18 @@ func bindataDeploymentAlamedaevictionerDMyaml() (*asset, error) {
 		name: "Deployment/alameda-evictionerDM.yaml",
 		size: 1259,
 		md5checksum: "",
+<<<<<<< HEAD
 		mode: os.FileMode(420),
 		modTime: time.Unix(1555895623, 0),
+=======
+<<<<<<< HEAD
+		mode:        os.FileMode(438),
+		modTime:     time.Unix(1553562565, 0),
+=======
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555409413, 0),
+>>>>>>> change get token containers image
+>>>>>>> change get token containers image
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1717,6 +1797,7 @@ func bindataDeploymentAlamedaevictionerDMyaml() (*asset, error) {
 	return a, nil
 }
 
+<<<<<<< HEAD
 var _bindataDeploymentAlamedagrafanaDMyaml = []byte(
 	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb4\x56\x3d\x8f\xe3\x36\x10\xed\xfd\x2b\x06\x6e\xae\x89\x2c\x7b\xef\xd2" +
 	"\xb0\x0b\x6e\x9b\x00\xd9\x83\x8b\x20\x4d\x10\x04\x63\x6a\x6c\x31\x47\x72\x18\x72\xe4\x3b\x23\xc8\x7f\x0f\xa8\x95" +
@@ -1748,6 +1829,51 @@ var _bindataDeploymentAlamedagrafanaDMyaml = []byte(
 	"")
 
 func bindataDeploymentAlamedagrafanaDMyamlBytes() ([]byte, error) {
+=======
+<<<<<<< HEAD
+var _bindataPersistentVolumeClaimmyalamedainfluxdbPVCyaml = []byte(
+	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x3c\x8c\x3f\x4b\xc0\x30\x10\x47\xf7\x40\xbe\xc3\x6d\x9d\x5a\xec\x9a\xd5" +
+		"\xc1\x49\x14\x87\x3a\x9f\xc9\xaf\x72\x98\x7f\xe6\x92\xa2\xdf\x5e\x5a\xa8\xe3\x7b\x3c\x1e\x57\xd9\xd0\x54\x4a\x76" +
+		"\x74\xac\xd6\x7c\x49\x0e\x8e\x5e\x4f\xa5\x1d\xb9\x6f\x25\x8e\x84\xc7\xc8\x92\xac\x49\xe8\x1c\xb8\xb3\xb3\x86\x28" +
+		"\x73\x82\xa3\xf4\x3b\x73\xe4\x84\xc0\x8b\xe4\x3d\x8e\x9f\xf0\xb1\xd4\xc3\xdf\x81\x56\xf6\x70\xb4\x23\xa0\x71\x2f" +
+		"\x8d\xc5\x1a\xad\xf0\xd7\x81\xbd\x87\xea\x73\x09\xd0\x8b\x89\x66\x7a\x03\x87\xf7\x26\x1d\x2f\xd9\xe3\x94\x0d\x5a" +
+		"\x46\xf3\xff\x49\xc3\xf7\x80\xf6\x1b\x89\xf4\xdc\x7e\xc2\xd1\xb4\x3e\x3c\xc9\xf4\x17\x00\x00\xff\xff\x64\x55\x34" +
+		"\x22\xd1\x00\x00\x00")
+
+func bindataPersistentVolumeClaimmyalamedainfluxdbPVCyamlBytes() ([]byte, error) {
+=======
+var _bindataDeploymentAlamedagrafanaDMyaml = []byte(
+	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb4\x56\x3d\x8f\xe3\x36\x10\xed\xfd\x2b\x06\x6e\xae\x89\x2c\xef\xdd\xa5" +
+	"\x61\x17\xdc\x36\x01\xb2\x07\x17\x41\x9a\x20\x08\x66\xa9\x91\xc5\x2c\xc9\x61\xc8\x91\x2f\x46\x90\xff\x1e\x48\x2b" +
+	"\xc9\x92\x2d\x69\xbd\xc5\xa9\x31\xcc\x79\xef\xcd\x27\x07\xc4\x60\x7e\xa3\x98\x0c\x7b\x05\x18\x42\xca\x4f\x0f\x9b" +
+	"\x17\xe3\x0b\x05\x8f\x14\x2c\x9f\x1d\x79\xd9\x38\x12\x2c\x50\x50\x6d\x00\x3c\x3a\x52\x80\x16\x1d\x15\x98\x1d\x23" +
+	"\x96\xe8\xb1\x3b\x4f\x01\x35\x29\x28\xa9\xa0\x88\xc2\x11\xcd\x06\xc0\xe2\x33\xd9\xd4\x50\xa1\xf1\x30\x70\xdb\x03" +
+	"\xcd\x2e\xb0\x27\x2f\x73\x92\xe8\x3d\x0b\x8a\x61\xdf\xd1\x0b\x4a\x3a\x9a\x20\x6d\xb4\x8f\x54\x1a\x4f\x09\x2a\xfe" +
+	"\x06\xc2\x50\xb4\xe1\x82\x54\xd4\x78\xb1\x46\xb7\x44\xb8\xa8\x01\x08\xb9\x60\x51\x68\x87\x36\x54\xb8\xe3\x40\x3e" +
+	"\x55\xa6\x94\x9d\xe1\xfc\x1b\x1a\xc9\x4a\x8e\x59\x24\x2c\xce\x0a\x3e\x48\xac\xe9\xc3\x26\x05\xd2\x8d\xef\x48\xad" +
+	"\x64\x52\xf0\xb0\x01\x48\x64\x49\x0b\xc7\xd7\xa8\x1c\x8a\xae\x7e\x19\x65\x79\x9d\xe9\x28\xa5\x3e\x84\x8e\x39\xaa" +
+	"\x6b\xf3\xd9\xfb\x44\x00\xfa\xb0\x9a\xcf\x78\x23\x5f\xd8\x0b\x1a\x4f\x71\x20\x67\x5d\xa3\x8e\x24\xc2\x2f\xe4\x07" +
+	"\x4d\xe3\xf0\x48\x0a\xb6\x68\x83\xf1\xb4\x1d\xce\x35\x3b\x87\x4d\xdf\x7f\xdf\xa6\x6a\xfb\xc3\x36\x4f\x15\x59\x9b" +
+	"\xd3\x3f\xa4\x6b\xa1\x3f\xdb\x7f\xbb\x54\x6d\xff\x18\x18\x27\xb6\xb5\xa3\x27\xae\xbd\x8c\x62\xce\xc0\x35\x27\x07" +
+	"\x94\x4a\xc1\xab\xc8\x60\xeb\xa7\xa7\x13\xcd\xa6\xd6\x29\xb3\xa9\x4b\xe2\x3a\x6a\x4a\x37\xfc\x39\xdb\x94\x4d\xa2" +
+	"\xf3\xae\x60\x79\x88\x7c\x32\xcd\x84\x1b\x7f\x5c\x95\x0d\x91\x1d\x49\x45\x75\xca\x2e\xb0\x4d\x5f\x9e\xc5\x0a\x8f" +
+	"\xfa\x32\x2a\x70\xef\xbd\xfb\x55\x3f\xee\x3e\xef\x3e\x4d\x41\x87\xda\xda\x03\x5b\xa3\xcf\x0a\x7e\x2e\xbf\xb2\x1c" +
+	"\x22\xa5\xe6\xbe\xf5\xa8\xc0\x71\x5c\xda\xc6\xe7\x10\xc7\x81\xa3\x28\xf8\xb4\xdf\xef\x47\xf6\x3e\x93\x4a\x24\x4c" +
+	"\x8e\x43\x64\x61\xcd\x56\xc1\xaf\x5f\x0e\x83\x25\x52\x57\x8a\xb1\x0f\x6b\x9c\x99\x7a\x05\xd0\xa1\x56\xf0\x71\xbf" +
+	"\x77\x93\x53\x47\x8e\xe3\xb9\x35\x3c\x99\x91\x25\xd2\xdf\x35\xa5\x59\x8d\x87\x25\x8d\x87\x89\xc6\xfc\x68\x5d\x37" +
+	"\xf9\x84\x31\xb7\xe6\x39\xbf\xee\xc0\xa5\x0e\x9d\x25\x4b\xcd\x32\x3a\xd2\x04\x91\xea\xe7\xd0\xea\xdc\xd2\x57\xdd" +
+	"\xe4\x05\xa6\xea\x99\x31\x16\x29\x1f\xaf\xb2\xa9\xe7\x0b\x28\xfb\x2b\xb1\x5f\x14\x7f\xe7\xa0\xde\x33\xaa\xef\x72" +
+	"\xd2\x47\xb9\x96\x42\x4b\x29\x28\x26\xd8\x8c\xdb\x33\xb9\xf4\xf7\x85\x45\x2e\xc8\xf9\xd1\x44\x05\xff\xfe\x77\x43" +
+	"\x5e\x6e\xd6\x02\x4d\xb3\x2f\xcd\xf1\x09\xc3\x74\xd0\x8c\x90\xbb\x9a\xbd\x0c\x5e\xe8\x3c\xec\x9d\x61\x99\x4d\x30" +
+	"\x00\xaf\xe3\xb0\x0a\x9a\x46\xba\xb6\x4c\x96\x76\xdc\x42\xd0\x05\x95\x58\x5b\x79\xe2\x82\x14\x7c\xfe\xb8\xbf\x33" +
+	"\xa3\x4b\xc1\x77\x67\x74\x76\x36\xa1\x35\xcc\xfd\xf9\xcc\xef\xdc\x85\x6c\xee\x91\x5d\x4b\x4b\xdb\x3a\x09\xc5\x8a" +
+	"\xd0\x4a\xb5\xbb\xba\x40\x97\xcc\xde\x80\x75\x62\x9e\x0b\x7a\x4b\x69\x0d\x33\x94\x9a\x0a\xa3\x9b\x47\xc5\xb2\xcc" +
+	"\x32\x66\x7d\x2b\x7c\xb7\x42\xde\xde\xe1\xe5\x39\x79\x1b\xbb\xb4\x17\x3a\x48\xa2\x78\x32\x9a\x7e\xd2\xba\xd9\x3d" +
+	"\xf3\x2f\x97\x6b\xd4\xd7\xb9\xe7\xe4\xff\x01\x00\x00\xff\xff\xcf\xe9\x0c\xbe\x95\x0a\x00\x00")
+
+func bindataDeploymentAlamedagrafanaDMyamlBytes() ([]byte, error) {
+>>>>>>> change get token containers image
+>>>>>>> change get token containers image
 	return bindataRead(
 		_bindataDeploymentAlamedagrafanaDMyaml,
 		"Deployment/alameda-grafanaDM.yaml",
@@ -1763,11 +1889,27 @@ func bindataDeploymentAlamedagrafanaDMyaml() (*asset, error) {
 	}
 
 	info := bindataFileInfo{
+<<<<<<< HEAD
 		name: "Deployment/alameda-grafanaDM.yaml",
 		size: 2707,
 		md5checksum: "",
 		mode: os.FileMode(420),
 		modTime: time.Unix(1555896018, 0),
+=======
+<<<<<<< HEAD
+		name:        "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
+		size:        209,
+		md5checksum: "",
+		mode:        os.FileMode(438),
+		modTime:     time.Unix(1553562565, 0),
+=======
+		name: "Deployment/alameda-grafanaDM.yaml",
+		size: 2709,
+		md5checksum: "",
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555410324, 0),
+>>>>>>> change get token containers image
+>>>>>>> change get token containers image
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1869,8 +2011,18 @@ func bindataDeploymentAlamedaoperatorDMyaml() (*asset, error) {
 		name: "Deployment/alameda-operatorDM.yaml",
 		size: 1408,
 		md5checksum: "",
+<<<<<<< HEAD
 		mode: os.FileMode(420),
 		modTime: time.Unix(1555895623, 0),
+=======
+<<<<<<< HEAD
+		mode:        os.FileMode(438),
+		modTime:     time.Unix(1554255393, 0),
+=======
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555409413, 0),
+>>>>>>> change get token containers image
+>>>>>>> change get token containers image
 	}
 
 	a := &asset{bytes: bytes, info: info}

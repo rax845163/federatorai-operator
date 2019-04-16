@@ -20,8 +20,8 @@ spec:
         app: alameda-grafana
     spec:
       initContainers:
-      - name: test123
-        image: "nginx"
+      - name: gettoken
+        image: "alpine"
         command: ["sh","/shell/execute_shell.sh"]
         volumeMounts:
         - mountPath: /shell
