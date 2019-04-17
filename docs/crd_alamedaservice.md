@@ -43,7 +43,7 @@ Here lists the global section schema:
 
 And here lists the storage schema:
 - usage  
-  This field is string type and right now *log* and *data* is supported. *log* means this storage setting is for log and */var/log/<application>* will be mounted. *data* means */var/log/<application>* will be mounted. The default value is "" which means it applied to all possible value in this field (which are *log* and *data*).
+  This field is string type and right now *log* and *data* is supported. *log* means this storage setting is for log and */var/log/<application>* will be mounted. *data* means */var/lib/<application>* will be mounted. The default value is "" which means it applied to all possible value in this field (which are *log* and *data*).
 - type  
   This field is string type and right now *ephemeral* and *pvc* is supported. *ephemeral* means this storage will use *emptyDir{}* and *pvc* means this *PersistentVolumeClaim*. The default value is *ephemeral*.
 - size  
