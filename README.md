@@ -1,15 +1,15 @@
 # FederatorAI Operator
 
-**FederatorAI Operator** is an Operator that manages **Alameda** components for an openshift cluster. Once installed, the FederatoAI Operator provides the following features:
-- **Create/Clean up**: Launch **Alameda** components using the Operator.
-- **Easy Configuration**: Easily config source of Prometheus and enable/disable addon components such as GUI, and execition.
-- **Autoscaling Pod**: Use provided CRD to setup target pods for autoscaling.
+**FederatorAI Operator** is an Operator that manages **FederatorAI** components for an OpenShift cluster. Once installed, the FederatoAI Operator provides the following features:
+- **Create/Clean up**: Launch **FederatorAI** components using the Operator.
+- **Easy Configuration**: Easily configure data source of Prometheus and enable/disable add-on components, such as GUI, and predictive autoscaling.
+- **Pod Scaling Recommendation/Autoscaling**: Use provided CRD to setup target pods and desired policies for scaling recommendation and autoscaling.
 
-> **Note:** **Alameda** requires a Prometheus datasource to get historical metrics of pods and nodes. When launching **Alameda** components, Prometheus connection settings need to be provided.
+> **Note:** **FederatorAI** requires a Prometheus datasource to get historical metrics of pods and nodes. When launching **FederatorAI** components, Prometheus connection settings need to be provided.
 
-## Alameda
+## FederatorAI
 
-**Alameda** is the brain of resource orchestration for kubernetes. It foresees future resource usage of your Kubernetes cluster from the cloud layer down to the pod level. We use machine learning technology to provide intelligence that enables dynamic scaling and scheduling of your containers - effectively making us the “brain” of Kubernetes resource orchestration. By providing full foresight of resource availability, demand, health, impact and SLA, we enable cloud strategies that involve changing provisioned resources in real time. For more information, visit [github.com/containers-ai/alameda](https://github.com/containers-ai/alameda)
+**FederatorAI** is the brain of resource orchestration for kubernetes. We use machine learning technology to provide intelligence that foresees future resource usage of your Kubernetes cluster across multiple layers. FederatorAI recommends the right sizes of containers and the right number of replications. It also elastically manages pod scaling and scheduling of your containerized applications. The overall benefit is cost reduction up to 50% and higher service quality, such as fewer OOM issues. For more information, visit [github.com/containers-ai/alameda](https://github.com/containers-ai/alameda)
 
 ## Documentations
 Please visit [docs](./docs/)
