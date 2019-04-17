@@ -3,8 +3,10 @@ package alamedaserviceparamter
 import (
 	"strings"
 
-	"github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
+	"github.com/containers-ai/federatorai-operator/pkg/util"
+
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 var (
@@ -69,13 +71,13 @@ type AlamedaServiceParamter struct {
 	ExcutionFlag           bool
 	Guicomponent           []string
 	Excutioncomponent      []string
-	InfluxdbPVCSet         v1alpha1.AlamedaServiceSpecInfluxdbPVCSet
-	GrafanaPVCSet          v1alpha1.AlamedaServiceSpecGrafanaPVCSet
-	AlamedaAILog           v1alpha1.AlamedaAILog
-	AlamedaOperatorLog     v1alpha1.AlamedaOperatorLog
-	AlamedaDatahubLog      v1alpha1.AlamedaDatahubLog
-	AlamedaEvictionerLog   v1alpha1.AlamedaEvictionerLog
-	AdmissionControllerLog v1alpha1.AdmissionControllerLog
+	InfluxdbPVCSet         corev1.PersistentVolumeClaimSpec
+	GrafanaPVCSet          corev1.PersistentVolumeClaimSpec
+	AlamedaAILog           corev1.PersistentVolumeClaimSpec
+	AlamedaOperatorLog     corev1.PersistentVolumeClaimSpec
+	AlamedaDatahubLog      corev1.PersistentVolumeClaimSpec
+	AlamedaEvictionerLog   corev1.PersistentVolumeClaimSpec
+	AdmissionControllerLog corev1.PersistentVolumeClaimSpec
 }
 
 type Resource struct {
@@ -125,28 +127,27 @@ func GetExcutionResource() *Resource {
 		DeploymentList:     excDep,
 	}
 }
-
 func (asp AlamedaServiceParamter) GetPVCResource() *Resource {
 	pvc := []string{}
-	if !asp.InfluxdbPVCSet.Flag {
+	if util.IsEmpty(asp.InfluxdbPVCSet) {
 		pvc = append(pvc, "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml")
 	}
-	if !asp.GrafanaPVCSet.Flag {
+	if util.IsEmpty(asp.GrafanaPVCSet) {
 		pvc = append(pvc, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
 	}
-	if !asp.AlamedaAILog.Flag {
+	if util.IsEmpty(asp.AlamedaAILog) {
 		pvc = append(pvc, "PersistentVolumeClaim/alameda-ai-log.yaml")
 	}
-	if !asp.AlamedaOperatorLog.Flag {
+	if util.IsEmpty(asp.AlamedaOperatorLog) {
 		pvc = append(pvc, "PersistentVolumeClaim/alameda-operator-log.yaml")
 	}
-	if !asp.AlamedaDatahubLog.Flag {
+	if util.IsEmpty(asp.AlamedaDatahubLog) {
 		pvc = append(pvc, "PersistentVolumeClaim/alameda-datahub-log.yaml")
 	}
-	if !asp.AlamedaEvictionerLog.Flag {
+	if util.IsEmpty(asp.AlamedaEvictionerLog) {
 		pvc = append(pvc, "PersistentVolumeClaim/alameda-evictioner-log.yaml")
 	}
-	if !asp.AdmissionControllerLog.Flag {
+	if util.IsEmpty(asp.AdmissionControllerLog) {
 		pvc = append(pvc, "PersistentVolumeClaim/admission-controller-log.yaml")
 	}
 	return &Resource{
@@ -232,25 +233,25 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		dep = append(dep, "Deployment/admission-controllerDM.yaml")
 		dep = append(dep, "Deployment/alameda-evictionerDM.yaml")
 	}
-	if asp.InfluxdbPVCSet.Flag {
+	if !util.IsEmpty(asp.InfluxdbPVCSet) {
 		pvc = append(pvc, "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml")
 	}
-	if asp.GrafanaPVCSet.Flag {
+	if !util.IsEmpty(asp.GrafanaPVCSet) {
 		pvc = append(pvc, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
 	}
-	if asp.AlamedaAILog.Flag {
+	if !util.IsEmpty(asp.AlamedaAILog) {
 		pvc = append(pvc, "PersistentVolumeClaim/alameda-ai-log.yaml")
 	}
-	if asp.AlamedaOperatorLog.Flag {
+	if !util.IsEmpty(asp.AlamedaOperatorLog) {
 		pvc = append(pvc, "PersistentVolumeClaim/alameda-operator-log.yaml")
 	}
-	if asp.AlamedaDatahubLog.Flag {
+	if !util.IsEmpty(asp.AlamedaDatahubLog) {
 		pvc = append(pvc, "PersistentVolumeClaim/alameda-datahub-log.yaml")
 	}
-	if asp.AlamedaEvictionerLog.Flag {
+	if !util.IsEmpty(asp.AlamedaEvictionerLog) {
 		pvc = append(pvc, "PersistentVolumeClaim/alameda-evictioner-log.yaml")
 	}
-	if asp.AdmissionControllerLog.Flag {
+	if !util.IsEmpty(asp.AdmissionControllerLog) {
 		pvc = append(pvc, "PersistentVolumeClaim/admission-controller-log.yaml")
 	}
 	return &Resource{

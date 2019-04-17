@@ -4,11 +4,12 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateenvvar"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateparamter"
+	"github.com/containers-ai/federatorai-operator/pkg/util"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
-func findindex(dep *appsv1.Deployment) int {
+func findindex(dep *appsv1.Deployment) int { //find volumeMount path's locat
 	if len(dep.Spec.Template.Spec.Volumes) > 0 {
 		for index, value := range dep.Spec.Template.Spec.Volumes {
 			if value.Name == "alameda-ai-log-storage" {
@@ -41,36 +42,63 @@ func ParamterToDeployment(dep *appsv1.Deployment, asp *alamedaserviceparamter.Al
 	dep = updateenvvar.AssignServiceToDeployment(dep, dep.Namespace) //DeploymentSpec's service
 	dep = updateparamter.ProcessImageVersion(dep, asp.Version)
 	dep = updateparamter.ProcessDeploymentsPrometheusService(dep, asp.PrometheusService)
-	//dep = updateparamter.ProcessDepPVC(dep, asp.InfluxdbPVCSet.Flag, asp.GrafanaPVCSet.Flag) //if user set pvc
-	if index := findindex(dep); index != -1 {
+	if index := findindex(dep); index != -1 { //find deployment and get index
 		switch dep.Name {
 		case "alameda-ai":
 			{
-				dep = updateparamter.ProcessDepPVC(dep, index, asp.AlamedaAILog)
+				if !util.IsEmpty(asp.AlamedaAILog) { // if user set PVCspec
+					pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "alameda-ai.pvc"}
+					vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+					dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+				}
 			}
 		case "alameda-operator":
 			{
-				dep = updateparamter.ProcessDepPVC(dep, index, asp.AlamedaOperatorLog)
+				if !util.IsEmpty(asp.AlamedaOperatorLog) {
+					pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "alameda-operator.pvc"}
+					vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+					dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+				}
 			}
 		case "alameda-datahub":
 			{
-				dep = updateparamter.ProcessDepPVC(dep, index, asp.AlamedaDatahubLog)
+				if !util.IsEmpty(asp.AlamedaDatahubLog) {
+					pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "alameda-datahub.pvc"}
+					vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+					dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+				}
 			}
 		case "alameda-evictioner":
 			{
-				dep = updateparamter.ProcessDepPVC(dep, index, asp.AlamedaEvictionerLog)
+				if !util.IsEmpty(asp.AlamedaEvictionerLog) {
+					pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "alameda-evictioner.pvc"}
+					vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+					dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+				}
 			}
 		case "admission-controller":
 			{
-				dep = updateparamter.ProcessDepPVC(dep, index, asp.AdmissionControllerLog)
+				if !util.IsEmpty(asp.AdmissionControllerLog) {
+					pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "admission-controller.pvc"}
+					vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+					dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+				}
 			}
 		case "alameda-influxdb":
 			{
-				dep = updateparamter.ProcessDepPVC(dep, index, asp.InfluxdbPVCSet)
+				if !util.IsEmpty(asp.InfluxdbPVCSet) {
+					pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "my-alameda.influxdb.pvc"}
+					vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+					dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+				}
 			}
 		case "alameda-grafana":
 			{
-				dep = updateparamter.ProcessDepPVC(dep, index, asp.GrafanaPVCSet)
+				if !util.IsEmpty(asp.GrafanaPVCSet) {
+					pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: "my-alameda.grafana.pvc"}
+					vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
+					dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
+				}
 			}
 		}
 	}
@@ -86,31 +114,32 @@ func ParamterToPersistentVolumeClaim(pvc *corev1.PersistentVolumeClaim, asp *ala
 	switch pvc.Name {
 	case "alameda-ai.pvc":
 		{
-			pvc = updateparamter.ProcessComponentLogPVC(pvc, asp.AlamedaAILog)
+			pvc.Spec = asp.AlamedaAILog
+			return pvc
 		}
 	case "alameda-operator.pvc":
 		{
-			pvc = updateparamter.ProcessComponentLogPVC(pvc, asp.AlamedaOperatorLog)
+			pvc.Spec = asp.AlamedaOperatorLog
 		}
 	case "alameda-datahub.pvc":
 		{
-			pvc = updateparamter.ProcessComponentLogPVC(pvc, asp.AlamedaDatahubLog)
+			pvc.Spec = asp.AlamedaDatahubLog
 		}
 	case "alameda-evictioner.pvc":
 		{
-			pvc = updateparamter.ProcessComponentLogPVC(pvc, asp.AlamedaEvictionerLog)
+			pvc.Spec = asp.AlamedaEvictionerLog
 		}
 	case "admission-controller.pvc":
 		{
-			pvc = updateparamter.ProcessComponentLogPVC(pvc, asp.AdmissionControllerLog)
+			pvc.Spec = asp.AdmissionControllerLog
 		}
 	case "my-alameda.influxdb.pvc":
 		{
-			pvc = updateparamter.ProcessComponentLogPVC(pvc, asp.InfluxdbPVCSet)
+			pvc.Spec = asp.InfluxdbPVCSet
 		}
 	case "my-alameda.grafana.pvc":
 		{
-			pvc = updateparamter.ProcessComponentLogPVC(pvc, asp.GrafanaPVCSet)
+			pvc.Spec = asp.GrafanaPVCSet
 		}
 	}
 	return pvc

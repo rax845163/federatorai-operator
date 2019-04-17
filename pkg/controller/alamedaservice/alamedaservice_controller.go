@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/containers-ai/federatorai-operator/pkg/util"
+
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
@@ -217,7 +219,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
 	}
-	if !asp.InfluxdbPVCSet.Flag || !asp.GrafanaPVCSet.Flag {
+	if util.IsEmpty(asp.InfluxdbPVCSet) || util.IsEmpty(asp.GrafanaPVCSet) {
 		pvcResource := asp.GetPVCResource()
 		if err := r.uninstallPersistentVolumeClaim(instance, pvcResource); err != nil {
 			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())

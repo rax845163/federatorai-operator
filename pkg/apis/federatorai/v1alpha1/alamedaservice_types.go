@@ -20,14 +20,16 @@ type AlamedaServiceSpec struct {
 	Version                string                           `json:"version"`
 	PrometheusService      string                           `json:"prometheusservice"`
 	PersistentVolumeClaim  string                           `json:"persistentvolumeclaim"`
-	InfluxdbPVCSet         AlamedaServiceSpecInfluxdbPVCSet `json:"influxdbpvcset"`
-	GrafanaPVCSet          AlamedaServiceSpecGrafanaPVCSet  `json:"grafanapvcset"`
-	AlamedaAILog           AlamedaAILog                     `json:"alamedaailog"`
-	AlamedaOperatorLog     AlamedaOperatorLog               `json:"alamedaoperatorlog"`
-	AlamedaDatahubLog      AlamedaDatahubLog                `json:"alamedadatahublog"`
-	AlamedaEvictionerLog   AlamedaEvictionerLog             `json:"alamedaevictionerlog"`
-	AdmissionControllerLog AdmissionControllerLog           `json:"admissioncontrollerlog"`
+	InfluxdbPVCSet         corev1.PersistentVolumeClaimSpec `json:"influxdbpvcset"`
+	GrafanaPVCSet          corev1.PersistentVolumeClaimSpec `json:"grafanapvcset"`
+	AlamedaAILog           corev1.PersistentVolumeClaimSpec `json:"alamedaailog"`
+	AlamedaOperatorLog     corev1.PersistentVolumeClaimSpec `json:"alamedaoperatorlog"`
+	AlamedaDatahubLog      corev1.PersistentVolumeClaimSpec `json:"alamedadatahublog"`
+	AlamedaEvictionerLog   corev1.PersistentVolumeClaimSpec `json:"alamedaevictionerlog"`
+	AdmissionControllerLog corev1.PersistentVolumeClaimSpec `json:"admissioncontrollerlog"`
 }
+
+/*
 type AdmissionControllerLog struct {
 	Flag bool `json:"flag"`
 	//AccessModes          []corev1.PersistentVolumeAccessMode `json:"accessmodes"`
@@ -70,6 +72,7 @@ type AlamedaServiceSpecGrafanaPVCSet struct {
 	//ResourceRequirements corev1.ResourceRequirements         `json:"resources"`
 	Spec corev1.PersistentVolumeClaimSpec `json:"spec"`
 }
+*/
 
 // AlamedaServiceStatus defines the observed state of AlamedaService
 // +k8s:openapi-gen=true
