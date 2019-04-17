@@ -37,6 +37,7 @@ var (
 		"Deployment/alameda-aiDM.yaml"}
 
 	guiList = []string{"ConfigMap/grafana-datasources.yaml",
+		"ConfigMap/dashboards-config.yaml",
 		"Deployment/alameda-grafanaDM.yaml",
 		"Service/alameda-grafanaSV.yaml",
 	}
@@ -221,6 +222,7 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		cr = append(cr, "ClusterRole/alameda-grafanaCR.yaml")
 		sa = append(sa, "ServiceAccount/alameda-grafanaSA.yaml")
 		cm = append(cm, "ConfigMap/grafana-datasources.yaml")
+		cm = append(cm, "ConfigMap/dashboards-config.yaml")
 		sv = append(sv, "Service/alameda-grafanaSV.yaml")
 		dep = append(dep, "Deployment/alameda-grafanaDM.yaml")
 	}

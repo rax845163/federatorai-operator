@@ -22,10 +22,10 @@ spec:
       initContainers:
       - name: gettoken
         image: "alpine"
-        command: ["sh","/shell/execute_shell.sh"]
+        command: ["sh","/shell/gettoken.sh"]
         volumeMounts:
         - mountPath: /shell
-          name: execute-shell
+          name: get-token-shell
         - mountPath: /datasources
           name: datasources
         - mountPath: /etc/grafana/provisioning/datasources
@@ -62,10 +62,10 @@ spec:
           emptyDir: {}
         - configMap:
             items:
-            - key: execute_shell.sh
-              path: execute_shell.sh
+            - key: gettoken.sh
+              path: gettoken.sh
             name: grafana-datasources
-          name: execute-shell
+          name: get-token-shell
         - configMap:
             defaultMode: 420
             items:
@@ -74,7 +74,7 @@ spec:
             name: grafana-datasources
           name: datasources
         - configMap:
-            name: grafana-datasources
+            name: dashboards-config
             items:
             - key: clusterhealth.json
               path: clusterhealth.json
@@ -84,7 +84,7 @@ spec:
               path: prediction.json
           name: dashboards-json
         - configMap:
-            name: grafana-datasources
+            name: dashboards-config
             items:
             - key: dashboardproviders.yaml
               path: dashboardproviders.yaml
