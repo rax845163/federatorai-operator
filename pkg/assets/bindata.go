@@ -373,7 +373,7 @@ func bindataClusterRolealamedadatahubCRyaml() (*asset, error) {
 		size: 380,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1553562565, 0),
+		modTime: time.Unix(1555379301, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -382,12 +382,14 @@ func bindataClusterRolealamedadatahubCRyaml() (*asset, error) {
 }
 
 var _bindataClusterRolealamedaevictionerCRyaml = []byte(
-	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x34\x8c\xb1\x6a\xc4\x30\x10\x44\x7b\x81\xfe\x41\xb8\x97\x43\xba\xa0\x36" +
-	"\x45\xfa\x14\xe9\xd7\xd6\xe4\x6e\xb1\xac\x15\xab\x95\x8b\xfb\xfa\xc3\x77\xb8\x9a\xc7\x83\x79\xd4\xf8\x0f\xda\x59" +
-	"\x6a\x0a\xba\xd0\x3a\xd3\xb0\xbb\x28\x3f\xc8\x58\xea\xbc\x7d\xf5\x99\xe5\xe3\xf8\xf4\x6e\xe3\x9a\x53\xf8\x2e\xa3" +
-	"\x1b\xf4\x57\x0a\xbc\xdb\x61\x94\xc9\x28\x79\x17\x42\xa5\x1d\x29\xfc\x23\x43\xc9\x44\x89\x23\x15\xda\x91\x29\xe2" +
-	"\xe0\xf5\xac\x41\xbd\xd3\x51\xd0\x93\x77\x31\x50\xe3\x1f\x95\xd1\xfa\xeb\x1d\xc3\x34\x9d\xab\xe8\x32\x74\xc5\x65" +
-	"\x9b\xe4\x7e\xd2\x01\x5d\x2e\x77\x83\xbd\x21\xa3\xc0\xf0\x0c\x00\x00\xff\xff\x3e\x0a\xb4\xb7\xc3\x00\x00\x00")
+	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x6c\x90\xb1\x4e\x04\x31\x0c\x44\xfb\x95\xf2\x0f\xd1\xf5\x1b\x44\x87\xd2" +
+	"\x52\xd0\x53\xd0\xfb\x92\xe1\xb0\x2e\x89\x57\xb6\x73\x05\x5f\x8f\xf6\xe0\x0a\xa4\xad\x3c\x7a\xb2\xc7\xa3\xa1\x8d" +
+	"\x3f\xa0\xc6\x32\x72\xd4\x33\x95\x44\xd3\xbf\x44\xf9\x9b\x9c\x65\xa4\xeb\x8b\x25\x96\xa7\xdb\x73\x58\xae\x3c\x6a" +
+	"\x8e\xaf\x6d\x9a\x43\xdf\xa5\x21\x2c\x1d\x4e\x95\x9c\x72\x58\x62\x1c\xd4\x91\xe3\x27\x2a\x94\x5c\x94\x78\xa5\x46" +
+	"\x1d\x95\x56\xdc\xb8\xec\x6e\xd0\xb0\xe8\x6c\xb0\x1c\x96\x35\xd2\xc6\x6f\x2a\x73\xb3\xfb\xf5\x1a\x4f\xa7\x7d\x2a" +
+	"\x4c\xa6\x16\x3c\xe8\x26\xd5\x76\x75\x83\x9e\x1f\xec\x02\xff\x15\x15\x0d\x8e\x23\x33\x9a\x2e\x56\xa8\xf1\xb8\xa4" +
+	"\x22\xc3\x89\x07\xd4\x12\xf1\xd1\x8f\xbf\x9c\xfb\x3e\xd4\xfe\x31\x45\x91\xde\x31\xea\xbd\x8e\xa3\x24\x3f\x01\x00" +
+	"\x00\xff\xff\x84\x7e\x10\x71\x41\x01\x00\x00")
 
 func bindataClusterRolealamedaevictionerCRyamlBytes() ([]byte, error) {
 	return bindataRead(
@@ -406,10 +408,10 @@ func bindataClusterRolealamedaevictionerCRyaml() (*asset, error) {
 
 	info := bindataFileInfo{
 		name: "ClusterRole/alameda-evictionerCR.yaml",
-		size: 195,
+		size: 321,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1553562565, 0),
+		modTime: time.Unix(1555645578, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -524,7 +526,7 @@ func bindataServiceAccountalamedaaiSAyaml() (*asset, error) {
 		size: 93,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1554255263, 0),
+		modTime: time.Unix(1555492503, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -827,7 +829,7 @@ func bindataDeploymentadmissioncontrollerDMyaml() (*asset, error) {
 		size: 1897,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1555315041, 0),
+		modTime: time.Unix(1555645347, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -875,7 +877,7 @@ func bindataDeploymentalamedaaiDMyaml() (*asset, error) {
 		size: 1175,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1555313970, 0),
+		modTime: time.Unix(1555645347, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -927,7 +929,7 @@ func bindataDeploymentalamedadatahubDMyaml() (*asset, error) {
 		size: 1487,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1555316457, 0),
+		modTime: time.Unix(1555645347, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -977,7 +979,7 @@ func bindataDeploymentalamedaevictionerDMyaml() (*asset, error) {
 		size: 1304,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1555315034, 0),
+		modTime: time.Unix(1555645347, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1077,7 +1079,7 @@ func bindataDeploymentalamedainfluxdbDMyaml() (*asset, error) {
 		size: 1706,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1554255393, 0),
+		modTime: time.Unix(1555492503, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1129,7 +1131,7 @@ func bindataDeploymentalamedaoperatorDMyaml() (*asset, error) {
 		size: 1460,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1555315031, 0),
+		modTime: time.Unix(1555645347, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1165,7 +1167,7 @@ func bindataServiceadmissioncontrollerSVyaml() (*asset, error) {
 		size: 236,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1554255393, 0),
+		modTime: time.Unix(1555492503, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1273,7 +1275,7 @@ func bindataServicealamedainfluxdbSVyaml() (*asset, error) {
 		size: 225,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1554255393, 0),
+		modTime: time.Unix(1555492503, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1310,7 +1312,7 @@ func bindataPersistentVolumeClaimadmissioncontrollerlogyaml() (*asset, error) {
 		size: 208,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1555082471, 0),
+		modTime: time.Unix(1555645347, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1346,7 +1348,7 @@ func bindataPersistentVolumeClaimalamedaailogyaml() (*asset, error) {
 		size: 198,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1555082471, 0),
+		modTime: time.Unix(1555645347, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1382,7 +1384,7 @@ func bindataPersistentVolumeClaimalamedadatahublogyaml() (*asset, error) {
 		size: 203,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1555082471, 0),
+		modTime: time.Unix(1555645347, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1418,7 +1420,7 @@ func bindataPersistentVolumeClaimalamedaevictionerlogyaml() (*asset, error) {
 		size: 206,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1555082471, 0),
+		modTime: time.Unix(1555645347, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1454,7 +1456,7 @@ func bindataPersistentVolumeClaimalamedaoperatorlogyaml() (*asset, error) {
 		size: 204,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1555082471, 0),
+		modTime: time.Unix(1555645347, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1563,7 +1565,7 @@ func bindataSecretadmissioncontrollertlsyaml() (*asset, error) {
 		size: 122,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1554255393, 0),
+		modTime: time.Unix(1555492503, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1598,7 +1600,7 @@ func bindataSecretalamedainfluxdbyaml() (*asset, error) {
 		size: 116,
 		md5checksum: "",
 		mode: os.FileMode(438),
-		modTime: time.Unix(1554255393, 0),
+		modTime: time.Unix(1555492503, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
