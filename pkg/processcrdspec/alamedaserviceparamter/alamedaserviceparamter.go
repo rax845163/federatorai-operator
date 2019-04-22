@@ -36,18 +36,29 @@ var (
 		"Deployment/alameda-influxdbDM.yaml",
 		"Deployment/alameda-aiDM.yaml"}
 
-	guiList = []string{"ConfigMap/grafana-datasources.yaml",
+	guiList = []string{
+		"ClusterRoleBinding/alameda-grafanaCRB.yaml",
+		"ClusterRole/alameda-grafanaCR.yaml",
+		"ServiceAccount/alameda-grafanaSA.yaml",
+		"ConfigMap/grafana-datasources.yaml",
 		"ConfigMap/dashboards-config.yaml",
 		"Deployment/alameda-grafanaDM.yaml",
 		"Service/alameda-grafanaSV.yaml",
 	}
-	excutionList = []string{"Deployment/admission-controllerDM.yaml",
+	excutionList = []string{
+		"ClusterRoleBinding/alameda-evictionerCRB.yaml",
+		"ClusterRoleBinding/admission-controllerCRB.yaml",
+		"ClusterRole/alameda-evictionerCR.yaml",
+		"ClusterRole/admission-controllerCR.yaml",
+		"ServiceAccount/alameda-evictionerSA.yaml",
+		"ServiceAccount/admission-controllerSA.yaml",
+		"Secret/admission-controller-tls.yaml",
+		"Deployment/admission-controllerDM.yaml",
 		"Deployment/alameda-evictionerDM.yaml",
 		"Service/admission-controllerSV.yaml",
 	}
 
 	secretList = []string{
-		"Secret/admission-controller-tls.yaml",
 		"Secret/alameda-influxdb.yaml",
 	}
 	pvcList = []string{
@@ -82,9 +93,9 @@ type AlamedaServiceParamter struct {
 }
 
 type Resource struct {
-	ClusterRoleBinding           []string
-	ClusterRole                  []string
-	ServiceAccount               []string
+	ClusterRoleBindingList       []string
+	ClusterRoleList              []string
+	ServiceAccountList           []string
 	CustomResourceDefinitionList []string
 	ConfigMapList                []string
 	ServiceList                  []string
@@ -94,9 +105,10 @@ type Resource struct {
 }
 
 func GetExcutionResource() *Resource {
-	var guicrb = make([]string, 0)
-	var guicr = make([]string, 0)
-	var guisa = make([]string, 0)
+	var excrb = make([]string, 0)
+	var excr = make([]string, 0)
+	var exsa = make([]string, 0)
+	var excsec = make([]string, 0)
 	var excDep = make([]string, 0)
 	var excCM = make([]string, 0)
 	var excSV = make([]string, 0)
@@ -104,11 +116,13 @@ func GetExcutionResource() *Resource {
 		if len(strings.Split(str, "/")) > 0 {
 			switch resource := strings.Split(str, "/")[0]; resource {
 			case "ClusterRoleBinding":
-				guicrb = append(guicrb, str)
+				excrb = append(excrb, str)
 			case "ClusterRole":
-				guicr = append(guicr, str)
+				excr = append(excr, str)
+			case "Secret":
+				excsec = append(excsec, str)
 			case "ServiceAccount":
-				guisa = append(guisa, str)
+				exsa = append(exsa, str)
 			case "ConfigMap":
 				excCM = append(excCM, str)
 			case "Service":
@@ -120,12 +134,13 @@ func GetExcutionResource() *Resource {
 		}
 	}
 	return &Resource{
-		ClusterRoleBinding: guicrb,
-		ClusterRole:        guicr,
-		ServiceAccount:     guisa,
-		ConfigMapList:      excCM,
-		ServiceList:        excSV,
-		DeploymentList:     excDep,
+		ClusterRoleBindingList: excrb,
+		ClusterRoleList:        excr,
+		ServiceAccountList:     exsa,
+		SecretList:             excsec,
+		ConfigMapList:          excCM,
+		ServiceList:            excSV,
+		DeploymentList:         excDep,
 	}
 }
 func (asp AlamedaServiceParamter) GetPVCResource() *Resource {
@@ -183,20 +198,20 @@ func GetGUIResource() *Resource {
 		}
 	}
 	return &Resource{
-		ClusterRoleBinding: guicrb,
-		ClusterRole:        guicr,
-		ServiceAccount:     guisa,
-		ConfigMapList:      guiCM,
-		ServiceList:        guiSV,
-		DeploymentList:     guiDep,
+		ClusterRoleBindingList: guicrb,
+		ClusterRoleList:        guicr,
+		ServiceAccountList:     guisa,
+		ConfigMapList:          guiCM,
+		ServiceList:            guiSV,
+		DeploymentList:         guiDep,
 	}
 }
 
 func GetUnInstallResource() *Resource {
 	return &Resource{
-		ClusterRoleBinding:           crbList,
-		ClusterRole:                  crList,
-		ServiceAccount:               saList,
+		ClusterRoleBindingList:       crbList,
+		ClusterRoleList:              crList,
+		ServiceAccountList:           saList,
 		CustomResourceDefinitionList: crdList,
 		ConfigMapList:                cmList,
 		ServiceList:                  svList,
@@ -232,6 +247,7 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		crb = append(crb, "ClusterRoleBinding/admission-controllerCRB.yaml")
 		cr = append(cr, "ClusterRole/alameda-evictionerCR.yaml")
 		cr = append(cr, "ClusterRole/admission-controllerCR.yaml")
+		secrets = append(secrets, "Secret/admission-controller-tls.yaml")
 		sa = append(sa, "ServiceAccount/alameda-evictionerSA.yaml")
 		sa = append(sa, "ServiceAccount/admission-controllerSA.yaml")
 		sv = append(sv, "Service/admission-controllerSV.yaml")
@@ -260,9 +276,9 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		pvc = append(pvc, "PersistentVolumeClaim/admission-controller-log.yaml")
 	}
 	return &Resource{
-		ClusterRoleBinding:           crb,
-		ClusterRole:                  cr,
-		ServiceAccount:               sa,
+		ClusterRoleBindingList:       crb,
+		ClusterRoleList:              cr,
+		ServiceAccountList:           sa,
 		CustomResourceDefinitionList: crd,
 		ConfigMapList:                cm,
 		ServiceList:                  sv,

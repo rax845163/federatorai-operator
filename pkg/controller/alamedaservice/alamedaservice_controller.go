@@ -248,7 +248,7 @@ func (r *ReconcileAlamedaService) uninstallCustomResourceDefinition(resource *al
 }
 
 func (r *ReconcileAlamedaService) syncClusterRoleBinding(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
-	for _, FileStr := range resource.ClusterRoleBinding {
+	for _, FileStr := range resource.ClusterRoleBindingList {
 		resourceCRB := componentConfig.NewClusterRoleBinding(FileStr)
 		if err := controllerutil.SetControllerReference(instance, resourceCRB, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceCRB SetControllerReference: %s", err.Error())
@@ -270,7 +270,7 @@ func (r *ReconcileAlamedaService) syncClusterRoleBinding(instance *federatoraiv1
 }
 
 func (r *ReconcileAlamedaService) syncClusterRole(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
-	for _, FileStr := range resource.ClusterRole {
+	for _, FileStr := range resource.ClusterRoleList {
 		resourceCR := componentConfig.NewClusterRole(FileStr)
 		if err := controllerutil.SetControllerReference(instance, resourceCR, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceCR SetControllerReference: %s", err.Error())
@@ -292,7 +292,7 @@ func (r *ReconcileAlamedaService) syncClusterRole(instance *federatoraiv1alpha1.
 }
 
 func (r *ReconcileAlamedaService) syncServiceAccount(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
-	for _, FileStr := range resource.ServiceAccount {
+	for _, FileStr := range resource.ServiceAccountList {
 		resourceSA := componentConfig.NewServiceAccount(FileStr)
 		if err := controllerutil.SetControllerReference(instance, resourceSA, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceSA SetControllerReference: %s", err.Error())
@@ -518,6 +518,66 @@ func (r *ReconcileAlamedaService) uninstallConfigMap(instance *federatoraiv1alph
 	return nil
 }
 
+func (r *ReconcileAlamedaService) uninstallSecret(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+
+	for _, fileString := range resource.SecretList {
+		resourceSec, _ := componentConfig.NewSecret(fileString)
+		err := r.client.Delete(context.TODO(), resourceSec)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			return nil
+		} else if err != nil {
+			return errors.Errorf("delete secret %s/%s failed: %s", resourceSec.Namespace, resourceSec.Name, err.Error())
+		}
+	}
+
+	return nil
+}
+
+func (r *ReconcileAlamedaService) uninstallServiceAccount(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+
+	for _, fileString := range resource.ServiceAccountList {
+		resourceSA := componentConfig.NewServiceAccount(fileString)
+		err := r.client.Delete(context.TODO(), resourceSA)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			return nil
+		} else if err != nil {
+			return errors.Errorf("delete serviceAccount %s/%s failed: %s", resourceSA.Namespace, resourceSA.Name, err.Error())
+		}
+	}
+
+	return nil
+}
+
+func (r *ReconcileAlamedaService) uninstallClusterRole(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+
+	for _, fileString := range resource.ClusterRoleList {
+		resourceCR := componentConfig.NewClusterRole(fileString)
+		err := r.client.Delete(context.TODO(), resourceCR)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			return nil
+		} else if err != nil {
+			return errors.Errorf("delete clusterRole %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
+		}
+	}
+
+	return nil
+}
+
+func (r *ReconcileAlamedaService) uninstallClusterRoleBinding(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+
+	for _, fileString := range resource.ClusterRoleBindingList {
+		resourceCRB := componentConfig.NewClusterRoleBinding(fileString)
+		err := r.client.Delete(context.TODO(), resourceCRB)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			return nil
+		} else if err != nil {
+			return errors.Errorf("delete clusterRoleBinding %s/%s failed: %s", resourceCRB.Namespace, resourceCRB.Name, err.Error())
+		}
+	}
+
+	return nil
+}
+
 func (r *ReconcileAlamedaService) uninstallGUIComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 
 	if err := r.uninstallDeployment(instance, resource); err != nil {
@@ -532,6 +592,18 @@ func (r *ReconcileAlamedaService) uninstallGUIComponent(instance *federatoraiv1a
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
 
+	if err := r.uninstallServiceAccount(instance, resource); err != nil {
+		return errors.Wrapf(err, "uninstall gui component failed")
+	}
+
+	if err := r.uninstallClusterRole(instance, resource); err != nil {
+		return errors.Wrapf(err, "uninstall gui component failed")
+	}
+
+	if err := r.uninstallClusterRoleBinding(instance, resource); err != nil {
+		return errors.Wrapf(err, "uninstall gui component failed")
+	}
+
 	return nil
 }
 
@@ -543,6 +615,22 @@ func (r *ReconcileAlamedaService) uninstallExecutionComponent(instance *federato
 
 	if err := r.uninstallService(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall execution component failed")
+	}
+
+	if err := r.uninstallSecret(instance, resource); err != nil {
+		return errors.Wrapf(err, "uninstall gui component failed")
+	}
+
+	if err := r.uninstallServiceAccount(instance, resource); err != nil {
+		return errors.Wrapf(err, "uninstall gui component failed")
+	}
+
+	if err := r.uninstallClusterRole(instance, resource); err != nil {
+		return errors.Wrapf(err, "uninstall gui component failed")
+	}
+
+	if err := r.uninstallClusterRoleBinding(instance, resource); err != nil {
+		return errors.Wrapf(err, "uninstall gui component failed")
 	}
 
 	return nil
