@@ -11,7 +11,6 @@ data:
     value=`cat /var/run/secrets/kubernetes.io/serviceaccount/token`
     value="Bearer ${value}"
     echo $value
-    mkdir -p /etc/grafana/provisioning/datasources/
     cp  datasources/prometheus.yaml  /etc/grafana/provisioning/datasources/prometheus.yaml
     sed -i 's/Bearer/'"$value"'/g' /etc/grafana/provisioning/datasources/prometheus.yaml
     cat /etc/grafana/provisioning/datasources/prometheus.yaml
