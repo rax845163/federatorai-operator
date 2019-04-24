@@ -31,7 +31,7 @@ spec:
           properties:
             customResourceVersion:
               type: string
-            enable:
+            enableexcution:
               type: boolean
             policy:
               enum:
@@ -43,7 +43,6 @@ spec:
               type: object
           required:
           - selector
-          - enable
           type: object
         status:
           properties:
