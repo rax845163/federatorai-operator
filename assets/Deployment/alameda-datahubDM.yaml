@@ -40,6 +40,25 @@ spec:
           value: adminpass
         - name: ALAMEDA_DATAHUB_PROMETHEUS_URL
           value: https://prometheus-k8s.openshift-monitoring.svc:9091
+        volumeMounts:
+          - mountPath: /var/log/alameda
+            name:  alameda-datahub-log-storage
+        readinessProbe:
+          exec:
+            command:
+            - /usr/local/bin/datahub
+            - probe
+            - --type=readiness
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - /usr/local/bin/datahub
+            - probe
+            - --type=liveness
+          initialDelaySeconds: 5
+          periodSeconds: 5
       volumes:
       - name:  alameda-datahub-data-storage
       - name:  alameda-datahub-log-storage

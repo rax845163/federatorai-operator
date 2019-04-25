@@ -58,6 +58,26 @@ spec:
         - mountPath: /etc/tls-certs
           name: tls-certs
           readOnly: false
+        - mountPath: /var/log/alameda
+          name:  admission-controller-log-storage
+        readinessProbe:
+          exec:
+            command:
+            - /usr/local/bin/admission-controller
+            - probe
+            - --type=readiness
+          failureThreshold: 20
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - /usr/local/bin/admission-controller
+            - probe
+            - --type=liveness
+          failureThreshold: 20
+          initialDelaySeconds: 5
+          periodSeconds: 5
       volumes: 
       - name:  admission-controller-data-storage
       - name:  admission-controller-log-storage
