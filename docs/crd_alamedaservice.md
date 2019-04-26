@@ -149,7 +149,7 @@ spec:
 
 - Field: usage
   - type: string
-  - description: The supported values of this field are _log_, _data_ and ""(empty). The default value is "" which means it applied both to log and data.
+  - description: This field is mandatory and the supported values are _log_ and _data_.
 - Field: type
   - type: string
   - description: The supported values of this field are _ephemeral_ and _pvc_. _ephemeral_ means this storage will be mounted with [_emptyDir{}_](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir) and _pvc_ means this storage will be allocated with [_PersistentVolumeClaim_](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims). The default value is _ephemeral_.
