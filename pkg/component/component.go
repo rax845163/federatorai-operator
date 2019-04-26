@@ -4,6 +4,7 @@ import (
 	"crypto/x509"
 	"fmt"
 	"net"
+	"strconv"
 	"strings"
 
 	"github.com/containers-ai/federatorai-operator/pkg/assets"
@@ -20,12 +21,15 @@ import (
 var log = logf.Log.WithName("controller_alamedaservice")
 
 type ComponentConfig struct {
-	NameSpace string
+	NameSpace         string
+	PodTemplateConfig PodTemplateConfig
 }
 
-func NewComponentConfig(ns string) *ComponentConfig {
+func NewComponentConfig(namespace string, ptc PodTemplateConfig) *ComponentConfig {
+
 	return &ComponentConfig{
-		NameSpace: ns,
+		NameSpace:         namespace,
+		PodTemplateConfig: ptc,
 	}
 }
 
@@ -94,6 +98,7 @@ func (c ComponentConfig) NewService(str string) *corev1.Service {
 	sv.Namespace = c.NameSpace
 	return sv
 }
+
 func (c ComponentConfig) NewDeployment(str string) *appsv1.Deployment {
 	deploymentBytes, err := assets.Asset(str)
 	if err != nil {
@@ -102,6 +107,7 @@ func (c ComponentConfig) NewDeployment(str string) *appsv1.Deployment {
 	}
 	d := resourceread.ReadDeploymentV1(deploymentBytes)
 	d.Namespace = c.NameSpace
+	d.Spec.Template = c.mutatePodTemplateSpecWithConfig(d.Spec.Template)
 	return d
 }
 
@@ -194,4 +200,112 @@ func (c ComponentConfig) RegistryCustomResourceDefinition(str string) *apiextv1b
 	}
 	crd := resourceread.ReadCustomResourceDefinitionV1Beta1(crdBytes)
 	return crd
+}
+
+func (c ComponentConfig) mutatePodTemplateSpecWithConfig(podTemplateSpec corev1.PodTemplateSpec) corev1.PodTemplateSpec {
+
+	copyPodTemplateSpec := podTemplateSpec.DeepCopy()
+
+	var currentPodSecurityContext corev1.PodSecurityContext
+	if copyPodTemplateSpec.Spec.SecurityContext != nil {
+		currentPodSecurityContext = *copyPodTemplateSpec.Spec.SecurityContext
+	}
+	podSecurityContext := c.mutatePodSecurityContextWithConfig(currentPodSecurityContext)
+	copyPodTemplateSpec.Spec.SecurityContext = &podSecurityContext
+
+	return *copyPodTemplateSpec
+}
+
+func (c ComponentConfig) mutatePodSecurityContextWithConfig(podSecurityContext corev1.PodSecurityContext) corev1.PodSecurityContext {
+
+	copyPodSecurityContext := podSecurityContext.DeepCopy()
+
+	fsGroup := *c.PodTemplateConfig.PodSecurityContext.FSGroup
+	copyPodSecurityContext.FSGroup = &fsGroup
+
+	return *copyPodSecurityContext
+}
+
+// PodTemplateConfig specifies pod confiruation needed while deploying pod
+type PodTemplateConfig struct {
+	corev1.PodSecurityContext
+}
+
+func NewDefaultPodTemplateConfig(ns corev1.Namespace) PodTemplateConfig {
+
+	var (
+		ptc PodTemplateConfig
+
+		defaultPSC         corev1.PodSecurityContext
+		okdPreAllocatedPSC corev1.PodSecurityContext
+	)
+
+	defaultPSC = newDefaultPodSecurityContext()
+	ptc = PodTemplateConfig{
+		PodSecurityContext: defaultPSC,
+	}
+
+	okdPreAllocatedPSC = newOKDPreAllocatedPodSecurityContext(ns)
+	ptc.PodSecurityContext = overwritePodSecurityContextFromOKDPodSecurityContext(ptc.PodSecurityContext, okdPreAllocatedPSC)
+
+	return ptc
+}
+
+func newDefaultPodSecurityContext() corev1.PodSecurityContext {
+
+	var (
+		defaultFSGroup = int64(1000)
+	)
+
+	psc := corev1.PodSecurityContext{
+		FSGroup: &defaultFSGroup,
+	}
+
+	return psc
+}
+
+// Currently implement fsGroup strategy.
+// Please reference okd documentation https://docs.okd.io/latest/architecture/additional_concepts/authorization.html#understanding-pre-allocated-values-and-security-context-constraints
+func newOKDPreAllocatedPodSecurityContext(ns corev1.Namespace) corev1.PodSecurityContext {
+
+	var psc corev1.PodSecurityContext
+
+	annotations := ns.GetObjectMeta().GetAnnotations()
+
+	var fsGroup *int64
+	minFSGroupValueString := ""
+	if fsGroupRanges, exist := annotations["openshift.io/sa.scc.supplemental-groups"]; exist {
+		firstFSGroupRange := strings.Split(fsGroupRanges, ",")[0]
+		if strings.Contains(firstFSGroupRange, "/") {
+			minFSGroupValueString = strings.Split(firstFSGroupRange, "/")[0]
+		} else if strings.Contains(firstFSGroupRange, "-") {
+			minFSGroupValueString = strings.Split(firstFSGroupRange, "-")[0]
+		}
+	} else if fsGroupRange, exist := annotations["openshift.io/sa.scc.uid-range"]; exist {
+		if strings.Contains(fsGroupRange, "/") {
+			minFSGroupValueString = strings.Split(fsGroupRange, "/")[0]
+		}
+	}
+	if minFSGroupValueString != "" {
+		if minFSGroupValue, err := strconv.ParseInt(minFSGroupValueString, 10, 64); err != nil {
+			log.V(-1).Info("parse minimum fsGroup value from namespace's annotation failed", "errMsg", err.Error())
+		} else {
+			fsGroup = &minFSGroupValue
+		}
+	}
+	psc.FSGroup = fsGroup
+
+	return psc
+}
+
+// Currently overwrite fsGroup
+// Please reference okd documentation https://docs.okd.io/latest/architecture/additional_concepts/authorization.html#understanding-pre-allocated-values-and-security-context-constraints
+func overwritePodSecurityContextFromOKDPodSecurityContext(psc, okdPSC corev1.PodSecurityContext) corev1.PodSecurityContext {
+
+	copyPSC := psc.DeepCopy()
+	copyOKDPSC := okdPSC.DeepCopy()
+
+	copyPSC.FSGroup = copyOKDPSC.FSGroup
+
+	return *copyPSC
 }

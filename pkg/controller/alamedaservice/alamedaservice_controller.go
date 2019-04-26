@@ -39,7 +39,7 @@ const (
 var (
 	_               reconcile.Reconciler = &ReconcileAlamedaService{}
 	log                                  = logf.Log.WithName("controller_alamedaservice")
-	componentConfig                      = &component.ComponentConfig{}
+	componentConfig *component.ComponentConfig
 )
 
 // Add creates a new AlamedaService Controller and adds it to the Manager. The Manager will set fields on the Controller
@@ -160,7 +160,12 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
-	componentConfig.SetNameSpace(instance.Namespace)
+	ns, err := r.getNamespace(request.Namespace)
+	if err != nil {
+		log.V(-1).Info("get namespace failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+	componentConfig = r.newComponentConfig(ns)
 	installResource := asp.GetInstallResource()
 
 	if err = r.syncCustomResourceDefinition(installResource); err != nil {
@@ -227,6 +232,22 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		}
 	}
 	return reconcile.Result{}, nil
+}
+
+func (r *ReconcileAlamedaService) getNamespace(namespaceName string) (corev1.Namespace, error) {
+	namespace := corev1.Namespace{}
+	if err := r.client.Get(context.TODO(), client.ObjectKey{Name: namespaceName}, &namespace); err != nil {
+		return namespace, errors.Errorf("get namespace %s failed: %s", namespaceName, err.Error())
+	}
+	return namespace, nil
+}
+
+func (r *ReconcileAlamedaService) newComponentConfig(namespace corev1.Namespace) *component.ComponentConfig {
+
+	podTemplateConfig := component.NewDefaultPodTemplateConfig(namespace)
+	componentConfg := component.NewComponentConfig(namespace.Name, podTemplateConfig)
+
+	return componentConfg
 }
 
 func (r *ReconcileAlamedaService) syncCustomResourceDefinition(resource *alamedaserviceparamter.Resource) error {
