@@ -220,8 +220,10 @@ func (c ComponentConfig) mutatePodSecurityContextWithConfig(podSecurityContext c
 
 	copyPodSecurityContext := podSecurityContext.DeepCopy()
 
-	fsGroup := *c.PodTemplateConfig.PodSecurityContext.FSGroup
-	copyPodSecurityContext.FSGroup = &fsGroup
+	if c.PodTemplateConfig.PodSecurityContext.FSGroup != nil {
+		fsGroup := *c.PodTemplateConfig.PodSecurityContext.FSGroup
+		copyPodSecurityContext.FSGroup = &fsGroup
+	}
 
 	return *copyPodSecurityContext
 }
