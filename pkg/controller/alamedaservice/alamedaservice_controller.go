@@ -4,11 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/containers-ai/federatorai-operator/pkg/util"
-
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
+
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/updateresource"
@@ -224,12 +223,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
 	}
-	if util.IsEmpty(asp.InfluxdbPVCSet) || util.IsEmpty(asp.GrafanaPVCSet) {
-		pvcResource := asp.GetPVCResource()
-		if err := r.uninstallPersistentVolumeClaim(instance, pvcResource); err != nil {
-			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
-		}
+	pvcResource := asp.GetUninstallPersistentVolumeClaimSource()
+	if err := r.uninstallPersistentVolumeClaim(instance, pvcResource); err != nil {
+		log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 	return reconcile.Result{}, nil
 }
@@ -660,11 +657,19 @@ func (r *ReconcileAlamedaService) uninstallExecutionComponent(instance *federato
 func (r *ReconcileAlamedaService) uninstallPersistentVolumeClaim(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.PersistentVolumeClaimList {
 		resourcePVC := componentConfig.NewPersistentVolumeClaim(fileString)
-		err := r.client.Delete(context.TODO(), resourcePVC)
+		foundPVC := &corev1.PersistentVolumeClaim{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourcePVC.Name, Namespace: resourcePVC.Namespace}, foundPVC)
 		if err != nil && k8sErrors.IsNotFound(err) {
-			return nil
+			continue
 		} else if err != nil {
-			return errors.Errorf("delete PersistentVolumeClaim %s/%s failed: %s", resourcePVC.Namespace, resourcePVC.Name, err.Error())
+			return errors.Errorf("get PersistentVolumeClaim %s/%s failed: %s", resourcePVC.Namespace, resourcePVC.Name, err.Error())
+		} else {
+			err := r.client.Delete(context.TODO(), resourcePVC)
+			if err != nil && k8sErrors.IsNotFound(err) {
+				return nil
+			} else if err != nil {
+				return errors.Errorf("delete PersistentVolumeClaim %s/%s failed: %s", resourcePVC.Namespace, resourcePVC.Name, err.Error())
+			}
 		}
 	}
 	return nil

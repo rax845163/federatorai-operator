@@ -15,64 +15,57 @@ type AlamedaServiceSpec struct {
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html
 	//AlmedaInstallOrUninstall bool   `json:"almedainstalloruninstall"`
-	EnableExecution        bool                             `json:"enableexecution"`
-	EnableGUI              bool                             `json:"enablegui"`
-	Version                string                           `json:"version"`
-	PrometheusService      string                           `json:"prometheusservice"`
-	PersistentVolumeClaim  string                           `json:"persistentvolumeclaim"`
-	InfluxdbPVCSet         corev1.PersistentVolumeClaimSpec `json:"influxdbpvcset"`
-	GrafanaPVCSet          corev1.PersistentVolumeClaimSpec `json:"grafanapvcset"`
-	AlamedaAILog           corev1.PersistentVolumeClaimSpec `json:"alamedaailog"`
-	AlamedaOperatorLog     corev1.PersistentVolumeClaimSpec `json:"alamedaoperatorlog"`
-	AlamedaDatahubLog      corev1.PersistentVolumeClaimSpec `json:"alamedadatahublog"`
-	AlamedaEvictionerLog   corev1.PersistentVolumeClaimSpec `json:"alamedaevictionerlog"`
-	AdmissionControllerLog corev1.PersistentVolumeClaimSpec `json:"admissioncontrollerlog"`
+	EnableExecution   bool          `json:"enableexecution"`
+	EnableGUI         bool          `json:"enablegui"`
+	Version           string        `json:"version"`
+	PrometheusService string        `json:"prometheusservice"`
+	Storages          []StorageSpec `json:"storages"`
+	//Component Section Schema
+	InfluxdbSectionSet            AlamedaComponentSpec `json:"alameda-influxdb"`
+	GrafanaSectionSet             AlamedaComponentSpec `json:"alameda-grafana"`
+	AlamedaAISectionSet           AlamedaComponentSpec `json:"alameda-ai"`
+	AlamedaOperatorSectionSet     AlamedaComponentSpec `json:"alameda-operator"`
+	AlamedaDatahubSectionSet      AlamedaComponentSpec `json:"alameda-datahub"`
+	AlamedaEvictionerSectionSet   AlamedaComponentSpec `json:"alameda-evictioner"`
+	AdmissionControllerSectionSet AlamedaComponentSpec `json:"alameda-admission-controller"`
+}
+type AlamedaComponentSpec struct {
+	Image           string            `json:"image"`
+	Version         string            `json:"version"`
+	ImagePullPolicy corev1.PullPolicy `json:"imagepullpolicy"`
+	Storages        []StorageSpec     `json:"storages"`
 }
 
-/*
-type AdmissionControllerLog struct {
-	Flag bool `json:"flag"`
-	//AccessModes          []corev1.PersistentVolumeAccessMode `json:"accessmodes"`
-	//ResourceRequirements corev1.ResourceRequirements         `json:"resources"`
-	Spec corev1.PersistentVolumeClaimSpec `json:"spec"`
+type Usage string
+type Type string
+
+const (
+	Empty     Usage = ""
+	Log       Usage = "log"
+	Data      Usage = "data"
+	PVC       Type  = "pvc"
+	Ephemeral Type  = "ephemeral"
+)
+
+var (
+	PvcUsage = []Usage{Data, Log}
+)
+
+type StorageSpec struct {
+	Type        Type                              `json:"type"`
+	Usage       Usage                             `json:"usage"`
+	Size        string                            `json:"size"`
+	Class       *string                           `json:"class"`
+	AccessModes corev1.PersistentVolumeAccessMode `json:"accessmode"`
 }
-type AlamedaEvictionerLog struct {
-	Flag bool `json:"flag"`
-	//AccessModes          []corev1.PersistentVolumeAccessMode `json:"accessmodes"`
-	//ResourceRequirements corev1.ResourceRequirements         `json:"resources"`
-	Spec corev1.PersistentVolumeClaimSpec `json:"spec"`
+
+//check StorageStruct
+func (storageStruct StorageSpec) StorageIsEmpty() bool {
+	if storageStruct.Size != "" && storageStruct.Type == PVC {
+		return false
+	}
+	return true
 }
-type AlamedaDatahubLog struct {
-	Flag bool `json:"flag"`
-	//AccessModes          []corev1.PersistentVolumeAccessMode `json:"accessmodes"`
-	//ResourceRequirements corev1.ResourceRequirements         `json:"resources"`
-	Spec corev1.PersistentVolumeClaimSpec `json:"spec"`
-}
-type AlamedaOperatorLog struct {
-	Flag bool `json:"flag"`
-	//AccessModes          []corev1.PersistentVolumeAccessMode `json:"accessmodes"`
-	//ResourceRequirements corev1.ResourceRequirements         `json:"resources"`
-	Spec corev1.PersistentVolumeClaimSpec `json:"spec"`
-}
-type AlamedaAILog struct {
-	Flag bool `json:"flag"`
-	//AccessModes          []corev1.PersistentVolumeAccessMode `json:"accessmodes"`
-	//ResourceRequirements corev1.ResourceRequirements         `json:"resources"`
-	Spec corev1.PersistentVolumeClaimSpec `json:"spec"`
-}
-type AlamedaServiceSpecInfluxdbPVCSet struct {
-	Flag bool `json:"flag"`
-	//AccessModes          []corev1.PersistentVolumeAccessMode `json:"accessmodes"`
-	//ResourceRequirements corev1.ResourceRequirements         `json:"resources"`
-	Spec corev1.PersistentVolumeClaimSpec `json:"spec"`
-}
-type AlamedaServiceSpecGrafanaPVCSet struct {
-	Flag bool `json:"flag"`
-	//AccessModes          []corev1.PersistentVolumeAccessMode `json:"accessmodes"`
-	//ResourceRequirements corev1.ResourceRequirements         `json:"resources"`
-	Spec corev1.PersistentVolumeClaimSpec `json:"spec"`
-}
-*/
 
 // AlamedaServiceStatus defines the observed state of AlamedaService
 // +k8s:openapi-gen=true

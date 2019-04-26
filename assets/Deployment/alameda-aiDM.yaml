@@ -35,11 +35,8 @@ spec:
           value: "alameda-operator.federatorai.svc:50050"
         - name: DATAHUB_ADDRESS
           value: "alameda-datahub.federatorai.svc:50050"
-        volumeMounts:
-          - mountPath: /var/log
-            name: alameda-ai-log-storage
       volumes:
+        - name: alameda-ai-data-storage
         - name: alameda-ai-log-storage
-          emptyDir: {}
       serviceAccount: alameda-ai
       serviceAccountName: alameda-ai

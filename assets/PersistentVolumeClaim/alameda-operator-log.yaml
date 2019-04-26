@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: alameda-operator.pvc
+  name: alameda-operator-log.pvc
   namespace: federatorai
 spec:
   accessModes:

@@ -1,0 +1,17 @@
+apiVersion: federatorai.containers.ai/v1alpha1
+kind: AlamedaService
+metadata:
+  name: example
+  namespace: kroos-tutorial
+spec:
+  enableexecution: true
+  enablegui: true
+  prometheusservice: ""
+  version: "v0.3.7"
+  storages:
+  - type: "ephemeral"
+    usage: "log"
+  - size: 1Gi
+    accessmode: ReadWriteOnce
+    type: "pvc"
+    usage: "data"

@@ -48,12 +48,9 @@ spec:
         - mountPath: /etc/tls/private
           name: alameda-influxdb-tls
           readOnly: false
-        - mountPath: /var/lib/influxdb
-          name: influxdb-storage
-          subPath: influxdb
       volumes:
-      - name: influxdb-storage
-        emptyDir: {}
+      - name: influxdb-data-storage
+      - name: influxdb-log-storage
       - name: alameda-influxdb-tls
         secret:
           secretName: alameda-influxdb-tls

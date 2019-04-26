@@ -46,9 +46,6 @@ spec:
             cpu: 100m
             memory: 100Mi
         volumeMounts:
-          - mountPath: /var/lib/grafana
-            name: grafana-storage
-            subpath: grafana
           - mountPath: /var/lib/grafana/dashboards/alameda
             name: dashboards-json
           - mountPath: /etc/grafana/provisioning/datasources
@@ -58,8 +55,8 @@ spec:
       volumes:
         - name: prometheus-datasource
           emptyDir: {}
-        - name: grafana-storage
-          emptyDir: {}
+        - name: grafana-data-storage
+        - name: grafana-log-storage
         - configMap:
             items:
             - key: gettoken.sh
