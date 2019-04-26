@@ -83,6 +83,7 @@ rules:
   - list
   - update
   - watch
+  - delete
 - apiGroups:
   - rbac.authorization.k8s.io
   resources:
@@ -124,6 +125,7 @@ rules:
   - list
   - update
   - watch
+  - delete
 - apiGroups:
   - apps.openshift.io
   resources:
