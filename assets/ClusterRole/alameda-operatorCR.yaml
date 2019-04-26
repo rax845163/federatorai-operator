@@ -85,6 +85,7 @@ rules:
   - create
   - update
   - list
+  - delete
 - apiGroups:
   - ""
   resources:
@@ -94,3 +95,4 @@ rules:
   - create
   - update
   - list
+  - delete
