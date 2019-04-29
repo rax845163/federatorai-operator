@@ -30,6 +30,8 @@ import (
 const (
 	envVarPrefix  = "FEDERATORAI_OPERATOR"
 	allowEmptyEnv = true
+
+	defaultLogOutputPath = "/var/log/alameda/federatorai-operator.log"
 )
 
 var (
@@ -100,6 +102,7 @@ func mergeViperValueWithDefaultConfig() {
 
 func initLogger() {
 
+	fedOperatorConfig.Log.AppendOutput(defaultLogOutputPath)
 	logger, err := fedOperatorLog.NewZaprLogger(fedOperatorConfig.Log)
 	if err != nil {
 		panic(err)

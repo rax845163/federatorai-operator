@@ -11,3 +11,13 @@ func NewDefaultConfig() Config {
 		OutputPaths: []string{"stdout"},
 	}
 }
+
+func (c *Config) AppendOutput(outputPath string) {
+
+	for _, path := range c.OutputPaths {
+		if path == outputPath {
+			return
+		}
+	}
+	c.OutputPaths = append(c.OutputPaths, outputPath)
+}
