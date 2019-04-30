@@ -5,7 +5,25 @@ ENV NO_DOCKER=1
 ENV BUILD_DEST=/go/bin/federatorai-operator
 RUN unset VERSION && make build
 
-FROM registry.access.redhat.com/ubi8-dev-preview/ubi-minimal:8.0
+FROM registry.access.redhat.com/ubi7/ubi-minimal
+ENV SUMMARY="FederatorAI Operator is an operator that manages FederatorAI components for an OpenShift cluster" \
+    DESCRIPTION="FederatorAI Operator is an operator that manages FederatorAI components for an OpenShift cluster" \
+    NAME="FederatorAI Operator" \
+    VERSION="latest"
+
+LABEL summary="$SUMMARY" \
+      description="$DESCRIPTION" \
+      io.k8s.description="$DESCRIPTION" \
+      io.k8s.display-name="$NAME" \
+      io.openshift.s2i.scripts-url=image:///usr/libexec/s2i \
+      io.s2i.scripts-url=image:///usr/libexec/s2i \
+      com.redhat.component="customer-container" \
+      name="$NAME" \
+      version="$VERSION" \
+      vendor="ProphetStor Data Services, Inc."
+
+RUN mkdir /licenses/
+COPY --from=builder /go/src/github.com/containers-ai/federatorai-operator/LICENSE /licenses/
 COPY --from=builder /go/bin/federatorai-operator /usr/bin/
 COPY --from=builder /go/src/github.com/containers-ai/federatorai-operator/etc/operator.yml /etc/federatorai/operator/operator.yml
 # COPY --from=builder /go/src/github.com/containers-ai/federatorai-operator/install /manifests
