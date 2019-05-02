@@ -1,21 +1,21 @@
 apiVersion: operators.coreos.com/v1alpha1
 kind: ClusterServiceVersion
 metadata:
-  name: federatorai.0.1.1
+  name: federatorai.0.1.7
   namespace: placeholder
   annotations:
     capabilities: Full Lifecycle
     categories: "AI/Machine Learning, OpenShift Optional"
     certified: "true"
     repository: https://access.redhat.com/containers/?tab=overview#/registry.connect.redhat.com/prophetstor/federatorai-operator
-    containerImage: registry.connect.redhat.com/prophetstor/federatorai-operator:0.1.1
+    containerImage: registry.connect.redhat.com/prophetstor/federatorai-operator:0.1.7
     createdAt: 2019-04-29T10:00:00Z
     description: FederatorAI Operator provides easy configuration and management of AI-based Kubernetes resource orchestrator
     support: ProphetStor Data Services, Inc.
     alm-examples: >-
         [{"apiVersion":"federatorai.containers.ai/v1alpha1","kind":"AlamedaService","metadata":{"name":"my-alamedaservice"},"spec":{"enableexecution":false,"enablegui":true,"version":"v0.3.9","prometheusservice":"https://prometheus-k8s.openshift-monitoring:9091","storages":[{"usage":"log","type":"ephemeral"},{"usage":"data","type":"ephemeral"}]}}]
 spec: 
-  version: 0.1.1
+  version: 0.1.7
   maturity: alpha
   displayName: FederatorAI
   description: |
@@ -62,7 +62,7 @@ spec:
     url: https://github.com/containers-ai/federatorai-operator
   labels:
     alm-owner-federatorai: federatorai-operator
-    alm-status-descriptors: federatorai-operator.0.1.1
+    alm-status-descriptors: federatorai-operator.0.1.7
   selector:
     matchLabels:
       alm-owner-federatorai: federatorai-operator
@@ -312,7 +312,7 @@ spec:
                       fieldPath: metadata.name
                 - name: OPERATOR_NAME
                   value: federatorai-operator
-                image: registry.connect.redhat.com/prophetstor/federatorai-operator:0.1.1
+                image: registry.connect.redhat.com/prophetstor/federatorai-operator:0.1.7
                 imagePullPolicy: IfNotPresent
                 name: federatorai-operator
                 resources: {}
