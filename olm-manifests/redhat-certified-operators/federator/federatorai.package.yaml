@@ -1,5 +1,5 @@
 packageName: federatorai-certified
 channels:
 - name: alpha
-  currentCSV: federatorai.v0.1.0
+  currentCSV: federatorai.v0.1.7
 
