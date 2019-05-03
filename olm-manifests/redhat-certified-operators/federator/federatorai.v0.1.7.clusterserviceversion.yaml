@@ -1,7 +1,7 @@
 apiVersion: operators.coreos.com/v1alpha1
 kind: ClusterServiceVersion
 metadata:
-  name: federatorai.0.1.7
+  name: federatorai.v0.1.7
   namespace: placeholder
   annotations:
     capabilities: Full Lifecycle
