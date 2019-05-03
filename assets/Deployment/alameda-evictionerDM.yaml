@@ -25,9 +25,6 @@ spec:
         image: quay.io/prophetstor/alameda-evictioner-rhel:v0.3.6
         imagePullPolicy: IfNotPresent
         resources:
-          limits:
-            cpu: 60m
-            memory: 90Mi
           requests:
             cpu: 45m
             memory: 75Mi

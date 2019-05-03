@@ -24,9 +24,6 @@ spec:
         image: quay.io/prophetstor/alameda-ai:v0.3.6
         imagePullPolicy: IfNotPresent
         resources:
-          limits:
-            cpu: 4000m
-            memory: 450Mi
           requests:
             cpu: 2000m
             memory: 250Mi

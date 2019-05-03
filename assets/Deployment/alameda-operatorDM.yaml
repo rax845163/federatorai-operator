@@ -25,9 +25,6 @@ spec:
         image: quay.io/prophetstor/alameda-operator-rhel:v0.3.6
         imagePullPolicy: IfNotPresent
         resources:
-          limits:
-            cpu: 20m
-            memory: 40Mi
           requests:
             cpu: 10m
             memory: 20Mi
