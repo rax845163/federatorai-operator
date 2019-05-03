@@ -36,9 +36,6 @@ spec:
           value: "alameda-datahub.federatorai.svc:50050"
         - name: ALAMEDA_EVICTIONER_EVICTION_ENABLE
           value: "true"
-        volumeMounts:
-        - mountPath: /var/log/alameda
-          name:  alameda-evictioner-log-storage
         readinessProbe:
           exec:
             command:

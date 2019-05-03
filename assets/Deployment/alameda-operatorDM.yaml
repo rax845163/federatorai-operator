@@ -46,8 +46,6 @@ spec:
         - name: podinfo
           mountPath: /etc/podinfo
           readOnly: false
-        - mountPath: /var/log/alameda
-          name:  alameda-operator-log-storage
         readinessProbe:
           exec:
             command:
