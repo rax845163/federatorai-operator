@@ -132,12 +132,6 @@ func getVolumeLogIndex(dep *appsv1.Deployment) int {
 			if value.Name == "admission-controller-log-storage" {
 				return index
 			}
-			if value.Name == "influxdb-log-storage" {
-				return index
-			}
-			if value.Name == "grafana-log-storage" {
-				return index
-			}
 		}
 		return -1
 	}
