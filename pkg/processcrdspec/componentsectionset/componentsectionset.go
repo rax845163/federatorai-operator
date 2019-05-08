@@ -60,6 +60,7 @@ func SectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaservicep
 		}
 	case util.GrafanaDPN:
 		{
+			util.SetBootStrapImageStruct(dep, asp.GrafanaSectionSet, util.GetTokenCTN)
 			util.SetImageStruct(dep, asp.GrafanaSectionSet, util.GrafanaCTN)
 			util.SetImagePullPolicy(dep, util.GrafanaCTN, asp.GrafanaSectionSet.ImagePullPolicy)
 			util.SetStorageToVolumeSource(dep, asp.GrafanaSectionSet.Storages, "my-alameda.grafana-type.pvc", util.GrafanaGroup)

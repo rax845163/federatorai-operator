@@ -2,6 +2,7 @@ package alamedaservice
 
 import (
 	"context"
+	"os"
 	"time"
 
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
@@ -70,28 +71,31 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err != nil {
 		return err
 	}
+	WatchFlag := os.Getenv("PROTECT_OPERAND_RESOURCE")
+	if WatchFlag == "enable" {
+		err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
+			IsController: true,
+			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
+		})
+		if err != nil {
+			return err
+		}
+		err = c.Watch(&source.Kind{Type: &corev1.ConfigMap{}}, &handler.EnqueueRequestForOwner{
+			IsController: true,
+			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
+		})
+		if err != nil {
+			return err
+		}
+		err = c.Watch(&source.Kind{Type: &corev1.Service{}}, &handler.EnqueueRequestForOwner{
+			IsController: true,
+			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
+		})
+		if err != nil {
+			return err
+		}
+	}
 
-	err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
-		IsController: true,
-		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-	})
-	if err != nil {
-		return err
-	}
-	err = c.Watch(&source.Kind{Type: &corev1.ConfigMap{}}, &handler.EnqueueRequestForOwner{
-		IsController: true,
-		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-	})
-	if err != nil {
-		return err
-	}
-	err = c.Watch(&source.Kind{Type: &corev1.Service{}}, &handler.EnqueueRequestForOwner{
-		IsController: true,
-		OwnerType:    &federatoraiv1alpha1.AlamedaService{},
-	})
-	if err != nil {
-		return err
-	}
 	return nil
 }
 

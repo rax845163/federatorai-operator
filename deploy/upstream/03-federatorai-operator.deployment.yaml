@@ -37,4 +37,6 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: "federatorai-operator"
+            - name: PROTECT_OPERAND_RESOURCE
+              value: "enable"
 

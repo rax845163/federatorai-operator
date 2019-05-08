@@ -31,6 +31,7 @@ const (
 	AlamedadatahubCTN      = "alameda-datahub"
 	AlamedaevictionerCTN   = "alameda-evictioner"
 	AdmissioncontrollerCTN = "admission-controller"
+	GetTokenCTN            = "gettoken"
 	GrafanaCTN             = "grafana"
 	InfluxdbCTN            = "influxdb"
 	//AlamedaService modify Prometheus's var
@@ -47,6 +48,18 @@ var (
 	log = logf.Log.WithName("controller_alamedaservice")
 )
 
+func SetBootStrapImageStruct(dep *appsv1.Deployment, componentspec v1alpha1.AlamedaComponentSpec, ctn string) {
+	for index, value := range dep.Spec.Template.Spec.InitContainers {
+		if value.Name == ctn {
+			if componentspec.BootStrapContainer.Image != "" || componentspec.BootStrapContainer.Version != "" {
+				image := fmt.Sprintf("%s:%s", componentspec.BootStrapContainer.Image, componentspec.BootStrapContainer.Version)
+				dep.Spec.Template.Spec.InitContainers[index].Image = image
+			}
+			dep.Spec.Template.Spec.InitContainers[index].ImagePullPolicy = componentspec.BootStrapContainer.ImagePullPolicy
+		}
+	}
+}
+
 //if user section schema set image then AlamedaService set Containers image
 func setImage(dep *appsv1.Deployment, ctn string, image string) {
 	for index, value := range dep.Spec.Template.Spec.Containers {
@@ -55,10 +68,9 @@ func setImage(dep *appsv1.Deployment, ctn string, image string) {
 			oriImage := dep.Spec.Template.Spec.Containers[index].Image
 			imageStrutct := strings.Split(oriImage, ":")
 			if len(imageStrutct) != 0 {
-				newImage = fmt.Sprintf("%s:%s", image, imageStrutct[1])
+				newImage = fmt.Sprintf("%s:%s", image, imageStrutct[len(imageStrutct)-1])
 				dep.Spec.Template.Spec.Containers[index].Image = newImage
 			}
-			log.V(1).Info("SetImage", dep.Spec.Template.Spec.Containers[index].Name, newImage)
 		}
 	}
 }
@@ -71,7 +83,7 @@ func setImageVersion(dep *appsv1.Deployment, ctn string, version string) {
 			oriImage := dep.Spec.Template.Spec.Containers[index].Image
 			imageStrutct := strings.Split(oriImage, ":")
 			if len(imageStrutct) != 0 {
-				newImage = fmt.Sprintf("%s:%s", imageStrutct[0], version)
+				newImage = fmt.Sprintf("%s:%s", strings.Join(imageStrutct[:len(imageStrutct)-1], ":"), version)
 				dep.Spec.Template.Spec.Containers[index].Image = newImage
 			}
 			log.V(1).Info("SetImageVersion", dep.Spec.Template.Spec.Containers[index].Name, newImage)

@@ -30,12 +30,17 @@ type AlamedaServiceSpec struct {
 	AdmissionControllerSectionSet AlamedaComponentSpec `json:"alameda-admission-controller"`
 }
 type AlamedaComponentSpec struct {
+	Image              string            `json:"image"`
+	Version            string            `json:"version"`
+	ImagePullPolicy    corev1.PullPolicy `json:"imagepullpolicy"`
+	Storages           []StorageSpec     `json:"storages"`
+	BootStrapContainer Imagestruct       `json:"bootstrap"`
+}
+type Imagestruct struct {
 	Image           string            `json:"image"`
 	Version         string            `json:"version"`
 	ImagePullPolicy corev1.PullPolicy `json:"imagepullpolicy"`
-	Storages        []StorageSpec     `json:"storages"`
 }
-
 type Usage string
 type Type string
 
