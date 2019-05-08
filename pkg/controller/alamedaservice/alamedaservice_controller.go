@@ -71,8 +71,8 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err != nil {
 		return err
 	}
-	WatchFlag := os.Getenv("PROTECT_OPERAND_RESOURCE")
-	if WatchFlag == "enable" {
+	WatchFlag := os.Getenv("DISABLE_OPERAND_RESOURCE_PROTECTION")
+	if WatchFlag != "true" {
 		err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
 			IsController: true,
 			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
