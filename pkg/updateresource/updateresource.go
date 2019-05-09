@@ -129,51 +129,8 @@ func misMatchTemplatePodSpec(modify *bool, clusterDep, sourceDep *corev1.PodSpec
 		log.V(-1).Info("change ServiceAccountName")
 		clusterDep.ServiceAccountName = sourceDep.ServiceAccountName
 	}
-	for sourceIndex, sourceContainerValue := range sourceDep.Containers {
-		for clusterIndex, clusterContainerValue := range clusterDep.Containers {
-			if clusterContainerValue.Name == sourceContainerValue.Name {
-				if clusterDep.Containers[clusterIndex].Image != sourceDep.Containers[sourceIndex].Image {
-					*modify = true
-					log.V(-1).Info("change Image")
-					clusterDep.Containers[clusterIndex].Image = sourceDep.Containers[sourceIndex].Image
-				}
-				if clusterDep.Containers[clusterIndex].ImagePullPolicy != sourceDep.Containers[sourceIndex].ImagePullPolicy {
-					*modify = true
-					log.V(-1).Info("change ImagePullPolicy")
-					clusterDep.Containers[clusterIndex].ImagePullPolicy = sourceDep.Containers[sourceIndex].ImagePullPolicy
-				}
-				if !equality.Semantic.DeepEqual(clusterDep.Containers[clusterIndex].Ports, sourceDep.Containers[sourceIndex].Ports) {
-					*modify = true
-					log.V(-1).Info("change Ports")
-					clusterDep.Containers[clusterIndex].Ports = sourceDep.Containers[sourceIndex].Ports
-				}
-				if !equality.Semantic.DeepEqual(clusterDep.Containers[clusterIndex].Resources, sourceDep.Containers[sourceIndex].Resources) {
-					*modify = true
-					log.V(-1).Info("change Resources")
-					clusterDep.Containers[clusterIndex].Resources = sourceDep.Containers[sourceIndex].Resources
-				}
-				if !equality.Semantic.DeepEqual(clusterDep.Containers[clusterIndex].VolumeMounts, sourceDep.Containers[sourceIndex].VolumeMounts) {
-					*modify = true
-					log.V(-1).Info("change VolumeMounts")
-					clusterDep.Containers[clusterIndex].VolumeMounts = sourceDep.Containers[sourceIndex].VolumeMounts
-				}
-				for index, value := range sourceDep.Containers[sourceIndex].Env {
-					if value.ValueFrom != nil {
-						if value.ValueFrom.FieldRef != nil {
-							if resourceEmpty(value.ValueFrom.FieldRef.APIVersion) {
-								sourceDep.Containers[sourceIndex].Env[index].ValueFrom.FieldRef.APIVersion = okdDeploymentDefaultEnvFieldRefAPIVersion
-							}
-						}
-					}
-				}
-				if !equality.Semantic.DeepEqual(clusterDep.Containers[clusterIndex].Env, sourceDep.Containers[sourceIndex].Env) {
-					*modify = true
-					log.V(-1).Info("change Env")
-					clusterDep.Containers[clusterIndex].Env = sourceDep.Containers[sourceIndex].Env
-				}
-			}
-		}
-	}
+	misMatchContainers(modify, clusterDep.InitContainers, sourceDep.InitContainers)
+	misMatchContainers(modify, clusterDep.Containers, sourceDep.Containers)
 	for sourceIndex, sourceVolumeValue := range sourceDep.Volumes {
 		for clusterIndex, clusterVolumeValue := range clusterDep.Volumes {
 			if clusterVolumeValue.Name == sourceVolumeValue.Name {
@@ -203,6 +160,53 @@ func misMatchTemplatePodSpec(modify *bool, clusterDep, sourceDep *corev1.PodSpec
 					*modify = true
 					log.V(-1).Info("change VolumeSource")
 					clusterDep.Volumes[clusterIndex].VolumeSource = sourceDep.Volumes[sourceIndex].VolumeSource
+				}
+			}
+		}
+	}
+}
+func misMatchContainers(modify *bool, clusterContainers, sourceContainers []corev1.Container) {
+	for _, sourceContainer := range sourceContainers {
+		for clusterIndex, clusterContainer := range clusterContainers {
+			if clusterContainer.Name == sourceContainer.Name {
+				if clusterContainer.Image != sourceContainer.Image {
+					*modify = true
+					log.V(-1).Info("change Image")
+					clusterContainers[clusterIndex].Image = sourceContainer.Image
+				}
+				if clusterContainer.ImagePullPolicy != sourceContainer.ImagePullPolicy {
+					*modify = true
+					log.V(-1).Info("change ImagePullPolicy")
+					clusterContainers[clusterIndex].ImagePullPolicy = sourceContainer.ImagePullPolicy
+				}
+				if !equality.Semantic.DeepEqual(clusterContainer.Ports, sourceContainer.Ports) {
+					*modify = true
+					log.V(-1).Info("change Ports")
+					clusterContainers[clusterIndex].Ports = sourceContainer.Ports
+				}
+				if !equality.Semantic.DeepEqual(clusterContainer.Resources, sourceContainer.Resources) {
+					*modify = true
+					log.V(-1).Info("change Resources")
+					clusterContainers[clusterIndex].Resources = sourceContainer.Resources
+				}
+				if !equality.Semantic.DeepEqual(clusterContainer.VolumeMounts, sourceContainer.VolumeMounts) {
+					*modify = true
+					log.V(-1).Info("change VolumeMounts")
+					clusterContainers[clusterIndex].VolumeMounts = sourceContainer.VolumeMounts
+				}
+				for index, value := range sourceContainer.Env {
+					if value.ValueFrom != nil {
+						if value.ValueFrom.FieldRef != nil {
+							if resourceEmpty(value.ValueFrom.FieldRef.APIVersion) {
+								clusterContainers[clusterIndex].Env[index].ValueFrom.FieldRef.APIVersion = okdDeploymentDefaultEnvFieldRefAPIVersion
+							}
+						}
+					}
+				}
+				if !equality.Semantic.DeepEqual(clusterContainer.Env, sourceContainer.Env) {
+					*modify = true
+					log.V(-1).Info("change Env")
+					clusterContainers[clusterIndex].Env = sourceContainer.Env
 				}
 			}
 		}
