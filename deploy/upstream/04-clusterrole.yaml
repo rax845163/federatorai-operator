@@ -31,6 +31,7 @@ rules:
   - persistentvolumeclaims
   - serviceaccounts
   verbs:
+  - delete #[issue 150]for openshift v3.09
   - get
   - list
   - watch
@@ -61,6 +62,7 @@ rules:
   resources:
   - secrets
   verbs:
+  - delete #[issue 150]for openshift v3.09
   - create
   - list
   - watch
@@ -69,6 +71,7 @@ rules:
   resources:
   - configmaps
   verbs:
+  - delete #[issue 150]for openshift v3.09
   - create
   - list
   - update
@@ -90,6 +93,7 @@ rules:
   - clusterroles
   - clusterrolebindings
   verbs:
+  - delete #[issue 150]for openshift v3.09
   - create
   - list
   - watch
