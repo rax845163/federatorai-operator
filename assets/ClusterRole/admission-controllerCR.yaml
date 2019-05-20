@@ -21,6 +21,7 @@ rules:
       - list
       - patch
   - apiGroups:
+      - extensions
       - apps
     resources:
       - replicasets
@@ -29,6 +30,7 @@ rules:
       - get
       - list
   - apiGroups:
+      - extensions
       - ""
     resources:
       - replicationcontrollers
