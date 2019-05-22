@@ -46,6 +46,7 @@ rules:
   - delete
   - patch
 - apiGroups:
+  - extensions
   - ""
   resources:
   - replicationcontrollers
@@ -98,12 +99,14 @@ rules:
   - list
   - watch
 - apiGroups:
+  - extensions
   - apps
   resources:
   - deployments
   verbs:
   - "*"
 - apiGroups:
+  - extensions
   - apps
   resources:
   - replicasets
