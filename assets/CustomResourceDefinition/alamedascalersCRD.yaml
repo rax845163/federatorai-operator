@@ -52,9 +52,6 @@ spec:
                   type: object
                 deployments:
                   type: object
-              required:
-              - deployments
-              - deploymentConfigs
               type: object
           type: object
   version: v1alpha1
