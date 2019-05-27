@@ -1,7 +1,0 @@
-apiVersion: federatorai.containers.ai/v1alpha1
-kind: AlamedaService
-metadata:
-  name: example-alamedaservice
-spec:
-  # Add fields here
-  size: 3
