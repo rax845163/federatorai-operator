@@ -145,11 +145,12 @@ func main() {
 		log.Error(err, "")
 		os.Exit(1)
 	}
-
+	//var day time.Duration = 1*24 * time.Hour
 	// Create a new Cmd to provide shared dependencies and start components
 	mgr, err := manager.New(cfg, manager.Options{
 		Namespace:          fedOperatorConfig.WatchNamespace,
 		MetricsBindAddress: fmt.Sprintf("%s:%d", fedOperatorConfig.Metrics.Host, fedOperatorConfig.Metrics.Port),
+		//SyncPeriod:         &day,
 	})
 	if err != nil {
 		log.Error(err, "")
