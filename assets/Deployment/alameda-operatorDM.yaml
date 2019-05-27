@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: alameda-operator
-        image: quay.io/prophetstor/alameda-operator-rhel:v0.3.6
+        image: quay.io/prophetstor/alameda-operator-ubi:v0.3.8
         imagePullPolicy: IfNotPresent
         resources:
           requests:

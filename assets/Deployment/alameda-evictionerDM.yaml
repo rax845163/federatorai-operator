@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: alameda-evictioner
-        image: quay.io/prophetstor/alameda-evictioner-rhel:v0.3.6
+        image: quay.io/prophetstor/alameda-evictioner-ubi:v0.3.8
         imagePullPolicy: IfNotPresent
         resources:
           requests:

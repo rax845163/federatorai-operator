@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: alameda-ai-engine
-        image: quay.io/prophetstor/alameda-ai:v0.3.6
+        image: quay.io/prophetstor/alameda-ai:v0.3.8
         imagePullPolicy: IfNotPresent
         resources:
           requests:

@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: admission-controller
-        image: quay.io/prophetstor/alameda-admission-rhel:v0.3.6
+        image: quay.io/prophetstor/alameda-admission-ubi:v0.3.8
         imagePullPolicy: IfNotPresent
         resources:
           requests:

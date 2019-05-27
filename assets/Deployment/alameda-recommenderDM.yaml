@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: alameda-recommender
-        image: docker-registry.default.svc:5000/federatorai/alameda-recommender:v0.0.1
+        image: quay.io/prophetstor/alameda-recommender-ubi:v0.3.8
         imagePullPolicy: Always
         volumeMounts:
           - name: alameda-recommender-config

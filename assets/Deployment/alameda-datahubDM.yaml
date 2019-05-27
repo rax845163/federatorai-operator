@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: alameda-datahub
-        image: quay.io/prophetstor/alameda-datahub-rhel:v0.3.6
+        image: quay.io/prophetstor/alameda-datahub-ubi:v0.3.8
         imagePullPolicy: IfNotPresent
         resources:
           requests:
