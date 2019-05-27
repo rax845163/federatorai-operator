@@ -31,7 +31,7 @@ spec:
           properties:
             customResourceVersion:
               type: string
-            enableExecution:
+            enableexecution:
               type: boolean
             policy:
               enum:
@@ -48,7 +48,7 @@ spec:
           properties:
             alamedaController:
               properties:
-                deploymentConfigs:
+                deploymentconfigs:
                   type: object
                 deployments:
                   type: object
