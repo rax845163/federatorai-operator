@@ -55,6 +55,9 @@ const (
 	OriginComfigMapRecommandation = "config.toml"
 	//Execution  config
 	OriginComfigMapExecution = "config.yml"
+	//Delete Deployment When Modify ConfigMap or Service(Temporary strategy)
+	GrafanaYaml            = "Deployment/alameda-grafanaDM.yaml"
+	GrafanaDatasourcesName = "grafana-datasources"
 )
 
 var (

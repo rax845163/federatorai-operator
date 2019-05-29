@@ -8,6 +8,7 @@ import (
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
+	"github.com/containers-ai/federatorai-operator/pkg/util"
 
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
@@ -426,6 +427,14 @@ func (r *ReconcileAlamedaService) syncConfigMap(instance *federatoraiv1alpha1.Al
 				err = r.client.Update(context.TODO(), foundCM)
 				if err != nil {
 					return errors.Errorf("update configMap %s/%s failed: %s", foundCM.Namespace, foundCM.Name, err.Error())
+				} else {
+					if foundCM.Name == util.GrafanaDatasourcesName { //if modify grafana-datasource then delete Deployment(Temporary strategy)
+						grafanaDep := componentConfig.NewDeployment(util.GrafanaYaml)
+						err = r.deleteDeploymentWhenModifyConfigMapOrService(grafanaDep)
+						if err != nil {
+							errors.Errorf("delete Deployment when modify ConfigMap %s/%s failed: %s", grafanaDep.Namespace, grafanaDep.Name, err.Error())
+						}
+					}
 				}
 				log.Info("Successfully Update Resource CinfigMap", "resourceCM.Name", foundCM.Name)
 			}
@@ -788,6 +797,14 @@ func (r *ReconcileAlamedaService) updateAlamedaServiceStatus(alamedaService *fed
 	copyAlamedaService.Status.CRDVersion = asp.CurrentCRDVersion
 	if err := r.client.Update(context.Background(), copyAlamedaService); err != nil {
 		return errors.Errorf("update AlamedaService Status failed: %s", err.Error())
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) deleteDeploymentWhenModifyConfigMapOrService(dep *appsv1.Deployment) error {
+	err := r.client.Delete(context.TODO(), dep)
+	if err != nil {
+		return err
 	}
 	return nil
 }
