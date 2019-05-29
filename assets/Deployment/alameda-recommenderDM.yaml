@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alameda-recommender
+  namespace: federatorai
+spec:
+  selector:
+    matchLabels:
+      app: alameda-recommender
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: alameda-recommender
+    spec:
+      containers:
+      - name: alameda-recommender
+        image: docker-registry.default.svc:5000/federatorai/alameda-recommender:v0.0.1
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: alameda-recommender-config
+            mountPath: /etc/alameda/federatorai-recommendation/config.toml
+            subPath: config.toml
+      volumes:
+        - name: alameda-recommender-data-storage
+        - name: alameda-recommender-log-storage             
+        - name: alameda-recommender-config
+          configMap:
+            name: alameda-recommender-config

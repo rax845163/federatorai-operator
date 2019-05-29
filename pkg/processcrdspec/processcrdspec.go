@@ -16,8 +16,8 @@ func ParamterToDeployment(dep *appsv1.Deployment, asp *alamedaserviceparamter.Al
 	return dep
 }
 func ParamterToConfigMap(cm *corev1.ConfigMap, asp *alamedaserviceparamter.AlamedaServiceParamter) *corev1.ConfigMap {
-	updateenvvar.AssignServiceToConfigMap(cm, cm.Namespace)                         //ConfigMapSpec's service
-	globalsectionset.GlobalSectionSetParamterToConfigMap(cm, asp.PrometheusService) //ConfigMapSpec's PrometheusService
+	updateenvvar.AssignServiceToConfigMap(cm, cm.Namespace)                                       //ConfigMapSpec's service
+	globalsectionset.GlobalSectionSetParamterToConfigMap(cm, asp.PrometheusService, cm.Namespace) //ConfigMapSpec's PrometheusService
 	return cm
 }
 func ParamterToPersistentVolumeClaim(pvc *corev1.PersistentVolumeClaim, asp *alamedaserviceparamter.AlamedaServiceParamter) *corev1.PersistentVolumeClaim {

@@ -138,6 +138,9 @@ spec:
 - Field: alameda-admission-controller
   - type: [AlamedaComponentSpec](#alamedacomponentspec) 
   - description: Spec for Alameda-admission-controller component. This field is optional.
+- Field: alameda-recommender
+  - type: [AlamedaComponentSpec](#alamedacomponentspec) 
+  - description: Spec for Alameda-recommender component. This field is optional.
 - Field: alameda-influxdb
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for InfluxDB component. This field is optional.

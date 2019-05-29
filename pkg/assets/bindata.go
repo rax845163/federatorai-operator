@@ -21,6 +21,7 @@
 // ClusterRoleBinding/alameda-operatorCRB.yaml
 // Secret/admission-controller-tls.yaml
 // Secret/alameda-influxdb.yaml
+// ConfigMap/alameda-recommender-config.yaml
 // ConfigMap/dashboards-config.yaml
 // ConfigMap/grafana-datasources.yaml
 // PersistentVolumeClaim/admission-controller-data.yaml
@@ -33,6 +34,8 @@
 // PersistentVolumeClaim/alameda-evictioner-log.yaml
 // PersistentVolumeClaim/alameda-operator-data.yaml
 // PersistentVolumeClaim/alameda-operator-log.yaml
+// PersistentVolumeClaim/alameda-recommender-data.yaml
+// PersistentVolumeClaim/alameda-recommender-log.yaml
 // PersistentVolumeClaim/my-alamedagrafanaPVC.yaml
 // PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml
 // Service/admission-controllerSV.yaml
@@ -46,6 +49,7 @@
 // Deployment/alameda-grafanaDM.yaml
 // Deployment/alameda-influxdbDM.yaml
 // Deployment/alameda-operatorDM.yaml
+// Deployment/alameda-recommenderDM.yaml
 
 package assets
 
@@ -159,8 +163,8 @@ func bindataCustomResourceDefinitionAlamedarecommendationsCRDyaml() (*asset, err
 		name: "CustomResourceDefinition/alamedarecommendationsCRD.yaml",
 		size: 1042,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553062567, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -217,7 +221,7 @@ func bindataCustomResourceDefinitionAlamedascalersCRDyaml() (*asset, error) {
 		size: 2010,
 		md5checksum: "",
 		mode: os.FileMode(436),
-		modTime: time.Unix(1559111925, 0),
+		modTime: time.Unix(1558944005, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -256,8 +260,8 @@ func bindataClusterRoleAdmissioncontrollerCRyaml() (*asset, error) {
 		name: "ClusterRole/admission-controllerCR.yaml",
 		size: 778,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1559111925, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1558339111, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -295,8 +299,8 @@ func bindataClusterRoleAggregatealamedaadmineditalamedaCRyaml() (*asset, error) 
 		name: "ClusterRole/aggregate-alameda-admin-edit-alamedaCR.yaml",
 		size: 496,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553062567, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -334,8 +338,8 @@ func bindataClusterRoleAlamedadatahubCRyaml() (*asset, error) {
 		name: "ClusterRole/alameda-datahubCR.yaml",
 		size: 362,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553562665, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555062656, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -372,8 +376,8 @@ func bindataClusterRoleAlamedaevictionerCRyaml() (*asset, error) {
 		name: "ClusterRole/alameda-evictionerCR.yaml",
 		size: 303,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1555988180, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555925496, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -408,8 +412,8 @@ func bindataClusterRoleAlamedagrafanaCRyaml() (*asset, error) {
 		name: "ClusterRole/alameda-grafanaCR.yaml",
 		size: 179,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1555988180, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555925496, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -454,8 +458,8 @@ func bindataClusterRoleAlamedaoperatorCRyaml() (*asset, error) {
 		name: "ClusterRole/alameda-operatorCR.yaml",
 		size: 1374,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556265604, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556268292, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -488,8 +492,8 @@ func bindataServiceAccountAdmissioncontrollerSAyaml() (*asset, error) {
 		name: "ServiceAccount/admission-controllerSA.yaml",
 		size: 99,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553562665, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -522,8 +526,8 @@ func bindataServiceAccountAlamedaaiSAyaml() (*asset, error) {
 		name: "ServiceAccount/alameda-aiSA.yaml",
 		size: 89,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1554197916, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -556,8 +560,8 @@ func bindataServiceAccountAlamedadatahubSAyaml() (*asset, error) {
 		name: "ServiceAccount/alameda-datahubSA.yaml",
 		size: 94,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553562665, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -590,8 +594,8 @@ func bindataServiceAccountAlamedaevictionerSAyaml() (*asset, error) {
 		name: "ServiceAccount/alameda-evictionerSA.yaml",
 		size: 97,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553562665, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -624,8 +628,8 @@ func bindataServiceAccountAlamedagrafanaSAyaml() (*asset, error) {
 		name: "ServiceAccount/alameda-grafanaSA.yaml",
 		size: 94,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1555988180, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555925496, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -658,8 +662,8 @@ func bindataServiceAccountAlamedaoperatorSAyaml() (*asset, error) {
 		name: "ServiceAccount/alameda-operatorSA.yaml",
 		size: 95,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553562665, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -695,8 +699,8 @@ func bindataClusterRoleBindingAdmissioncontrollerCRByaml() (*asset, error) {
 		name: "ClusterRoleBinding/admission-controllerCRB.yaml",
 		size: 317,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553562665, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -732,8 +736,8 @@ func bindataClusterRoleBindingAlamedadatahubCRByaml() (*asset, error) {
 		name: "ClusterRoleBinding/alameda-datahubCRB.yaml",
 		size: 296,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553562665, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -769,8 +773,8 @@ func bindataClusterRoleBindingAlamedaevictionerCRByaml() (*asset, error) {
 		name: "ClusterRoleBinding/alameda-evictionerCRB.yaml",
 		size: 305,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553562665, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -806,8 +810,8 @@ func bindataClusterRoleBindingAlamedagrafanaCRByaml() (*asset, error) {
 		name: "ClusterRoleBinding/alameda-grafanaCRB.yaml",
 		size: 296,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1555988180, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555925496, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -843,8 +847,8 @@ func bindataClusterRoleBindingAlamedaoperatorCRByaml() (*asset, error) {
 		name: "ClusterRoleBinding/alameda-operatorCRB.yaml",
 		size: 299,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553562665, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -878,8 +882,8 @@ func bindataSecretAdmissioncontrollertlsyaml() (*asset, error) {
 		name: "Secret/admission-controller-tls.yaml",
 		size: 115,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1554254667, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -913,8 +917,48 @@ func bindataSecretAlamedainfluxdbyaml() (*asset, error) {
 		name: "Secret/alameda-influxdb.yaml",
 		size: 110,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1554254667, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
+	}
+
+	a := &asset{bytes: bytes, info: info}
+
+	return a, nil
+}
+
+var _bindataConfigMapAlamedarecommenderconfigyaml = []byte(
+	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x54\x8f\xb1\x6e\xc3\x30\x0c\x44\x77\x7f\x05\x91\x3d\x86\xd2\x22\x41\x6b" +
+	"\xc0\x53\xe7\xae\x5d\x8a\xc2\x60\x24\xc6\x12\x4a\x89\x02\xa5\x78\xea\xc7\x17\x91\x1d\x34\x1d\x79\xef\x70\xbc\xc3" +
+	"\x1c\x3e\x48\x4b\x90\x34\xc0\x72\xe8\xbe\x43\x72\x03\xbc\x49\xba\x84\xf9\x1d\x73\x17\xa9\xa2\xc3\x8a\x43\x07\x90" +
+	"\x30\xd2\x00\xc8\x18\xc9\xe1\x5e\xc9\x4a\x8c\x94\x1c\xe9\xde\x36\xff\x66\x29\x19\x2d\x0d\x70\x21\x47\x8a\x55\x14" +
+	"\x43\x77\x4f\x58\x7d\x7d\x95\xc8\x03\xfc\xec\x3b\x00\x80\xcf\x99\xe5\x8c\xfc\xd5\x0e\x9f\x71\x0a\xa9\x92\x2e\xc8" +
+	"\x30\xc2\xe1\xc5\x34\x79\xc9\x38\x15\x2f\x5a\x1f\xe1\xb3\xf9\x83\x2c\x69\xfe\xc7\x4e\x1b\x74\x74\xbe\xce\x30\xc2" +
+	"\x05\xb9\x50\xb7\x3e\xbc\xb5\xf1\xd7\xf3\xfa\x11\x9d\x53\x2a\x05\x46\xd8\xdd\x97\x6d\xbc\x7f\x58\xd0\x97\xc5\xee" +
+	"\x9a\x3f\x8b\x56\x18\xe1\x68\xcc\xd1\x6c\x79\xb7\xd2\xc5\x22\x87\x34\x6f\x99\x9c\x3d\xc2\x08\xa6\x7f\x3a\x36\x81" +
+	"\x43\x0c\xb5\x4c\xd5\x2b\x15\x2f\xec\x1a\x7b\x6d\xa8\x60\xcc\x4c\x93\x62\xa5\xdb\xe0\xd5\x9f\x49\x83\xb8\xbb\x78" +
+	"\x32\x8f\xa2\x95\x6b\x6a\x0d\x9a\xf8\x1b\x00\x00\xff\xff\x80\x01\x45\x96\xbf\x01\x00\x00")
+
+func bindataConfigMapAlamedarecommenderconfigyamlBytes() ([]byte, error) {
+	return bindataRead(
+		_bindataConfigMapAlamedarecommenderconfigyaml,
+		"ConfigMap/alameda-recommender-config.yaml",
+	)
+}
+
+
+
+func bindataConfigMapAlamedarecommenderconfigyaml() (*asset, error) {
+	bytes, err := bindataConfigMapAlamedarecommenderconfigyamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{
+		name: "ConfigMap/alameda-recommender-config.yaml",
+		size: 447,
+		md5checksum: "",
+		mode: os.FileMode(420),
+		modTime: time.Unix(1559123855, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1430,8 +1474,8 @@ func bindataConfigMapDashboardsconfigyaml() (*asset, error) {
 		name: "ConfigMap/dashboards-config.yaml",
 		size: 225724,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1559118393, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1559123674, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1482,8 +1526,8 @@ func bindataConfigMapGrafanadatasourcesyaml() (*asset, error) {
 		name: "ConfigMap/grafana-datasources.yaml",
 		size: 1736,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1555988180, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1555925496, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1518,8 +1562,8 @@ func bindataPersistentVolumeClaimAdmissioncontrollerdatayaml() (*asset, error) {
 		name: "PersistentVolumeClaim/admission-controller-data.yaml",
 		size: 203,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556326748, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556500362, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1554,8 +1598,8 @@ func bindataPersistentVolumeClaimAdmissioncontrollerlogyaml() (*asset, error) {
 		name: "PersistentVolumeClaim/admission-controller-log.yaml",
 		size: 202,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556326748, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556500362, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1590,8 +1634,8 @@ func bindataPersistentVolumeClaimAlamedaaidatayaml() (*asset, error) {
 		name: "PersistentVolumeClaim/alameda-ai-data.yaml",
 		size: 193,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556326748, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556500362, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1626,8 +1670,8 @@ func bindataPersistentVolumeClaimAlamedaailogyaml() (*asset, error) {
 		name: "PersistentVolumeClaim/alameda-ai-log.yaml",
 		size: 192,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556326748, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556500362, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1662,8 +1706,8 @@ func bindataPersistentVolumeClaimAlamedadatahubdatayaml() (*asset, error) {
 		name: "PersistentVolumeClaim/alameda-datahub-data.yaml",
 		size: 198,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556326748, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556500362, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1698,8 +1742,8 @@ func bindataPersistentVolumeClaimAlamedadatahublogyaml() (*asset, error) {
 		name: "PersistentVolumeClaim/alameda-datahub-log.yaml",
 		size: 197,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556326748, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556500362, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1734,8 +1778,8 @@ func bindataPersistentVolumeClaimAlamedaevictionerdatayaml() (*asset, error) {
 		name: "PersistentVolumeClaim/alameda-evictioner-data.yaml",
 		size: 201,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556326748, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556500362, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1770,8 +1814,8 @@ func bindataPersistentVolumeClaimAlamedaevictionerlogyaml() (*asset, error) {
 		name: "PersistentVolumeClaim/alameda-evictioner-log.yaml",
 		size: 200,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556326748, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556500362, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1806,8 +1850,8 @@ func bindataPersistentVolumeClaimAlamedaoperatordatayaml() (*asset, error) {
 		name: "PersistentVolumeClaim/alameda-operator-data.yaml",
 		size: 199,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556326748, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556500362, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1842,8 +1886,80 @@ func bindataPersistentVolumeClaimAlamedaoperatorlogyaml() (*asset, error) {
 		name: "PersistentVolumeClaim/alameda-operator-log.yaml",
 		size: 198,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556326748, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556500362, 0),
+	}
+
+	a := &asset{bytes: bytes, info: info}
+
+	return a, nil
+}
+
+var _bindataPersistentVolumeClaimAlamedarecommenderdatayaml = []byte(
+	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x34\xcc\xbd\x6a\x03\x31\x10\xc4\xf1\x5e\x4f\x31\x2f\x70\x81\xa4\x54\x9b" +
+	"\x22\x55\x48\x70\x71\xae\x97\xd5\xd8\x08\x9f\x3e\xbc\xab\xbb\xe7\x37\x82\x73\x39\xc3\x8f\xbf\xf4\xbc\xd2\x3c\xb7" +
+	"\x1a\x71\x7c\x86\x47\xae\x29\xe2\x7f\x3e\x3e\x58\xc7\xda\xb6\xbd\xf0\x7b\x93\x5c\x42\xe1\x90\x24\x43\x62\x00\xaa" +
+	"\x14\x46\xc8\x26\x85\x49\x16\xa3\xb6\x52\x58\x13\x6d\x99\xe2\xa3\x1f\x7a\x22\xef\xa2\x8c\xb8\x31\xd1\x64\x34\x93" +
+	"\x1c\xbc\x53\x67\x43\x54\xe9\xfe\xdb\x12\x7d\x4e\x60\xc1\x85\x92\xae\x96\x07\xff\xaa\x32\x00\x46\x6f\xbb\xe9\x1b" +
+	"\x18\x9f\x3b\x7d\x9c\x0b\xf0\x19\xbc\x33\xe2\xeb\x27\xe3\x15\x00\x00\xff\xff\x58\x9e\x60\xa3\xca\x00\x00\x00")
+
+func bindataPersistentVolumeClaimAlamedarecommenderdatayamlBytes() ([]byte, error) {
+	return bindataRead(
+		_bindataPersistentVolumeClaimAlamedarecommenderdatayaml,
+		"PersistentVolumeClaim/alameda-recommender-data.yaml",
+	)
+}
+
+
+
+func bindataPersistentVolumeClaimAlamedarecommenderdatayaml() (*asset, error) {
+	bytes, err := bindataPersistentVolumeClaimAlamedarecommenderdatayamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{
+		name: "PersistentVolumeClaim/alameda-recommender-data.yaml",
+		size: 202,
+		md5checksum: "",
+		mode: os.FileMode(420),
+		modTime: time.Unix(1559123815, 0),
+	}
+
+	a := &asset{bytes: bytes, info: info}
+
+	return a, nil
+}
+
+var _bindataPersistentVolumeClaimAlamedarecommenderlogyaml = []byte(
+	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x34\x8c\x3d\x4e\xc6\x30\x10\x05\x7b\x9f\xe2\x5d\x20\x48\x50\xba\xa5\xa0" +
+	"\x42\x20\x8a\x50\xaf\xd6\x8f\xc8\xc2\x7f\xec\x3a\x39\x3f\xb2\x94\xaf\x9c\xd1\x68\x64\xe4\x9d\xe6\xb9\xb7\x88\xeb" +
+	"\x39\xfc\xe6\x96\x22\x3e\x97\xf1\xc9\x36\xf7\x5e\xce\xca\xd7\x22\xb9\x86\xca\x29\x49\xa6\xc4\x00\x34\xa9\x8c\x90" +
+	"\x22\x95\x49\x36\xa3\xf6\x5a\xd9\x12\x6d\x2b\xfd\x78\x1a\x97\xde\x8d\x0f\x51\x46\xfc\x30\xd1\x64\x76\x93\x1c\x7c" +
+	"\x50\xd7\x42\x54\xe9\xfe\xde\x13\x7d\x21\xb0\xe1\x8b\x92\xbe\x2d\x4f\x7e\x34\x65\x00\x8c\xde\x4f\xd3\x47\x60\xfc" +
+	"\x3b\xe9\xf3\x26\xc0\xd7\xf0\x60\xc4\xcb\x5b\xc6\x7f\x00\x00\x00\xff\xff\x22\x62\xb1\xa9\xc9\x00\x00\x00")
+
+func bindataPersistentVolumeClaimAlamedarecommenderlogyamlBytes() ([]byte, error) {
+	return bindataRead(
+		_bindataPersistentVolumeClaimAlamedarecommenderlogyaml,
+		"PersistentVolumeClaim/alameda-recommender-log.yaml",
+	)
+}
+
+
+
+func bindataPersistentVolumeClaimAlamedarecommenderlogyaml() (*asset, error) {
+	bytes, err := bindataPersistentVolumeClaimAlamedarecommenderlogyamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{
+		name: "PersistentVolumeClaim/alameda-recommender-log.yaml",
+		size: 201,
+		md5checksum: "",
+		mode: os.FileMode(420),
+		modTime: time.Unix(1559123815, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1879,8 +1995,8 @@ func bindataPersistentVolumeClaimMyalamedagrafanaPVCyaml() (*asset, error) {
 		name: "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml",
 		size: 201,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556326748, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556500362, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1916,8 +2032,8 @@ func bindataPersistentVolumeClaimMyalamedainfluxdbPVCyaml() (*asset, error) {
 		name: "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml",
 		size: 204,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1556326748, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1556589048, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1952,8 +2068,8 @@ func bindataServiceAdmissioncontrollerSVyaml() (*asset, error) {
 		name: "Service/admission-controllerSV.yaml",
 		size: 224,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1554254667, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1988,8 +2104,8 @@ func bindataServiceAlamedadatahubSVyaml() (*asset, error) {
 		name: "Service/alameda-datahubSV.yaml",
 		size: 205,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553562665, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2024,8 +2140,8 @@ func bindataServiceAlamedagrafanaSVyaml() (*asset, error) {
 		name: "Service/alameda-grafanaSV.yaml",
 		size: 211,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1553562665, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2060,8 +2176,8 @@ func bindataServiceAlamedainfluxdbSVyaml() (*asset, error) {
 		name: "Service/alameda-influxdbSV.yaml",
 		size: 213,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1554254667, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1554806736, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2117,8 +2233,8 @@ func bindataDeploymentAdmissioncontrollerDMyaml() (*asset, error) {
 		name: "Deployment/admission-controllerDM.yaml",
 		size: 2445,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1557293960, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1558926876, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2166,8 +2282,8 @@ func bindataDeploymentAlamedaaiDMyaml() (*asset, error) {
 		name: "Deployment/alameda-aiDM.yaml",
 		size: 1348,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1557293960, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1558929030, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2219,8 +2335,8 @@ func bindataDeploymentAlamedadatahubDMyaml() (*asset, error) {
 		name: "Deployment/alameda-datahubDM.yaml",
 		size: 1703,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1557293960, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1558926876, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2270,8 +2386,8 @@ func bindataDeploymentAlamedaevictionerDMyaml() (*asset, error) {
 		name: "Deployment/alameda-evictionerDM.yaml",
 		size: 1536,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1557293960, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1558926876, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2328,8 +2444,8 @@ func bindataDeploymentAlamedagrafanaDMyaml() (*asset, error) {
 		name: "Deployment/alameda-grafanaDM.yaml",
 		size: 2941,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1559111925, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1558938264, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2380,8 +2496,8 @@ func bindataDeploymentAlamedainfluxdbDMyaml() (*asset, error) {
 		name: "Deployment/alameda-influxdbDM.yaml",
 		size: 1672,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1557293960, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1557128664, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2435,8 +2551,50 @@ func bindataDeploymentAlamedaoperatorDMyaml() (*asset, error) {
 		name: "Deployment/alameda-operatorDM.yaml",
 		size: 1953,
 		md5checksum: "",
-		mode: os.FileMode(436),
-		modTime: time.Unix(1557293960, 0),
+		mode: os.FileMode(420),
+		modTime: time.Unix(1558926876, 0),
+	}
+
+	a := &asset{bytes: bytes, info: info}
+
+	return a, nil
+}
+
+var _bindataDeploymentAlamedarecommenderDMyaml = []byte(
+	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\x91\x3d\x8e\xe3\x30\x0c\x46\x7b\x9f\x82\x17\xf0\x4f\x8a\x6d\xd4\x2d" +
+	"\xb0\xe5\x06\x48\xb5\x3d\x23\x33\x8e\x10\x4a\x14\x24\xda\x0b\xdf\x7e\x20\x38\xc9\xd8\xc8\x8c\x27\xac\x0c\x89\xdf" +
+	"\xf3\x23\x85\xd1\xfd\xa3\x94\x9d\x04\x03\x18\x63\x6e\xa7\x43\x75\x73\xa1\x37\xf0\x87\x22\xcb\xec\x29\x68\xe5\x49" +
+	"\xb1\x47\x45\x53\x01\x04\xf4\x64\x00\x19\x3d\xf5\x58\x27\xb2\xe2\x3d\x85\x9e\xd2\xfd\x2e\x47\xb4\x64\xe0\x42\x3d" +
+	"\x25\x54\x49\xe8\xaa\x1c\xc9\x96\x68\x26\x26\xab\x92\xca\x37\x80\x47\xb5\xd7\xbf\x78\x26\xce\xcb\x01\x14\x81\xef" +
+	"\xd0\x89\x22\x3b\x8b\xd9\xc0\xa1\x02\x50\xf2\x91\x51\xe9\x4e\x5a\xe9\x95\xe2\x0d\x74\x17\x0b\xf0\x90\x2b\x65\x25" +
+	"\x28\xba\x40\xe9\x19\xae\x77\xe7\x5d\xca\x79\x1c\xc8\x40\x2f\xf6\x46\xa9\x4e\x34\xb8\xac\x69\x6e\x7a\xba\xe0\xc8" +
+	"\xda\xe4\xc9\x9a\x5f\x5d\xd7\xb5\xab\x95\xb4\x5f\xf0\xcc\xd4\x35\x5d\x73\xd8\x62\x4f\x23\xf3\x49\xd8\xd9\xd9\xc0" +
+	"\x6f\xfe\x8f\x73\x7e\xde\x4f\xc2\xa3\xa7\xa3\x8c\x41\x57\xb3\xee\x2a\xd7\x56\xc2\xc5\x0d\xab\x66\x00\x5f\x00\x27" +
+	"\xd4\xab\x81\x96\xd4\x3e\xcc\xd6\xb6\x9f\x08\x54\x27\xa1\x5d\x28\x8d\x8a\xe7\x0d\x2a\x8f\xe7\x05\xf4\xda\xb0\xc8" +
+	"\xae\x3c\xf7\x2c\xcb\x5b\xd6\xb9\xfc\x7a\xa0\xb7\x02\x2c\xc3\xa3\x7f\xed\x03\x6f\x85\x5f\x76\xb2\x1c\x1c\x31\x9a" +
+	"\xcd\x74\x3f\x11\x3e\x02\x00\x00\xff\xff\xdc\xa4\xbf\x7b\x4a\x03\x00\x00")
+
+func bindataDeploymentAlamedarecommenderDMyamlBytes() ([]byte, error) {
+	return bindataRead(
+		_bindataDeploymentAlamedarecommenderDMyaml,
+		"Deployment/alameda-recommenderDM.yaml",
+	)
+}
+
+
+
+func bindataDeploymentAlamedarecommenderDMyaml() (*asset, error) {
+	bytes, err := bindataDeploymentAlamedarecommenderDMyamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{
+		name: "Deployment/alameda-recommenderDM.yaml",
+		size: 842,
+		md5checksum: "",
+		mode: os.FileMode(420),
+		modTime: time.Unix(1559123835, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2529,6 +2687,7 @@ var _bindata = map[string]func() (*asset, error){
 	"ClusterRoleBinding/alameda-operatorCRB.yaml":             bindataClusterRoleBindingAlamedaoperatorCRByaml,
 	"Secret/admission-controller-tls.yaml":                    bindataSecretAdmissioncontrollertlsyaml,
 	"Secret/alameda-influxdb.yaml":                            bindataSecretAlamedainfluxdbyaml,
+	"ConfigMap/alameda-recommender-config.yaml":               bindataConfigMapAlamedarecommenderconfigyaml,
 	"ConfigMap/dashboards-config.yaml":                        bindataConfigMapDashboardsconfigyaml,
 	"ConfigMap/grafana-datasources.yaml":                      bindataConfigMapGrafanadatasourcesyaml,
 	"PersistentVolumeClaim/admission-controller-data.yaml":    bindataPersistentVolumeClaimAdmissioncontrollerdatayaml,
@@ -2541,6 +2700,8 @@ var _bindata = map[string]func() (*asset, error){
 	"PersistentVolumeClaim/alameda-evictioner-log.yaml":       bindataPersistentVolumeClaimAlamedaevictionerlogyaml,
 	"PersistentVolumeClaim/alameda-operator-data.yaml":        bindataPersistentVolumeClaimAlamedaoperatordatayaml,
 	"PersistentVolumeClaim/alameda-operator-log.yaml":         bindataPersistentVolumeClaimAlamedaoperatorlogyaml,
+	"PersistentVolumeClaim/alameda-recommender-data.yaml":     bindataPersistentVolumeClaimAlamedarecommenderdatayaml,
+	"PersistentVolumeClaim/alameda-recommender-log.yaml":      bindataPersistentVolumeClaimAlamedarecommenderlogyaml,
 	"PersistentVolumeClaim/my-alamedagrafanaPVC.yaml":         bindataPersistentVolumeClaimMyalamedagrafanaPVCyaml,
 	"PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml":        bindataPersistentVolumeClaimMyalamedainfluxdbPVCyaml,
 	"Service/admission-controllerSV.yaml":                     bindataServiceAdmissioncontrollerSVyaml,
@@ -2554,6 +2715,7 @@ var _bindata = map[string]func() (*asset, error){
 	"Deployment/alameda-grafanaDM.yaml":                       bindataDeploymentAlamedagrafanaDMyaml,
 	"Deployment/alameda-influxdbDM.yaml":                      bindataDeploymentAlamedainfluxdbDMyaml,
 	"Deployment/alameda-operatorDM.yaml":                      bindataDeploymentAlamedaoperatorDMyaml,
+	"Deployment/alameda-recommenderDM.yaml":                   bindataDeploymentAlamedarecommenderDMyaml,
 }
 
 //
@@ -2624,6 +2786,7 @@ var _bintree = &bintree{Func: nil, Children: map[string]*bintree{
 		"alameda-operatorCRB.yaml": {Func: bindataClusterRoleBindingAlamedaoperatorCRByaml, Children: map[string]*bintree{}},
 	}},
 	"ConfigMap": {Func: nil, Children: map[string]*bintree{
+		"alameda-recommender-config.yaml": {Func: bindataConfigMapAlamedarecommenderconfigyaml, Children: map[string]*bintree{}},
 		"dashboards-config.yaml": {Func: bindataConfigMapDashboardsconfigyaml, Children: map[string]*bintree{}},
 		"grafana-datasources.yaml": {Func: bindataConfigMapGrafanadatasourcesyaml, Children: map[string]*bintree{}},
 	}},
@@ -2639,6 +2802,7 @@ var _bintree = &bintree{Func: nil, Children: map[string]*bintree{
 		"alameda-grafanaDM.yaml": {Func: bindataDeploymentAlamedagrafanaDMyaml, Children: map[string]*bintree{}},
 		"alameda-influxdbDM.yaml": {Func: bindataDeploymentAlamedainfluxdbDMyaml, Children: map[string]*bintree{}},
 		"alameda-operatorDM.yaml": {Func: bindataDeploymentAlamedaoperatorDMyaml, Children: map[string]*bintree{}},
+		"alameda-recommenderDM.yaml": {Func: bindataDeploymentAlamedarecommenderDMyaml, Children: map[string]*bintree{}},
 	}},
 	"PersistentVolumeClaim": {Func: nil, Children: map[string]*bintree{
 		"admission-controller-data.yaml": {Func: bindataPersistentVolumeClaimAdmissioncontrollerdatayaml, Children: map[string]*bintree{}},
@@ -2651,6 +2815,8 @@ var _bintree = &bintree{Func: nil, Children: map[string]*bintree{
 		"alameda-evictioner-log.yaml": {Func: bindataPersistentVolumeClaimAlamedaevictionerlogyaml, Children: map[string]*bintree{}},
 		"alameda-operator-data.yaml": {Func: bindataPersistentVolumeClaimAlamedaoperatordatayaml, Children: map[string]*bintree{}},
 		"alameda-operator-log.yaml": {Func: bindataPersistentVolumeClaimAlamedaoperatorlogyaml, Children: map[string]*bintree{}},
+		"alameda-recommender-data.yaml": {Func: bindataPersistentVolumeClaimAlamedarecommenderdatayaml, Children: map[string]*bintree{}},
+		"alameda-recommender-log.yaml": {Func: bindataPersistentVolumeClaimAlamedarecommenderlogyaml, Children: map[string]*bintree{}},
 		"my-alamedagrafanaPVC.yaml": {Func: bindataPersistentVolumeClaimMyalamedagrafanaPVCyaml, Children: map[string]*bintree{}},
 		"my-alamedainfluxdbPVC.yaml": {Func: bindataPersistentVolumeClaimMyalamedainfluxdbPVCyaml, Children: map[string]*bintree{}},
 	}},

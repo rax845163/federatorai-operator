@@ -45,6 +45,12 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 			util.SetStorageToVolumeSource(dep, asp.Storages, "admission-controller-type.pvc", util.AlamedaGroup)
 			util.SetStorageToMountPath(dep, asp.Storages, util.AdmissioncontrollerCTN, "admission-controller-type-storage", util.AlamedaGroup)
 		}
+	case util.AlamedarecommenderDPN:
+		{
+			util.SetImageStruct(dep, asp.Version, util.AlamedarecommenderCTN)
+			util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-recommender-type.pvc", util.AlamedaGroup)
+			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedarecommenderCTN, "alameda-recommender-type-storage", util.AlamedaGroup)
+		}
 	case util.InfluxdbDPN:
 		{
 			util.SetStorageToVolumeSource(dep, asp.Storages, "my-alameda.influxdb-type.pvc", util.InfluxDBGroup)
@@ -63,9 +69,15 @@ func processConfigMapsPrometheusService(cm *corev1.ConfigMap, prometheusservice 
 		cm.Data[util.OriginComfigMapPrometheusLocation] = strings.Replace(cm.Data[util.OriginComfigMapPrometheusLocation], util.OriginPrometheus_URL, prometheusservice, -1)
 	}
 }
+func processConfigMapsDataHubService(cm *corev1.ConfigMap, namespace string) {
+	if strings.Contains(cm.Data[util.OriginComfigMapRecommandation], util.NamespaceService) && namespace != "" {
+		cm.Data[util.OriginComfigMapRecommandation] = strings.Replace(cm.Data[util.OriginComfigMapRecommandation], util.NamespaceService, namespace+".svc", -1)
+	}
+}
 
-func GlobalSectionSetParamterToConfigMap(cm *corev1.ConfigMap, prometheusService string) {
+func GlobalSectionSetParamterToConfigMap(cm *corev1.ConfigMap, prometheusService string, namespace string) {
 	processConfigMapsPrometheusService(cm, prometheusService) //ConfigMapData's PrometheusService
+	processConfigMapsDataHubService(cm, namespace)            //ConfigMapData's alameda-datahub service
 }
 
 func processDeploymentPrometheusService(dep *appsv1.Deployment, prometheusservice string) {

@@ -23,6 +23,7 @@ const (
 	AlamedadatahubDPN      = "alameda-datahub"
 	AlamedaevictionerDPN   = "alameda-evictioner"
 	AdmissioncontrollerDPN = "admission-controller"
+	AlamedarecommenderDPN  = "alameda-recommender"
 	GrafanaDPN             = "alameda-grafana"
 	InfluxdbDPN            = "alameda-influxdb"
 	//container name
@@ -31,6 +32,7 @@ const (
 	AlamedadatahubCTN      = "alameda-datahub"
 	AlamedaevictionerCTN   = "alameda-evictioner"
 	AdmissioncontrollerCTN = "admission-controller"
+	AlamedarecommenderCTN  = "alameda-recommender"
 	GetTokenCTN            = "gettoken"
 	GrafanaCTN             = "grafana"
 	InfluxdbCTN            = "influxdb"
@@ -42,6 +44,8 @@ const (
 	//MountPath
 	DataMountPath = "/var/lib"
 	LogMountPath  = "/var/log"
+	//Recommandation config
+	OriginComfigMapRecommandation = "config.toml"
 )
 
 var (
@@ -144,6 +148,9 @@ func getVolumeLogIndex(dep *appsv1.Deployment) int {
 			if value.Name == "admission-controller-log-storage" {
 				return index
 			}
+			if value.Name == "alameda-recommender-log-storage" {
+				return index
+			}
 		}
 		return -1
 	}
@@ -167,6 +174,9 @@ func getVolumeDataIndex(dep *appsv1.Deployment) int {
 				return index
 			}
 			if value.Name == "admission-controller-data-storage" {
+				return index
+			}
+			if value.Name == "alameda-recommender-data-storage" {
 				return index
 			}
 			if value.Name == "influxdb-data-storage" {
