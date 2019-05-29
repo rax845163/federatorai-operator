@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
+	"github.com/containers-ai/federatorai-operator/pkg/util"
 	"github.com/pkg/errors"
 	apiextv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	apiextclientv1beta1 "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
@@ -15,11 +17,11 @@ import (
 
 var log = logf.Log.WithName("controller_alamedaservice")
 
-func ApplyCustomResourceDefinition(client apiextclientv1beta1.CustomResourceDefinitionsGetter, required *apiextv1beta1.CustomResourceDefinition) (*apiextv1beta1.CustomResourceDefinition, error) {
+func ApplyCustomResourceDefinition(client apiextclientv1beta1.CustomResourceDefinitionsGetter, required *apiextv1beta1.CustomResourceDefinition, asp *alamedaserviceparamter.AlamedaServiceParamter) (*apiextv1beta1.CustomResourceDefinition, error) {
 
 	waitInterval := 500 * time.Millisecond
 
-	_, err := client.CustomResourceDefinitions().Get(required.Name, metav1.GetOptions{})
+	cluster, err := client.CustomResourceDefinitions().Get(required.Name, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		log.Info("Not Found CRD And Create", "CustomResourceDefinition.Name", required.Name)
 		actual, err := client.CustomResourceDefinitions().Create(required)
@@ -39,11 +41,22 @@ func ApplyCustomResourceDefinition(client apiextclientv1beta1.CustomResourceDefi
 			return nil, errors.Wrapf(err, "apply CustomResourceDefinition %s failed: waiting CustomResourceDefinition timeout", required.Name)
 		}
 		return actual, err
+	} else {
+		log.Info("Found CRD", "CustomResourceDefinition.Name", required.Name)
+		if asp.CheckCurrentCRDIsChangeVersion() && cluster.Name == util.AlamedaScalerName { //if user change scaler CRD version (component version change)
+			cluster.Spec = required.Spec //replace crd spec
+			actual, err := client.CustomResourceDefinitions().Update(cluster)
+			if err != nil {
+				return nil, errors.Wrapf(err, "update CustomResourceDefinition %s failed", required.Name)
+			}
+			asp.SetCurrentCRDChangeVersionToFalse()
+			log.Info("change CRD Version", "CustomResourceDefinition.Name", required.Name)
+			return actual, err
+		}
 	}
 	if err != nil {
 		return nil, errors.Wrapf(err, "apply CustomResourceDefinition %s failed", required.Name)
 	}
-	log.Info("Found CRD", "CustomResourceDefinition.Name", required.Name)
 	return nil, nil
 }
 func DeleteCustomResourceDefinition(client apiextclientv1beta1.CustomResourceDefinitionsGetter, required *apiextv1beta1.CustomResourceDefinition) (*apiextv1beta1.CustomResourceDefinition, bool, error) {

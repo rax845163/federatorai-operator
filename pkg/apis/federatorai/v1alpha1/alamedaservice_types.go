@@ -79,8 +79,17 @@ type AlamedaServiceStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html
-
+	CRDVersion AlamedaServiceStatusCRDVersion  `json:"crdversion"`
 	Conditions []AlamedaServiceStatusCondition `json:"conditions"`
+}
+
+type AlamedaServiceStatusCRDVersion struct {
+
+	// Represents whether any actions on the underlaying managed objects are
+	// being performed. Only delete actions will be performed.
+	ChangeVersion bool   `json:"-"`
+	ScalerVersion string `json:"scalerversion"`
+	CRDName       string `json:"crdname"`
 }
 
 type AlamedaServiceStatusCondition struct {

@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
+	"github.com/containers-ai/federatorai-operator/pkg/util"
 )
 
 var (
@@ -21,7 +22,6 @@ var (
 	}
 	crdList = []string{
 		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
-		"CustomResourceDefinition/alamedascalersCRD.yaml",
 	}
 	cmList = []string{
 		"ConfigMap/alameda-recommender-config.yaml",
@@ -93,6 +93,8 @@ type AlamedaServiceParamter struct {
 	AlamedaEvictionerSectionSet   v1alpha1.AlamedaComponentSpec
 	AdmissionControllerSectionSet v1alpha1.AlamedaComponentSpec
 	AlamedaRecommenderSectionSet  v1alpha1.AlamedaComponentSpec
+	CurrentCRDVersion             v1alpha1.AlamedaServiceStatusCRDVersion
+	previousCRDVersion            v1alpha1.AlamedaServiceStatusCRDVersion
 }
 
 type Resource struct {
@@ -166,7 +168,7 @@ func sectionUninstallPersistentVolumeClaimSource(pvc []string, storagestruct []v
 	return pvc
 }
 
-func (asp AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Resource {
+func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Resource {
 	pvc := []string{}
 	for _, v := range asp.Storages {
 		if v.Type != v1alpha1.PVC {
@@ -292,7 +294,7 @@ func sectioninstallPersistentVolumeClaimSource(pvc []string, storagestruct []v1a
 	return pvc
 }
 
-func (asp AlamedaServiceParamter) getInstallPersistentVolumeClaimSource(pvc []string) []string {
+func (asp *AlamedaServiceParamter) getInstallPersistentVolumeClaimSource(pvc []string) []string {
 	// get install resource
 	gloabalLogFlag := false
 	gloabalDataFlag := false
@@ -339,7 +341,43 @@ func (asp AlamedaServiceParamter) getInstallPersistentVolumeClaimSource(pvc []st
 	return pvc
 
 }
-func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
+
+func (asp *AlamedaServiceParamter) changeScalerCRDVersion(crd []string) []string {
+	alamedaOperatorVersion := util.OriAlamedaOperatorVersion
+	if asp.Version != "" {
+		alamedaOperatorVersion = asp.Version
+	}
+	if asp.AlamedaOperatorSectionSet.Version != "" {
+		alamedaOperatorVersion = asp.AlamedaOperatorSectionSet.Version
+	}
+	if util.StringInSlice(alamedaOperatorVersion, util.V1scalerOperatorVersionList) { //check current operatorVersion used scaler version is scaler V1
+		crd = append(crd, "CustomResourceDefinition/alamedascalersCRD.yaml")
+		asp.CurrentCRDVersion.ScalerVersion = util.AlamedaScalerVersion[0]
+		asp.CurrentCRDVersion.CRDName = util.AlamedaScalerName
+	} else {
+		crd = append(crd, "CustomResourceDefinition/alamedascalersV2CRD.yaml")
+		asp.CurrentCRDVersion.ScalerVersion = util.AlamedaScalerVersion[1]
+		asp.CurrentCRDVersion.CRDName = util.AlamedaScalerName
+	}
+	if asp.CurrentCRDVersion.ScalerVersion != asp.previousCRDVersion.ScalerVersion && asp.CurrentCRDVersion.ScalerVersion != "" && asp.previousCRDVersion.ScalerVersion != "" {
+		asp.SetCurrentCRDChangeVersionToTrue()
+	}
+	return crd
+}
+
+func (asp *AlamedaServiceParamter) CheckCurrentCRDIsChangeVersion() bool {
+	return asp.CurrentCRDVersion.ChangeVersion
+}
+
+func (asp *AlamedaServiceParamter) SetCurrentCRDChangeVersionToFalse() {
+	asp.CurrentCRDVersion.ChangeVersion = false
+}
+
+func (asp *AlamedaServiceParamter) SetCurrentCRDChangeVersionToTrue() {
+	asp.CurrentCRDVersion.ChangeVersion = true
+}
+
+func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 	crb := crbList
 	cr := crList
 	sa := saList
@@ -372,6 +410,7 @@ func (asp AlamedaServiceParamter) GetInstallResource() *Resource {
 		dep = append(dep, "Deployment/alameda-evictionerDM.yaml")
 	}
 	pvc = asp.getInstallPersistentVolumeClaimSource(pvc)
+	crd = asp.changeScalerCRDVersion(crd)
 	return &Resource{
 		ClusterRoleBindingList:       crb,
 		ClusterRoleList:              cr,
@@ -401,6 +440,8 @@ func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServic
 		AlamedaEvictionerSectionSet:   instance.Spec.AlamedaEvictionerSectionSet,
 		AdmissionControllerSectionSet: instance.Spec.AdmissionControllerSectionSet,
 		AlamedaRecommenderSectionSet:  instance.Spec.AlamedaRecommenderSectionSet,
+		CurrentCRDVersion:             instance.Status.CRDVersion,
+		previousCRDVersion:            instance.Status.CRDVersion,
 	}
 	return asp
 }

@@ -174,11 +174,12 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	componentConfig = r.newComponentConfig(ns)
 	installResource := asp.GetInstallResource()
-
-	if err = r.syncCustomResourceDefinition(installResource); err != nil {
+	if err = r.syncCustomResourceDefinition(instance, asp, installResource); err != nil {
 		log.Error(err, "create crd failed")
 	}
-
+	if err = r.updateAlamedaServiceStatus(instance, request.NamespacedName, asp); err != nil {
+		log.Error(err, "updateAlamedaServiceStatus failed")
+	}
 	if err := r.syncClusterRole(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync clusterRole failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -256,10 +257,13 @@ func (r *ReconcileAlamedaService) newComponentConfig(namespace corev1.Namespace)
 	return componentConfg
 }
 
-func (r *ReconcileAlamedaService) syncCustomResourceDefinition(resource *alamedaserviceparamter.Resource) error {
+func (r *ReconcileAlamedaService) syncCustomResourceDefinition(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.CustomResourceDefinitionList {
 		crd := componentConfig.RegistryCustomResourceDefinition(fileString)
-		_, err := resourceapply.ApplyCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd)
+		/*if err := controllerutil.SetControllerReference(instance, crd, r.scheme); err != nil {
+			return errors.Errorf("Fail resourceCRB SetControllerReference: %s", err.Error())
+		}*/
+		_, err := resourceapply.ApplyCustomResourceDefinition(r.apiextclient.ApiextensionsV1beta1(), crd, asp)
 		if err != nil {
 			return errors.Wrapf(err, "syncCustomResourceDefinition faild: CustomResourceDefinition.Name: %s", crd.Name)
 		}
@@ -776,4 +780,14 @@ func lockIsOwnedByAlamedaService(lock rbacv1.ClusterRole, alamedaService *federa
 	}
 
 	return false
+}
+
+func (r *ReconcileAlamedaService) updateAlamedaServiceStatus(alamedaService *federatoraiv1alpha1.AlamedaService, namespaceName client.ObjectKey, asp *alamedaserviceparamter.AlamedaServiceParamter) error {
+	copyAlamedaService := alamedaService.DeepCopy()
+	r.client.Get(context.TODO(), namespaceName, copyAlamedaService)
+	copyAlamedaService.Status.CRDVersion = asp.CurrentCRDVersion
+	if err := r.client.Update(context.Background(), copyAlamedaService); err != nil {
+		return errors.Errorf("update AlamedaService Status failed: %s", err.Error())
+	}
+	return nil
 }

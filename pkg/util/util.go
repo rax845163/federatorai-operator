@@ -36,6 +36,11 @@ const (
 	GetTokenCTN            = "gettoken"
 	GrafanaCTN             = "grafana"
 	InfluxdbCTN            = "influxdb"
+	//CRD NAME
+	AlamedaScalerName         = "alamedascalers.autoscaling.containers.ai"
+	AlamedaRecommendationName = "alamedarecommendations.autoscaling.containers.ai"
+	//CRD Version
+	OriAlamedaOperatorVersion = "v0.3.8"
 	//AlamedaService modify Prometheus's var
 	OriginPrometheus_URL               = "https://prometheus-k8s.openshift-monitoring.svc:9091"
 	OriginDeploymentPrometheusLocation = "ALAMEDA_DATAHUB_PROMETHEUS_URL"
@@ -50,6 +55,9 @@ const (
 
 var (
 	log = logf.Log.WithName("controller_alamedaservice")
+	//AlamedaScaler version
+	AlamedaScalerVersion        = []string{"v1", "v2"}
+	V1scalerOperatorVersionList = []string{"v0.3.6", "v0.3.7", "v0.3.8", "v0.3.9", "v0.3.10", "v0.3.11", "v0.3.12"}
 )
 
 func SetBootStrapImageStruct(dep *appsv1.Deployment, componentspec v1alpha1.AlamedaComponentSpec, ctn string) {
@@ -304,4 +312,13 @@ func SetStorageToPersistentVolumeClaimSpec(pvc *corev1.PersistentVolumeClaim, st
 			setPVCSpec(pvc, storagestructs[k])
 		}
 	}
+}
+
+func StringInSlice(str string, list []string) bool {
+	for _, v := range list {
+		if v == str {
+			return true
+		}
+	}
+	return false
 }
