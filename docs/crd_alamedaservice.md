@@ -1,7 +1,7 @@
 ## AlamedaService Custom Resource Definition
 
 **FederatorAI Operator** provides _AlamedaService_ [CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) as a channel for users to manage Alameda components including:
-- Deployment of Alameda components such as _alameda-operator_, _alameda-datahub_, _alameda-ai_, _alameda-evictioner_, _alameda-admission-controller_, _InfluxDB_ and _Grafana_. Please visit [Alamede architecture](https://github.com/containers-ai/alameda/blob/master/design/architecture.md) for more details.
+- Deployment of Alameda components such as _alameda-operator_, _alameda-datahub_, _alameda-ai_, _alameda-evictioner_, _alameda-admission-controller_, _alameda-recommender_, _InfluxDB_ and _Grafana_. Please visit [Alamede architecture](https://github.com/containers-ai/alameda/blob/master/design/architecture.md) for more details.
 - Seamless updation of Alameda between versions.
 - Application lifecycle and storage management.
 
@@ -147,6 +147,9 @@ spec:
 - Field: alameda-grafana
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-grafana component. This field is optional.
+- Field: alameda-recommender
+  - type: [AlamedaComponentSpec](#alamedacomponentspec)
+  - description: Spec for Alameda-recommender component. This field is optional.
 
 ### StorageSpec
 
