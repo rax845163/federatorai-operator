@@ -2383,7 +2383,7 @@ data:
     
   prediction-recommendation.json:
     |-
-      {
+     {
         "annotations": {
           "list": [
             {
@@ -2400,7 +2400,8 @@ data:
         "editable": true,
         "gnetId": null,
         "graphTooltip": 0,
-        "iteration": 1559117845685,
+        "id": 14,
+        "iteration": 1559191382251,
         "links": [],
         "panels": [
           {
@@ -2884,27 +2885,23 @@ data:
             "seriesOverrides": [
               {
                 "alias": "Observation : CPU Usage",
-                "color": "#5195ce",
-                "pointradius": 1
+                "color": "#5195ce"
               },
               {
                 "alias": "Recommendation: CPU limit",
                 "color": "#f2c96d",
-                "pointradius": 1,
-                "points": true
+                "steppedLine": true
               },
               {
                 "alias": "Recommendation: CPU request",
                 "color": "#7eb26d",
-                "pointradius": 1,
-                "points": true
+                "steppedLine": true
               },
               {
                 "alias": "Prediction: CPU usage (in 15m)",
                 "color": "#f9e2d2",
                 "dashLength": 5,
                 "dashes": true,
-                "pointradius": 1,
                 "spaceLength": 4
               },
               {
@@ -2912,7 +2909,6 @@ data:
                 "color": "#f9e2d2",
                 "dashLength": 5,
                 "dashes": true,
-                "pointradius": 1,
                 "spaceLength": 4
               },
               {
@@ -2920,7 +2916,6 @@ data:
                 "color": "#f9e2d2",
                 "dashLength": 5,
                 "dashes": true,
-                "pointradius": 1,
                 "spaceLength": 4
               },
               {
@@ -2928,7 +2923,6 @@ data:
                 "color": "#f29191",
                 "dashLength": 5,
                 "dashes": true,
-                "pointradius": 1,
                 "spaceLength": 4
               },
               {
@@ -2936,7 +2930,6 @@ data:
                 "color": "#f29191",
                 "dashLength": 5,
                 "dashes": true,
-                "pointradius": 1,
                 "spaceLength": 4
               },
               {
@@ -2944,7 +2937,6 @@ data:
                 "color": "#f29191",
                 "dashLength": 5,
                 "dashes": true,
-                "pointradius": 1,
                 "spaceLength": 4
               }
             ],
@@ -3339,27 +3331,23 @@ data:
             "seriesOverrides": [
               {
                 "alias": "Observation: memory usage",
-                "color": "#5195ce",
-                "pointradius": 1
+                "color": "#5195ce"
               },
               {
                 "alias": "Recommendation: memory limit",
                 "color": "#f2c96d",
-                "pointradius": 1,
-                "points": true
+                "steppedLine": true
               },
               {
                 "alias": "Recommendation: memory request",
                 "color": "#7eb26d",
-                "pointradius": 1,
-                "points": true
+                "steppedLine": true
               },
               {
                 "alias": "Prediction: memory usage (in 15m)",
                 "color": "#f9e2d2",
                 "dashLength": 5,
                 "dashes": true,
-                "pointradius": 1,
                 "spaceLength": 4
               },
               {
@@ -3367,7 +3355,6 @@ data:
                 "color": "#f9e2d2",
                 "dashLength": 5,
                 "dashes": true,
-                "pointradius": 1,
                 "spaceLength": 4
               },
               {
@@ -3375,7 +3362,6 @@ data:
                 "color": "#f9e2d2",
                 "dashLength": 5,
                 "dashes": true,
-                "pointradius": 1,
                 "spaceLength": 4
               },
               {
@@ -3383,7 +3369,6 @@ data:
                 "color": "#f29191",
                 "dashLength": 5,
                 "dashes": true,
-                "pointradius": 1,
                 "spaceLength": 4
               },
               {
@@ -3391,7 +3376,6 @@ data:
                 "color": "#f29191",
                 "dashLength": 5,
                 "dashes": true,
-                "pointradius": 1,
                 "spaceLength": 4
               },
               {
@@ -3399,7 +3383,6 @@ data:
                 "color": "#f29191",
                 "dashLength": 5,
                 "dashes": true,
-                "pointradius": 1,
                 "spaceLength": 4
               }
             ],
@@ -3766,8 +3749,8 @@ data:
             {
               "allValue": null,
               "current": {
-                "text": "utimbox",
-                "value": "utimbox"
+                "text": "federatorai",
+                "value": "federatorai"
               },
               "datasource": "InfluxDB",
               "definition": "show tag values on alameda_cluster_status from container with key=\"alameda_scaler_namespace\"",
@@ -3791,8 +3774,8 @@ data:
             {
               "allValue": null,
               "current": {
-                "text": "utimbox",
-                "value": "utimbox"
+                "text": "alameda-app",
+                "value": "alameda-app"
               },
               "datasource": "InfluxDB",
               "definition": "show tag values on alameda_cluster_status from container with key=\"alameda_scaler_name\" where \"alameda_scaler_namespace\" = '$ns'",
@@ -3816,8 +3799,8 @@ data:
             {
               "allValue": null,
               "current": {
-                "text": "utimbox-6d7889c989-tskln",
-                "value": "utimbox-6d7889c989-tskln"
+                "text": "alameda-ai-8d8458b74-n2mx8",
+                "value": "alameda-ai-8d8458b74-n2mx8"
               },
               "datasource": "InfluxDB",
               "definition": "show tag values on alameda_cluster_status from container with key=\"pod_name\" where \"alameda_scaler_namespace\" = '$ns' and \"alameda_scaler_name\" = '$scaler'",
@@ -3841,8 +3824,8 @@ data:
             {
               "allValue": null,
               "current": {
-                "text": "utimbox",
-                "value": "utimbox"
+                "text": "alameda-ai-engine",
+                "value": "alameda-ai-engine"
               },
               "datasource": "InfluxDB",
               "definition": "show tag values on alameda_cluster_status from container with key=\"name\" where \"alameda_scaler_namespace\" = '$ns' and \"alameda_scaler_name\" = '$scaler' and \"pod_name\" = '$pod'",
@@ -3896,10 +3879,10 @@ data:
         },
         "timezone": "",
         "title": "Prediction and Recommendation",
-        "uid": "7dadaada",
-        "version": 1
+        "uid": "7dayyuda",
+        "version": 2
       }
-
+ 
     
   recommendation-alamedascaler.json:
     |-
