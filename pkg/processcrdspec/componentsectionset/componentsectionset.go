@@ -58,6 +58,13 @@ func SectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaservicep
 			util.SetStorageToVolumeSource(dep, asp.AlamedaRecommenderSectionSet.Storages, "alameda-recommender-type.pvc", util.AlamedaGroup)
 			util.SetStorageToMountPath(dep, asp.AlamedaRecommenderSectionSet.Storages, util.AlamedarecommenderCTN, "alameda-recommender-type.pvc", util.AlamedaGroup)
 		}
+	case util.AlamedaexecutorDPN:
+		{
+			util.SetImageStruct(dep, asp.AlamedaExecutorSectionSet, util.AlamedaexecutorCTN)
+			util.SetImagePullPolicy(dep, util.AlamedaexecutorCTN, asp.AlamedaExecutorSectionSet.ImagePullPolicy)
+			util.SetStorageToVolumeSource(dep, asp.AlamedaExecutorSectionSet.Storages, "alameda-executor-type.pvc", util.AlamedaGroup)
+			util.SetStorageToMountPath(dep, asp.AlamedaExecutorSectionSet.Storages, util.AlamedaexecutorCTN, "alameda-executor-type.pvc", util.AlamedaGroup)
+		}
 	case util.InfluxdbDPN:
 		{
 			util.SetImageStruct(dep, asp.InfluxdbSectionSet, util.InfluxdbCTN)
@@ -102,6 +109,10 @@ func SectionSetParamterToPersistentVolumeClaim(pvc *corev1.PersistentVolumeClaim
 		case fmt.Sprintf("alameda-recommender-%s.pvc", pvcusage):
 			{
 				util.SetStorageToPersistentVolumeClaimSpec(pvc, asp.AlamedaRecommenderSectionSet.Storages, pvcusage)
+			}
+		case fmt.Sprintf("alameda-executor-%s.pvc", pvcusage):
+			{
+				util.SetStorageToPersistentVolumeClaimSpec(pvc, asp.AlamedaExecutorSectionSet.Storages, pvcusage)
 			}
 		case fmt.Sprintf("my-alameda.influxdb-%s.pvc", pvcusage):
 			{

@@ -57,6 +57,10 @@ var (
 		"Deployment/admission-controllerDM.yaml",
 		"Deployment/alameda-evictionerDM.yaml",
 		"Service/admission-controllerSV.yaml",
+		"Deployment/alameda-executorDM.yaml",
+		"ServiceAccount/alameda-executorSA.yaml",
+		"ClusterRole/alameda-executorCR.yaml",
+		"ClusterRoleBinding/alameda-executorCRB.yaml",
 	}
 
 	secretList = []string{
@@ -93,6 +97,7 @@ type AlamedaServiceParamter struct {
 	AlamedaEvictionerSectionSet   v1alpha1.AlamedaComponentSpec
 	AdmissionControllerSectionSet v1alpha1.AlamedaComponentSpec
 	AlamedaRecommenderSectionSet  v1alpha1.AlamedaComponentSpec
+	AlamedaExecutorSectionSet     v1alpha1.AlamedaComponentSpec
 	CurrentCRDVersion             v1alpha1.AlamedaServiceStatusCRDVersion
 	previousCRDVersion            v1alpha1.AlamedaServiceStatusCRDVersion
 }
@@ -179,6 +184,7 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 				pvc = append(pvc, "PersistentVolumeClaim/alameda-evictioner-log.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/admission-controller-log.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/alameda-recommender-log.yaml")
+				pvc = append(pvc, "PersistentVolumeClaim/alameda-executor-log.yaml")
 			} else if v.Usage == v1alpha1.Data {
 				pvc = append(pvc, "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
@@ -188,6 +194,7 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 				pvc = append(pvc, "PersistentVolumeClaim/alameda-evictioner-data.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/admission-controller-data.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/alameda-recommender-data.yaml")
+				pvc = append(pvc, "PersistentVolumeClaim/alameda-executor-data.yaml")
 			} else if v.Usage == v1alpha1.Empty {
 				pvc = append(pvc, "PersistentVolumeClaim/alameda-ai-log.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/alameda-operator-log.yaml")
@@ -195,6 +202,7 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 				pvc = append(pvc, "PersistentVolumeClaim/alameda-evictioner-log.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/admission-controller-log.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/alameda-recommender-log.yaml")
+				pvc = append(pvc, "PersistentVolumeClaim/alameda-executor-log.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/alameda-ai-data.yaml")
@@ -203,6 +211,7 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 				pvc = append(pvc, "PersistentVolumeClaim/alameda-evictioner-data.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/admission-controller-data.yaml")
 				pvc = append(pvc, "PersistentVolumeClaim/alameda-recommender-data.yaml")
+				pvc = append(pvc, "PersistentVolumeClaim/alameda-executor-data.yaml")
 			}
 		}
 	}
@@ -212,6 +221,7 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaEvictionerSectionSet.Storages, "PersistentVolumeClaim/alameda-evictioner-log.yaml", v1alpha1.Log)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AdmissionControllerSectionSet.Storages, "PersistentVolumeClaim/admission-controller-log.yaml", v1alpha1.Log)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaRecommenderSectionSet.Storages, "PersistentVolumeClaim/alameda-recommender-log.yaml", v1alpha1.Log)
+	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaRecommenderSectionSet.Storages, "PersistentVolumeClaim/alameda-executor-log.yaml", v1alpha1.Log)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.InfluxdbSectionSet.Storages, "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.GrafanaSectionSet.Storages, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaAISectionSet.Storages, "PersistentVolumeClaim/alameda-ai-data.yaml", v1alpha1.Data)
@@ -220,6 +230,7 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaEvictionerSectionSet.Storages, "PersistentVolumeClaim/alameda-evictioner-data.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AdmissionControllerSectionSet.Storages, "PersistentVolumeClaim/admission-controller-data.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaRecommenderSectionSet.Storages, "PersistentVolumeClaim/alameda-recommender-data.yaml", v1alpha1.Log)
+	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaRecommenderSectionSet.Storages, "PersistentVolumeClaim/alameda-executor-data.yaml", v1alpha1.Log)
 	return &Resource{
 		PersistentVolumeClaimList: pvc,
 	}
@@ -313,6 +324,7 @@ func (asp *AlamedaServiceParamter) getInstallPersistentVolumeClaimSource(pvc []s
 		pvc = append(pvc, "PersistentVolumeClaim/alameda-evictioner-log.yaml")
 		pvc = append(pvc, "PersistentVolumeClaim/admission-controller-log.yaml")
 		pvc = append(pvc, "PersistentVolumeClaim/alameda-recommender-log.yaml")
+		pvc = append(pvc, "PersistentVolumeClaim/alameda-executor-log.yaml")
 	}
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AlamedaAISectionSet.Storages, "PersistentVolumeClaim/alameda-ai-log.yaml", v1alpha1.Log)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AlamedaOperatorSectionSet.Storages, "PersistentVolumeClaim/alameda-operator-log.yaml", v1alpha1.Log)
@@ -320,6 +332,7 @@ func (asp *AlamedaServiceParamter) getInstallPersistentVolumeClaimSource(pvc []s
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AlamedaEvictionerSectionSet.Storages, "PersistentVolumeClaim/alameda-evictioner-log.yaml", v1alpha1.Log)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AdmissionControllerSectionSet.Storages, "PersistentVolumeClaim/admission-controller-log.yaml", v1alpha1.Log)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AdmissionControllerSectionSet.Storages, "PersistentVolumeClaim/alameda-recommender-log.yaml", v1alpha1.Log)
+	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AdmissionControllerSectionSet.Storages, "PersistentVolumeClaim/alameda-executor-log.yaml", v1alpha1.Log)
 	if gloabalDataFlag {
 		pvc = append(pvc, "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml")
 		pvc = append(pvc, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml")
@@ -329,6 +342,7 @@ func (asp *AlamedaServiceParamter) getInstallPersistentVolumeClaimSource(pvc []s
 		pvc = append(pvc, "PersistentVolumeClaim/alameda-evictioner-data.yaml")
 		pvc = append(pvc, "PersistentVolumeClaim/admission-controller-data.yaml")
 		pvc = append(pvc, "PersistentVolumeClaim/alameda-recommender-data.yaml")
+		pvc = append(pvc, "PersistentVolumeClaim/alameda-executor-data.yaml")
 	}
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.InfluxdbSectionSet.Storages, "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml", v1alpha1.Data)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.GrafanaSectionSet.Storages, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml", v1alpha1.Data)
@@ -338,6 +352,7 @@ func (asp *AlamedaServiceParamter) getInstallPersistentVolumeClaimSource(pvc []s
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AlamedaEvictionerSectionSet.Storages, "PersistentVolumeClaim/alameda-evictioner-data.yaml", v1alpha1.Data)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AdmissionControllerSectionSet.Storages, "PersistentVolumeClaim/admission-controller-data.yaml", v1alpha1.Data)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AdmissionControllerSectionSet.Storages, "PersistentVolumeClaim/alameda-recommender-data.yaml", v1alpha1.Log)
+	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AdmissionControllerSectionSet.Storages, "PersistentVolumeClaim/alameda-executor-data.yaml", v1alpha1.Log)
 	return pvc
 
 }
@@ -400,14 +415,19 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 	if asp.EnableExecution {
 		crb = append(crb, "ClusterRoleBinding/alameda-evictionerCRB.yaml")
 		crb = append(crb, "ClusterRoleBinding/admission-controllerCRB.yaml")
+		crb = append(crb, "ClusterRoleBinding/alameda-executorCRB.yaml")
 		cr = append(cr, "ClusterRole/alameda-evictionerCR.yaml")
 		cr = append(cr, "ClusterRole/admission-controllerCR.yaml")
+		cr = append(cr, "ClusterRole/alameda-executorCR.yaml")
 		secrets = append(secrets, "Secret/admission-controller-tls.yaml")
 		sa = append(sa, "ServiceAccount/alameda-evictionerSA.yaml")
 		sa = append(sa, "ServiceAccount/admission-controllerSA.yaml")
+		sa = append(sa, "ServiceAccount/alameda-executorSA.yaml")
+		cm = append(cm, "ConfigMap/alameda-executor-config.yaml")
 		sv = append(sv, "Service/admission-controllerSV.yaml")
 		dep = append(dep, "Deployment/admission-controllerDM.yaml")
 		dep = append(dep, "Deployment/alameda-evictionerDM.yaml")
+		dep = append(dep, "Deployment/alameda-executorDM.yaml")
 	}
 	pvc = asp.getInstallPersistentVolumeClaimSource(pvc)
 	crd = asp.changeScalerCRDVersion(crd)
@@ -440,6 +460,7 @@ func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServic
 		AlamedaEvictionerSectionSet:   instance.Spec.AlamedaEvictionerSectionSet,
 		AdmissionControllerSectionSet: instance.Spec.AdmissionControllerSectionSet,
 		AlamedaRecommenderSectionSet:  instance.Spec.AlamedaRecommenderSectionSet,
+		AlamedaExecutorSectionSet:     instance.Spec.AlamedaExecutorSectionSet,
 		CurrentCRDVersion:             instance.Status.CRDVersion,
 		previousCRDVersion:            instance.Status.CRDVersion,
 	}

@@ -24,6 +24,7 @@ const (
 	AlamedaevictionerDPN   = "alameda-evictioner"
 	AdmissioncontrollerDPN = "admission-controller"
 	AlamedarecommenderDPN  = "alameda-recommender"
+	AlamedaexecutorDPN     = "alameda-executor"
 	GrafanaDPN             = "alameda-grafana"
 	InfluxdbDPN            = "alameda-influxdb"
 	//container name
@@ -33,6 +34,7 @@ const (
 	AlamedaevictionerCTN   = "alameda-evictioner"
 	AdmissioncontrollerCTN = "admission-controller"
 	AlamedarecommenderCTN  = "alameda-recommender"
+	AlamedaexecutorCTN     = "alameda-executor"
 	GetTokenCTN            = "gettoken"
 	GrafanaCTN             = "grafana"
 	InfluxdbCTN            = "influxdb"
@@ -51,10 +53,13 @@ const (
 	LogMountPath  = "/var/log"
 	//Recommandation config
 	OriginComfigMapRecommandation = "config.toml"
+	//Execution  config
+	OriginComfigMapExecution = "config.yml"
 )
 
 var (
-	log = logf.Log.WithName("controller_alamedaservice")
+	ConfigKeyList = []string{OriginComfigMapRecommandation, OriginComfigMapExecution}
+	log           = logf.Log.WithName("controller_alamedaservice")
 	//AlamedaScaler version
 	AlamedaScalerVersion        = []string{"v1", "v2"}
 	V1scalerOperatorVersionList = []string{"v0.3.6", "v0.3.7", "v0.3.8", "v0.3.9", "v0.3.10", "v0.3.11", "v0.3.12"}
@@ -159,6 +164,9 @@ func getVolumeLogIndex(dep *appsv1.Deployment) int {
 			if value.Name == "alameda-recommender-log-storage" {
 				return index
 			}
+			if value.Name == "alameda-executor-log-storage" {
+				return index
+			}
 		}
 		return -1
 	}
@@ -185,6 +193,9 @@ func getVolumeDataIndex(dep *appsv1.Deployment) int {
 				return index
 			}
 			if value.Name == "alameda-recommender-data-storage" {
+				return index
+			}
+			if value.Name == "alameda-executor-data-storage" {
 				return index
 			}
 			if value.Name == "influxdb-data-storage" {

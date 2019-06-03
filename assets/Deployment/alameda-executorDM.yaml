@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alameda-executor
+  namespace: alameda
+spec:
+  selector:
+    matchLabels:
+      app: alameda-executor
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: alameda-executor
+    spec:
+      serviceAccountName: alameda-executor
+      containers:
+      - name: alameda-executor
+        image: quay.io/prophetstor/alameda-executor-ubi:v0.3.8
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: alameda-executor-config
+            mountPath: /etc/alameda/federatorai-execution/config.yml
+            subPath: config.yml
+      volumes:
+        - name: alameda-executor-data-storage
+        - name: alameda-executor-log-storage
+        - name: alameda-executor-config
+          configMap:
+            name: alameda-executor-config

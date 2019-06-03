@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alameda-executor-config
+  namespace: federatorai
+data:
+  config.yml: |-
+    datahub:
+      address: "alameda-datahub.federatorai.svc"
+      port: 50050
+    executor:
+      check-cycle: 3 # second
+      enable: false

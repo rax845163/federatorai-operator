@@ -1,0 +1,26 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: federatorai-alameda-executor
+rules:
+- apiGroups:
+  - apps
+  - extensions
+  resources:
+  - replicasets
+  - deployments
+  verbs:
+  - get
+  - list
+  - update
+  - patch
+- apiGroups:
+  - apps.openshift.io
+  resources:
+  - deploymentconfigs
+  verbs:
+  - get
+  - list
+  - update
+  - patch

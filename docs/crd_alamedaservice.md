@@ -150,6 +150,9 @@ spec:
 - Field: alameda-recommender
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-recommender component. This field is optional.
+- Field: alameda-executor
+  - type: [AlamedaComponentSpec](#alamedacomponentspec)
+  - description: Spec for Alameda-executor component. This field is optional.
 
 ### StorageSpec
 

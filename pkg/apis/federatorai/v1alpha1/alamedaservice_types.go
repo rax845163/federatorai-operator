@@ -29,6 +29,7 @@ type AlamedaServiceSpec struct {
 	AlamedaEvictionerSectionSet   AlamedaComponentSpec `json:"alameda-evictioner"`
 	AdmissionControllerSectionSet AlamedaComponentSpec `json:"alameda-admission-controller"`
 	AlamedaRecommenderSectionSet  AlamedaComponentSpec `json:"alameda-recommender"`
+	AlamedaExecutorSectionSet     AlamedaComponentSpec `json:"alameda-executor"`
 }
 type AlamedaComponentSpec struct {
 	Image              string            `json:"image"`

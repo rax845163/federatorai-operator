@@ -51,6 +51,12 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 			util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-recommender-type.pvc", util.AlamedaGroup)
 			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedarecommenderCTN, "alameda-recommender-type-storage", util.AlamedaGroup)
 		}
+	case util.AlamedaexecutorDPN:
+		{
+			util.SetImageStruct(dep, asp.Version, util.AlamedaexecutorCTN)
+			util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-executor-type.pvc", util.AlamedaGroup)
+			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedaexecutorCTN, "alameda-executor-type-storage", util.AlamedaGroup)
+		}
 	case util.InfluxdbDPN:
 		{
 			util.SetStorageToVolumeSource(dep, asp.Storages, "my-alameda.influxdb-type.pvc", util.InfluxDBGroup)
@@ -70,8 +76,10 @@ func processConfigMapsPrometheusService(cm *corev1.ConfigMap, prometheusservice 
 	}
 }
 func processConfigMapsDataHubService(cm *corev1.ConfigMap, namespace string) {
-	if strings.Contains(cm.Data[util.OriginComfigMapRecommandation], util.NamespaceService) && namespace != "" {
-		cm.Data[util.OriginComfigMapRecommandation] = strings.Replace(cm.Data[util.OriginComfigMapRecommandation], util.NamespaceService, namespace+".svc", -1)
+	for _, v := range util.ConfigKeyList {
+		if strings.Contains(cm.Data[v], util.NamespaceService) && namespace != "" {
+			cm.Data[v] = strings.Replace(cm.Data[v], util.NamespaceService, namespace+".svc", -1)
+		}
 	}
 }
 
