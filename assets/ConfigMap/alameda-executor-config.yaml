@@ -9,5 +9,6 @@ data:
       address: "alameda-datahub.federatorai.svc"
       port: 50050
     executor:
-      check-cycle: 3 # second
+      check-cycle: 3   # second
+      expire-time: 300 # second
       enable: false
