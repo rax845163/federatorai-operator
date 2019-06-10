@@ -62,7 +62,9 @@ const (
 
 var (
 	ConfigKeyList = []string{OriginComfigMapRecommandation, OriginComfigMapExecution}
-	log           = logf.Log.WithName("controller_alamedaservice")
+	//if disable resource protection
+	Disable_operand_resource_protection = "false"
+	log                                 = logf.Log.WithName("controller_alamedaservice")
 	//AlamedaScaler version
 	AlamedaScalerVersion        = []string{"v1", "v2"}
 	V1scalerOperatorVersionList = []string{"v0.3.6", "v0.3.7", "v0.3.8", "v0.3.9", "v0.3.10", "v0.3.11", "v0.3.12"}

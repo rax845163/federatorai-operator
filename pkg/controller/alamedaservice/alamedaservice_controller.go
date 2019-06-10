@@ -2,17 +2,17 @@ package alamedaservice
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"time"
 
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
-	"github.com/containers-ai/federatorai-operator/pkg/util"
-
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/updateresource"
+	"github.com/containers-ai/federatorai-operator/pkg/util"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -73,8 +73,8 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err != nil {
 		return err
 	}
-	WatchFlag := os.Getenv("DISABLE_OPERAND_RESOURCE_PROTECTION")
-	if WatchFlag != "true" {
+	util.Disable_operand_resource_protection = os.Getenv("DISABLE_OPERAND_RESOURCE_PROTECTION")
+	if util.Disable_operand_resource_protection != "true" {
 		err = c.Watch(&source.Kind{Type: &appsv1.Deployment{}}, &handler.EnqueueRequestForOwner{
 			IsController: true,
 			OwnerType:    &federatoraiv1alpha1.AlamedaService{},
@@ -167,6 +167,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 
+	if flag, _ := r.checkAlamedaServiceSpecIsChange(instance, request.NamespacedName); !flag && util.Disable_operand_resource_protection == "true" {
+		return reconcile.Result{}, nil
+	}
+
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
 	ns, err := r.getNamespace(request.Namespace)
 	if err != nil {
@@ -178,8 +182,8 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	if err = r.syncCustomResourceDefinition(instance, asp, installResource); err != nil {
 		log.Error(err, "create crd failed")
 	}
-	if err = r.updateAlamedaServiceStatus(instance, request.NamespacedName, asp); err != nil {
-		log.Error(err, "updateAlamedaServiceStatus failed")
+	if err = r.updateAlamedaService(instance, request.NamespacedName, asp); err != nil {
+		log.Error(err, "updateAlamedaService failed")
 	}
 	if err := r.syncClusterRole(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync clusterRole failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
@@ -296,6 +300,11 @@ func (r *ReconcileAlamedaService) syncClusterRoleBinding(instance *federatoraiv1
 			log.Info("Successfully Creating Resource ClusterRoleBinding", "resourceCRB.Name", resourceCRB.Name)
 		} else if err != nil {
 			return errors.Errorf("get clusterRoleBinding %s/%s failed: %s", resourceCRB.Namespace, resourceCRB.Name, err.Error())
+		} else {
+			err = r.client.Update(context.TODO(), resourceCRB)
+			if err != nil {
+				return errors.Errorf("Update clusterRoleBinding %s/%s failed: %s", resourceCRB.Namespace, resourceCRB.Name, err.Error())
+			}
 		}
 	}
 	return nil
@@ -318,6 +327,11 @@ func (r *ReconcileAlamedaService) syncClusterRole(instance *federatoraiv1alpha1.
 			log.Info("Successfully Creating Resource ClusterRole", "resourceCR.Name", resourceCR.Name)
 		} else if err != nil {
 			return errors.Errorf("get clusterRole %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
+		} else {
+			err = r.client.Update(context.TODO(), resourceCR)
+			if err != nil {
+				return errors.Errorf("Update clusterRole %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
+			}
 		}
 	}
 	return nil
@@ -341,6 +355,11 @@ func (r *ReconcileAlamedaService) syncServiceAccount(instance *federatoraiv1alph
 			log.Info("Successfully Creating Resource ServiceAccount", "resourceSA.Name", resourceSA.Name)
 		} else if err != nil {
 			return errors.Errorf("get serviceAccount %s/%s failed: %s", resourceSA.Namespace, resourceSA.Name, err.Error())
+		} else {
+			err = r.client.Update(context.TODO(), resourceSA)
+			if err != nil {
+				return errors.Errorf("Update serviceAccount %s/%s failed: %s", resourceSA.Namespace, resourceSA.Name, err.Error())
+			}
 		}
 	}
 	return nil
@@ -791,6 +810,16 @@ func lockIsOwnedByAlamedaService(lock rbacv1.ClusterRole, alamedaService *federa
 	return false
 }
 
+func (r *ReconcileAlamedaService) updateAlamedaService(alamedaService *federatoraiv1alpha1.AlamedaService, namespaceName client.ObjectKey, asp *alamedaserviceparamter.AlamedaServiceParamter) error {
+	if err := r.updateAlamedaServiceStatus(alamedaService, namespaceName, asp); err != nil {
+		return err
+	}
+	if err := r.updateAlamedaServiceAnnotations(alamedaService, namespaceName); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *ReconcileAlamedaService) updateAlamedaServiceStatus(alamedaService *federatoraiv1alpha1.AlamedaService, namespaceName client.ObjectKey, asp *alamedaserviceparamter.AlamedaServiceParamter) error {
 	copyAlamedaService := alamedaService.DeepCopy()
 	r.client.Get(context.TODO(), namespaceName, copyAlamedaService)
@@ -798,7 +827,42 @@ func (r *ReconcileAlamedaService) updateAlamedaServiceStatus(alamedaService *fed
 	if err := r.client.Update(context.Background(), copyAlamedaService); err != nil {
 		return errors.Errorf("update AlamedaService Status failed: %s", err.Error())
 	}
+	log.Info("Update AlamedaService Status Successfully", "resource.Name", copyAlamedaService.Name)
 	return nil
+}
+
+func (r *ReconcileAlamedaService) updateAlamedaServiceAnnotations(alamedaService *federatoraiv1alpha1.AlamedaService, namespaceName client.ObjectKey) error {
+	copyAlamedaService := alamedaService.DeepCopy()
+	r.client.Get(context.TODO(), namespaceName, copyAlamedaService)
+	jsonSpec, err := json.Marshal(copyAlamedaService.Spec)
+	if err != nil {
+		return errors.Errorf("AlamedaService Spec json Marshal failed: %s", err.Error())
+	}
+	if copyAlamedaService.Annotations != nil {
+		copyAlamedaService.Annotations["previousAlamedaServiceSpec"] = string(jsonSpec)
+	} else {
+		annotations := make(map[string]string)
+		annotations["previousAlamedaServiceSpec"] = string(jsonSpec)
+		copyAlamedaService.Annotations = annotations
+	}
+	if err := r.client.Update(context.Background(), copyAlamedaService); err != nil {
+		return errors.Errorf("update AlamedaService Annotations failed: %s", err.Error())
+	}
+	log.Info("Update AlamedaService Annotations Successfully", "resource.Name", copyAlamedaService.Name)
+	return nil
+}
+
+func (r *ReconcileAlamedaService) checkAlamedaServiceSpecIsChange(alamedaService *federatoraiv1alpha1.AlamedaService, namespaceName client.ObjectKey) (bool, error) {
+	jsonSpec, err := json.Marshal(alamedaService.Spec)
+	if err != nil {
+		return false, errors.Errorf("AlamedaService Spec json Marshal failed: %s", err.Error())
+	}
+	currentAlamedaServiceSpec := string(jsonSpec)
+	previousAlamedaServiceSpec := alamedaService.Annotations["previousAlamedaServiceSpec"]
+	if currentAlamedaServiceSpec == previousAlamedaServiceSpec {
+		return false, nil
+	}
+	return true, nil
 }
 
 func (r *ReconcileAlamedaService) deleteDeploymentWhenModifyConfigMapOrService(dep *appsv1.Deployment) error {
