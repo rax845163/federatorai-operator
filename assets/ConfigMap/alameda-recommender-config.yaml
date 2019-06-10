@@ -21,4 +21,4 @@ data:
     sample_rate = 15
     period_rate = 60
     period_count = 5
-    
+    data_source = "workload"
