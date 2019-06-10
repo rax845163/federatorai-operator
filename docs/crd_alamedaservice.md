@@ -66,8 +66,7 @@ spec:
       class: "normal"
 
 # following are more detail configurations for each component and overwrite the global config
-# Alameda components are: alameda-operator, alameda-datahub, alameda-ai, alameda-evictioner,
-# alameda-admission-controller, alameda-grafana and alameda-influxdb
+# for complete list of Alameda components, please visit https://github.com/containers-ai/federatorai-operator/blob/master/docs/crd_alamedaservice.md
   alameda-ai:
     image: quay.io/prophetstor/alameda-ai
     version: latest
@@ -138,9 +137,6 @@ spec:
 - Field: alameda-admission-controller
   - type: [AlamedaComponentSpec](#alamedacomponentspec) 
   - description: Spec for Alameda-admission-controller component. This field is optional.
-- Field: alameda-recommender
-  - type: [AlamedaComponentSpec](#alamedacomponentspec) 
-  - description: Spec for Alameda-recommender component. This field is optional.
 - Field: alameda-influxdb
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for InfluxDB component. This field is optional.
