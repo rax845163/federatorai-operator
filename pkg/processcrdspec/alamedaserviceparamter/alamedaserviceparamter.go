@@ -374,7 +374,7 @@ func (asp *AlamedaServiceParamter) changeScalerCRDVersion(crd []string) []string
 		asp.CurrentCRDVersion.ScalerVersion = util.AlamedaScalerVersion[1]
 		asp.CurrentCRDVersion.CRDName = util.AlamedaScalerName
 	}
-	if asp.CurrentCRDVersion.ScalerVersion != asp.previousCRDVersion.ScalerVersion && asp.CurrentCRDVersion.ScalerVersion != "" && asp.previousCRDVersion.ScalerVersion != "" {
+	if asp.CurrentCRDVersion.ScalerVersion != asp.previousCRDVersion.ScalerVersion {
 		asp.SetCurrentCRDChangeVersionToTrue()
 	}
 	return crd

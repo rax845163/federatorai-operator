@@ -39,6 +39,4 @@ spec:
               value: "federatorai-operator"
             - name: DISABLE_OPERAND_RESOURCE_PROTECTION
               value: "true"
-            - name: ONLY_SYNC_ONCE
-              value: "false"
 

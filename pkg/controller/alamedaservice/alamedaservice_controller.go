@@ -57,7 +57,6 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 		scheme:       mgr.GetScheme(),
 		apiextclient: apiextension.NewForConfigOrDie(mgr.GetConfig()),
 		kubeClient:   kubeClient,
-		OnlySyncOnce: "false",
 	}
 }
 
@@ -109,7 +108,6 @@ type ReconcileAlamedaService struct {
 	scheme       *runtime.Scheme
 	apiextclient apiextension.Interface
 	kubeClient   *kubernetes.Clientset
-	OnlySyncOnce string
 }
 
 // Reconcile reads that state of the cluster for a AlamedaService object and makes changes based on the state read
@@ -120,9 +118,6 @@ type ReconcileAlamedaService struct {
 // The Controller will requeue the Request to be processed again if the returned error is non-nil or
 // Result.Requeue is true, otherwise upon completion it will remove the work from the queue.
 func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcile.Result, error) {
-	if r.OnlySyncOnce == "true" {
-		return reconcile.Result{}, nil
-	}
 	reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
 	reqLogger.Info("Reconciling AlamedaService")
 
@@ -242,7 +237,6 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-	r.OnlySyncOnce = os.Getenv("ONLY_SYNC_ONCE")
 	return reconcile.Result{}, nil
 }
 
