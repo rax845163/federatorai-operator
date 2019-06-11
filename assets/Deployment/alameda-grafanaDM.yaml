@@ -77,14 +77,16 @@ spec:
               path: clusterhealth.json
             - key: nodehealth.json
               path: nodehealth.json
-            - key: prediction-recommendation.json
-              path: prediction-recommendation.json
-            - key: recommendation-cluster.json
-              path: recommendation-cluster.json
-            - key: recommendation-namespace.json
-              path: recommendation-namespace.json
-            - key: recommendation-alamedascaler.json
-              path: recommendation-alamedascaler.json
+            - key: hpa-recommendation.json
+              path: hpa-recommendation.json
+            - key: vpa-recommendation.json
+              path: vpa-recommendation.json
+            - key: vpa-recommendation-cluster.json
+              path: vpa-recommendation-cluster.json
+            - key: vpa-recommendation-namespace.json
+              path: vpa-recommendation-namespace.json
+            - key: vpa-recommendation-alamedascaler.json
+              path: vpa-recommendation-alamedascaler.json
           name: dashboards-json
         - configMap:
             name: dashboards-config
