@@ -1,0 +1,13 @@
+apiVersion: autoscaling.containers.ai/v1alpha1
+kind: AlamedaScaler
+metadata:
+  name: alameda
+  namespace: federatorai
+spec:
+  policy: stable
+  enableexecution: true
+  scalingTools:
+  - vpa
+  selector:
+    matchLabels:
+      app: alameda

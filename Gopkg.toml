@@ -57,10 +57,6 @@ required = [
   version = "=v0.1.10"
 
 [[constraint]]
-  name = "github.com/blang/semver"
-  version = "v3.5.0"
-  
-[[constraint]]
   name = "github.com/operator-framework/operator-sdk"
   # The version rule is used for a specific release and the master branch for in between releases.
   branch = "master" #osdk_branch_annotation

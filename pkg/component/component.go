@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	autoscaling_v1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/assets"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceread"
 	"github.com/pkg/errors"
@@ -97,6 +98,17 @@ func (c ComponentConfig) NewService(str string) *corev1.Service {
 	sv := resourceread.ReadServiceV1(svByte)
 	sv.Namespace = c.NameSpace
 	return sv
+}
+
+func (c ComponentConfig) NewAlamedaScaler(str string) *autoscaling_v1alpha1.AlamedaScaler {
+	scalerByte, err := assets.Asset(str)
+	if err != nil {
+		log.Error(err, "Failed to Test create NewAlamedaScaler")
+
+	}
+	scaler := resourceread.ReadScalerV1(scalerByte)
+	scaler.Namespace = c.NameSpace
+	return scaler
 }
 
 func (c ComponentConfig) NewDeployment(str string) *appsv1.Deployment {

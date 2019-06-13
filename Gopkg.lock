@@ -42,12 +42,23 @@
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
-  digest = "1:aa09b5d3f9ee0d50d580e14b7c4fde6b4904d927acc2370cbc29574dc0535cb8"
-  name = "github.com/blang/semver"
-  packages = ["."]
+  digest = "1:176a89479bb4eb997b7e52a4e14010749fc64d2691863c27f5345aae6f62eaaf"
+  name = "github.com/containers-ai/alameda"
+  packages = [
+    "operator/pkg/apis/autoscaling/v1alpha1",
+    "operator/pkg/utils",
+  ]
   pruneopts = "NT"
-  revision = "2ee87856327ba09384cabd113bc6b5d174e9ec0f"
-  version = "v3.5.1"
+  revision = "de67517419787268d74cbc7f94f97134d4cb1d8a"
+  version = "v0.3.27"
+
+[[projects]]
+  branch = "master"
+  digest = "1:2f11376801023e908d271f31b222e993ecf78f3f4c882d940030fe6a0a0e56a5"
+  name = "github.com/containers-ai/api"
+  packages = ["alameda_api/v1alpha1/datahub"]
+  pruneopts = "NT"
+  revision = "f31690c037e792676d98abf43da9a66e92e4cd5d"
 
 [[projects]]
   digest = "1:c61f4f97321a37adcb5b4fd4fd61209cd553e46c99ee606c465553541b12a229"
@@ -362,9 +373,7 @@
   packages = [
     "pkg/k8sutil",
     "pkg/leader",
-    "pkg/log/zap",
     "pkg/metrics",
-    "version",
   ]
   pruneopts = "NT"
   revision = "e4c1258d110b6cc9a1d34a723177de064e428bec"
@@ -560,6 +569,8 @@
     "http2",
     "http2/hpack",
     "idna",
+    "internal/timeseries",
+    "trace",
   ]
   pruneopts = "NT"
   revision = "9f648a60d9775ef5c977e7669d1673a7a67bef33"
@@ -662,6 +673,55 @@
   version = "v1.4.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:ba5a50ad30d20b12c1a228b5a3a476e96d89471afa8280842d69da89b66db0b5"
+  name = "google.golang.org/genproto"
+  packages = ["googleapis/rpc/status"]
+  pruneopts = "NT"
+  revision = "a7e196e89fd3a3c4d103ca540bd5dac3a736e375"
+
+[[projects]]
+  digest = "1:d2c237dc4281b21718395454f2e51e246e17ab620d807609e2eb4d67686e1348"
+  name = "google.golang.org/grpc"
+  packages = [
+    ".",
+    "balancer",
+    "balancer/base",
+    "balancer/roundrobin",
+    "binarylog/grpc_binarylog_v1",
+    "codes",
+    "connectivity",
+    "credentials",
+    "credentials/internal",
+    "encoding",
+    "encoding/proto",
+    "grpclog",
+    "internal",
+    "internal/backoff",
+    "internal/balancerload",
+    "internal/binarylog",
+    "internal/channelz",
+    "internal/envconfig",
+    "internal/grpcrand",
+    "internal/grpcsync",
+    "internal/syscall",
+    "internal/transport",
+    "keepalive",
+    "metadata",
+    "naming",
+    "peer",
+    "resolver",
+    "resolver/dns",
+    "resolver/passthrough",
+    "stats",
+    "status",
+    "tap",
+  ]
+  pruneopts = "NT"
+  revision = "501c41df7f472c740d0674ff27122f3f48c80ce7"
+  version = "v1.21.1"
+
+[[projects]]
   digest = "1:2d1fbdc6777e5408cabeb02bf336305e724b925ff4546ded0fa8715a7267922a"
   name = "gopkg.in/inf.v0"
   packages = ["."]
@@ -735,6 +795,7 @@
   digest = "1:15b5c41ff6faa4d0400557d4112d6337e1abc961c65513d44fce7922e32c9ca7"
   name = "k8s.io/apimachinery"
   packages = [
+    "pkg/api/equality",
     "pkg/api/errors",
     "pkg/api/meta",
     "pkg/api/resource",
@@ -993,30 +1054,36 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/blang/semver",
+    "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1",
+    "github.com/go-logr/logr",
+    "github.com/go-logr/zapr",
     "github.com/go-openapi/spec",
+    "github.com/operator-framework/operator-sdk/pkg/k8sutil",
     "github.com/operator-framework/operator-sdk/pkg/leader",
-    "github.com/operator-framework/operator-sdk/pkg/log/zap",
     "github.com/operator-framework/operator-sdk/pkg/metrics",
-    "github.com/operator-framework/operator-sdk/version",
     "github.com/pkg/errors",
     "github.com/spf13/pflag",
     "github.com/spf13/viper",
+    "go.uber.org/zap",
+    "go.uber.org/zap/zapcore",
     "k8s.io/api/apps/v1",
     "k8s.io/api/core/v1",
     "k8s.io/api/rbac/v1",
     "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1",
     "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset",
     "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1",
+    "k8s.io/apimachinery/pkg/api/equality",
     "k8s.io/apimachinery/pkg/api/errors",
+    "k8s.io/apimachinery/pkg/api/resource",
     "k8s.io/apimachinery/pkg/apis/meta/v1",
     "k8s.io/apimachinery/pkg/runtime",
     "k8s.io/apimachinery/pkg/runtime/schema",
     "k8s.io/apimachinery/pkg/runtime/serializer",
     "k8s.io/apimachinery/pkg/types",
+    "k8s.io/apimachinery/pkg/util/wait",
     "k8s.io/client-go/kubernetes",
-    "k8s.io/client-go/kubernetes/typed/apps/v1",
     "k8s.io/client-go/plugin/pkg/client/auth/gcp",
+    "k8s.io/client-go/util/cert",
     "k8s.io/code-generator/cmd/client-gen",
     "k8s.io/code-generator/cmd/conversion-gen",
     "k8s.io/code-generator/cmd/deepcopy-gen",

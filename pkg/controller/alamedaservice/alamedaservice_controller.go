@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	autoscaling_v1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceapply"
@@ -190,6 +191,13 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 
+	if asp.SelfDriving {
+		if err := r.createScalerforAlameda(instance, asp, installResource); err != nil {
+			log.V(-1).Info("create scaler for alameda failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+		}
+	}
+
 	if err := r.syncClusterRoleBinding(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync clusterRoleBinding failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -254,6 +262,28 @@ func (r *ReconcileAlamedaService) newComponentConfig(namespace corev1.Namespace)
 	componentConfg := component.NewComponentConfig(namespace.Name, podTemplateConfig)
 
 	return componentConfg
+}
+
+func (r *ReconcileAlamedaService) createScalerforAlameda(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+	for _, fileString := range resource.AlamdaScalerList {
+		resourceScaler := componentConfig.NewAlamedaScaler(fileString)
+		if err := controllerutil.SetControllerReference(instance, resourceScaler, r.scheme); err != nil {
+			return errors.Errorf("Fail resourceScaler SetControllerReference: %s", err.Error())
+		}
+		foundScaler := &autoscaling_v1alpha1.AlamedaScaler{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceScaler.Name, Namespace: resourceScaler.Namespace}, foundScaler)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			log.Info("Creating a new Resource Scaler... ", "resourceScaler.Name", resourceScaler.Name)
+			err = r.client.Create(context.TODO(), resourceScaler)
+			if err != nil {
+				return errors.Errorf("create Scaler %s/%s failed: %s", resourceScaler.Namespace, resourceScaler.Name, err.Error())
+			}
+			log.Info("Successfully Creating Resource Scaler", "resourceScaler.Name", resourceScaler.Name)
+		} else if err != nil {
+			return errors.Errorf("get Scaler %s/%s failed: %s", resourceScaler.Namespace, resourceScaler.Name, err.Error())
+		}
+	}
+	return nil
 }
 
 func (r *ReconcileAlamedaService) syncCustomResourceDefinition(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {

@@ -15,6 +15,7 @@ type AlamedaServiceSpec struct {
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html
 	//AlmedaInstallOrUninstall bool   `json:"almedainstalloruninstall"`
+	SelfDriving       bool          `json:"selfDriving"`
 	EnableExecution   bool          `json:"enableexecution"`
 	EnableGUI         bool          `json:"enablegui"`
 	Version           string        `json:"version"`

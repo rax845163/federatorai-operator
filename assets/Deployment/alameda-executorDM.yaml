@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: alameda-executor
   namespace: alameda
+  labels:
+    app: alameda
+    component: alameda-executor
 spec:
   selector:
     matchLabels:

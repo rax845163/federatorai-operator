@@ -84,6 +84,7 @@ var (
 
 type AlamedaServiceParamter struct {
 	NameSpace                     string
+	SelfDriving                   bool
 	EnableExecution               bool
 	EnableGUI                     bool
 	Version                       string
@@ -112,6 +113,7 @@ type Resource struct {
 	DeploymentList               []string
 	SecretList                   []string
 	PersistentVolumeClaimList    []string
+	AlamdaScalerList             []string
 }
 
 func GetExcutionResource() *Resource {
@@ -402,7 +404,10 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 	dep := depList
 	secrets := secretList
 	pvc := []string{}
-
+	alamdaScalerList := []string{}
+	if asp.SelfDriving {
+		alamdaScalerList = append(alamdaScalerList, "AlamedaScaler/alamedaScaler-alameda.yaml")
+	}
 	if asp.EnableGUI {
 		crb = append(crb, "ClusterRoleBinding/alameda-grafanaCRB.yaml")
 		cr = append(cr, "ClusterRole/alameda-grafanaCR.yaml")
@@ -441,12 +446,14 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 		DeploymentList:               dep,
 		SecretList:                   secrets,
 		PersistentVolumeClaimList:    pvc,
+		AlamdaScalerList:             alamdaScalerList,
 	}
 }
 
 func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServiceParamter {
 	asp := &AlamedaServiceParamter{
 		NameSpace:                     instance.Namespace,
+		SelfDriving:                   instance.Spec.SelfDriving,
 		EnableExecution:               instance.Spec.EnableExecution,
 		EnableGUI:                     instance.Spec.EnableGUI,
 		Version:                       instance.Spec.Version,

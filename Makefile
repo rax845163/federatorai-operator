@@ -41,8 +41,9 @@ pkg/assets/bindata.go: $(GOBINDATA_BIN)
 		PersistentVolumeClaim/... \
 		Service/... \
 		Deployment/... \
-		
-		
+		AlamedaScaler/... \
+
+
 
 
 .PHONY: depend

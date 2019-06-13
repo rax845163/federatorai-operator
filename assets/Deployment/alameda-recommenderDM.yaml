@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: alameda-recommender
   namespace: federatorai
+  labels:
+    app: alameda
+    component: alameda-recommender
 spec:
   selector:
     matchLabels:
@@ -23,7 +26,7 @@ spec:
             subPath: config.toml
       volumes:
         - name: alameda-recommender-data-storage
-        - name: alameda-recommender-log-storage             
+        - name: alameda-recommender-log-storage
         - name: alameda-recommender-config
           configMap:
             name: alameda-recommender-config
