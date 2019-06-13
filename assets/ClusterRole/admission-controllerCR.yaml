@@ -50,3 +50,11 @@ rules:
       - alamedascalers
     verbs:
       - get
+  - apiGroups:
+      - federatorai.containers.ai
+    resources:
+      - alamedaservices
+    verbs:
+      - get
+      - list
+      - watch
