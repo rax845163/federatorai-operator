@@ -46,6 +46,7 @@
 // PersistentVolumeClaim/my-alamedagrafanaPVC.yaml
 // PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml
 // Service/admission-controllerSV.yaml
+// Service/alameda-ai-metricsSV.yaml
 // Service/alameda-datahubSV.yaml
 // Service/alameda-grafanaSV.yaml
 // Service/alameda-influxdbSV.yaml
@@ -230,7 +231,7 @@ func bindataCustomResourceDefinitionAlamedascalersCRDyaml() (*asset, error) {
 		size: 2010,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559126794, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -289,7 +290,7 @@ func bindataCustomResourceDefinitionAlamedascalersV2CRDyaml() (*asset, error) {
 		size: 2178,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559208397, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -331,7 +332,7 @@ func bindataClusterRoleAdmissioncontrollerCRyaml() (*asset, error) {
 		size: 1026,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1560416272, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -449,7 +450,7 @@ func bindataClusterRoleAlamedaevictionerCRyaml() (*asset, error) {
 		size: 701,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1560409020, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -488,7 +489,7 @@ func bindataClusterRoleAlamedaexecutorCRyaml() (*asset, error) {
 		size: 384,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559698645, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -740,7 +741,7 @@ func bindataServiceAccountAlamedaexecutorSAyaml() (*asset, error) {
 		size: 95,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559698645, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -956,7 +957,7 @@ func bindataClusterRoleBindingAlamedaexecutorCRByaml() (*asset, error) {
 		size: 323,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559698645, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1138,7 +1139,7 @@ func bindataConfigMapAlamedaexecutorconfigyaml() (*asset, error) {
 		size: 298,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1560221364, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1179,7 +1180,7 @@ func bindataConfigMapAlamedarecommenderconfigyaml() (*asset, error) {
 		size: 472,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1560221364, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -1801,7 +1802,7 @@ func bindataConfigMapDashboardsconfigyaml() (*asset, error) {
 		size: 282250,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1560221364, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2177,7 +2178,7 @@ func bindataPersistentVolumeClaimAlamedaexecutordatayaml() (*asset, error) {
 		size: 199,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559698645, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2213,7 +2214,7 @@ func bindataPersistentVolumeClaimAlamedaexecutorlogyaml() (*asset, error) {
 		size: 198,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559698645, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2321,7 +2322,7 @@ func bindataPersistentVolumeClaimAlamedarecommenderdatayaml() (*asset, error) {
 		size: 202,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559208397, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2357,7 +2358,7 @@ func bindataPersistentVolumeClaimAlamedarecommenderlogyaml() (*asset, error) {
 		size: 201,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559208397, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2468,6 +2469,42 @@ func bindataServiceAdmissioncontrollerSVyaml() (*asset, error) {
 		md5checksum: "",
 		mode: os.FileMode(420),
 		modTime: time.Unix(1559548282, 0),
+	}
+
+	a := &asset{bytes: bytes, info: info}
+
+	return a, nil
+}
+
+var _bindataServiceAlamedaaimetricsSVyaml = []byte(
+	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x74\xcd\xb1\x0a\xc3\x30\x0c\x04\xd0\xdd\x5f\xa1\x1f\x08\x34\x63\xfc\x1b" +
+	"\x85\xee\x57\xfb\x0a\xa2\x76\x6c\x24\x91\xef\x2f\x09\x74\x6b\x37\xa1\xe3\xde\x61\xea\x83\xe6\x3a\xf6\x2c\xc7\x9a" +
+	"\xde\xba\xd7\x2c\x77\xda\xa1\x85\xa9\x33\x50\x11\xc8\x49\xa4\xe1\xc9\xe6\xe7\x25\x82\x39\xb3\xa0\xa1\xb3\x62\x81" +
+	"\x26\x91\x1d\x9d\x3f\x5e\x3e\x51\x98\xe5\xc5\x4a\x43\x0c\x83\x26\x9f\x2c\xa7\xe2\x6c\x2c\x31\xec\x9f\x38\x87\xc5" +
+	"\x35\xb7\x7c\x71\x5d\x3a\xc3\xb4\xf8\xd5\x38\xf3\x2c\xdb\x6d\x5b\xd3\x27\x00\x00\xff\xff\x3e\x0f\xf9\x43\xc4\x00" +
+	"\x00\x00")
+
+func bindataServiceAlamedaaimetricsSVyamlBytes() ([]byte, error) {
+	return bindataRead(
+		_bindataServiceAlamedaaimetricsSVyaml,
+		"Service/alameda-ai-metricsSV.yaml",
+	)
+}
+
+
+
+func bindataServiceAlamedaaimetricsSVyaml() (*asset, error) {
+	bytes, err := bindataServiceAlamedaaimetricsSVyamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{
+		name: "Service/alameda-ai-metricsSV.yaml",
+		size: 196,
+		md5checksum: "",
+		mode: os.FileMode(420),
+		modTime: time.Unix(1560418880, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2632,7 +2669,7 @@ func bindataDeploymentAdmissioncontrollerDMyaml() (*asset, error) {
 		size: 2444,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559208397, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2641,25 +2678,26 @@ func bindataDeploymentAdmissioncontrollerDMyaml() (*asset, error) {
 }
 
 var _bindataDeploymentAlamedaaiDMyaml = []byte(
-	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb4\x94\x51\x6f\xd3\x30\x10\xc7\xdf\xfb\x29\x4e\x7b\x4f\x96\x0d\x55\x42" +
-	"\x96\x78\x28\xca\x24\x90\x60\xab\xda\xc1\x2b\xba\x3a\xd7\xc6\xc2\xf6\x79\xb6\x13\xc8\xb7\x47\x4e\xdb\x2c\x49\x2b" +
-	"\x40\x42\xe4\xf1\xee\xfe\xbf\xfb\xdb\x77\x0e\x3a\xf5\x95\x7c\x50\x6c\x05\xa0\x73\xe1\xb6\xbd\x5b\x7c\x57\xb6\x12" +
-	"\x50\x92\xd3\xdc\x19\xb2\x71\x61\x28\x62\x85\x11\xc5\x02\xc0\xa2\x21\x01\xa8\xd1\x50\x85\x19\xaa\x53\x28\x38\x94" +
-	"\x24\x60\x4f\x15\x79\x8c\xec\xfb\x84\xc6\x1d\xe9\x90\x54\x90\xe0\x83\xac\x0f\x48\x36\x8e\x2d\xd9\x38\xa3\xa1\xb5" +
-	"\x1c\x31\x2a\xb6\x27\x65\x45\x41\x7a\xe5\x62\xef\xb1\xa4\xbd\xb2\x14\xa0\xe6\x1f\x10\x19\xaa\xde\x24\xc4\x9a\x52" +
-	"\x03\xad\x64\x2f\x1c\x80\xec\x8e\x6e\x16\xc1\x91\x4c\x34\x4f\x7d\x51\x10\x70\xb7\x00\x08\xa4\x49\x46\xf6\xc7\x3e" +
-	"\x06\xa3\xac\x3f\x8d\x2c\x4f\x4d\x1f\xdd\x45\x32\x4e\x63\xa4\x93\x64\x74\x31\xe9\xbb\x72\x39\xe9\xd3\x13\xe8\x35" +
-	"\x2c\xc0\xd9\xe1\xf1\x6a\x6c\x44\x65\xc9\x0f\x9a\xec\x02\x9d\x91\x3d\x28\x4b\x03\x53\x19\x3c\x90\x80\x97\x06\xbb" +
-	"\x5c\xf1\xad\xf3\xec\x6a\x8a\x21\xb2\xbf\x7d\x15\x89\xb6\xc8\xdf\xe4\x6f\xa7\xa2\x75\xa3\xf5\x9a\xb5\x92\x9d\x80" +
-	"\x8f\xfb\x47\x8e\x6b\x4f\x21\x8d\xfd\x5c\xe5\x29\x70\xe3\x25\x8d\x4e\x90\x82\x2f\x0d\x85\x38\x89\x01\x48\xd7\x08" +
-	"\xb8\x2f\x8a\xc2\x4c\xc2\x86\x0c\xfb\x4e\xc0\xfd\xb2\xf8\xac\x86\x0c\xd9\xf6\x55\x7d\x3e\xe1\xd3\xfa\x61\xb3\x7a" +
-	"\x7e\xda\x7c\x5b\x95\xe5\xe6\x61\xbb\x1d\x71\x5a\xd4\x0d\x09\xb8\x99\x4f\x37\x1f\x6d\x5d\x1e\x5a\x29\x96\x45\xb1" +
-	"\x2c\x6e\x2e\xd0\xe5\xea\x79\xf5\xe1\xcb\xfb\xbf\x20\xa7\x99\xd6\xcd\xee\x4f\x60\x4f\x58\xa5\x6d\x0c\x6b\xcf\x3b" +
-	"\x12\x30\x22\xd2\x4f\x92\x93\x40\xbf\xf0\x06\xd3\xcb\x9a\x44\x33\x48\xb3\xda\x51\x1e\xea\x79\x22\xcb\x62\xe7\xe8" +
-	"\xdd\xd0\x65\x9c\x57\x56\x45\x85\xba\x24\x8d\xdd\x96\x24\xdb\x2a\x08\x58\x8e\x2b\x1c\x79\xc5\xd5\xb5\x9c\x56\x2d" +
-	"\xfd\x77\xd7\xe7\x26\xff\x66\xfa\x94\x6a\x59\x37\x66\xbc\x7f\x57\xde\x43\x9a\x59\x96\xf6\x1d\x0f\xf4\xbb\x3a\xcd" +
-	"\x87\x59\x59\x20\xdf\x2a\x49\x2b\x29\xb9\xb9\xf8\x1d\x5d\x16\x3c\xce\x1f\xf9\xaf\x00\x00\x00\xff\xff\xee\x38\xb0" +
-	"\x51\x44\x05\x00\x00")
+	"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb4\x54\x41\x6f\xdb\x3c\x0c\xbd\xe7\x57\x10\xbd\x3b\x75\xfb\x21\xc0\x57" +
+	"\x01\x3b\x64\x4b\x81\x0d\xd8\x5a\xa3\xed\x76\x1d\x18\x99\x4d\x84\x49\xa2\x2a\xd1\xde\xf2\xef\x07\x39\x89\x6b\x3b" +
+	"\xc1\xb6\xc3\xe6\x23\xf9\xde\xe3\x13\xf5\x2c\x0c\xe6\x0b\xc5\x64\xd8\x2b\xc0\x10\xd2\x65\x7b\x35\xfb\x66\x7c\xad" +
+	"\x60\x45\xc1\xf2\xce\x91\x97\x99\x23\xc1\x1a\x05\xd5\x0c\xc0\xa3\x23\x05\x68\xd1\x51\x8d\x05\x9a\x43\x29\x05\xd4" +
+	"\xa4\xe0\x99\x6a\x8a\x28\x1c\xbb\x86\xc5\x35\xd9\x94\x59\x90\xc5\x7b\x5a\x57\xd0\xec\x02\x7b\xf2\x32\x51\x43\xef" +
+	"\x59\x50\x0c\xfb\x03\xb3\xa6\xa4\xa3\x09\xd2\x79\x5c\xd1\xb3\xf1\x94\x60\xcb\xdf\x41\x18\xea\xce\x24\xc8\x96\xf2" +
+	"\x00\x6b\x74\x47\xec\x05\x39\xec\xdd\xcc\x52\x20\x9d\xd5\x22\x75\xa0\xa4\xe0\x6a\x06\x90\xc8\x92\x16\x8e\xfb\x39" +
+	"\x0e\x45\x6f\x3f\x0e\x2c\x8f\x4d\xef\xdd\x09\xb9\x60\x51\xe8\x40\x19\x2c\x26\x7f\x67\x96\x93\x3f\x3b\x12\x3d\x27" +
+	"\x0b\x70\x74\xb8\x5f\x8d\x17\x34\x9e\x62\xcf\x29\x4e\xa4\x0b\xf2\x1b\xe3\xa9\xd7\x0c\x1c\x65\x30\x62\x4f\xea\x85" +
+	"\x2a\x8e\xa2\xe0\xa6\xbc\xb9\x1a\x21\x7a\xc7\xa6\x70\x24\xd1\xe8\x34\x69\x87\xc8\xc2\x9a\xad\x82\xa7\x77\x55\xdf" +
+	"\x33\x0e\x37\xa4\xe0\xa5\xc1\xdd\xdc\xf0\x65\x88\x1c\xb6\x24\x49\x38\x5e\xbe\x1a\x54\x6d\x39\xff\x6f\xfe\xff\x98" +
+	"\x54\x35\xd6\x56\x6c\x8d\xde\x29\xf8\xf0\x7c\xc7\x52\x45\x4a\x39\x62\x47\x54\xa4\xc4\x4d\xd4\x34\x3a\x4a\xa4\x97" +
+	"\x86\xd2\xf4\x78\x3a\x34\x0a\xae\xcb\xb2\x74\xa3\xb2\x23\xc7\x71\xa7\xe0\x7a\x51\x7e\x32\x7d\x87\x7c\xfb\xca\x3e" +
+	"\x6e\xf3\xbe\xba\x7d\x58\x3e\xdd\x3f\x7c\x5d\xae\x56\x0f\xb7\x8f\x8f\x03\x9d\x16\x6d\x43\x0a\x2e\xa6\x49\x9a\x0f" +
+	"\x12\x3e\x4f\xad\x56\x8b\xb2\x5c\x94\x17\x27\xd2\xab\xe5\xd3\xf2\xfd\xe7\xb7\x7f\xa0\x9c\xf3\xb3\x6d\xd6\xbf\x13" +
+	"\x8e\x84\x75\x4e\x7e\xaa\x22\xaf\x69\xb8\x09\xfa\xf1\x9a\x9c\xc3\x66\xd8\x39\xf4\xf5\x34\x0d\xf9\xa2\xd6\x34\x4f" +
+	"\xdb\x49\xbd\x28\x64\x17\xe8\x4d\x3f\x61\xd0\x36\xde\x88\x41\xbb\x22\x8b\xbb\x47\xd2\xec\xeb\xa4\x60\x31\x00\x04" +
+	"\x8a\x86\xeb\x33\x2d\x6b\x5a\xfa\xa7\x76\x8f\x03\xfe\x82\xdb\x96\x6d\xe3\x86\x91\x3b\xf3\xbb\xe5\x6b\x2a\x72\xc4" +
+	"\x71\x43\xbf\xc2\x59\xde\x4c\x60\x89\x62\x6b\x34\x2d\xb5\xe6\xe6\xe4\xb5\x3b\x05\xdc\x4d\xdf\x90\x9f\x01\x00\x00" +
+	"\xff\xff\x30\x31\x60\x05\xa3\x05\x00\x00")
 
 func bindataDeploymentAlamedaaiDMyamlBytes() ([]byte, error) {
 	return bindataRead(
@@ -2678,10 +2716,10 @@ func bindataDeploymentAlamedaaiDMyaml() (*asset, error) {
 
 	info := bindataFileInfo{
 		name: "Deployment/alameda-aiDM.yaml",
-		size: 1348,
+		size: 1443,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559208397, 0),
+		modTime: time.Unix(1560418795, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2734,7 +2772,7 @@ func bindataDeploymentAlamedadatahubDMyaml() (*asset, error) {
 		size: 1702,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559208397, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2785,7 +2823,7 @@ func bindataDeploymentAlamedaevictionerDMyaml() (*asset, error) {
 		size: 1535,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559208397, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2828,7 +2866,7 @@ func bindataDeploymentAlamedaexecutorDMyaml() (*asset, error) {
 		size: 869,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1560416274, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2886,7 +2924,7 @@ func bindataDeploymentAlamedagrafanaDMyaml() (*asset, error) {
 		size: 3038,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1560221364, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -2993,7 +3031,7 @@ func bindataDeploymentAlamedaoperatorDMyaml() (*asset, error) {
 		size: 1952,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1559208397, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -3035,7 +3073,7 @@ func bindataDeploymentAlamedarecommenderDMyaml() (*asset, error) {
 		size: 870,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1560416274, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -3072,7 +3110,7 @@ func bindataAlamedaScalerAlamedaScaleralamedayaml() (*asset, error) {
 		size: 237,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1560416274, 0),
+		modTime: time.Unix(1560418749, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
@@ -3190,6 +3228,7 @@ var _bindata = map[string]func() (*asset, error){
 	"PersistentVolumeClaim/my-alamedagrafanaPVC.yaml":         bindataPersistentVolumeClaimMyalamedagrafanaPVCyaml,
 	"PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml":        bindataPersistentVolumeClaimMyalamedainfluxdbPVCyaml,
 	"Service/admission-controllerSV.yaml":                     bindataServiceAdmissioncontrollerSVyaml,
+	"Service/alameda-ai-metricsSV.yaml":                       bindataServiceAlamedaaimetricsSVyaml,
 	"Service/alameda-datahubSV.yaml":                          bindataServiceAlamedadatahubSVyaml,
 	"Service/alameda-grafanaSV.yaml":                          bindataServiceAlamedagrafanaSVyaml,
 	"Service/alameda-influxdbSV.yaml":                         bindataServiceAlamedainfluxdbSVyaml,
@@ -3323,6 +3362,7 @@ var _bintree = &bintree{Func: nil, Children: map[string]*bintree{
 	}},
 	"Service": {Func: nil, Children: map[string]*bintree{
 		"admission-controllerSV.yaml": {Func: bindataServiceAdmissioncontrollerSVyaml, Children: map[string]*bintree{}},
+		"alameda-ai-metricsSV.yaml": {Func: bindataServiceAlamedaaimetricsSVyaml, Children: map[string]*bintree{}},
 		"alameda-datahubSV.yaml": {Func: bindataServiceAlamedadatahubSVyaml, Children: map[string]*bintree{}},
 		"alameda-grafanaSV.yaml": {Func: bindataServiceAlamedagrafanaSVyaml, Children: map[string]*bintree{}},
 		"alameda-influxdbSV.yaml": {Func: bindataServiceAlamedainfluxdbSVyaml, Children: map[string]*bintree{}},

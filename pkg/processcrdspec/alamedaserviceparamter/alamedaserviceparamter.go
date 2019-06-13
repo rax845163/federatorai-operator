@@ -28,7 +28,8 @@ var (
 	}
 
 	svList = []string{"Service/alameda-datahubSV.yaml",
-		"Service/alameda-influxdbSV.yaml"}
+		"Service/alameda-influxdbSV.yaml",
+		"Service/alameda-ai-metricsSV.yaml"}
 
 	depList = []string{"Deployment/alameda-datahubDM.yaml",
 		"Deployment/alameda-operatorDM.yaml",

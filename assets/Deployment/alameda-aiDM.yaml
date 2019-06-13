@@ -21,6 +21,10 @@ spec:
     spec:
       containers:
       - name: alameda-ai-engine
+        ports:
+            - containerPort: 9091
+              name: ai-metrics
+              protocol: TCP
         image: quay.io/prophetstor/alameda-ai:v0.3.8
         imagePullPolicy: IfNotPresent
         resources:
@@ -32,19 +36,19 @@ spec:
           value: "alameda-operator.federatorai.svc:50050"
         - name: DATAHUB_ADDRESS
           value: "alameda-datahub.federatorai.svc:50050"
-        readinessProbe: 
-          exec: 
-            command: 
-            - /probe.sh 
-            - --type=readiness 
-          initialDelaySeconds: 5 
-          periodSeconds: 5 
-        livenessProbe: 
-          exec: 
-            command: 
-            - /probe.sh 
-            - --type=liveness 
-          initialDelaySeconds: 5 
+        readinessProbe:
+          exec:
+            command:
+            - /probe.sh
+            - --type=readiness
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - /probe.sh
+            - --type=liveness
+          initialDelaySeconds: 5
           periodSeconds: 5
       volumes:
         - name: alameda-ai-data-storage
