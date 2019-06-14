@@ -6,9 +6,9 @@ ENV BUILD_DEST=/go/bin/federatorai-operator
 RUN unset VERSION && make build
 
 FROM registry.access.redhat.com/ubi7/ubi-minimal
-ENV SUMMARY="FederatorAI Operator is an operator that manages FederatorAI components for an OpenShift cluster" \
-    DESCRIPTION="FederatorAI Operator is an operator that manages FederatorAI components for an OpenShift cluster" \
-    NAME="FederatorAI Operator" \
+ENV SUMMARY="Federator.ai Operator is an operator that manages Federator.ai components for an OpenShift cluster" \
+    DESCRIPTION="Federator.ai Operator is an operator that manages Federator.ai components for an OpenShift cluster" \
+    NAME="Federator.ai Operator" \
     VERSION="latest"
 
 LABEL summary="$SUMMARY" \

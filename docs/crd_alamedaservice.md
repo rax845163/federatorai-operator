@@ -1,6 +1,6 @@
 ## AlamedaService Custom Resource Definition
 
-**FederatorAI Operator** provides _AlamedaService_ [CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) as a channel for users to manage Alameda components including:
+**Federator.ai Operator** provides _AlamedaService_ [CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) as a channel for users to manage Alameda components including:
 - Deployment of Alameda components such as _alameda-operator_, _alameda-datahub_, _alameda-ai_, _alameda-evictioner_, _alameda-admission-controller_, _alameda-recommender_, _InfluxDB_ and _Grafana_. Please visit [Alamede architecture](https://github.com/containers-ai/alameda/blob/master/design/architecture.md) for more details.
 - Seamless updation of Alameda between versions.
 - Application lifecycle and storage management.
@@ -11,7 +11,7 @@ An _AlamedaService_ CR is structured as:
 - a section of detailed setting for each component (optional)  
   The settings in this section are optional and it is used to fine tune the values inherited from the global section for each Alameda component.
 
-When an _AlamedaService_ CR is created, FederatorAI-Operator will reconcile it and spawn operands. For the detail schema of _AlamedaService_, please refer to the last section of this document. Here we shows two example to quickly give users a feel what the configuration that an _AlamedaService_ tries to provide.
+When an _AlamedaService_ CR is created, Federator.ai Operator will reconcile it and spawn operands. For the detail schema of _AlamedaService_, please refer to the last section of this document. Here we shows two example to quickly give users a feel what the configuration that an _AlamedaService_ tries to provide.
 
 ### An Example
 Here is an _AlamedaService_ CR example:
@@ -23,6 +23,8 @@ metadata:
   name: my-alamedaservice
   namespace: alameda
 spec:
+  selfDriving: true             ## to enable resource self-orchestration of the deployed Alameda components
+                                ## it is recommended NOT to use ephemeral data storage for Alameda influxdb component when self-Driving is enabled
   enableexecution: true
   enablegui: true
   version: latest               ## for Alameda components. (exclude grafana and influxdb)
@@ -36,12 +38,13 @@ spec:
       class: "normal"           ## mandatory when type=pvc
 ```
 
-In this example, it creates an _AlamedaService_ CR with name _my-alamedaservice_ in namespace `alameda`. By creating this CR, **FederatorAI Operator** starts to:
+In this example, it creates an _AlamedaService_ CR with name _my-alamedaservice_ in namespace `alameda`. By creating this CR, **Federator.ai Operator** starts to:
 - deploy Alameda core components, components for recommendation execution and components for GUI
-- The pulled Alameda component image tag is _latest_. The only exceptions are InfluxDB and Grafana components. To overwrite the pulled image tag of InfluxDB and Grafana, users can specify them in _section schema for each component_.
-- Alameda datahub will retrieve metrics from Prometheus at _https://prometheus-k8s.openshift-monitoring:9091_
-- log path will be mounted with _emptyDir{}_ for each component
-- PVC are claimed and mounted in data path for each component
+- create an [_AlamedaScaler_](https://github.com/containers-ai/alameda/blob/master/design/crd_alamedascaler.md) to self-orchestrate Alameda's resource usage
+- pull _latest_ Alameda component image except InfluxDB and Grafana components. To overwrite the pulled image tag of InfluxDB and Grafana, users can specify them in _section schema for each component_.
+- set Alameda datahub to retrieve metrics from Prometheus at _https://prometheus-k8s.openshift-monitoring:9091_
+- mount _emptyDir{}_ to log path for each component
+- claim volumn by PVC and mount it to data path for each component
 
 ### A More Complicated Example
 Here is another _AlamedaService_ CR example to show how to overwrite the global setting for some components:
@@ -53,6 +56,8 @@ metadata:
   name: my-alamedaservice
   namespace: alameda
 spec:
+  selfDriving: true             ## to enable resource self-orchestration of the deployed Alameda components
+                                ## it is recommended NOT to use ephemeral data storage for Alameda influxdb component when self-Driving is enabled
   enableexecution: true
   enablegui: true
   version: v0.3.7               ## for Alameda components. (exclude grafana and influxdb)
@@ -107,12 +112,16 @@ spec:
 
 ### AlamedaServiceSpec
 
+- Field: selfDriving
+  - type: boolean
+  - description: If this field is set to _true_, Federator.ai Operator will create an [_AlamedaScaler_](https://github.com/containers-ai/alameda/blob/master/design/crd_alamedascaler.md) CR to self-orchestrate the resource usage of deployed Alameda components. Default is _false_.
+> **Note:** It is highly recommended to use persistent storage for data in Alameda influxdb component when self-Driving is enabled
 - Field: enableexecution
   - type: boolean
-  - description: FederatorAI Operator will deploy components to execute AlamedaRecommendation CRs if this field is set to _true_. Default is _false_.
+  - description: Federator.ai Operator will deploy components to execute _AlamedaRecommendation_ CRs if this field is set to _true_. Default is _false_.
 - Field: enablegui
   - type: boolean
-  - description: FederatorAI Operator will deploy GUI to visualize Alameda predictions/recommendations and cluster/node status if this field is set to _true_. Default is _true_.
+  - description: Federator.ai Operator will deploy GUI to visualize Alameda predictions/recommendations and cluster/node status if this field is set to _true_. Default is _true_.
 - Field: version
   - type: string
   - description: It sets the version tag when pulling Alameda component images.
