@@ -13,11 +13,12 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-        app: alameda-grafana
+        component: alameda-grafana
   template:
     metadata:
       labels:
-        app: alameda-grafana
+        app: alameda
+        component: alameda-grafana
     spec:
       initContainers:
       - name: gettoken
@@ -51,7 +52,7 @@ spec:
           - mountPath: /etc/grafana/provisioning/datasources
             name: prometheus-datasource
           - mountPath: /etc/grafana/provisioning/dashboards
-            name: dashboardproviders 
+            name: dashboardproviders
       volumes:
         - name: prometheus-datasource
           emptyDir: {}

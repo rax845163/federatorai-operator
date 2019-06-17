@@ -13,12 +13,13 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: alameda-operator
+      component: alameda-operator
   template:
     metadata:
       name: alameda-operator
       labels:
-        app: alameda-operator
+        app: alameda
+        component: alameda-operator
     spec:
       containers:
       - name: alameda-operator
@@ -32,7 +33,7 @@ spec:
         - name: NAMESPACE_NAME
           valueFrom:
             fieldRef:
-              fieldPath: metadata.namespace   
+              fieldPath: metadata.namespace
         - name: POD_NAME
           valueFrom:
             fieldRef:
@@ -69,4 +70,4 @@ spec:
             fieldRef:
               fieldPath: metadata.labels
       serviceAccount: alameda-operator
-      serviceAccountName: alameda-operator    
+      serviceAccountName: alameda-operator

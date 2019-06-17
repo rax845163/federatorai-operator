@@ -13,12 +13,13 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: alameda-evictioner
+      component: alameda-evictioner
   template:
     metadata:
       name: alameda-evictioner
       labels:
-        app: alameda-evictioner
+        app: alameda
+        component: alameda-evictioner
     spec:
       containers:
       - name: alameda-evictioner

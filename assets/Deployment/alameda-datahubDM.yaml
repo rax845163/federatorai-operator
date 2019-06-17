@@ -13,12 +13,13 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: alameda-datahub
+      component: alameda-datahub
   template:
     metadata:
       name: alameda-datahub
       labels:
-        app: alameda-datahub
+        app: alameda
+        component: alameda-datahub
     spec:
       containers:
       - name: alameda-datahub

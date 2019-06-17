@@ -56,7 +56,7 @@ depend-update:
 	dep ensure -update
 
 .PHONY: build
-build: ## build binaries
+build: pkg/assets/bindata.go## build binaries
 	$(DOCKER_CMD) go build $(GOGCFLAGS) -ldflags "$(LD_FLAGS)" -o "$(BUILD_DEST)" "$(REPO_PATH)/cmd/manager"
 
 .PHONY: images

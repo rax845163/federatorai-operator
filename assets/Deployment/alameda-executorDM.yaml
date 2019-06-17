@@ -9,12 +9,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: alameda-executor
+      component: alameda-executor
   replicas: 1
   template:
     metadata:
       labels:
-        app: alameda-executor
+        app: alameda
+        component: alameda-executor
     spec:
       serviceAccountName: alameda-executor
       containers:

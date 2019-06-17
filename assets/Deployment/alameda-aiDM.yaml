@@ -12,12 +12,13 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: alameda-ai
+      component: alameda-ai
   template:
     metadata:
       name: alameda-ai
       labels:
-        app: alameda-ai
+        app: alameda
+        component: alameda-ai
     spec:
       containers:
       - name: alameda-ai-engine

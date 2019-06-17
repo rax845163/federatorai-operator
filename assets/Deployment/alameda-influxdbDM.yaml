@@ -13,11 +13,12 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-        app: alameda-influxdb
+        component: alameda-influxdb
   template:
     metadata:
       labels:
-        app: alameda-influxdb
+        app: alameda
+        component: alameda-influxdb
     spec:
       # securityContext:
       #   runAsUser: 1000

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: alameda-datahub
+    component: alameda-datahub
   name: alameda-datahub
   namespace: federatorai
 spec:
@@ -10,4 +10,4 @@ spec:
   - name: grpc
     port: 50050
   selector:
-    app: alameda-datahub
+    component: alameda-datahub

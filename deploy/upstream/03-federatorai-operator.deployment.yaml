@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: federatorai-operator
   namespace: federatorai
+  labels:
+    name: federatorai-operator
+    app: Federator.ai
 spec:
   replicas: 1
   strategy:
@@ -17,6 +20,7 @@ spec:
     metadata:
       labels:
         name: federatorai-operator
+        app: Federator.ai
     spec:
       serviceAccountName: federatorai-operator
       containers:
