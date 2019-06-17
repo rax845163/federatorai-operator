@@ -17,6 +17,7 @@ data:
 
     [hpa_scaling]
     alpha = 0.25
+    k8s_threshold = 0.8
     limits_threshold = 0.9
     sample_rate = 15
     period_rate = 60
