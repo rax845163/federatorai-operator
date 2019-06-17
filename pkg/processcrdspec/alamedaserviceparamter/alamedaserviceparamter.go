@@ -117,6 +117,14 @@ type Resource struct {
 	AlamdaScalerList             []string
 }
 
+func GetSelfDrivingRsource() *Resource {
+	var alamedaScalerList = make([]string, 0)
+	alamedaScalerList = append(alamedaScalerList, "AlamedaScaler/alamedaScaler-alameda.yaml")
+	return &Resource{
+		AlamdaScalerList: alamedaScalerList,
+	}
+}
+
 func GetExcutionResource() *Resource {
 	var excrb = make([]string, 0)
 	var excr = make([]string, 0)

@@ -224,6 +224,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 	// if EnableExecution Or EnableGUI has been changed to false
+	//Uninstall Execution Component
 	if !asp.EnableExecution {
 		log.Info("EnableExecution has been changed to false")
 		excutionResource := alamedaserviceparamter.GetExcutionResource()
@@ -232,6 +233,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
 	}
+	//Uninstall GUI Component
 	if !asp.EnableGUI {
 		log.Info("EnableGUI has been changed to false")
 		guiResource := alamedaserviceparamter.GetGUIResource()
@@ -240,6 +242,16 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
 	}
+	//Uninstall Alameda Scaler
+	if !asp.SelfDriving {
+		log.Info("selfDriving has been changed to false")
+		selfDrivingResource := alamedaserviceparamter.GetSelfDrivingRsource()
+		if err := r.uninstallScalerforAlameda(instance, selfDrivingResource); err != nil {
+			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+		}
+	}
+	//Uninstall PersistentVolumeClaim Source
 	pvcResource := asp.GetUninstallPersistentVolumeClaimSource()
 	if err := r.uninstallPersistentVolumeClaim(instance, pvcResource); err != nil {
 		log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
@@ -658,6 +670,26 @@ func (r *ReconcileAlamedaService) uninstallClusterRoleBinding(instance *federato
 		}
 	}
 
+	return nil
+}
+
+func (r *ReconcileAlamedaService) uninstallAlamedaScaler(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+	for _, fileString := range resource.AlamdaScalerList {
+		resourceScaler := componentConfig.NewAlamedaScaler(fileString)
+		err := r.client.Delete(context.TODO(), resourceScaler)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			return nil
+		} else if err != nil {
+			return errors.Errorf("delete resourceScaler %s/%s failed: %s", resourceScaler.Namespace, resourceScaler.Name, err.Error())
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) uninstallScalerforAlameda(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+	if err := r.uninstallAlamedaScaler(instance, resource); err != nil {
+		return errors.Wrapf(err, "uninstall selfDriving scaler failed")
+	}
 	return nil
 }
 
