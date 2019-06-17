@@ -88,6 +88,8 @@ spec:
               path: vpa-recommendation-namespace.json
             - key: vpa-recommendation-alamedascaler.json
               path: vpa-recommendation-alamedascaler.json
+            - key: prediction-1day.json
+              path: prediction-1day.json
           name: dashboards-json
         - configMap:
             name: dashboards-config
