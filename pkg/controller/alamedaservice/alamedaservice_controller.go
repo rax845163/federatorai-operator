@@ -191,13 +191,6 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 
-	if asp.SelfDriving {
-		if err := r.createScalerforAlameda(instance, asp, installResource); err != nil {
-			log.V(-1).Info("create scaler for alameda failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
-		}
-	}
-
 	if err := r.syncClusterRoleBinding(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync clusterRoleBinding failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -242,7 +235,12 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
 	}
-	//Uninstall Alameda Scaler
+	//Uninstall PersistentVolumeClaim Source
+	pvcResource := asp.GetUninstallPersistentVolumeClaimSource()
+	if err := r.uninstallPersistentVolumeClaim(instance, pvcResource); err != nil {
+		log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
 	if !asp.SelfDriving {
 		log.Info("selfDriving has been changed to false")
 		selfDrivingResource := alamedaserviceparamter.GetSelfDrivingRsource()
@@ -250,12 +248,11 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
-	}
-	//Uninstall PersistentVolumeClaim Source
-	pvcResource := asp.GetUninstallPersistentVolumeClaimSource()
-	if err := r.uninstallPersistentVolumeClaim(instance, pvcResource); err != nil {
-		log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	} else { //install Alameda Scaler
+		if err := r.createScalerforAlameda(instance, asp, installResource); err != nil {
+			log.V(-1).Info("create scaler for alameda failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+		}
 	}
 	return reconcile.Result{}, nil
 }
