@@ -11,6 +11,8 @@ spec:
     matchLabels:
       component: alameda-recommender
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:

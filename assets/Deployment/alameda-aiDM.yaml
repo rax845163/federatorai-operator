@@ -10,6 +10,8 @@ metadata:
     description: Defines how to deploy the application alameda-operator
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       component: alameda-ai

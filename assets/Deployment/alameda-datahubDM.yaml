@@ -11,6 +11,8 @@ metadata:
     template.alpha.openshift.io/wait-for-ready: 'true'
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       component: alameda-datahub
