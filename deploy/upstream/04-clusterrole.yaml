@@ -143,4 +143,10 @@ rules:
   - deploymentconfigs
   verbs:
   - "*"
+- apiGroups:
+  - autoscaling
+  resources:
+  - horizontalpodautoscalers
+  verbs:
+  - list
 

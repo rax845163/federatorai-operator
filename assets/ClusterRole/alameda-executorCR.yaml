@@ -24,3 +24,9 @@ rules:
   - list
   - update
   - patch
+- apiGroups:
+  - autoscaling
+  resources:
+  - horizontalpodautoscalers
+  verbs:
+  - list
