@@ -44,7 +44,9 @@ func (v *validator) IsControllerEnabledExecution(namespace, name, kind string) (
 			Name:      name,
 		},
 	}
+	scope.Debugf("query ListControllers to datahub, send request: %+v", req)
 	resp, err := v.datahubServiceClient.ListControllers(ctx, req)
+	scope.Debugf("query ListControllers to datahub, received response: %+v", resp)
 	if err != nil {
 		return false, errors.Errorf("query ListControllers to datahub failed: errMsg: %s", err.Error())
 	}
@@ -57,20 +59,20 @@ func (v *validator) IsControllerEnabledExecution(namespace, name, kind string) (
 	controllers := resp.Controllers
 	indices := getMatchedControllerIndices(controllers, namespace, name, datahub_v1alpha1.Kind(datahubKind))
 	if len(indices) == 0 {
-		return false, nil
+		return false, errors.Errorf("cannot find matched controller (%s/%s ,kind: %s) from datahub", namespace, name, kind)
 	}
 	controller := controllers[0]
 
 	alamedaScalerIndices := getMatchedResourceIndicesWithKind(controller.OwnerInfo, datahub_v1alpha1.Kind_ALAMEDASCALER)
 	if len(alamedaScalerIndices) == 0 {
-		return false, nil
+		return false, errors.Errorf("cannot find matched AlamedaScaler to controller (%s/%s ,kind: %s) from datahub", namespace, name, kind)
 	}
 	alamedaScalerInfo := controller.OwnerInfo[alamedaScalerIndices[0]]
 	alamedaScalerNamespacedName := alamedaScalerInfo.NamespacedName
 	if alamedaScalerNamespacedName == nil {
-		return false, nil
+		return false, errors.Errorf("getting AlamedaScaler with empty NamespacedName controller (%s/%s ,kind: %s) from datahub", namespace, name, kind)
 	} else if alamedaScalerNamespacedName.Namespace == "" || alamedaScalerNamespacedName.Name == "" {
-		return false, nil
+		return false, errors.Errorf("getting AlamedaScaler with empty NamespacedName controller (%s/%s ,kind: %s) from datahub", namespace, name, kind)
 	}
 
 	alamedaScaler := autoscaling_v1alpha1.AlamedaScaler{}

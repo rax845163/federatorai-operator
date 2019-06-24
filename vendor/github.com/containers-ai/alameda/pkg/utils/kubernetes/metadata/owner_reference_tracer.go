@@ -17,6 +17,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/restmapper"
+	sigs_k8s_client_config "sigs.k8s.io/controller-runtime/pkg/client/config"
 )
 
 var (
@@ -37,7 +38,7 @@ type OwnerReferenceTracer struct {
 // NewDefaultOwnerReferenceTracer build OwnerReferenceTracer
 func NewDefaultOwnerReferenceTracer() (*OwnerReferenceTracer, error) {
 
-	config, err := rest.InClusterConfig()
+	config, err := sigs_k8s_client_config.GetConfig()
 	if err != nil {
 		return nil, errors.Errorf("new OwnerReferenceTracer failed: %s", err.Error())
 	}
@@ -216,6 +217,42 @@ func (ort *OwnerReferenceTracer) GetDeploymentOrDeploymentConfigOwningPod(pod co
 	}
 
 	return nil, nil, nil
+}
+
+func (ort *OwnerReferenceTracer) GetControllerOwnerReferenceLink(objectMeta meta_v1.Object) ([]meta_v1.OwnerReference, error) {
+
+	var link = make([]meta_v1.OwnerReference, 0)
+	var nextControllerOwnerRef *meta_v1.OwnerReference
+	var namespace = objectMeta.GetNamespace()
+
+	ownerRefs := objectMeta.GetOwnerReferences()
+	for true {
+
+		nextControllerOwnerRef = nil
+
+		// get owner that is controller
+		for _, ownerRef := range ownerRefs {
+			if ownerRef.Controller != nil && *ownerRef.Controller {
+				link = append(link, ownerRef)
+				nextControllerOwnerRef = &ownerRef
+				break
+			}
+		}
+
+		// no next controller ownerReference find
+		if nextControllerOwnerRef == nil {
+			break
+		}
+
+		var err error
+		gvk := schema.FromAPIVersionAndKind(nextControllerOwnerRef.APIVersion, nextControllerOwnerRef.Kind)
+		ownerRefs, err = ort.getOwnerRefsOfResource(namespace, nextControllerOwnerRef.Name, gvk)
+		if err != nil {
+			return link, err
+		}
+	}
+
+	return link, nil
 }
 
 func (ort *OwnerReferenceTracer) getOwnerRefsOfResource(namespace, name string, gvk schema.GroupVersionKind) ([]meta_v1.OwnerReference, error) {

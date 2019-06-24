@@ -9,17 +9,24 @@ import (
 	"github.com/pkg/errors"
 )
 
+type JsonPatchValidationFuncName = string
+
+const (
+	JsonPatchValidationFuncOpenshift3_9 = "openshift3.9"
+)
+
 // Config contains the server (the webhook) cert and key.
 type Config struct {
-	CACertFile        string          `mapstructure:"ca-cert-file"`
-	CertFile          string          `mapstructure:"tls-cert-file"`
-	KeyFile           string          `mapstructure:"tls-private-key-file"`
-	Enable            bool            `mapstructure:"enable"`
-	DeployedNamespace string          `mapstructure:"deployed-namespace"`
-	Log               *log.Config     `mapstructure:"log"`
-	Datahub           *datahub.Config `mapstructure:"datahub"`
-	Port              int32           `mapstructure:"port"`
-	Service           *service.Config `mapstructure:"service"`
+	CACertFile              string                      `mapstructure:"ca-cert-file"`
+	CertFile                string                      `mapstructure:"tls-cert-file"`
+	KeyFile                 string                      `mapstructure:"tls-private-key-file"`
+	Enable                  bool                        `mapstructure:"enable"`
+	JsonPatchValidationFunc JsonPatchValidationFuncName `mapstructure:"json-patch-validation-func"`
+	DeployedNamespace       string                      `mapstructure:"deployed-namespace"`
+	Log                     *log.Config                 `mapstructure:"log"`
+	Datahub                 *datahub.Config             `mapstructure:"datahub"`
+	Port                    int32                       `mapstructure:"port"`
+	Service                 *service.Config             `mapstructure:"service"`
 }
 
 func NewDefaultConfig() Config {
@@ -28,15 +35,16 @@ func NewDefaultConfig() Config {
 	defaultLogConfig := log.NewDefaultConfig()
 	defaultSvcConfig := service.NewDefaultConfig()
 	return Config{
-		CACertFile:        "",
-		CertFile:          "",
-		KeyFile:           "",
-		Enable:            false,
-		DeployedNamespace: "alameda",
-		Log:               &defaultLogConfig,
-		Datahub:           &defaultDatahubConfig,
-		Port:              8000,
-		Service:           defaultSvcConfig,
+		CACertFile:              "",
+		CertFile:                "",
+		KeyFile:                 "",
+		Enable:                  false,
+		JsonPatchValidationFunc: "",
+		DeployedNamespace:       "alameda",
+		Log:                     &defaultLogConfig,
+		Datahub:                 &defaultDatahubConfig,
+		Port:                    8000,
+		Service:                 defaultSvcConfig,
 	}
 }
 

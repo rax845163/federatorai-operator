@@ -42,15 +42,19 @@
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
-  digest = "1:176a89479bb4eb997b7e52a4e14010749fc64d2691863c27f5345aae6f62eaaf"
+  digest = "1:57daad428af4e2c3eb247b00f758f74902660e2644be934462b52488ae1c2c1d"
   name = "github.com/containers-ai/alameda"
   packages = [
+    "admission-controller",
+    "admission-controller/pkg/service",
     "operator/pkg/apis/autoscaling/v1alpha1",
     "operator/pkg/utils",
+    "pkg/framework/datahub",
+    "pkg/utils/log",
   ]
   pruneopts = "NT"
-  revision = "de67517419787268d74cbc7f94f97134d4cb1d8a"
-  version = "v0.3.27"
+  revision = "f81006add87efee00cfa3c9e6e8de96be2de9159"
+  version = "v0.3.30"
 
 [[projects]]
   branch = "master"
@@ -291,6 +295,14 @@
   version = "v0.3.7"
 
 [[projects]]
+  digest = "1:406338ad39ab2e37b7f4452906442a3dbf0eb3379dd1f06aafb5c07e769a5fbb"
+  name = "github.com/inconshreveable/mousetrap"
+  packages = ["."]
+  pruneopts = "NT"
+  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+  version = "v1.0"
+
+[[projects]]
   digest = "1:f5b9328966ccea0970b1d15075698eff0ddb3e75889560aad2e9f76b289b536a"
   name = "github.com/joho/godotenv"
   packages = ["."]
@@ -496,6 +508,14 @@
   version = "v1.3.0"
 
 [[projects]]
+  digest = "1:37a91e5093cb260946900c75198c293f3439187e43f48e1a3ae10b4aa55bd7ad"
+  name = "github.com/spf13/cobra"
+  packages = ["."]
+  pruneopts = "NT"
+  revision = "f2b07da1e2c38d5f12845a4f607e2e1018cbb1f5"
+  version = "v0.0.5"
+
+[[projects]]
   digest = "1:3d72352adb74e79d6d5a43d6f51bfd2d0bd0c9b5f3c00cf5a4b1636d8d3b9d92"
   name = "github.com/spf13/jwalterweatherman"
   packages = ["."]
@@ -545,6 +565,7 @@
     "internal/color",
     "internal/exit",
     "zapcore",
+    "zapgrpc",
   ]
   pruneopts = "NT"
   revision = "ff33455a0e382e8a81d14dd7c922020b6b5e7982"
@@ -676,7 +697,10 @@
   branch = "master"
   digest = "1:ba5a50ad30d20b12c1a228b5a3a476e96d89471afa8280842d69da89b66db0b5"
   name = "google.golang.org/genproto"
-  packages = ["googleapis/rpc/status"]
+  packages = [
+    "googleapis/rpc/code",
+    "googleapis/rpc/status",
+  ]
   pruneopts = "NT"
   revision = "a7e196e89fd3a3c4d103ca540bd5dac3a736e375"
 
@@ -728,6 +752,14 @@
   pruneopts = "NT"
   revision = "d2d2541c53f18d2a059457998ce2876cc8e67cbf"
   version = "v0.9.1"
+
+[[projects]]
+  digest = "1:80c34337e8a734e190f2d1b716cae774cca74db98315166f92074434e9af0227"
+  name = "gopkg.in/natefinch/lumberjack.v2"
+  packages = ["."]
+  pruneopts = "NT"
+  revision = "a96e63847dc3c67d17befa69c303767e2f84e54f"
+  version = "v2.1"
 
 [[projects]]
   digest = "1:18108594151654e9e696b27b181b953f9a90b16bf14d253dd1b397b025a1487f"
@@ -1054,6 +1086,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/containers-ai/alameda/admission-controller",
     "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1",
     "github.com/go-logr/logr",
     "github.com/go-logr/zapr",

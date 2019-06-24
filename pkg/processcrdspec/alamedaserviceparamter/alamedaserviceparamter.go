@@ -3,8 +3,10 @@ package alamedaserviceparamter
 import (
 	"strings"
 
+	admission_controller "github.com/containers-ai/alameda/admission-controller"
 	"github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/util"
+	corev1 "k8s.io/api/core/v1"
 )
 
 var (
@@ -86,6 +88,7 @@ var (
 type AlamedaServiceParamter struct {
 	NameSpace                     string
 	SelfDriving                   bool
+	Platform                      string
 	EnableExecution               bool
 	EnableGUI                     bool
 	Version                       string
@@ -246,6 +249,50 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 		PersistentVolumeClaimList: pvc,
 	}
 
+}
+
+func (asp *AlamedaServiceParamter) GetEnvVarsByDeployment(deploymentName string) []corev1.EnvVar {
+
+	var envVars []corev1.EnvVar
+
+	switch deploymentName {
+	case util.AdmissioncontrollerDPN:
+		envVars = asp.GetAdmissionControllerEnvVars()
+	case util.AlamedaevictionerDPN:
+		envVars = asp.GetAlamedaEvictionerEnvVars()
+	default:
+	}
+
+	return envVars
+}
+
+func (asp *AlamedaServiceParamter) GetAdmissionControllerEnvVars() []corev1.EnvVar {
+
+	envVars := make([]corev1.EnvVar, 0)
+
+	switch asp.Platform {
+	case v1alpha1.PlatformOpenshift3_9:
+		envVars = append(envVars, corev1.EnvVar{
+			Name:  "ALAMEDA_ADMCTL_JSON_PATCH_VALIDATION_FUNC",
+			Value: admission_controller.JsonPatchValidationFuncOpenshift3_9,
+		})
+	}
+
+	return envVars
+}
+
+func (asp *AlamedaServiceParamter) GetAlamedaEvictionerEnvVars() []corev1.EnvVar {
+	envVars := make([]corev1.EnvVar, 0)
+
+	switch asp.Platform {
+	case v1alpha1.PlatformOpenshift3_9:
+		envVars = append(envVars, corev1.EnvVar{
+			Name:  "ALAMEDA_EVICTIONER_EVICTION_PURGE_CONTAINER_CPU_MEMORY",
+			Value: "true",
+		})
+	}
+
+	return envVars
 }
 
 func GetGUIResource() *Resource {
@@ -463,6 +510,7 @@ func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServic
 	asp := &AlamedaServiceParamter{
 		NameSpace:                     instance.Namespace,
 		SelfDriving:                   instance.Spec.SelfDriving,
+		Platform:                      instance.Spec.Platform,
 		EnableExecution:               instance.Spec.EnableExecution,
 		EnableGUI:                     instance.Spec.EnableGUI,
 		Version:                       instance.Spec.Version,

@@ -3,18 +3,21 @@ package eviction
 import (
 	"context"
 	"fmt"
-	"math"
+	"sort"
 	"time"
 
-	datahubutils "github.com/containers-ai/alameda/datahub/pkg/utils"
 	autoscalingv1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	utilsresource "github.com/containers-ai/alameda/operator/pkg/utils/resources"
 	"github.com/containers-ai/alameda/pkg/consts"
 	"github.com/containers-ai/alameda/pkg/utils"
 	logUtil "github.com/containers-ai/alameda/pkg/utils/log"
 	datahub_v1alpha1 "github.com/containers-ai/api/alameda_api/v1alpha1/datahub"
+	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	openshift_apps_v1 "github.com/openshift/api/apps/v1"
+	"github.com/pkg/errors"
 	"google.golang.org/genproto/googleapis/rpc/code"
+	apps_v1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	k8s_errors "k8s.io/apimachinery/pkg/api/errors"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
@@ -28,22 +31,25 @@ var (
 
 // Evictioner deletes pods which need to apply recommendation
 type Evictioner struct {
-	checkCycle  int64
-	datahubClnt datahub_v1alpha1.DatahubServiceClient
-	k8sClienit  client.Client
-	evictCfg    Config
+	checkCycle              int64
+	datahubClnt             datahub_v1alpha1.DatahubServiceClient
+	k8sClienit              client.Client
+	evictCfg                Config
+	purgeContainerCPUMemory bool
 }
 
 // NewEvictioner return Evictioner instance
 func NewEvictioner(checkCycle int64,
 	datahubClnt datahub_v1alpha1.DatahubServiceClient,
 	k8sClienit client.Client,
-	evictCfg Config) *Evictioner {
+	evictCfg Config,
+	purgeContainerCPUMemory bool) *Evictioner {
 	return &Evictioner{
-		checkCycle:  checkCycle,
-		datahubClnt: datahubClnt,
-		k8sClienit:  k8sClienit,
-		evictCfg:    evictCfg,
+		checkCycle:              checkCycle,
+		datahubClnt:             datahubClnt,
+		k8sClienit:              k8sClienit,
+		evictCfg:                evictCfg,
+		purgeContainerCPUMemory: purgeContainerCPUMemory,
 	}
 }
 
@@ -55,6 +61,7 @@ func (evictioner *Evictioner) Start() {
 func (evictioner *Evictioner) evictProcess() {
 	for {
 		if !evictioner.evictCfg.Enable {
+			scope.Warn("evictioner is not enabled")
 			return
 		}
 		appliablePodRecList, err := evictioner.listAppliablePodRecommendation()
@@ -80,11 +87,157 @@ func (evictioner *Evictioner) evictPods(recPodList []*datahub_v1alpha1.PodRecomm
 			}
 			continue
 		}
-		err = evictioner.k8sClienit.Delete(context.TODO(), recPodIns)
-		if err != nil {
-			scope.Errorf("Evict pod (%s,%s) failed: %s", recPodIns.GetNamespace(), recPodIns.GetName(), err.Error())
+		if evictioner.purgeContainerCPUMemory {
+			topController := recPod.TopController
+			if topController == nil || topController.NamespacedName == nil {
+				scope.Errorf("Purge pod (%s,%s) resources failed: get empty topController from PodRecommendation", recPodIns.GetNamespace(), recPodIns.GetName())
+				continue
+
+			}
+			topControllerNamespace := topController.NamespacedName.Namespace
+			topControllerName := topController.NamespacedName.Name
+			topControllerKind := topController.Kind
+			topControllerInstance, err := evictioner.getTopController(topControllerNamespace, topControllerName, topControllerKind)
+			if err != nil {
+				scope.Errorf("Purge pod (%s,%s) resources failed: get topController failed: %s", recPodIns.GetNamespace(), recPodIns.GetName(), err.Error())
+				continue
+			}
+			if needToPurge, err := evictioner.needToPurgeTopControllerContainerResources(topControllerInstance, topControllerKind); err != nil {
+				scope.Errorf("Purge pod (%s,%s) resources failed: %s", recPodIns.GetNamespace(), recPodIns.GetName(), err.Error())
+			} else if needToPurge {
+				if err = evictioner.purgeTopControllerContainerResources(topControllerInstance, topControllerKind); err != nil {
+					scope.Errorf("Purge pod (%s,%s) resources failed: %s", recPodIns.GetNamespace(), recPodIns.GetName(), err.Error())
+					continue
+				}
+			} else {
+				err = evictioner.k8sClienit.Delete(context.TODO(), recPodIns)
+				if err != nil {
+					scope.Errorf("Evict pod (%s,%s) failed: %s", recPodIns.GetNamespace(), recPodIns.GetName(), err.Error())
+				}
+			}
+		} else {
+			err = evictioner.k8sClienit.Delete(context.TODO(), recPodIns)
+			if err != nil {
+				scope.Errorf("Evict pod (%s,%s) failed: %s", recPodIns.GetNamespace(), recPodIns.GetName(), err.Error())
+			}
 		}
 	}
+}
+
+func (evictioner *Evictioner) getTopController(namespace string, name string, kind datahub_v1alpha1.Kind) (interface{}, error) {
+
+	getResource := utilsresource.NewGetResource(evictioner.k8sClienit)
+
+	switch kind {
+	case datahub_v1alpha1.Kind_DEPLOYMENT:
+		return getResource.GetDeployment(namespace, name)
+	case datahub_v1alpha1.Kind_DEPLOYMENTCONFIG:
+		return getResource.GetDeploymentConfig(namespace, name)
+	default:
+		return nil, errors.Errorf("not supported controller type %s", datahub_v1alpha1.Kind_name[int32(kind)])
+	}
+}
+
+func (evictioner *Evictioner) needToPurgeTopControllerContainerResources(controller interface{}, kind datahub_v1alpha1.Kind) (bool, error) {
+
+	switch kind {
+	case datahub_v1alpha1.Kind_DEPLOYMENT:
+		deployment := controller.(*apps_v1.Deployment)
+		for _, container := range deployment.Spec.Template.Spec.Containers {
+			resourceLimits := container.Resources.Limits
+			if resourceLimits != nil {
+				_, cpuSpecExist := resourceLimits[corev1.ResourceCPU]
+				_, memorySpecExist := resourceLimits[corev1.ResourceMemory]
+				if cpuSpecExist || memorySpecExist {
+					return true, nil
+				}
+			}
+			resourceRequests := container.Resources.Requests
+			if resourceRequests != nil {
+				_, cpuSpecExist := resourceRequests[corev1.ResourceCPU]
+				_, memorySpecExist := resourceRequests[corev1.ResourceMemory]
+				if cpuSpecExist || memorySpecExist {
+					return true, nil
+				}
+			}
+		}
+		return false, nil
+	case datahub_v1alpha1.Kind_DEPLOYMENTCONFIG:
+		deploymentConfig := controller.(*openshift_apps_v1.DeploymentConfig)
+		for _, container := range deploymentConfig.Spec.Template.Spec.Containers {
+			resourceLimits := container.Resources.Limits
+			if resourceLimits != nil {
+				_, cpuSpecExist := resourceLimits[corev1.ResourceCPU]
+				_, memorySpecExist := resourceLimits[corev1.ResourceMemory]
+				if cpuSpecExist || memorySpecExist {
+					return true, nil
+				}
+			}
+			resourceRequests := container.Resources.Requests
+			if resourceRequests != nil {
+				_, cpuSpecExist := resourceRequests[corev1.ResourceCPU]
+				_, memorySpecExist := resourceRequests[corev1.ResourceMemory]
+				if cpuSpecExist || memorySpecExist {
+					return true, nil
+				}
+			}
+		}
+		return false, nil
+	default:
+		return false, errors.Errorf("not supported controller type %s", datahub_v1alpha1.Kind_name[int32(kind)])
+	}
+}
+
+func (evictioner *Evictioner) purgeTopControllerContainerResources(controller interface{}, kind datahub_v1alpha1.Kind) error {
+
+	switch kind {
+	case datahub_v1alpha1.Kind_DEPLOYMENT:
+		deployment := controller.(*apps_v1.Deployment)
+		deploymentCopy := deployment.DeepCopy()
+		for _, container := range deploymentCopy.Spec.Template.Spec.Containers {
+			resourceLimits := container.Resources.Limits
+			if resourceLimits != nil {
+				delete(resourceLimits, corev1.ResourceCPU)
+				delete(resourceLimits, corev1.ResourceMemory)
+			}
+			resourceRequests := container.Resources.Requests
+			if resourceRequests != nil {
+				delete(resourceRequests, corev1.ResourceCPU)
+				delete(resourceRequests, corev1.ResourceMemory)
+			}
+		}
+		ctx := context.TODO()
+		err := evictioner.k8sClienit.Update(ctx, deploymentCopy)
+		if err != nil {
+			return errors.Wrapf(err, "purge topController failed: %s", err.Error())
+		}
+		return nil
+	case datahub_v1alpha1.Kind_DEPLOYMENTCONFIG:
+		deploymentConfig := controller.(*openshift_apps_v1.DeploymentConfig)
+		deploymentConfigCopy := deploymentConfig.DeepCopy()
+		for _, container := range deploymentConfigCopy.Spec.Template.Spec.Containers {
+			resourceLimits := container.Resources.Limits
+			if resourceLimits != nil {
+				delete(resourceLimits, corev1.ResourceCPU)
+				delete(resourceLimits, corev1.ResourceMemory)
+			}
+			resourceRequests := container.Resources.Requests
+			if resourceRequests != nil {
+				delete(resourceRequests, corev1.ResourceCPU)
+				delete(resourceRequests, corev1.ResourceMemory)
+			}
+		}
+		ctx := context.TODO()
+		err := evictioner.k8sClienit.Update(ctx, deploymentConfigCopy)
+		if err != nil {
+			return errors.Wrapf(err, "purge topController failed: %s", err.Error())
+		}
+		return nil
+	default:
+		return errors.Errorf("not supported controller type %s", datahub_v1alpha1.Kind_name[int32(kind)])
+	}
+
+	return nil
 }
 
 func (evictioner *Evictioner) listAppliablePodRecommendation() ([]*datahub_v1alpha1.PodRecommendation, error) {
@@ -104,43 +257,39 @@ func (evictioner *Evictioner) listAppliablePodRecommendation() ([]*datahub_v1alp
 	podRecommsPossibleToApply := resp.GetPodRecommendations()
 	scope.Debugf("Possible applicable pod recommendation lists: %s", utils.InterfaceToString(podRecommsPossibleToApply))
 
-	enableScalerMap := map[string]bool{}
-	for _, rec := range podRecommsPossibleToApply {
-		startTime := rec.GetStartTime().GetSeconds()
-		endTime := rec.GetEndTime().GetSeconds()
-		if startTime >= nowTimestamp || nowTimestamp >= endTime {
-			continue
-		}
+	controllerRecommendationInfoMap := NewControllerRecommendationInfoMap(evictioner.k8sClienit, podRecommsPossibleToApply)
+	for _, controllerRecommendationInfo := range controllerRecommendationInfoMap {
+		podRecommendationInfos := controllerRecommendationInfo.podRecommendationInfos
+		sort.Slice(podRecommendationInfos, func(i, j int) bool {
+			return podRecommendationInfos[i].pod.ObjectMeta.CreationTimestamp.UnixNano() < podRecommendationInfos[j].pod.ObjectMeta.CreationTimestamp.UnixNano()
+		})
+	}
+	for _, controllerRecommendationInfo := range controllerRecommendationInfoMap {
 
-		if rec.GetNamespacedName() == nil {
-			scope.Warn("receive pod recommendation with nil NamespacedName, skip this recommendation")
-			continue
+		// Create eviction restriction
+		preservationPercentage := 100 - controllerRecommendationInfo.alamedaScaler.GetMaxUnavailablePercentage()
+		podRecommendations := make([]*datahub_v1alpha1.PodRecommendation, len(controllerRecommendationInfo.podRecommendationInfos))
+		for i := range controllerRecommendationInfo.podRecommendationInfos {
+			podRecommendations[i] = controllerRecommendationInfo.podRecommendationInfos[i].recommendation
 		}
+		evictionRestriction := NewEvictionRestriction(evictioner.k8sClienit, preservationPercentage, evictioner.evictCfg.TriggerThreshold, podRecommendations)
 
-		recNS := rec.GetNamespacedName().GetNamespace()
-		recName := rec.GetNamespacedName().GetName()
-		pod, err := evictioner.getPodInfo(recNS, recName)
-		if err != nil {
-			scope.Errorf("Get Pod (%s/%s) failed due to %s.", recNS, recName, err.Error())
-			continue
-		}
-
-		alamRecomm, err := evictioner.getAlamRecommInfo(recNS, recName)
-		if err != nil {
-			scope.Errorf("Get AlamedaRecommendation (%s/%s) failed due to %s.", recNS, recName, err.Error())
-			continue
-		}
-
-		if !evictioner.isPodEnableExecution(alamRecomm, enableScalerMap) {
-			scope.Debugf("Pod (%s/%s) cannot be evicted because its execution is not enabled.", pod.GetNamespace(), pod.GetName())
-			continue
-		}
-
-		if evictioner.isPodEvictable(pod, rec) {
-			scope.Debugf("Pod (%s/%s) can be evicted.", pod.GetNamespace(), pod.GetName())
-			appliablePodRecList = append(appliablePodRecList, rec)
+		for _, podRecommendationInfo := range controllerRecommendationInfo.podRecommendationInfos {
+			pod := podRecommendationInfo.pod
+			podRecommendation := podRecommendationInfo.recommendation
+			if isEvictabel, err := evictionRestriction.IsEvictabel(pod); err != nil {
+				scope.Infof("Pod (%s/%s) cannot be evicted due to eviction restriction checking error: %s", pod.GetNamespace(), pod.GetName(), err.Error())
+				continue
+			} else if !isEvictabel {
+				scope.Infof("Pod (%s/%s) cannot be evicted.", pod.GetNamespace(), pod.GetName())
+				continue
+			} else {
+				scope.Infof("Pod (%s/%s) can be evicted.", pod.GetNamespace(), pod.GetName())
+				appliablePodRecList = append(appliablePodRecList, podRecommendation)
+			}
 		}
 	}
+
 	return appliablePodRecList, nil
 }
 
@@ -189,110 +338,6 @@ func (evictioner *Evictioner) getAlamRecommInfo(namespace, name string) (*autosc
 	return alamRecomm, err
 }
 
-func (evictioner *Evictioner) isContainerEvictable(pod *corev1.Pod, container *corev1.Container, recContainer *datahub_v1alpha1.ContainerRecommendation) bool {
-	cpuTriggerThreshold := evictioner.evictCfg.TriggerThreshold.CPU
-	memoryTriggerThreshold := evictioner.evictCfg.TriggerThreshold.Memory
-
-	if &container.Resources == nil || container.Resources.Limits == nil || container.Resources.Requests == nil {
-		scope.Infof("Pod %s/%s selected to evict due to some resource of container %s not defined.",
-			pod.GetNamespace(), pod.GetName(), recContainer.GetName())
-		return true
-	}
-
-	for _, resourceType := range []corev1.ResourceName{
-		corev1.ResourceMemory,
-		corev1.ResourceCPU,
-	} {
-		// resource limit check
-		if _, ok := container.Resources.Limits[resourceType]; !ok {
-			scope.Infof("Pod %s/%s selected to evict due to resource limit %s of container %s not defined.",
-				pod.GetNamespace(), pod.GetName(), resourceType, recContainer.GetName())
-			return true
-		}
-
-		for _, limitRec := range recContainer.GetLimitRecommendations() {
-			if resourceType == corev1.ResourceMemory && limitRec.GetMetricType() == datahub_v1alpha1.MetricType_MEMORY_USAGE_BYTES && len(limitRec.GetData()) > 0 {
-				if limitRecVal, err := datahubutils.StringToFloat64(limitRec.GetData()[0].GetNumValue()); err == nil {
-					limitRecVal = math.Ceil(limitRecVal)
-					limitQuan := container.Resources.Limits[resourceType]
-					delta := (math.Abs(float64(100*(limitRecVal-float64(limitQuan.Value())))) / float64(limitQuan.Value()))
-					scope.Infof("Resource limit of %s pod %s/%s container %s checking eviction threshold (%v perentage). Current setting: %v, Recommended setting: %v",
-						resourceType, pod.GetNamespace(), pod.GetName(), recContainer.GetName(), memoryTriggerThreshold, limitQuan.Value(), limitRecVal)
-					if delta >= memoryTriggerThreshold {
-						scope.Infof("Decide to evict pod %s/%s due to delta is %v >= %v (threshold)", pod.GetNamespace(), pod.GetName(), delta, memoryTriggerThreshold)
-						return true
-					}
-				}
-			}
-			if resourceType == corev1.ResourceCPU && limitRec.GetMetricType() == datahub_v1alpha1.MetricType_CPU_USAGE_SECONDS_PERCENTAGE && len(limitRec.GetData()) > 0 {
-				if limitRecVal, err := datahubutils.StringToFloat64(limitRec.GetData()[0].GetNumValue()); err == nil {
-					limitRecVal = math.Ceil(limitRecVal)
-					limitQuan := container.Resources.Limits[resourceType]
-					delta := (math.Abs(float64(100*(limitRecVal-float64(limitQuan.MilliValue())))) / float64(limitQuan.MilliValue()))
-					scope.Infof("Resource limit of %s pod %s/%s container %s checking eviction threshold (%v perentage). Current setting: %v, Recommended setting: %v",
-						resourceType, pod.GetNamespace(), pod.GetName(), recContainer.GetName(), cpuTriggerThreshold, limitQuan.MilliValue(), limitRecVal)
-					if delta >= cpuTriggerThreshold {
-						scope.Infof("Decide to evict pod %s/%s due to delta is %v >= %v (threshold)", pod.GetNamespace(), pod.GetName(), delta, cpuTriggerThreshold)
-						return true
-					}
-				}
-			}
-		}
-
-		// resource request check
-		if _, ok := container.Resources.Requests[resourceType]; !ok {
-			scope.Infof("Pod %s/%s selected to evict due to resource request %s of container %s not defined.",
-				pod.GetNamespace(), pod.GetName(), resourceType, recContainer.GetName())
-			return true
-		}
-		for _, reqRec := range recContainer.GetRequestRecommendations() {
-			if resourceType == corev1.ResourceMemory && reqRec.GetMetricType() == datahub_v1alpha1.MetricType_MEMORY_USAGE_BYTES && len(reqRec.GetData()) > 0 {
-				if requestRecVal, err := datahubutils.StringToFloat64(reqRec.GetData()[0].GetNumValue()); err == nil {
-					requestRecVal = math.Ceil(requestRecVal)
-					requestQuan := container.Resources.Requests[resourceType]
-					delta := (math.Abs(float64(100*(requestRecVal-float64(requestQuan.Value())))) / float64(requestQuan.Value()))
-					scope.Infof("Resource request of %s pod %s/%s container %s checking eviction threshold (%v perentage). Current setting: %v, Recommended setting: %v",
-						resourceType, pod.GetNamespace(), pod.GetName(), recContainer.GetName(), memoryTriggerThreshold, requestQuan.Value(), requestRecVal)
-					if delta >= memoryTriggerThreshold {
-						scope.Infof("Decide to evict pod %s/%s due to delta is %v >= %v (threshold)", pod.GetNamespace(), pod.GetName(), delta, memoryTriggerThreshold)
-						return true
-					}
-				}
-			}
-			if resourceType == corev1.ResourceCPU && reqRec.GetMetricType() == datahub_v1alpha1.MetricType_CPU_USAGE_SECONDS_PERCENTAGE && len(reqRec.GetData()) > 0 {
-				if requestRecVal, err := datahubutils.StringToFloat64(reqRec.GetData()[0].GetNumValue()); err == nil {
-					requestRecVal = math.Ceil(requestRecVal)
-					requestQuan := container.Resources.Requests[resourceType]
-					delta := (math.Abs(float64(100*(requestRecVal-float64(requestQuan.MilliValue())))) / float64(requestQuan.MilliValue()))
-					scope.Infof("Resource request of %s pod %s/%s container %s checking eviction threshold (%v perentage). Current setting: %v, Recommended setting: %v",
-						resourceType, pod.GetNamespace(), pod.GetName(), recContainer.GetName(), cpuTriggerThreshold, requestQuan.MilliValue(), requestRecVal)
-					if delta >= cpuTriggerThreshold {
-						scope.Infof("Decide to evict pod %s/%s due to delta is %v >= %v (threshold)", pod.GetNamespace(), pod.GetName(), delta, cpuTriggerThreshold)
-						return true
-					}
-				}
-			}
-		}
-	}
-	return false
-}
-
-func (evictioner *Evictioner) isPodEvictable(pod *corev1.Pod, podRecomm *datahub_v1alpha1.PodRecommendation) bool {
-	ctRecomms := podRecomm.GetContainerRecommendations()
-	containers := pod.Spec.Containers
-	for _, container := range containers {
-		for _, recContainer := range ctRecomms {
-			if container.Name != recContainer.GetName() {
-				continue
-			}
-			if evictioner.isContainerEvictable(pod, &container, recContainer) {
-				return true
-			}
-		}
-	}
-	return false
-}
-
 func (evictioner *Evictioner) isPodEnableExecution(alamRecomm *autoscalingv1alpha1.AlamedaRecommendation, enableScalerMap map[string]bool) bool {
 
 	for _, or := range alamRecomm.OwnerReferences {
@@ -327,4 +372,108 @@ func (evictioner *Evictioner) getAlamedaScalerInfo(namespace, name string) (*aut
 		}
 	}
 	return scaler, err
+}
+
+type podRecommendationInfo struct {
+	pod            *corev1.Pod
+	recommendation *datahub_v1alpha1.PodRecommendation
+}
+
+type controllerRecommendationInfo struct {
+	alamedaScaler          *autoscalingv1alpha1.AlamedaScaler
+	podRecommendationInfos []*podRecommendationInfo
+}
+
+func NewControllerRecommendationInfoMap(client client.Client, podRecommendations []*datahub_v1alpha1.PodRecommendation) map[string]*controllerRecommendationInfo {
+
+	nowTimestamp := time.Now().Unix()
+
+	getResource := utilsresource.NewGetResource(client)
+	alamedaScalerMap := make(map[string]*autoscalingv1alpha1.AlamedaScaler)
+	controllerRecommendationInfoMap := make(map[string]*controllerRecommendationInfo)
+	for _, podRecommendation := range podRecommendations {
+
+		// Filter out invalid PodRecommendation
+		copyPodRecommendation := proto.Clone(podRecommendation)
+		podRecommendation = copyPodRecommendation.(*datahub_v1alpha1.PodRecommendation)
+		recommendationNamespacedName := podRecommendation.NamespacedName
+		if recommendationNamespacedName == nil {
+			scope.Errorf("skip PodRecommendation due to PodRecommendation has empty NamespacedName")
+			continue
+		}
+		startTime := podRecommendation.GetStartTime().GetSeconds()
+		endTime := podRecommendation.GetEndTime().GetSeconds()
+		if startTime >= nowTimestamp || nowTimestamp >= endTime {
+			scope.Errorf("skip PodRecommendation (%s/%s) due to recommendation out of date", podRecommendation.NamespacedName.Namespace, podRecommendation.NamespacedName.Name)
+			continue
+		}
+
+		// Get AlamedaScaler owns this PodRecommendation and validate the AlamedaScaler is enabled execution.
+		alamedaRecommendation, err := getResource.GetAlamedaRecommendation(podRecommendation.NamespacedName.Namespace, podRecommendation.NamespacedName.Name)
+		if err != nil {
+			scope.Errorf("skip PodRecommendation (%s/%s) due to get AlamedaRecommendation falied: %s", podRecommendation.NamespacedName.Namespace, podRecommendation.NamespacedName.Name, err.Error())
+			continue
+		}
+		alamedaScalerNamespace := ""
+		alamedaScalerName := ""
+		for _, or := range alamedaRecommendation.OwnerReferences {
+			if or.Kind == "AlamedaScaler" {
+				alamedaScalerNamespace = alamedaRecommendation.Namespace
+				alamedaScalerName = or.Name
+				break
+			}
+		}
+		alamedaScaler, exist := alamedaScalerMap[fmt.Sprintf("%s/%s", alamedaScalerNamespace, alamedaScalerName)]
+		if !exist {
+			alamedaScaler, err = getResource.GetAlamedaScaler(alamedaScalerNamespace, alamedaScalerName)
+			if err != nil {
+				scope.Errorf("skip PodRecommendation (%s/%s) due to get AlamedaScaler falied: %s", podRecommendation.NamespacedName.Namespace, podRecommendation.NamespacedName.Name, err.Error())
+				continue
+			}
+			alamedaScalerMap[fmt.Sprintf("%s/%s", alamedaScalerNamespace, alamedaScalerName)] = alamedaScaler
+		}
+		if !alamedaScaler.Spec.EnableExecution {
+			scope.Debugf("skip PodRecommendation (%s/%s) because it's execution is not enabled.", recommendationNamespacedName.Namespace, recommendationNamespacedName.Name)
+			continue
+		}
+
+		// Get Pod instance of this PodRecommendation
+		podNamespace := recommendationNamespacedName.Namespace
+		podName := recommendationNamespacedName.Name
+		pod, err := getResource.GetPod(podNamespace, podName)
+		if err != nil {
+			scope.Errorf("skip PodRecommendation due to get Pod (%s/%s) failed: %s", podNamespace, podName, err.Error())
+			continue
+		}
+
+		// Get topmost controller namespace, name and kind controlling this pod
+		controller := podRecommendation.TopController
+		if controller == nil {
+			scope.Errorf("skip PodRecommendation (%s/%s) due to PodRecommendation has empty topmost controller", recommendationNamespacedName.Namespace, recommendationNamespacedName.Name)
+			continue
+		} else if controller.NamespacedName == nil {
+			scope.Errorf("skip PodRecommendation (%s/%s) due to topmost controller has empty NamespacedName", recommendationNamespacedName.Namespace, recommendationNamespacedName.Name)
+			continue
+		}
+
+		// Append podRecommendationInfos into controllerRecommendationInfo
+		controllerID := fmt.Sprintf("%s.%s.%s", controller.Kind, controller.NamespacedName.Namespace, controller.NamespacedName.Name)
+		_, exist = controllerRecommendationInfoMap[controllerID]
+		if !exist {
+			controllerRecommendationInfoMap[controllerID] = &controllerRecommendationInfo{
+				alamedaScaler:          alamedaScaler,
+				podRecommendationInfos: make([]*podRecommendationInfo, 0),
+			}
+		}
+		podRecommendationInfo := &podRecommendationInfo{
+			pod:            pod,
+			recommendation: podRecommendation,
+		}
+		controllerRecommendationInfoMap[controllerID].podRecommendationInfos = append(
+			controllerRecommendationInfoMap[controllerID].podRecommendationInfos,
+			podRecommendationInfo,
+		)
+	}
+
+	return controllerRecommendationInfoMap
 }

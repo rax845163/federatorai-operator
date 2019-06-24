@@ -116,6 +116,9 @@ spec:
   - type: boolean
   - description: If this field is set to _true_, Federator.ai Operator will create an [_AlamedaScaler_](https://github.com/containers-ai/alameda/blob/master/design/crd_alamedascaler.md) CR to self-orchestrate the resource usage of deployed Alameda components. Default is _false_.
 > **Note:** It is highly recommended to use persistent storage for data in Alameda influxdb component when self-Driving is enabled
+- Field: platform
+  - type: string
+  - description: (Optional) Specify this key with "openshift3.9" value if you are deploying Alameda in OCP/OKD 3.9 environment or the execution of container cpu and memory resource limit/request changes may not work. For other platforms, this key is optional.
 - Field: enableexecution
   - type: boolean
   - description: Federator.ai Operator will deploy components to execute _AlamedaRecommendation_ CRs if this field is set to _true_. Default is _false_.

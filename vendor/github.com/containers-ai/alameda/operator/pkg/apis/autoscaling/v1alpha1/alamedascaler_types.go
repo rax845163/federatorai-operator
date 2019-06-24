@@ -27,6 +27,10 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+const (
+	defaultMaxUnavailablePercentage = float64(50)
+)
+
 type enableExecution = bool
 type alamedaPolicy = string
 type NamespacedName = string
@@ -76,6 +80,11 @@ var (
 		DeploymentController:       "deployment",
 		DeploymentConfigController: "deploymentconfig",
 	}
+
+	K8SKindToAlamedaControllerType = map[string]AlamedaControllerType{
+		"Deployment":       DeploymentController,
+		"DeploymentConfig": DeploymentConfigController,
+	}
 )
 
 type scalingToolType string
@@ -86,16 +95,22 @@ const (
 	DefaultScalingTool bool            = true
 )
 
+type RollingUpdateStrategy struct {
+	MaxUnavailablePercentage float64 `json:"maxUnavailablePercentage,omitempty" protobuf:"bytes,1,name=max_unavailabel_percentage"`
+}
+
 // AlamedaScalerSpec defines the desired state of AlamedaScaler
 // INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 type AlamedaScalerSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 	Selector        *metav1.LabelSelector `json:"selector" protobuf:"bytes,1,name=selector"`
-	EnableExecution enableExecution       `json:"enableexecution" protobuf:"bytes,2,name=enable_execution"`
+	EnableExecution enableExecution       `json:"enableexecution,omitempty" protobuf:"bytes,2,name=enable_execution"`
 	// +kubebuilder:validation:Enum=stable,compact
-	Policy                alamedaPolicy     `json:"policy,omitempty" protobuf:"bytes,3,opt,name=policy"`
-	CustomResourceVersion string            `json:"customResourceVersion,omitempty" protobuf:"bytes,4,opt,name=custom_resource_version"`
-	ScalingTools          []scalingToolType `json:"scalingTools,omitempty" protobuf:"bytes,5,opt,name=scaling_tools"`
+	Policy                alamedaPolicy `json:"policy,omitempty" protobuf:"bytes,3,opt,name=policy"`
+	CustomResourceVersion string        `json:"customResourceVersion,omitempty" protobuf:"bytes,4,opt,name=custom_resource_version"`
+	// +kubebuilder:validation:Enum=vpa,hpa
+	ScalingTools  []scalingToolType     `json:"scalingTools,omitempty" protobuf:"bytes,5,opt,name=scaling_tools"`
+	RollingUpdate RollingUpdateStrategy `json:"rollingUpdate,omitempty" protobuf:"bytes,6,name=rolling_update"`
 }
 
 // AlamedaScalerStatus defines the observed state of AlamedaScaler
@@ -153,6 +168,15 @@ func (as *AlamedaScaler) SetCustomResourceVersion(v string) {
 func (as *AlamedaScaler) GenCustomResourceVersion() string {
 	v := as.ResourceVersion
 	return v
+}
+
+func (as *AlamedaScaler) GetMaxUnavailablePercentage() float64 {
+
+	maxUnavailablePercentage := as.Spec.RollingUpdate.MaxUnavailablePercentage
+	if maxUnavailablePercentage == 0 {
+		maxUnavailablePercentage = defaultMaxUnavailablePercentage
+	}
+	return maxUnavailablePercentage
 }
 
 func (as *AlamedaScaler) ResetStatusAlamedaController() {

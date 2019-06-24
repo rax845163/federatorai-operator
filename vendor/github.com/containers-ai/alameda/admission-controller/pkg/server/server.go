@@ -13,11 +13,13 @@ import (
 	"github.com/containers-ai/alameda/admission-controller/pkg/recommendator/resource"
 	admission_controller_utils "github.com/containers-ai/alameda/admission-controller/pkg/utils"
 	controller_validator "github.com/containers-ai/alameda/admission-controller/pkg/validator/controller"
+	autoscalingv1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	alamedascaler_reconciler "github.com/containers-ai/alameda/operator/pkg/reconciler/alamedascaler"
 	"github.com/containers-ai/alameda/operator/pkg/utils/resources"
 	metadata_utils "github.com/containers-ai/alameda/pkg/utils/kubernetes/metadata"
 	"github.com/containers-ai/alameda/pkg/utils/log"
 
+	"github.com/mattbaird/jsonpatch"
 	"github.com/pkg/errors"
 	admission_v1beta1 "k8s.io/api/admission/v1beta1"
 	core_v1 "k8s.io/api/core/v1"
@@ -27,9 +29,23 @@ import (
 )
 
 var (
-	patchType = admission_v1beta1.PatchTypeJSONPatch
-	scope     = log.RegisterScope("admission-controller", "admission-controller", 0)
+	DefaultPodMutatePatchValdationFunction = admission_controller_utils.ValidatePatchFunc(func(patch jsonpatch.JsonPatchOperation) error {
+		return nil
+	})
+	OKD3_9tPodMutatePatchValdationFunction = admission_controller_utils.ValidatePatchFunc(func(patch jsonpatch.JsonPatchOperation) error {
 
+		allowedPatchOperations := map[string]bool{
+			"add": true,
+		}
+		if allowed, exist := allowedPatchOperations[patch.Operation]; !exist || !allowed {
+			return errors.Errorf("cannot patch with operation %s", patch.Operation)
+		}
+
+		return nil
+	})
+
+	patchType                = admission_v1beta1.PatchTypeJSONPatch
+	scope                    = log.RegisterScope("admission-controller", "admission-controller", 0)
 	defaultAdmissionResponse = admission_v1beta1.AdmissionResponse{
 		Allowed: true,
 	}
@@ -52,10 +68,12 @@ type admissionController struct {
 	ownerReferenceTracer  *metadata_utils.OwnerReferenceTracer
 	resourceRecommendator resource.ResourceRecommendator
 	controllerValidator   controller_validator.Validator
+
+	podMutatePatchValdationFunction admission_controller_utils.ValidatePatchFunc
 }
 
 // NewAdmissionControllerWithConfig creates AdmissionController with configuration and dependencies
-func NewAdmissionControllerWithConfig(cfg Config, sigsK8SClient client.Client, resourceRecommendator resource.ResourceRecommendator, controllerValidator controller_validator.Validator) (AdmissionController, error) {
+func NewAdmissionControllerWithConfig(cfg Config, sigsK8SClient client.Client, resourceRecommendator resource.ResourceRecommendator, controllerValidator controller_validator.Validator, podMutatePatchValdationFunction admission_controller_utils.ValidatePatchFunc) (AdmissionController, error) {
 
 	defaultOwnerReferenceTracer, err := metadata_utils.NewDefaultOwnerReferenceTracer()
 	if err != nil {
@@ -77,6 +95,8 @@ func NewAdmissionControllerWithConfig(cfg Config, sigsK8SClient client.Client, r
 		ownerReferenceTracer:  defaultOwnerReferenceTracer,
 		resourceRecommendator: resourceRecommendator,
 		controllerValidator:   controllerValidator,
+
+		podMutatePatchValdationFunction: podMutatePatchValdationFunction,
 	}
 
 	return ac, nil
@@ -151,7 +171,6 @@ func (ac *admissionController) writeDefaultAdmissionReview(w http.ResponseWriter
 func (ac *admissionController) mutatePod(ar *admission_v1beta1.AdmissionReview) (admission_v1beta1.AdmissionResponse, error) {
 
 	admissionResponse := admission_v1beta1.AdmissionResponse{Allowed: true}
-	namespace := ar.Request.Namespace
 
 	podResource := meta_v1.GroupVersionResource{Group: "", Version: "v1", Resource: "pods"}
 	if ar.Request.Resource != podResource {
@@ -164,15 +183,15 @@ func (ac *admissionController) mutatePod(ar *admission_v1beta1.AdmissionReview) 
 	if _, _, err := ac.k8sDeserializer.Decode(raw, nil, &pod); err != nil {
 		return admissionResponse, errors.Errorf("mutating pod failed: deserialize AdmissionRequest.Raw to Pod failed, skip mutating pod: %s", err.Error())
 	}
+	pod.SetNamespace(ar.Request.Namespace)
 
 	scope.Infof("mutating pod: %+v", pod.ObjectMeta)
 
-	controllerKind, controllerName, err := ac.ownerReferenceTracer.GetRootControllerKindAndNameOfOwnerReferences(namespace, pod.OwnerReferences)
+	controllerID, err := ac.getControllerIDToQueryPodRecommendations(&pod)
 	if err != nil {
-		return admissionResponse, errors.Wrapf(err, "mutating pod failed: get root controller information of Pod failed, skip mutating pod: Pod: %+v")
+		return admissionResponse, errors.Wrapf(err, "mutating pod failed: get controller information of Pod failed, skip mutating pod: Pod: %+v")
 	}
 
-	controllerID := newNamespaceKindName(namespace, controllerKind, controllerName)
 	executionEnabeld, err := ac.isControllerExecutionEnabled(controllerID)
 	if err != nil {
 		return admissionResponse, errors.Wrapf(err, "check if pod needs mutating faield, skip mutating pod: Pod: %+v", pod.ObjectMeta)
@@ -190,9 +209,14 @@ func (ac *admissionController) mutatePod(ar *admission_v1beta1.AdmissionReview) 
 	if err != nil {
 		return admissionResponse, errors.Wrapf(err, "get patches to mutate pod resource failed, skip mutating pod: Pod: %+v", pod.ObjectMeta)
 	}
-	scope.Infof("patch %s to pod %+v ", patches, pod.ObjectMeta)
+	err = admission_controller_utils.ValidatePatches(patches, ac.podMutatePatchValdationFunction)
+	if err != nil {
+		return admissionResponse, errors.Wrapf(err, "validate patches to mutate pod resource failed, skip mutating pod: Pod: %+v", pod.ObjectMeta)
+	}
+	patchString := admission_controller_utils.GetK8SPatchesString(patches)
+	scope.Infof("patch %s to pod %+v ", patchString, pod.ObjectMeta)
 
-	admissionResponse.Patch = []byte(patches)
+	admissionResponse.Patch = []byte(patchString)
 	admissionResponse.PatchType = &patchType
 
 	return admissionResponse, nil
@@ -333,6 +357,28 @@ func (ac *admissionController) fetchNewPodRecommendations(controllerID namespace
 func (ac *admissionController) isControllerExecutionEnabled(controllerID namespaceKindName) (bool, error) {
 
 	return ac.controllerValidator.IsControllerEnabledExecution(controllerID.namespace, controllerID.name, controllerID.kind)
+}
+
+func (ac *admissionController) getControllerIDToQueryPodRecommendations(pod *core_v1.Pod) (namespaceKindName, error) {
+
+	var controllerID = namespaceKindName{}
+
+	link, err := ac.ownerReferenceTracer.GetControllerOwnerReferenceLink(pod)
+	if err != nil {
+		return controllerID, err
+	}
+
+	for i := len(link) - 1; i >= 0; i-- {
+		ownerRef := link[i]
+		if _, exist := autoscalingv1alpha1.K8SKindToAlamedaControllerType[ownerRef.Kind]; exist {
+			controllerID.namespace = pod.Namespace
+			controllerID.name = ownerRef.Name
+			controllerID.kind = ownerRef.Kind
+			break
+		}
+	}
+
+	return controllerID, nil
 }
 
 func buildPodRecommendationNumberMap(recommendations []*resource.PodResourceRecommendation) map[string]int {

@@ -8,6 +8,12 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+type Platform = string
+
+const (
+	PlatformOpenshift3_9 Platform = "openshift3.9"
+)
+
 // AlamedaServiceSpec defines the desired state of AlamedaService
 // +k8s:openapi-gen=true
 type AlamedaServiceSpec struct {
@@ -15,7 +21,9 @@ type AlamedaServiceSpec struct {
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html
 	//AlmedaInstallOrUninstall bool   `json:"almedainstalloruninstall"`
-	SelfDriving       bool          `json:"selfDriving"`
+	SelfDriving bool `json:"selfDriving"`
+	// +kubebuilder:validation:Enum=openshift3.9
+	Platform          Platform      `json:"platform,omitempty"`
 	EnableExecution   bool          `json:"enableexecution"`
 	EnableGUI         bool          `json:"enablegui"`
 	Version           string        `json:"version"`

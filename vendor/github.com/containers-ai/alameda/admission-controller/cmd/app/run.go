@@ -12,6 +12,7 @@ import (
 	admission_controller_kubernetes "github.com/containers-ai/alameda/admission-controller/pkg/kubernetes"
 	datahub_resource_recommendator "github.com/containers-ai/alameda/admission-controller/pkg/recommendator/resource/datahub"
 	"github.com/containers-ai/alameda/admission-controller/pkg/server"
+	admission_controller_utils "github.com/containers-ai/alameda/admission-controller/pkg/utils"
 	datahub_controller_validator "github.com/containers-ai/alameda/admission-controller/pkg/validator/controller/datahub"
 	utils "github.com/containers-ai/alameda/pkg/utils"
 	k8s_utils "github.com/containers-ai/alameda/pkg/utils/kubernetes"
@@ -89,7 +90,14 @@ var (
 				panic(err.Error())
 			}
 			datahubControllerValidator := datahub_controller_validator.NewControllerValidator(datahubServiceClient, sigsK8SClient)
-			admissionController, err := server.NewAdmissionControllerWithConfig(server.Config{Enable: config.Enable}, sigsK8SClient, datahubResourceRecommendator, datahubControllerValidator)
+			admissionController, err := server.NewAdmissionControllerWithConfig(
+				server.Config{
+					Enable: config.Enable,
+				},
+				sigsK8SClient,
+				datahubResourceRecommendator,
+				datahubControllerValidator,
+				getJSONPatchValidationFunction())
 			if err != nil {
 				panic(err.Error())
 			}
@@ -337,6 +345,15 @@ func createOrUpdateMutatingWebhookConfiguration(instance admissionregistration_v
 	}
 
 	return nil
+}
+
+func getJSONPatchValidationFunction() admission_controller_utils.ValidatePatchFunc {
+	switch config.JsonPatchValidationFunc {
+	case admission_controller.JsonPatchValidationFuncOpenshift3_9:
+		return server.OKD3_9tPodMutatePatchValdationFunction
+	default:
+		return server.DefaultPodMutatePatchValdationFunction
+	}
 }
 
 func registerHandlerFunc(mux *http.ServeMux, ac server.AdmissionController) {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
+	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateenvvar"
 	"github.com/containers-ai/federatorai-operator/pkg/util"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -12,6 +13,7 @@ import (
 
 func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaserviceparamter.AlamedaServiceParamter) {
 	processDeploymentPrometheusService(dep, asp.PrometheusService) //Global section set DeploymentSpec's PrometheusService
+
 	switch dep.Name {
 	case util.AlamedaaiDPN:
 		{
@@ -68,6 +70,9 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 			util.SetStorageToMountPath(dep, asp.Storages, util.GrafanaCTN, "grafana-type-storage", util.GrafanaGroup)
 		}
 	}
+
+	envVars := asp.GetEnvVarsByDeployment(dep.Name)
+	updateenvvar.UpdateEnvVarsToDeployment(dep, envVars)
 }
 
 func processConfigMapsPrometheusService(cm *corev1.ConfigMap, prometheusservice string) {
