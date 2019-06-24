@@ -25,6 +25,7 @@ const (
 	AdmissioncontrollerDPN = "admission-controller"
 	AlamedarecommenderDPN  = "alameda-recommender"
 	AlamedaexecutorDPN     = "alameda-executor"
+	AlamedaalameterDPN     = "alameda-alameter"
 	GrafanaDPN             = "alameda-grafana"
 	InfluxdbDPN            = "alameda-influxdb"
 	//container name
@@ -35,6 +36,7 @@ const (
 	AdmissioncontrollerCTN = "admission-controller"
 	AlamedarecommenderCTN  = "alameda-recommender"
 	AlamedaexecutorCTN     = "alameda-executor"
+	AlamedaalameterCTN     = "alameda-alameter"
 	GetTokenCTN            = "gettoken"
 	GrafanaCTN             = "grafana"
 	InfluxdbCTN            = "influxdb"
@@ -172,6 +174,9 @@ func getVolumeLogIndex(dep *appsv1.Deployment) int {
 			if value.Name == "alameda-executor-log-storage" {
 				return index
 			}
+			if value.Name == "alameda-alameter-log-storage" {
+				return index
+			}
 		}
 		return -1
 	}
@@ -207,6 +212,9 @@ func getVolumeDataIndex(dep *appsv1.Deployment) int {
 				return index
 			}
 			if value.Name == "grafana-data-storage" {
+				return index
+			}
+			if value.Name == "alameda-alameter-data-storage" {
 				return index
 			}
 		}

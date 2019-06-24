@@ -65,6 +65,13 @@ func SectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaservicep
 			util.SetStorageToVolumeSource(dep, asp.AlamedaExecutorSectionSet.Storages, "alameda-executor-type.pvc", util.AlamedaGroup)
 			util.SetStorageToMountPath(dep, asp.AlamedaExecutorSectionSet.Storages, util.AlamedaexecutorCTN, "alameda-executor-type.pvc", util.AlamedaGroup)
 		}
+	case util.AlamedaalameterDPN:
+		{
+			util.SetImageStruct(dep, asp.AlamedaAlameterSectionSet, util.AlamedaalameterCTN)
+			util.SetImagePullPolicy(dep, util.AlamedaalameterCTN, asp.AlamedaAlameterSectionSet.ImagePullPolicy)
+			util.SetStorageToVolumeSource(dep, asp.AlamedaAlameterSectionSet.Storages, "alameda-alameter-type.pvc", util.AlamedaGroup)
+			util.SetStorageToMountPath(dep, asp.AlamedaAlameterSectionSet.Storages, util.AlamedaalameterCTN, "alameda-alameter-type.pvc", util.AlamedaGroup)
+		}
 	case util.InfluxdbDPN:
 		{
 			util.SetImageStruct(dep, asp.InfluxdbSectionSet, util.InfluxdbCTN)
@@ -113,6 +120,10 @@ func SectionSetParamterToPersistentVolumeClaim(pvc *corev1.PersistentVolumeClaim
 		case fmt.Sprintf("alameda-executor-%s.pvc", pvcusage):
 			{
 				util.SetStorageToPersistentVolumeClaimSpec(pvc, asp.AlamedaExecutorSectionSet.Storages, pvcusage)
+			}
+		case fmt.Sprintf("alameda-alameter-%s.pvc", pvcusage):
+			{
+				util.SetStorageToPersistentVolumeClaimSpec(pvc, asp.AlamedaAlameterSectionSet.Storages, pvcusage)
 			}
 		case fmt.Sprintf("my-alameda.influxdb-%s.pvc", pvcusage):
 			{

@@ -21,11 +21,12 @@ type AlamedaServiceSpec struct {
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html
 	//AlmedaInstallOrUninstall bool   `json:"almedainstalloruninstall"`
-	SelfDriving bool `json:"selfDriving"`
 	// +kubebuilder:validation:Enum=openshift3.9
 	Platform          Platform      `json:"platform,omitempty"`
 	EnableExecution   bool          `json:"enableExecution"`
 	EnableGUI         bool          `json:"enableGui"`
+	SelfDriving       bool          `json:"selfDriving"`
+	EnableAlameter    bool          `json:"enableFedemeter"`
 	Version           string        `json:"version"`
 	PrometheusService string        `json:"prometheusService"`
 	Storages          []StorageSpec `json:"storages"`
@@ -39,6 +40,7 @@ type AlamedaServiceSpec struct {
 	AdmissionControllerSectionSet AlamedaComponentSpec `json:"alamedaAdmissionController"`
 	AlamedaRecommenderSectionSet  AlamedaComponentSpec `json:"alamedaRecommender"`
 	AlamedaExecutorSectionSet     AlamedaComponentSpec `json:"alamedaExecutor"`
+	AlamedaAlameterSectionSet     AlamedaComponentSpec `json:"fedemeter"`
 }
 type AlamedaComponentSpec struct {
 	Image              string            `json:"image"`

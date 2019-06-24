@@ -59,6 +59,12 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 			util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-executor-type.pvc", util.AlamedaGroup)
 			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedaexecutorCTN, "alameda-executor-type-storage", util.AlamedaGroup)
 		}
+	case util.AlamedaalameterDPN:
+		{
+			util.SetImageStruct(dep, asp.Version, util.AlamedaexecutorCTN)
+			util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-alameter-type.pvc", util.AlamedaGroup)
+			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedaalameterCTN, "alameda-alameter-type-storage", util.AlamedaGroup)
+		}
 	case util.InfluxdbDPN:
 		{
 			util.SetStorageToVolumeSource(dep, asp.Storages, "my-alameda.influxdb-type.pvc", util.InfluxDBGroup)
