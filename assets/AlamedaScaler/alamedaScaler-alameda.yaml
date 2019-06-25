@@ -6,8 +6,8 @@ metadata:
 spec:
   policy: stable
   enableexecution: true
-  scalingTools:
-  - vpa
+  scalingTool:
+    type: vpa
   selector:
     matchLabels:
       app: alameda

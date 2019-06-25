@@ -1,6 +1,7 @@
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
-metadata:    
+metadata:
+  creationTimestamp: null
   labels:
     controller-tools.k8s.io: "1.0"
   name: alamedascalers.autoscaling.containers.ai
@@ -14,14 +15,12 @@ spec:
     openAPIV3Schema:
       properties:
         apiVersion:
-          description: >-
-            'APIVersion defines the versioned schema of this representation
+          description: 'APIVersion defines the versioned schema of this representation
             of an object. Servers should convert recognized schemas to the latest
             internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
           type: string
         kind:
-          description: >-
-            'Kind is a string value representing the REST resource this
+          description: 'Kind is a string value representing the REST resource this
             object represents. Servers may infer this from the endpoint the client
             submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
           type: string
@@ -38,15 +37,32 @@ spec:
               - stable
               - compact
               type: string
-            scalingTools:
-              items:
-                enum:
-                - vpa
-                - hpa
-                type: string
-              type: array
+            scalingTool:
+              properties:
+                executionStrategy:
+                  properties:
+                    maxUnavailable:
+                      pattern: ^\d*[1-9]+\d*(%?$)$|^\d*[1-9]+\d*\.\d*(%?$)$|^\d*\.\d*[1-9]+\d*(%?$)$
+                      type: string
+                    triggerThreshold:
+                      properties:
+                        cpu:
+                          pattern: ^\d*[1-9]+\d*%$|^\d*[1-9]+\d*\.\d*%$|^\d*\.\d*[1-9]+\d*%$
+                          type: string
+                        memory:
+                          pattern: ^\d*[1-9]+\d*%$|^\d*[1-9]+\d*\.\d*%$|^\d*\.\d*[1-9]+\d*%$
+                          type: string
+                      type: object
+                  type: object
+                type:
+                  enum:
+                  - vpa
+                  - hpa
+                  type: string
+              type: object
             selector:
-              description: 'Important: Run "make" to regenerate code after modifying this file'
+              description: 'Important: Run "make" to regenerate code after modifying
+                this file'
               type: object
           required:
           - selector

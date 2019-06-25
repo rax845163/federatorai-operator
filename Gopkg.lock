@@ -54,7 +54,7 @@
   ]
   pruneopts = "NT"
   revision = "d9a6a0ea76363482ce30fded5facd5b3d40853aa"
-  version = "v0.3.35"
+  version = "v0.3.37"
 
 [[projects]]
   branch = "master"
@@ -391,7 +391,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:17209ba7d18dbeddc253f8c307f29782df94237110da1b489f70b958bab069c7"
+  digest = "1:ce4eb83561916e4d239309a715284937ea1ece5282b017b8e2ce35335d313587"
   name = "github.com/operator-framework/operator-sdk"
   packages = [
     "pkg/k8sutil",
@@ -399,7 +399,7 @@
     "pkg/metrics",
   ]
   pruneopts = "NT"
-  revision = "c2b49e8f6a0e1bb310f59be4447211332df292fd"
+  revision = "be7925f8abbdafcd0506453319a7b0da6893e033"
 
 [[projects]]
   digest = "1:93b1d84c5fa6d1ea52f4114c37714cddd84d5b78f151b62bb101128dd51399bf"
@@ -636,14 +636,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3c1fc09d41596bfcd04587a8ab55d3b4848eb990817a768f2810ce07d49e8fda"
+  digest = "1:67b5835da89d284ab75c6807736d8ef9fe971a41087c6b74520b10fd7577b7a1"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "NT"
-  revision = "d432491b91382bba9c2a91776aa47c9430183a6f"
+  revision = "c5567b49c5d04a5f83870795b8c0e2df43a8ce32"
 
 [[projects]]
   digest = "1:348fa8283a7c60b5b71ce04d27b37f7c0fce552d4d0b463b5b3ebbd1840d3f1a"
@@ -681,7 +681,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:350f34ea0b8cf824f2fbb3381036be635cc35d0c7f3a15c77448e6dd73925493"
+  digest = "1:b81ba4679620ad02ca2147122aa45e7a279403d87504ca899c18068139914da9"
   name = "golang.org/x/tools"
   packages = [
     "go/ast/astutil",
@@ -698,7 +698,7 @@
     "internal/semver",
   ]
   pruneopts = "NT"
-  revision = "6e04913cbbac05c5c0c9d8f237717e292f700e76"
+  revision = "a101b041ded4588cfeb96c45f394050221b40f11"
 
 [[projects]]
   digest = "1:25a3797e84a65cc761261eb04134cc03bc64861ef37d1242d92b199bd955800f"
