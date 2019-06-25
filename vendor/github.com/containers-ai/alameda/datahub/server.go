@@ -23,6 +23,7 @@ import (
 	"github.com/containers-ai/alameda/pkg/utils"
 	"github.com/containers-ai/alameda/pkg/utils/log"
 	datahub_v1alpha1 "github.com/containers-ai/api/alameda_api/v1alpha1/datahub"
+	Common "github.com/containers-ai/api/common"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/pkg/errors"
@@ -40,6 +41,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	influxdbBase "github.com/containers-ai/alameda/datahub/pkg/repository/influxdb"
+	prometheusBase "github.com/containers-ai/alameda/datahub/pkg/repository/prometheus"
 )
 
 type Server struct {
@@ -1107,6 +1109,74 @@ func (s *Server) DeleteAlamedaNodes(ctx context.Context, in *datahub_v1alpha1.De
 	return &status.Status{
 		Code: int32(code.Code_OK),
 	}, nil
+}
+
+// Read rawdata from database
+func (s *Server) ReadRawdata(ctx context.Context, in *datahub_v1alpha1.ReadRawdataRequest) (*datahub_v1alpha1.ReadRawdataResponse, error) {
+	scope.Debug("Request received from ReadRawdata grpc function")
+
+	var (
+		err error
+		rawdata = make([]*Common.ReadRawdata, 0)
+	)
+
+	switch in.GetDatabaseType() {
+	case Common.DatabaseType_INFLUXDB:
+		rawdata, err = influxdbBase.ReadRawdata(s.Config.InfluxDB, in.GetQueries())
+	case Common.DatabaseType_PROMETHEUS:
+		rawdata, err = prometheusBase.ReadRawdata(s.Config.Prometheus, in.GetQueries())
+	default:
+		err = errors.New(fmt.Sprintf("database type(%s) is not supported", Common.DatabaseType_name[int32(in.GetDatabaseType())]))
+	}
+
+	if err != nil {
+		scope.Errorf("api ReadRawdata failed: %v", err)
+		response := &datahub_v1alpha1.ReadRawdataResponse{
+			Status: &status.Status{
+				Code:    int32(code.Code_INTERNAL),
+				Message: err.Error(),
+			},
+			Rawdata: rawdata,
+		}
+		return response, err
+	}
+
+	response := &datahub_v1alpha1.ReadRawdataResponse{
+		Status: &status.Status{
+			Code: int32(code.Code_OK),
+		},
+		Rawdata: rawdata,
+	}
+
+	return response, nil
+}
+
+// Write rawdata to database
+func (s *Server) WriteRawdata(ctx context.Context, in *datahub_v1alpha1.WriteRawdataRequest) (*status.Status, error) {
+	scope.Debug("Request received from WriteRawdata grpc function")
+
+	var (
+		err error
+	)
+
+	switch in.GetDatabaseType() {
+	case Common.DatabaseType_INFLUXDB:
+		err = influxdbBase.WriteRawdata(s.Config.InfluxDB, in.GetRawdata())
+	case Common.DatabaseType_PROMETHEUS:
+		err = errors.New(fmt.Sprintf("database type(%s) is not supported yet", Common.DatabaseType_name[int32(in.GetDatabaseType())]))
+	default:
+		err = errors.New(fmt.Sprintf("database type(%s) is not supported", Common.DatabaseType_name[int32(in.GetDatabaseType())]))
+	}
+
+	if err != nil {
+		scope.Errorf("api WriteRawdata failed: %v", err)
+		return &status.Status{
+			Code:    int32(code.Code_INTERNAL),
+			Message: err.Error(),
+		}, err
+	}
+
+	return &status.Status{Code: int32(code.Code_OK)}, nil
 }
 
 func (s *Server) ListWeaveScopeHosts(ctx context.Context, in *datahub_v1alpha1.ListWeaveScopeHostsRequest) (*datahub_v1alpha1.WeaveScopeResponse, error) {

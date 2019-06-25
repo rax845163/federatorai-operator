@@ -1,0 +1,11 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    component: alameda-grafana
+  name: alameda-grafana
+  namespace: federatorai
+spec:
+  to:
+    kind: Service
+    name: alameda-grafana

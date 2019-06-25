@@ -3,6 +3,8 @@ package eviction
 import (
 	"fmt"
 	"math"
+	"strconv"
+	"strings"
 
 	datahubutils "github.com/containers-ai/alameda/datahub/pkg/utils"
 	autoscalingv1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
@@ -26,9 +28,40 @@ type podReplicaStatus struct {
 	runningPodCount float64
 }
 
+// NewPodReplicaStatus build podReplicaStatus by pods and maxUnavailable
+func NewPodReplicaStatus(pods []core_v1.Pod, replicasCount int32, maxUnavailable string) (podReplicaStatus, error) {
+
+	podReplicaStatus := podReplicaStatus{}
+
+	for _, pod := range pods {
+		if pod.Status.Phase == core_v1.PodRunning && pod.ObjectMeta.DeletionTimestamp.IsZero() {
+			podReplicaStatus.runningPodCount++
+		}
+	}
+	maxUnavailableCount := float64(0)
+	if strings.Contains(maxUnavailable, "%") {
+		maxUnavailableValue, err := strconv.ParseFloat(strings.TrimSuffix(maxUnavailable, "%"), 64)
+		if err != nil {
+			return podReplicaStatus, errors.Errorf("%s", err.Error())
+		}
+		maxUnavailableCount = math.Ceil(float64(replicasCount) * (maxUnavailableValue / 100))
+	} else {
+		maxUnavailableValue, err := strconv.ParseFloat(maxUnavailable, 64)
+		if err != nil {
+			return podReplicaStatus, errors.Errorf("%s", err.Error())
+		}
+		maxUnavailableCount = math.Ceil(maxUnavailableValue)
+	}
+	podReplicaStatus.preservedPodCount = float64(replicasCount) - maxUnavailableCount
+	if podReplicaStatus.preservedPodCount < 0 {
+		podReplicaStatus.preservedPodCount = 0
+	}
+
+	return podReplicaStatus, nil
+}
+
 type evictionRestriction struct {
-	preservationPercentage float64
-	triggerThreshold       triggerThreshold
+	triggerThreshold triggerThreshold
 
 	alamedaScalerMap map[string]*autoscalingv1alpha1.AlamedaScaler
 
@@ -37,7 +70,7 @@ type evictionRestriction struct {
 	alamedaResourceIDToPodReplicaStatusMap map[string]*podReplicaStatus
 }
 
-func NewEvictionRestriction(client client.Client, preservationPercentage float64, triggerThreshold triggerThreshold, podRecommendations []*datahub_v1alpha1.PodRecommendation) EvictionRestriction {
+func NewEvictionRestriction(client client.Client, maxUnavailable string, triggerThreshold triggerThreshold, podRecommendations []*datahub_v1alpha1.PodRecommendation) EvictionRestriction {
 
 	podIDToPodRecommendationMap := make(map[string]*datahub_v1alpha1.PodRecommendation)
 	podIDToAlamedaResourceIDMap := make(map[string]string)
@@ -71,7 +104,24 @@ func NewEvictionRestriction(client client.Client, preservationPercentage float64
 		podIDToAlamedaResourceIDMap[podID] = alamedaResourceID
 
 		if _, exist := alamedaResourceIDToPodReplicaStatusMap[alamedaResourceID]; !exist {
-			podReplicaStatus, err := buildPodReplicaStatus(client, alamedaResourceNamespace, alamedaResourceName, alamedaResourceKind, preservationPercentage)
+
+			getResource := utilsresource.NewGetResource(client)
+			listResource := utilsresource.NewListResources(client)
+
+			controllerKind := datahub_v1alpha1.Kind_name[int32(alamedaResourceKind)]
+			replicasCount, err := getResource.GetReplicasCountByController(alamedaResourceNamespace, alamedaResourceName, strings.ToLower(controllerKind))
+			if err != nil {
+				if err != nil {
+					scope.Warnf("skip PodRecommendation (%s/%s) due to get replicas count by controller failed: %s", podRecommendationNamespace, podRecommendationName, err.Error())
+					continue
+				}
+			}
+			pods, err := listResource.ListPodsByController(alamedaResourceNamespace, alamedaResourceName, strings.ToLower(controllerKind))
+			if err != nil {
+				scope.Warnf("skip PodRecommendation (%s/%s) due to list pods by controller failed: %s", podRecommendationNamespace, podRecommendationName, err.Error())
+				continue
+			}
+			podReplicaStatus, err := NewPodReplicaStatus(pods, replicasCount, maxUnavailable)
 			if err != nil {
 				scope.Warnf("skip PodRecommendation (%s/%s) due to build PodReplicaStatus failed: %s", podRecommendationNamespace, podRecommendationName, err.Error())
 				continue
@@ -81,8 +131,7 @@ func NewEvictionRestriction(client client.Client, preservationPercentage float64
 	}
 
 	e := &evictionRestriction{
-		preservationPercentage: preservationPercentage,
-		triggerThreshold:       triggerThreshold,
+		triggerThreshold: triggerThreshold,
 
 		podIDToPodRecommendationMap:            podIDToPodRecommendationMap,
 		podIDToAlamedaResourceIDMap:            podIDToAlamedaResourceIDMap,
@@ -240,39 +289,4 @@ func (e *evictionRestriction) isContainerEvictable(pod *core_v1.Pod, container *
 		}
 	}
 	return false
-}
-
-func buildPodReplicaStatus(k8sClient client.Client, namespace string, name string, kind datahub_v1alpha1.Kind, preservationPercentage float64) (podReplicaStatus, error) {
-
-	podReplicaStatus := podReplicaStatus{}
-
-	var pods []core_v1.Pod
-	listResource := utilsresource.NewListResources(k8sClient)
-	switch kind {
-	case datahub_v1alpha1.Kind_DEPLOYMENT:
-		currentPods, err := listResource.ListPodsByDeployment(namespace, name)
-		if err != nil {
-			return podReplicaStatus, errors.Errorf("%s", err.Error())
-		}
-		pods = currentPods
-	case datahub_v1alpha1.Kind_DEPLOYMENTCONFIG:
-		currentPods, err := listResource.ListPodsByDeploymentConfig(namespace, name)
-		if err != nil {
-			return podReplicaStatus, errors.Errorf("%s", err.Error())
-		}
-		pods = currentPods
-	default:
-		return podReplicaStatus, errors.Errorf("not supported controller type %s",
-			datahub_v1alpha1.Kind_name[int32(kind)],
-		)
-	}
-
-	for _, pod := range pods {
-		if pod.Status.Phase == core_v1.PodRunning {
-			podReplicaStatus.runningPodCount++
-		}
-	}
-	podReplicaStatus.preservedPodCount = math.Ceil(float64(len(pods)) * (preservationPercentage / 100))
-
-	return podReplicaStatus, nil
 }

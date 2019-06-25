@@ -187,13 +187,13 @@ func (ort *OwnerReferenceTracer) GetDeploymentOrDeploymentConfigOwningPod(pod co
 				case "Deployment":
 					dep, err := ort.k8sClient.AppsV1().Deployments(searchingNamespace).Get(ownerName, meta_v1.GetOptions{})
 					if err != nil {
-						return nil, nil, errors.Errorf("get deployment owning pod %s/%s failed, %s", err.Error())
+						return nil, nil, errors.Errorf("get deployment owning pod %s/%s failed, %s", pod.Namespace, pod.Name, err.Error())
 					}
 					return dep, nil, nil
 				case "DeploymentConfig":
 					depConfig, err := ort.openshiftClientset.AppsV1().DeploymentConfigs(searchingNamespace).Get(ownerName, meta_v1.GetOptions{})
 					if err != nil {
-						return nil, nil, errors.Errorf("get deployment owning pod %s/%s failed, %s", err.Error())
+						return nil, nil, errors.Errorf("get deployment owning pod %s/%s failed, %s", pod.Namespace, pod.Name, err.Error())
 					}
 					return nil, depConfig, nil
 				}

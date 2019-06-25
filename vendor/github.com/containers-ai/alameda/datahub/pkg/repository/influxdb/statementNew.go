@@ -45,6 +45,10 @@ func (s *StatementNew) AppendWhereConditionDirect(condition string) {
 }
 
 func (s *StatementNew) AppendTimeCondition(operator string, value int64) {
+	if value == 0 {
+		return
+	}
+
 	tm := time.Unix(int64(value), 0)
 
 	if s.WhereClause == "" {
@@ -55,14 +59,8 @@ func (s *StatementNew) AppendTimeCondition(operator string, value int64) {
 }
 
 func (s *StatementNew) AppendTimeConditionFromQueryCondition() {
-	reqStartTime := time.Unix(int64(s.QueryCondition.GetTimeRange().GetStartTime().GetSeconds()), 0)
-	reqEndTime := time.Unix(int64(s.QueryCondition.GetTimeRange().GetEndTime().GetSeconds()), 0)
-
-	if s.WhereClause == "" {
-		s.WhereClause += fmt.Sprintf("WHERE time>='%s' AND time<='%s' ", reqStartTime.UTC().Format(time.RFC3339), reqEndTime.UTC().Format(time.RFC3339))
-	} else {
-		s.WhereClause += fmt.Sprintf("AND time>='%s' AND time<='%s' ", reqStartTime.UTC().Format(time.RFC3339), reqEndTime.UTC().Format(time.RFC3339))
-	}
+	s.AppendTimeCondition(">=", s.QueryCondition.GetTimeRange().GetStartTime().GetSeconds())
+	s.AppendTimeCondition("<=", s.QueryCondition.GetTimeRange().GetEndTime().GetSeconds())
 }
 
 func (s *StatementNew) AppendOrderClauseFromQueryCondition() {

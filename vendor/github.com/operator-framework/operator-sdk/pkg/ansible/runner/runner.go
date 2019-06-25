@@ -26,6 +26,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/operator-framework/operator-sdk/pkg/ansible/metrics"
 	"github.com/operator-framework/operator-sdk/pkg/ansible/paramconv"
 	"github.com/operator-framework/operator-sdk/pkg/ansible/runner/eventapi"
 	"github.com/operator-framework/operator-sdk/pkg/ansible/runner/internal/inputdir"
@@ -222,6 +223,10 @@ type runner struct {
 }
 
 func (r *runner) Run(ident string, u *unstructured.Unstructured, kubeconfig string) (RunResult, error) {
+
+	timer := metrics.ReconcileTimer(r.GVK.String())
+	defer timer.ObserveDuration()
+
 	if u.GetDeletionTimestamp() != nil && !r.isFinalizerRun(u) {
 		return nil, errors.New("resource has been deleted, but no finalizer was matched, skipping reconciliation")
 	}
@@ -398,7 +403,10 @@ func (r *runner) addFinalizer(finalizer *Finalizer) error {
 //   <cr_spec_fields_as_snake_case>,
 //   ...
 //   _<group_as_snake>_<kind>: {
-//       <cr_object as is
+//       <cr_object> as is
+//   }
+//   _<group_as_snake>_<kind>_spec: {
+//       <cr_object.spec> as is
 //   }
 // }
 func (r *runner) makeParameters(u *unstructured.Unstructured) map[string]interface{} {
@@ -408,10 +416,16 @@ func (r *runner) makeParameters(u *unstructured.Unstructured) map[string]interfa
 		log.Info("Spec was not found for CR", "GroupVersionKind", u.GroupVersionKind(), "Namespace", u.GetNamespace(), "Name", u.GetName())
 		spec = map[string]interface{}{}
 	}
+
 	parameters := paramconv.MapToSnake(spec)
 	parameters["meta"] = map[string]string{"namespace": u.GetNamespace(), "name": u.GetName()}
-	objectKey := fmt.Sprintf("_%v_%v", strings.Replace(r.GVK.Group, ".", "_", -1), strings.ToLower(r.GVK.Kind))
-	parameters[objectKey] = u.Object
+
+	objKey := fmt.Sprintf("_%v_%v", strings.Replace(r.GVK.Group, ".", "_", -1), strings.ToLower(r.GVK.Kind))
+	parameters[objKey] = u.Object
+
+	specKey := fmt.Sprintf("%s_spec", objKey)
+	parameters[specKey] = spec
+
 	if r.isFinalizerRun(u) {
 		for k, v := range r.Finalizer.Vars {
 			parameters[k] = v

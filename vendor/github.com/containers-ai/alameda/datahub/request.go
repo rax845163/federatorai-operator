@@ -243,7 +243,7 @@ func (r datahubListSimulatedSchedulingScoresRequestExtended) daoLisRequest() sco
 
 	queryCondition = datahubQueryConditionExtend{r.request.GetQueryCondition()}.daoQueryCondition()
 	listRequest := score_dao.ListRequest{
-		queryCondition,
+		QueryCondition: queryCondition,
 	}
 
 	return listRequest
@@ -310,11 +310,11 @@ func (d datahubQueryConditionExtend) daoQueryCondition() dao.QueryCondition {
 	}
 
 	queryCondition = dao.QueryCondition{
-		StartTime:      queryStartTime,
-		EndTime:        queryEndTime,
-		StepTime:       queryStepTime,
-		TimestampOrder: queryTimestampOrder,
-		Limit:          queryLimit,
+		StartTime:                 queryStartTime,
+		EndTime:                   queryEndTime,
+		StepTime:                  queryStepTime,
+		TimestampOrder:            queryTimestampOrder,
+		Limit:                     queryLimit,
 		AggregateOverTimeFunction: aggregateFunc,
 	}
 	return queryCondition

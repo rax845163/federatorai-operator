@@ -14,6 +14,7 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/updateresource"
 	"github.com/containers-ai/federatorai-operator/pkg/util"
+	routev1 "github.com/openshift/api/route/v1"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -214,6 +215,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	if err := r.syncDeployment(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync deployment failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+	if err := r.syncRoute(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync route failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 	// if EnableExecution Or EnableGUI has been changed to false
@@ -565,6 +570,44 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 	return nil
 }
 
+func (r *ReconcileAlamedaService) syncRoute(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+	for _, FileStr := range resource.RouteList {
+		resourceRT := componentConfig.NewRoute(FileStr)
+		if err := controllerutil.SetControllerReference(instance, resourceRT, r.scheme); err != nil {
+			return errors.Errorf("Fail resourceRT SetControllerReference: %s", err.Error())
+		}
+		foundSA := &routev1.Route{}
+
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceRT.Name, Namespace: resourceRT.Namespace}, foundSA)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			log.Info("Creating a new Resource Route... ", "resourceRT.Name", resourceRT.Name)
+			err = r.client.Create(context.TODO(), resourceRT)
+			if err != nil {
+				return errors.Errorf("create route %s/%s failed: %s", resourceRT.Namespace, resourceRT.Name, err.Error())
+			}
+			log.Info("Successfully Creating Resource route", "resourceRT.Name", resourceRT.Name)
+		} else if err != nil {
+			return errors.Errorf("get route %s/%s failed: %s", resourceRT.Namespace, resourceRT.Name, err.Error())
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) uninstallRoute(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+
+	for _, fileString := range resource.RouteList {
+		resourceRT := componentConfig.NewRoute(fileString)
+		err := r.client.Delete(context.TODO(), resourceRT)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			return nil
+		} else if err != nil {
+			return errors.Errorf("delete route %s/%s failed: %s", resourceRT.Namespace, resourceRT.Name, err.Error())
+		}
+	}
+
+	return nil
+}
+
 func (r *ReconcileAlamedaService) uninstallDeployment(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 
 	for _, fileString := range resource.DeploymentList {
@@ -691,6 +734,10 @@ func (r *ReconcileAlamedaService) uninstallScalerforAlameda(instance *federatora
 }
 
 func (r *ReconcileAlamedaService) uninstallGUIComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+
+	if err := r.uninstallRoute(instance, resource); err != nil {
+		return errors.Wrapf(err, "uninstall gui component failed")
+	}
 
 	if err := r.uninstallDeployment(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")

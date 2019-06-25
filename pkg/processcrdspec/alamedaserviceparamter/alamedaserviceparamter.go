@@ -48,6 +48,7 @@ var (
 		"ConfigMap/dashboards-config.yaml",
 		"Deployment/alameda-grafanaDM.yaml",
 		"Service/alameda-grafanaSV.yaml",
+		"Route/alameda-grafanaRT.yaml",
 	}
 	excutionList = []string{
 		"ClusterRoleBinding/alameda-evictionerCRB.yaml",
@@ -118,6 +119,7 @@ type Resource struct {
 	SecretList                   []string
 	PersistentVolumeClaimList    []string
 	AlamdaScalerList             []string
+	RouteList                    []string
 }
 
 func GetSelfDrivingRsource() *Resource {
@@ -302,6 +304,7 @@ func GetGUIResource() *Resource {
 	var guiDep = make([]string, 0)
 	var guiCM = make([]string, 0)
 	var guiSV = make([]string, 0)
+	var guiRT = make([]string, 0)
 	for _, str := range guiList {
 		if len(strings.Split(str, "/")) > 0 {
 			switch resource := strings.Split(str, "/")[0]; resource {
@@ -317,6 +320,8 @@ func GetGUIResource() *Resource {
 				guiSV = append(guiSV, str)
 			case "Deployment":
 				guiDep = append(guiDep, str)
+			case "Route":
+				guiRT = append(guiRT, str)
 			default:
 			}
 		}
@@ -328,6 +333,7 @@ func GetGUIResource() *Resource {
 		ConfigMapList:          guiCM,
 		ServiceList:            guiSV,
 		DeploymentList:         guiDep,
+		RouteList:              guiRT,
 	}
 }
 
@@ -460,6 +466,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 	dep := depList
 	secrets := secretList
 	pvc := []string{}
+	route := []string{}
 	alamdaScalerList := []string{}
 	if asp.SelfDriving {
 		alamdaScalerList = append(alamdaScalerList, "AlamedaScaler/alamedaScaler-alameda.yaml")
@@ -472,6 +479,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 		cm = append(cm, "ConfigMap/dashboards-config.yaml")
 		sv = append(sv, "Service/alameda-grafanaSV.yaml")
 		dep = append(dep, "Deployment/alameda-grafanaDM.yaml")
+		route = append(route, "Route/alameda-grafanaRT.yaml")
 	}
 	if asp.EnableExecution {
 		crb = append(crb, "ClusterRoleBinding/alameda-evictionerCRB.yaml")
@@ -503,6 +511,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 		SecretList:                   secrets,
 		PersistentVolumeClaimList:    pvc,
 		AlamdaScalerList:             alamdaScalerList,
+		RouteList:                    route,
 	}
 }
 

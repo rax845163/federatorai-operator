@@ -10,7 +10,7 @@ const (
 	defaultAddress                = "https://influxdb.alameda.svc.cluster.local:8086"
 	defaultUsername               = "datahub"
 	defaultPassword               = "datahub"
-	defaultRetentionDuration      = "15d"
+	defaultRetentionDuration      = "30d"
 	defaultRetentionShardDuration = "1d"
 )
 

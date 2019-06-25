@@ -25,6 +25,7 @@ const (
 type QueryCondition struct {
 	StartTime                 *time.Time
 	EndTime                   *time.Time
+	Timeout                   *time.Time
 	StepTime                  *time.Duration
 	TimestampOrder            Order
 	Limit                     int

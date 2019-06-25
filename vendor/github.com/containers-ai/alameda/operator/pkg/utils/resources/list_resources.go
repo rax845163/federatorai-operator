@@ -8,6 +8,7 @@ import (
 
 	autuscaling "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	appsapi_v1 "github.com/openshift/api/apps/v1"
+	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -95,6 +96,23 @@ func (listResources *ListResources) ListDeploymentConfigsByLabels(labels map[str
 	}
 
 	return deploymentConfigList.Items, nil
+}
+
+func (listResources *ListResources) ListPodsByController(namespace, name, kind string) ([]corev1.Pod, error) {
+
+	var pods []corev1.Pod
+	var err error
+
+	switch kind {
+	case "deployment":
+		pods, err = listResources.ListPodsByDeployment(namespace, name)
+	case "deploymentconfig":
+		pods, err = listResources.ListPodsByDeploymentConfig(namespace, name)
+	default:
+		err = errors.Errorf("not supported kind \"%s\"", kind)
+	}
+
+	return pods, err
 }
 
 // ListPodsByDeployment return pods by deployment namespace and name

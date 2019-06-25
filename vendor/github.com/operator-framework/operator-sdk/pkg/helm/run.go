@@ -20,22 +20,25 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/operator-framework/operator-sdk/pkg/helm/client"
 	"github.com/operator-framework/operator-sdk/pkg/helm/controller"
 	hoflags "github.com/operator-framework/operator-sdk/pkg/helm/flags"
 	"github.com/operator-framework/operator-sdk/pkg/helm/release"
 	"github.com/operator-framework/operator-sdk/pkg/helm/watches"
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
 	"github.com/operator-framework/operator-sdk/pkg/leader"
+	"github.com/operator-framework/operator-sdk/pkg/metrics"
 	sdkVersion "github.com/operator-framework/operator-sdk/version"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/helm/pkg/storage"
-	"k8s.io/helm/pkg/storage/driver"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 	"sigs.k8s.io/controller-runtime/pkg/runtime/signals"
+)
+
+var (
+	metricsHost       = "0.0.0.0"
+	metricsPort int32 = 8383
 )
 
 var log = logf.Log.WithName("cmd")
@@ -70,18 +73,11 @@ func Run(flags *hoflags.HelmOperatorFlags) error {
 		return err
 	}
 	mgr, err := manager.New(cfg, manager.Options{
-		Namespace: namespace,
+		Namespace:          namespace,
+		MetricsBindAddress: fmt.Sprintf("%s:%d", metricsHost, metricsPort),
 	})
 	if err != nil {
 		log.Error(err, "Failed to create a new manager.")
-		return err
-	}
-
-	// Create Tiller's storage backend and kubernetes client
-	storageBackend := storage.Init(driver.NewMemory())
-	tillerKubeClient, err := client.NewFromManager(mgr)
-	if err != nil {
-		log.Error(err, "Failed to create new Tiller client.")
 		return err
 	}
 
@@ -96,7 +92,7 @@ func Run(flags *hoflags.HelmOperatorFlags) error {
 		err := controller.Add(mgr, controller.WatchOptions{
 			Namespace:               namespace,
 			GVK:                     w.GroupVersionKind,
-			ManagerFactory:          release.NewManagerFactory(storageBackend, tillerKubeClient, w.ChartDir),
+			ManagerFactory:          release.NewManagerFactory(mgr, w.ChartDir),
 			ReconcilePeriod:         flags.ReconcilePeriod,
 			WatchDependentResources: w.WatchDependentResources,
 		})
@@ -111,11 +107,20 @@ func Run(flags *hoflags.HelmOperatorFlags) error {
 		log.Error(err, "Failed to get operator name")
 		return err
 	}
+
+	ctx := context.TODO()
+
 	// Become the leader before proceeding
-	err = leader.Become(context.TODO(), operatorName+"-lock")
+	err = leader.Become(ctx, operatorName+"-lock")
 	if err != nil {
 		log.Error(err, "Failed to become leader.")
 		return err
+	}
+
+	// Create Service object to expose the metrics port.
+	_, err = metrics.ExposeMetricsPort(ctx, metricsPort)
+	if err != nil {
+		log.Info(err.Error())
 	}
 
 	// Start the Cmd

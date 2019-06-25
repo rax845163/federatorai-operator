@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strconv"
+	"strings"
 	"time"
 
 	autoscalingv1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
@@ -236,13 +238,12 @@ func (evictioner *Evictioner) purgeTopControllerContainerResources(controller in
 	default:
 		return errors.Errorf("not supported controller type %s", datahub_v1alpha1.Kind_name[int32(kind)])
 	}
-
-	return nil
 }
 
 func (evictioner *Evictioner) listAppliablePodRecommendation() ([]*datahub_v1alpha1.PodRecommendation, error) {
 
 	appliablePodRecList := []*datahub_v1alpha1.PodRecommendation{}
+	nowTime := time.Now()
 	nowTimestamp := time.Now().Unix()
 
 	resp, err := evictioner.listPodRecommsPossibleToApply(nowTimestamp)
@@ -267,16 +268,36 @@ func (evictioner *Evictioner) listAppliablePodRecommendation() ([]*datahub_v1alp
 	for _, controllerRecommendationInfo := range controllerRecommendationInfoMap {
 
 		// Create eviction restriction
-		preservationPercentage := 100 - controllerRecommendationInfo.alamedaScaler.GetMaxUnavailablePercentage()
+		maxUnavailable := controllerRecommendationInfo.getMaxUnavailable()
+		triggerThreshold, err := controllerRecommendationInfo.buildTriggerThreshold()
+		if err != nil {
+			scope.Errorf("Build triggerThreshold of controller (%s/%s, kind: %s) faild, skip evicting controller's pod: %s",
+				controllerRecommendationInfo.namespace, controllerRecommendationInfo.name, controllerRecommendationInfo.kind, err.Error())
+			continue
+		}
 		podRecommendations := make([]*datahub_v1alpha1.PodRecommendation, len(controllerRecommendationInfo.podRecommendationInfos))
 		for i := range controllerRecommendationInfo.podRecommendationInfos {
 			podRecommendations[i] = controllerRecommendationInfo.podRecommendationInfos[i].recommendation
 		}
-		evictionRestriction := NewEvictionRestriction(evictioner.k8sClienit, preservationPercentage, evictioner.evictCfg.TriggerThreshold, podRecommendations)
+		evictionRestriction := NewEvictionRestriction(evictioner.k8sClienit, maxUnavailable, triggerThreshold, podRecommendations)
 
 		for _, podRecommendationInfo := range controllerRecommendationInfo.podRecommendationInfos {
 			pod := podRecommendationInfo.pod
 			podRecommendation := podRecommendationInfo.recommendation
+			if !controllerRecommendationInfo.isScalingToolTypeVPA() {
+				scope.Infof("Pod (%s/%s) cannot be evicted due to AlamedaScaler's scaling tool is type of %s",
+					pod.GetNamespace(), pod.GetName(), controllerRecommendationInfo.alamedaScaler.Spec.ScalingTool.Type)
+				continue
+			}
+			if ok, err := podRecommendationInfo.isApplicableAtTime(nowTime); err != nil {
+				scope.Infof("Pod (%s/%s) cannot be evicted due to PodRecommendation validate error, %s",
+					pod.GetNamespace(), pod.GetName(), err.Error())
+				continue
+			} else if !ok {
+				scope.Infof("Pod (%s/%s) cannot be evicted due to current time (%d) is not applicable on PodRecommendation's startTime (%d) and endTime(%d) interval",
+					pod.GetNamespace(), pod.GetName(), nowTime.Unix(), podRecommendation.GetStartTime().GetSeconds(), podRecommendation.GetEndTime().GetSeconds())
+				continue
+			}
 			if isEvictabel, err := evictionRestriction.IsEvictabel(pod); err != nil {
 				scope.Infof("Pod (%s/%s) cannot be evicted due to eviction restriction checking error: %s", pod.GetNamespace(), pod.GetName(), err.Error())
 				continue
@@ -379,14 +400,72 @@ type podRecommendationInfo struct {
 	recommendation *datahub_v1alpha1.PodRecommendation
 }
 
+func (p *podRecommendationInfo) isApplicableAtTime(t time.Time) (bool, error) {
+
+	startTime := p.recommendation.GetStartTime()
+	endTime := p.recommendation.GetEndTime()
+
+	if startTime == nil || endTime == nil {
+		return false, errors.Errorf("starTime and endTime cannot be nil")
+	}
+
+	if startTime.GetSeconds() >= t.Unix() || t.Unix() >= endTime.GetSeconds() {
+		return false, nil
+	}
+
+	return true, nil
+}
+
 type controllerRecommendationInfo struct {
+	namespace              string
+	name                   string
+	kind                   string
 	alamedaScaler          *autoscalingv1alpha1.AlamedaScaler
 	podRecommendationInfos []*podRecommendationInfo
 }
 
-func NewControllerRecommendationInfoMap(client client.Client, podRecommendations []*datahub_v1alpha1.PodRecommendation) map[string]*controllerRecommendationInfo {
+func (c controllerRecommendationInfo) getMaxUnavailable() string {
 
-	nowTimestamp := time.Now().Unix()
+	var maxUnavailable string
+
+	scalingTool := c.alamedaScaler.Spec.ScalingTool
+	if scalingTool.ExecutionStrategy == nil {
+		maxUnavailable = autoscalingv1alpha1.DefaultMaxUnavailablePercentage
+		return maxUnavailable
+	}
+
+	maxUnavailable = scalingTool.ExecutionStrategy.MaxUnavailable
+	return maxUnavailable
+}
+
+func (c controllerRecommendationInfo) isScalingToolTypeVPA() bool {
+	return c.alamedaScaler.IsScalingToolTypeVPA()
+}
+
+func (c controllerRecommendationInfo) buildTriggerThreshold() (triggerThreshold, error) {
+
+	var triggerThreshold triggerThreshold
+
+	cpu := c.alamedaScaler.Spec.ScalingTool.ExecutionStrategy.TriggerThreshold.CPU
+	cpu = strings.TrimSuffix(cpu, "%")
+	cpuValue, err := strconv.ParseFloat(cpu, 64)
+	if err != nil {
+		return triggerThreshold, errors.Errorf("parse cpu trigger threshold failed: %s", err.Error())
+	}
+	triggerThreshold.CPU = cpuValue
+
+	memory := c.alamedaScaler.Spec.ScalingTool.ExecutionStrategy.TriggerThreshold.Memory
+	memory = strings.TrimSuffix(memory, "%")
+	memoryValue, err := strconv.ParseFloat(memory, 64)
+	if err != nil {
+		return triggerThreshold, errors.Errorf("parse memory trigger threshold failed: %s", err.Error())
+	}
+	triggerThreshold.Memory = memoryValue
+
+	return triggerThreshold, nil
+}
+
+func NewControllerRecommendationInfoMap(client client.Client, podRecommendations []*datahub_v1alpha1.PodRecommendation) map[string]*controllerRecommendationInfo {
 
 	getResource := utilsresource.NewGetResource(client)
 	alamedaScalerMap := make(map[string]*autoscalingv1alpha1.AlamedaScaler)
@@ -399,12 +478,6 @@ func NewControllerRecommendationInfoMap(client client.Client, podRecommendations
 		recommendationNamespacedName := podRecommendation.NamespacedName
 		if recommendationNamespacedName == nil {
 			scope.Errorf("skip PodRecommendation due to PodRecommendation has empty NamespacedName")
-			continue
-		}
-		startTime := podRecommendation.GetStartTime().GetSeconds()
-		endTime := podRecommendation.GetEndTime().GetSeconds()
-		if startTime >= nowTimestamp || nowTimestamp >= endTime {
-			scope.Errorf("skip PodRecommendation (%s/%s) due to recommendation out of date", podRecommendation.NamespacedName.Namespace, podRecommendation.NamespacedName.Name)
 			continue
 		}
 
@@ -461,6 +534,9 @@ func NewControllerRecommendationInfoMap(client client.Client, podRecommendations
 		_, exist = controllerRecommendationInfoMap[controllerID]
 		if !exist {
 			controllerRecommendationInfoMap[controllerID] = &controllerRecommendationInfo{
+				namespace:              controller.NamespacedName.Namespace,
+				name:                   controller.NamespacedName.Name,
+				kind:                   datahub_v1alpha1.Kind_name[int32(controller.Kind)],
 				alamedaScaler:          alamedaScaler,
 				podRecommendationInfos: make([]*podRecommendationInfo, 0),
 			}

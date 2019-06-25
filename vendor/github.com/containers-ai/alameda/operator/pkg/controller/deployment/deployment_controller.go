@@ -21,9 +21,11 @@ import (
 
 	autoscalingv1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	utilsresource "github.com/containers-ai/alameda/operator/pkg/utils/resources"
-	appsv1 "k8s.io/api/apps/v1"
-
 	logUtil "github.com/containers-ai/alameda/pkg/utils/log"
+	"github.com/pkg/errors"
+	"golang.org/x/net/context"
+	appsv1 "k8s.io/api/apps/v1"
+	k8sErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -92,21 +94,65 @@ func (r *ReconcileDeployment) Reconcile(request reconcile.Request) (reconcile.Re
 	getResource := utilsresource.NewGetResource(r)
 	updateResource := utilsresource.NewUpdateResource(r)
 
-	alamedaScaler, err := getResource.GetObservingAlamedaScalerOfController(autoscalingv1alpha1.DeploymentController, request.Namespace, request.Name)
-	if err != nil {
-		scope.Errorf("%s", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
-	} else if alamedaScaler == nil {
-		scope.Warnf("get observing AlamedaScaler of deployment %s/%s not found", request.Namespace, request.Name)
-		return reconcile.Result{}, nil
-	}
+	deployment := appsv1.Deployment{}
+	err := r.Get(context.Background(), request.NamespacedName, &deployment)
+	if err != nil && k8sErrors.IsNotFound(err) {
+		// If deployment is deleted, it cannnot find the monitoring AlamedaScaler by calling method GetObservingAlamedaScalerOfController
+		// in type GetResource.
+		alamedaScaler, err := r.getMonitoringAlamedaScaler(request.Namespace, request.Name)
+		if err != nil {
+			scope.Errorf("Get observing AlamedaScaler of Deployment failed: %s", err.Error())
+			return reconcile.Result{}, nil
+		} else if alamedaScaler == nil {
+			scope.Warnf("Get observing AlamedaScaler of Deployment %s/%s not found", request.Namespace, request.Name)
+			return reconcile.Result{}, nil
+		}
 
-	alamedaScaler.SetCustomResourceVersion(alamedaScaler.GenCustomResourceVersion())
-	err = updateResource.UpdateAlamedaScaler(alamedaScaler)
-	if err != nil {
-		scope.Errorf("update AlamedaScaler falied: %s", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
+		alamedaScaler.SetCustomResourceVersion(alamedaScaler.GenCustomResourceVersion())
+		err = updateResource.UpdateAlamedaScaler(alamedaScaler)
+		if err != nil {
+			scope.Errorf("Update AlamedaScaler falied: %s", err.Error())
+			return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
+		}
+	} else if err != nil {
+		scope.Errorf("Get Deployment %s/%s failed: %s", request.Namespace, request.Name, err.Error())
+		return reconcile.Result{}, nil
+	} else {
+		alamedaScaler, err := getResource.GetObservingAlamedaScalerOfController(autoscalingv1alpha1.DeploymentController, request.Namespace, request.Name)
+		if err != nil {
+			scope.Errorf("Get observing AlamedaScaler of deployment failed: %s", err.Error())
+			return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
+		} else if alamedaScaler == nil {
+			scope.Warnf("Get observing AlamedaScaler of deployment %s/%s not found", request.Namespace, request.Name)
+			return reconcile.Result{}, nil
+		}
+
+		alamedaScaler.SetCustomResourceVersion(alamedaScaler.GenCustomResourceVersion())
+		err = updateResource.UpdateAlamedaScaler(alamedaScaler)
+		if err != nil {
+			scope.Errorf("Update AlamedaScaler falied: %s", err.Error())
+			return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
+		}
 	}
 
 	return reconcile.Result{}, nil
+}
+
+func (r *ReconcileDeployment) getMonitoringAlamedaScaler(namespace, name string) (*autoscalingv1alpha1.AlamedaScaler, error) {
+
+	listResource := utilsresource.NewListResources(r.Client)
+	alamedaScalers, err := listResource.ListNamespaceAlamedaScaler(namespace)
+	if err != nil {
+		return nil, errors.Wrap(err, "list AlamedaScalers failed")
+	}
+
+	for _, alamedaScaler := range alamedaScalers {
+		for _, deployment := range alamedaScaler.Status.AlamedaController.Deployments {
+			if deployment.Namespace == namespace && deployment.Name == name {
+				return &alamedaScaler, nil
+			}
+		}
+	}
+
+	return nil, nil
 }

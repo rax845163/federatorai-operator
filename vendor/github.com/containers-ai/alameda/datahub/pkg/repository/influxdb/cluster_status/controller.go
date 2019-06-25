@@ -110,10 +110,10 @@ func (c *ControllerRepository) DeleteControllers(in *datahub_api.DeleteControlle
 	for _, controller := range controllers {
 		namespace := controller.GetControllerInfo().GetNamespacedName().GetNamespace()
 		name := controller.GetControllerInfo().GetNamespacedName().GetName()
-		whereStr += fmt.Sprintf(" (\"name\"='%s' AND \"namespace\"='%s') AND", name, namespace)
+		whereStr += fmt.Sprintf(" (\"name\"='%s' AND \"namespace\"='%s') OR", name, namespace)
 	}
 
-	whereStr = strings.TrimSuffix(whereStr, "AND")
+	whereStr = strings.TrimSuffix(whereStr, "OR")
 
 	if whereStr != "" {
 		whereStr = "WHERE" + whereStr

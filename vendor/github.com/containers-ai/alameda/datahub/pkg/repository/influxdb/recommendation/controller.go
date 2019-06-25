@@ -36,10 +36,10 @@ func (c *ControllerRepository) CreateControllerRecommendations(controllerRecomme
 			tags := map[string]string{
 				recommendation_entity.ControllerNamespace: recommendedSpec.GetNamespacedName().GetNamespace(),
 				recommendation_entity.ControllerName:      recommendedSpec.GetNamespacedName().GetName(),
+				recommendation_entity.ControllerType:      datahub_v1alpha1.ControllerRecommendedType_CRT_Primitive.String(),
 			}
 
 			fields := map[string]interface{}{
-				recommendation_entity.ControllerType:            datahub_v1alpha1.ControllerRecommendedType_CRT_Primitive,
 				recommendation_entity.ControllerCurrentReplicas: recommendedSpec.GetCurrentReplicas(),
 				recommendation_entity.ControllerDesiredReplicas: recommendedSpec.GetDesiredReplicas(),
 				recommendation_entity.ControllerCreateTime:      recommendedSpec.GetCreateTime().GetSeconds(),
@@ -66,10 +66,10 @@ func (c *ControllerRepository) CreateControllerRecommendations(controllerRecomme
 			tags := map[string]string{
 				recommendation_entity.ControllerNamespace: recommendedSpec.GetNamespacedName().GetNamespace(),
 				recommendation_entity.ControllerName:      recommendedSpec.GetNamespacedName().GetName(),
+				recommendation_entity.ControllerType:      datahub_v1alpha1.ControllerRecommendedType_CRT_K8s.String(),
 			}
 
 			fields := map[string]interface{}{
-				recommendation_entity.ControllerType:            datahub_v1alpha1.ControllerRecommendedType_CRT_K8s,
 				recommendation_entity.ControllerCurrentReplicas: recommendedSpec.GetCurrentReplicas(),
 				recommendation_entity.ControllerDesiredReplicas: recommendedSpec.GetDesiredReplicas(),
 				recommendation_entity.ControllerCreateTime:      recommendedSpec.GetCreateTime().GetSeconds(),

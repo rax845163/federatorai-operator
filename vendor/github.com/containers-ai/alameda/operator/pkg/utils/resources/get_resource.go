@@ -120,6 +120,29 @@ func (getResource *GetResource) GetObservingAlamedaScalerOfController(controller
 	return nil, nil
 }
 
+// GetReplicasCountByController get controller's spec.replicas
+func (getResource *GetResource) GetReplicasCountByController(namespace, name, kind string) (int32, error) {
+
+	switch kind {
+	case "deployment":
+		deployment, err := getResource.GetDeployment(namespace, name)
+		if err != nil {
+			return 0, err
+		} else if deployment.Spec.Replicas == nil {
+			return 0, errors.Errorf("deployment's spec.replicas is nil")
+		}
+		return *deployment.Spec.Replicas, nil
+	case "deploymentconfig":
+		deploymentConfig, err := getResource.GetDeploymentConfig(namespace, name)
+		if err != nil {
+			return 0, err
+		}
+		return deploymentConfig.Spec.Replicas, nil
+	default:
+		return 0, errors.Errorf("not supported kind \"%s\"", kind)
+	}
+}
+
 func (getResource *GetResource) getResource(resource runtime.Object, namespace, name string) error {
 	if namespace == "" || name == "" {
 		return errors.Errorf("Namespace: %s or name: %s is empty", namespace, name)

@@ -85,6 +85,63 @@ func New(config Config) (*Prometheus, error) {
 	}, nil
 }
 
+// Query Query data over a range of time from prometheus
+func (p *Prometheus) Query(query string, startTime, timeout *time.Time) (Response, error) {
+
+	var (
+		err error
+
+		endpoint        = apiPrefix + epQuery
+		queryParameters = url.Values{}
+
+		u            *url.URL
+		httpRequest  *http.Request
+		httpResponse *http.Response
+
+		response Response
+	)
+
+	queryParameters.Set("query", query)
+
+	if startTime != nil {
+		queryParameters.Set("time", strconv.FormatInt(int64(startTime.Unix()), 10))
+	}
+
+	if timeout != nil {
+		queryParameters.Set("timeout", strconv.FormatInt(int64(timeout.Unix()), 10))
+	}
+
+	u, err = url.Parse(p.config.URL + endpoint)
+	if err != nil {
+		return Response{}, errors.New("prometheus query failed: url parse failed: " + err.Error())
+	}
+	u.RawQuery = queryParameters.Encode()
+
+	httpRequest, err = http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		return Response{}, errors.New("Query: " + err.Error())
+	}
+	if token := p.config.bearerToken; token != "" {
+		h := http.Header{
+			"Authorization": []string{fmt.Sprintf(" Bearer %s", token)},
+		}
+		httpRequest.Header = h
+	}
+
+	httpResponse, err = p.client.Do(httpRequest)
+	if err != nil {
+		return Response{}, errors.New("prometheus query failed: send http request failed" + err.Error())
+	}
+	err = decodeHTTPResponse(httpResponse, &response)
+	if err != nil {
+		return Response{}, errors.Wrap(err, "prometheus query failed")
+	}
+
+	defer p.Close()
+
+	return response, nil
+}
+
 // QueryRange Query data over a range of time from prometheus
 func (p *Prometheus) QueryRange(query string, startTime, endTime *time.Time, stepTime *time.Duration) (Response, error) {
 

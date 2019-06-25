@@ -189,7 +189,7 @@ func (ac *admissionController) mutatePod(ar *admission_v1beta1.AdmissionReview) 
 
 	controllerID, err := ac.getControllerIDToQueryPodRecommendations(&pod)
 	if err != nil {
-		return admissionResponse, errors.Wrapf(err, "mutating pod failed: get controller information of Pod failed, skip mutating pod: Pod: %+v")
+		return admissionResponse, errors.Wrapf(err, "mutating pod failed: get controller information of Pod failed, skip mutating pod: %s", err.Error())
 	}
 
 	executionEnabeld, err := ac.isControllerExecutionEnabled(controllerID)

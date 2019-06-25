@@ -122,6 +122,12 @@ func (r *ReconcileAlamedaScaler) Reconcile(request reconcile.Request) (reconcile
 		} else {
 			scope.Infof("Remove alameda pods of alamedascaler (%s/%s) from datahub successed.", request.Namespace, request.Name)
 		}
+		err = deleteControllersFromDatahub(request.Namespace, request.Name)
+		if err != nil {
+			scope.Errorf("Remove alameda controllers of alamedascaler (%s/%s) from datahub failed. %s", request.Namespace, request.Name, err.Error())
+		} else {
+			scope.Infof("Remove alameda controllers of alamedascaler (%s/%s) from datahub successed.", request.Namespace, request.Name)
+		}
 	} else if err == nil {
 		// TODO: deployment already in the AlamedaScaler cannot join the other
 		alamedaScaler.SetDefaultValue()
@@ -535,8 +541,8 @@ func (r *ReconcileAlamedaScaler) createPodsToDatahub(scaler *autoscalingv1alpha1
 			StartTime:     startTime,
 			TopController: topCtrl,
 			Status:        podStatus,
-			Enable_VPA:    autoscalingv1alpha1.ScalingTool.VpaFlag,
-			Enable_HPA:    autoscalingv1alpha1.ScalingTool.HpaFlag,
+			Enable_VPA:    scaler.IsScalingToolTypeVPA(),
+			Enable_HPA:    scaler.IsScalingToolTypeHPA(),
 			AppName:       appName,
 			AppPartOf:     appPartOf,
 		})
@@ -555,6 +561,34 @@ func (r *ReconcileAlamedaScaler) createPodsToDatahub(scaler *autoscalingv1alpha1
 	scope.Infof(fmt.Sprintf("add alameda pods for AlamedaScaler (%s/%s) successfully", scaler.GetNamespace(), scaler.GetName()))
 
 	return nil
+}
+
+func deleteControllersFromDatahub(scalerNamespace, scalerName string) error {
+
+	k8sRes := datahubclient.NewK8SResource()
+	controllers, err := k8sRes.ListAlamedaWatchedResource(&datahub_v1alpha1.NamespacedName{
+		Namespace: scalerNamespace,
+	})
+	if err != nil {
+		return err
+	}
+
+	controllersNeedDelete := make([]*datahub_v1alpha1.Controller, 0)
+	for _, controller := range controllers {
+		for _, ownerInfo := range controller.GetOwnerInfo() {
+			if ownerInfo == nil {
+				continue
+			}
+			if ownerInfo.NamespacedName == nil {
+				continue
+			}
+			if ownerInfo.NamespacedName.Namespace == scalerNamespace && ownerInfo.NamespacedName.Name == scalerName && ownerInfo.Kind == datahub_v1alpha1.Kind_ALAMEDASCALER {
+				controllersNeedDelete = append(controllersNeedDelete, controller)
+			}
+		}
+	}
+
+	return k8sRes.DeleteAlamedaWatchedResource(controllersNeedDelete)
 }
 
 func deletePodsFromDatahub(scalerNamespacedName *types.NamespacedName, existingPodsMap map[autoscalingv1alpha1.NamespacedName]bool) error {

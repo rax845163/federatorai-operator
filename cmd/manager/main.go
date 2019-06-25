@@ -9,11 +9,13 @@ import (
 	"runtime"
 	"strings"
 
+	autoscaling_v1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	fedOperator "github.com/containers-ai/federatorai-operator"
 	"github.com/containers-ai/federatorai-operator/pkg/apis"
 	"github.com/containers-ai/federatorai-operator/pkg/controller"
 	fedOperatorLog "github.com/containers-ai/federatorai-operator/pkg/log"
 	"github.com/containers-ai/federatorai-operator/pkg/version"
+	routev1 "github.com/openshift/api/route/v1"
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
 	"github.com/operator-framework/operator-sdk/pkg/leader"
 	"github.com/operator-framework/operator-sdk/pkg/metrics"
@@ -164,7 +166,14 @@ func main() {
 		log.Error(err, "")
 		os.Exit(1)
 	}
-
+	if err := routev1.AddToScheme(mgr.GetScheme()); err != nil {
+		log.Error(err, "")
+		os.Exit(1)
+	}
+	if err := autoscaling_v1alpha1.AddToScheme(mgr.GetScheme()); err != nil {
+		log.Error(err, "")
+		os.Exit(1)
+	}
 	// Setup all Controllers
 	if err := controller.AddToManager(mgr); err != nil {
 		log.Error(err, "")

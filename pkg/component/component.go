@@ -10,6 +10,7 @@ import (
 	autoscaling_v1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/assets"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceread"
+	routev1 "github.com/openshift/api/route/v1"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -121,6 +122,17 @@ func (c ComponentConfig) NewDeployment(str string) *appsv1.Deployment {
 	d.Namespace = c.NameSpace
 	d.Spec.Template = c.mutatePodTemplateSpecWithConfig(d.Spec.Template)
 	return d
+}
+
+func (c ComponentConfig) NewRoute(str string) *routev1.Route {
+	rtByte, err := assets.Asset(str)
+	if err != nil {
+		log.Error(err, "Failed to Test create route")
+
+	}
+	rt := resourceread.ReadRouteV1(rtByte)
+	rt.Namespace = c.NameSpace
+	return rt
 }
 
 func (c ComponentConfig) NewAdmissionControllerSecret() (*corev1.Secret, error) {
