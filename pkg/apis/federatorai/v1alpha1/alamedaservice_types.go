@@ -24,21 +24,21 @@ type AlamedaServiceSpec struct {
 	SelfDriving bool `json:"selfDriving"`
 	// +kubebuilder:validation:Enum=openshift3.9
 	Platform          Platform      `json:"platform,omitempty"`
-	EnableExecution   bool          `json:"enableexecution"`
-	EnableGUI         bool          `json:"enablegui"`
+	EnableExecution   bool          `json:"enableExecution"`
+	EnableGUI         bool          `json:"enableGui"`
 	Version           string        `json:"version"`
-	PrometheusService string        `json:"prometheusservice"`
+	PrometheusService string        `json:"prometheusService"`
 	Storages          []StorageSpec `json:"storages"`
 	//Component Section Schema
-	InfluxdbSectionSet            AlamedaComponentSpec `json:"alameda-influxdb"`
-	GrafanaSectionSet             AlamedaComponentSpec `json:"alameda-grafana"`
-	AlamedaAISectionSet           AlamedaComponentSpec `json:"alameda-ai"`
-	AlamedaOperatorSectionSet     AlamedaComponentSpec `json:"alameda-operator"`
-	AlamedaDatahubSectionSet      AlamedaComponentSpec `json:"alameda-datahub"`
-	AlamedaEvictionerSectionSet   AlamedaComponentSpec `json:"alameda-evictioner"`
-	AdmissionControllerSectionSet AlamedaComponentSpec `json:"alameda-admission-controller"`
-	AlamedaRecommenderSectionSet  AlamedaComponentSpec `json:"alameda-recommender"`
-	AlamedaExecutorSectionSet     AlamedaComponentSpec `json:"alameda-executor"`
+	InfluxdbSectionSet            AlamedaComponentSpec `json:"alamedaInfluxdb"`
+	GrafanaSectionSet             AlamedaComponentSpec `json:"alamedaGrafana"`
+	AlamedaAISectionSet           AlamedaComponentSpec `json:"alamedaAi"`
+	AlamedaOperatorSectionSet     AlamedaComponentSpec `json:"alamedaOperator"`
+	AlamedaDatahubSectionSet      AlamedaComponentSpec `json:"alamedaDatahub"`
+	AlamedaEvictionerSectionSet   AlamedaComponentSpec `json:"alamedaEvictioner"`
+	AdmissionControllerSectionSet AlamedaComponentSpec `json:"alamedaAdmissionController"`
+	AlamedaRecommenderSectionSet  AlamedaComponentSpec `json:"alamedaRecommender"`
+	AlamedaExecutorSectionSet     AlamedaComponentSpec `json:"alamedaExecutor"`
 }
 type AlamedaComponentSpec struct {
 	Image              string            `json:"image"`
@@ -72,7 +72,7 @@ type StorageSpec struct {
 	Usage       Usage                             `json:"usage"`
 	Size        string                            `json:"size"`
 	Class       *string                           `json:"class"`
-	AccessModes corev1.PersistentVolumeAccessMode `json:"accessmode"`
+	AccessModes corev1.PersistentVolumeAccessMode `json:"accessMode"`
 }
 
 //check StorageStruct

@@ -10,14 +10,14 @@ And this document helps you to get started. In the following sections, we first 
 ## Deployment
 
 Like any Kubernetes application, the deployment of a Kubernetes application can directly apply K8s manifests or leverage 3rd-party tools/frameworks. Here we provides but not limit to two ways:
-- by K8s manifests  
+- by K8s manifests
 - by operator-lifecycle-management framework
 
 During the deployment, **Federator.ai Operator** will install a CRD called _AlamedaService_ as a channel for users to interact with it. **Federator.ai Operator** will reconcile to an _AlamedaService_ CR in a cluster wide scope.
 
 #### Deployment by K8s Manifests
 
-1. Checkout **Federator.ai Operator** repository from github  
+1. Checkout **Federator.ai Operator** repository from github
 ```
 $ git clone https://github.com/containers-ai/federatorai-operator.git
 ```
@@ -55,10 +55,10 @@ metadata:
 spec:
   selfDriving: true             ## to enable resource self-orchestration of the deployed Alameda components
                                 ## it is recommended NOT to use ephemeral data storage for Alameda influxdb component when self-Driving is enabled
-  enableexecution: true
-  enablegui: true
+  enableExecution: true
+  enableGui: true
   version: latest               ## for Alameda components. (exclude grafana and influxdb)
-  prometheusservice: https://prometheus-k8s.openshift-monitoring:9091
+  prometheusService: https://prometheus-k8s.openshift-monitoring:9091
   storages:                     ## see following details for where it is used in each component
     - usage: log                ## storage setting for log
       type: ephemeral           ## ephemeral means emptyDir{}

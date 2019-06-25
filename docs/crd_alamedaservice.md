@@ -6,9 +6,9 @@
 - Application lifecycle and storage management.
 
 An _AlamedaService_ CR is structured as:
-- a section of global setting  
+- a section of global setting
   This section provides a configurable global setting for all Alameda components. This section intends to provide a fast and easy setup to quickstart Alameda.
-- a section of detailed setting for each component (optional)  
+- a section of detailed setting for each component (optional)
   The settings in this section are optional and it is used to fine tune the values inherited from the global section for each Alameda component.
 
 When an _AlamedaService_ CR is created, Federator.ai Operator will reconcile it and spawn operands. For the detail schema of _AlamedaService_, please refer to the last section of this document. Here we shows two example to quickly give users a feel what the configuration that an _AlamedaService_ tries to provide.
@@ -119,46 +119,46 @@ spec:
 - Field: platform
   - type: string
   - description: (Optional) Specify this key with "openshift3.9" value if you are deploying Alameda in OCP/OKD 3.9 environment or the execution of container cpu and memory resource limit/request changes may not work. For other platforms, this key is optional.
-- Field: enableexecution
+- Field: enableExecution
   - type: boolean
   - description: Federator.ai Operator will deploy components to execute _AlamedaRecommendation_ CRs if this field is set to _true_. Default is _false_.
-- Field: enablegui
+- Field: enableGui
   - type: boolean
   - description: Federator.ai Operator will deploy GUI to visualize Alameda predictions/recommendations and cluster/node status if this field is set to _true_. Default is _true_.
 - Field: version
   - type: string
   - description: It sets the version tag when pulling Alameda component images.
-- Field: prometheusservice
+- Field: prometheusService
   - type: string
   - description: This field tells datahub and Grafana where the Prometheus URL is to retrieve pods/nodes peformance metrics data.
 - Field: storages
   - type: [StorageSpec](#storagespec) array
   - description: This field is optional and it lists storage settings which applied to each operand.
-- Field: alameda-operator
+- Field: alamedaOperator
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-operator component. This field is optional.
-- Field: alameda-datahub
+- Field: alamedaDatahub
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-datahub component. This field is optional.
-- Field: alameda-ai
-  - type: [AlamedaComponentSpec](#alamedacomponentspec) 
+- Field: alamedaAi
+  - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-ai component. This field is optional.
-- Field: alameda-evictioner
-  - type: [AlamedaComponentSpec](#alamedacomponentspec) 
+- Field: alamedaEvictioner
+  - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-evictioner component. This field is optional.
-- Field: alameda-admission-controller
-  - type: [AlamedaComponentSpec](#alamedacomponentspec) 
+- Field: alamedaAdmissionController
+  - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-admission-controller component. This field is optional.
-- Field: alameda-influxdb
+- Field: alamedaInfluxdb
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for InfluxDB component. This field is optional.
-- Field: alameda-grafana
+- Field: alamedaGrafana
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-grafana component. This field is optional.
-- Field: alameda-recommender
+- Field: alamedaRecommender
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-recommender component. This field is optional.
-- Field: alameda-executor
+- Field: alamedaExecutor
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-executor component. This field is optional.
 
@@ -176,7 +176,7 @@ spec:
 - Field: class
   - type: string
   - description: This field is mandatory if type is _pvc_. It claims a persistent volume from K8s with the matching _storageClassName_.
-- Field: accessmode
+- Field: accessMode
   - type: string
   - description: This field is for _pvc_ type. Is sets how the claimed volume is mounted. Default is _ReadWriteOnce_.
 

@@ -5,7 +5,7 @@ metadata:
   namespace: federatorai
 spec:
   policy: stable
-  enableexecution: true
+  enableExecution: true
   scalingTool:
     type: vpa
   selector:
