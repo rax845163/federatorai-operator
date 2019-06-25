@@ -5,6 +5,12 @@ metadata:
 rules:
 # following is taken from Federatorai-operator CSV v0.0.1 clusterPermissions section
 - apiGroups:
+  - route.openshift.io
+  resources:
+  - "*"
+  verbs:
+  - "*"
+- apiGroups:
   - federatorai.containers.ai
   resources:
   - "*"
