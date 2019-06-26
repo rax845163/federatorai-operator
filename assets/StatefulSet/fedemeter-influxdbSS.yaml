@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: influxdb
-  namespace: kroos-tutorial
+  namespace: federatorai
 spec:
   serviceName: influxdb
   selector:

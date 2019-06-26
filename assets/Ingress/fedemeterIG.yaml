@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  namespace: federatorai
+  name: fedemeter-api
+spec:
+  rules:
+  - host:
+    http:
+      paths:
+      - path: /fedemeter-api/v1/
+        backend:
+          serviceName: fedemeter
+          servicePort: 8999

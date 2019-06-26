@@ -18,6 +18,7 @@ import (
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	ingressv1beta1 "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	apiextension "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	k8sErrors "k8s.io/apimachinery/pkg/api/errors"
@@ -98,7 +99,6 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -122,7 +122,6 @@ type ReconcileAlamedaService struct {
 func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcile.Result, error) {
 	reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
 	reqLogger.Info("Reconciling AlamedaService")
-
 	// Fetch the AlamedaService instance
 	instance := &federatoraiv1alpha1.AlamedaService{}
 	err := r.client.Get(context.TODO(), request.NamespacedName, instance)
@@ -142,13 +141,11 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("get AlamedaService failed, retry reconciling", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, err
 	}
-
 	needToReconcile, err := r.needToReconcile(instance)
 	if err != nil {
 		log.V(-1).Info("check if AlamedaService needs to reconcile failed, retry reconciling", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-
 	if !needToReconcile {
 		log.Info("AlamedaService doe not need to reconcile", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name)
 		err := r.syncAlamedaServiceActive(instance, false)
@@ -158,16 +155,13 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		}
 		return reconcile.Result{}, nil
 	}
-
 	if err := r.syncAlamedaServiceActive(instance, true); err != nil {
 		log.V(-1).Info("sync AlamedaService failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-
 	if flag, _ := r.checkAlamedaServiceSpecIsChange(instance, request.NamespacedName); !flag && util.Disable_operand_resource_protection == "true" {
 		return reconcile.Result{}, nil
 	}
-
 	asp := alamedaserviceparamter.NewAlamedaServiceParamter(instance)
 	ns, err := r.getNamespace(request.Namespace)
 	if err != nil {
@@ -186,17 +180,14 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("sync clusterRole failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-
 	if err := r.syncServiceAccount(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync serviceAccount failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-
 	if err := r.syncClusterRoleBinding(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync clusterRoleBinding failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-
 	if err := r.createSecret(instance, asp, installResource); err != nil {
 		log.V(-1).Info("create secret failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -223,6 +214,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	if err := r.syncRoute(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync route failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+	if err := r.syncIngress(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync Ingress failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 	// if EnableExecution Or EnableGUI has been changed to false
@@ -284,10 +279,8 @@ func (r *ReconcileAlamedaService) getNamespace(namespaceName string) (corev1.Nam
 }
 
 func (r *ReconcileAlamedaService) newComponentConfig(namespace corev1.Namespace) *component.ComponentConfig {
-
 	podTemplateConfig := component.NewDefaultPodTemplateConfig(namespace)
 	componentConfg := component.NewComponentConfig(namespace.Name, podTemplateConfig)
-
 	return componentConfg
 }
 
@@ -454,7 +447,6 @@ func (r *ReconcileAlamedaService) createSecret(instance *federatoraiv1alpha1.Ala
 	} else if err != nil {
 		return errors.Errorf("get secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
 	}
-
 	secret, err = componentConfig.NewInfluxDBSecret()
 	if err != nil {
 		return errors.Errorf("build secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
@@ -468,7 +460,6 @@ func (r *ReconcileAlamedaService) createSecret(instance *federatoraiv1alpha1.Ala
 	} else if err != nil {
 		return errors.Errorf("get secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
 	}
-
 	return nil
 }
 
@@ -604,6 +595,28 @@ func (r *ReconcileAlamedaService) syncRoute(instance *federatoraiv1alpha1.Alamed
 	return nil
 }
 
+func (r *ReconcileAlamedaService) syncIngress(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+	for _, FileStr := range resource.IngressList {
+		resourceIG := componentConfig.NewIngress(FileStr)
+		if err := controllerutil.SetControllerReference(instance, resourceIG, r.scheme); err != nil {
+			return errors.Errorf("Fail resourceIG SetControllerReference: %s", err.Error())
+		}
+		foundIG := &ingressv1beta1.Ingress{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceIG.Name, Namespace: resourceIG.Namespace}, foundIG)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			log.Info("Creating a new Resource Route... ", "resourceIG.Name", resourceIG.Name)
+			err = r.client.Create(context.TODO(), resourceIG)
+			if err != nil {
+				return errors.Errorf("create route %s/%s failed: %s", resourceIG.Namespace, resourceIG.Name, err.Error())
+			}
+			log.Info("Successfully Creating Resource route", "resourceRT.Name", resourceIG.Name)
+		} else if err != nil {
+			return errors.Errorf("get route %s/%s failed: %s", resourceIG.Namespace, resourceIG.Name, err.Error())
+		}
+	}
+	return nil
+}
+
 func (r *ReconcileAlamedaService) syncStatefulSet(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, FileStr := range resource.StatefulSetList {
 		resourceSS := componentConfig.NewStatefulSet(FileStr)
@@ -634,6 +647,19 @@ func (r *ReconcileAlamedaService) uninstallStatefulSet(instance *federatoraiv1al
 			return nil
 		} else if err != nil {
 			return errors.Errorf("delete statefulset %s/%s failed: %s", resourceSS.Namespace, resourceSS.Name, err.Error())
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) uninstallIngress(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+	for _, fileString := range resource.IngressList {
+		resourceIG := componentConfig.NewIngress(fileString)
+		err := r.client.Delete(context.TODO(), resourceIG)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			return nil
+		} else if err != nil {
+			return errors.Errorf("delete ingress %s/%s failed: %s", resourceIG.Namespace, resourceIG.Name, err.Error())
 		}
 	}
 	return nil
@@ -764,77 +790,62 @@ func (r *ReconcileAlamedaService) uninstallScalerforAlameda(instance *federatora
 }
 
 func (r *ReconcileAlamedaService) uninstallGUIComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-
 	if err := r.uninstallRoute(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
-
 	if err := r.uninstallDeployment(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
-
 	if err := r.uninstallService(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
-
 	if err := r.uninstallConfigMap(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
-
 	if err := r.uninstallServiceAccount(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
-
 	if err := r.uninstallClusterRole(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
-
 	if err := r.uninstallClusterRoleBinding(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
-
 	return nil
 }
 
 func (r *ReconcileAlamedaService) uninstallExecutionComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-
 	if err := r.uninstallDeployment(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall execution component failed")
 	}
-
 	if err := r.uninstallService(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall execution component failed")
 	}
-
 	if err := r.uninstallSecret(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
-
 	if err := r.uninstallServiceAccount(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
-
 	if err := r.uninstallClusterRole(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
-
 	if err := r.uninstallClusterRoleBinding(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall gui component failed")
 	}
-
 	return nil
 }
 
 func (r *ReconcileAlamedaService) uninstallFedemeterComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-
+	if err := r.uninstallIngress(instance, resource); err != nil {
+		return errors.Wrapf(err, "uninstall Fedemeter component failed")
+	}
 	if err := r.uninstallDeployment(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall Fedemeter component failed")
 	}
-
 	if err := r.uninstallService(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall Fedemeter component failed")
 	}
-
 	if err := r.uninstallConfigMap(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall Fedemeter component failed")
 	}
@@ -866,7 +877,6 @@ func (r *ReconcileAlamedaService) uninstallPersistentVolumeClaim(instance *feder
 }
 
 func (r *ReconcileAlamedaService) needToReconcile(alamedaService *federatoraiv1alpha1.AlamedaService) (bool, error) {
-
 	lock, lockErr := r.getAlamedaServiceLock(alamedaService.Namespace, alamedaServiceLockName)
 	if lockErr == nil {
 		if lockIsOwnedByAlamedaService(lock, alamedaService) {
@@ -882,12 +892,10 @@ func (r *ReconcileAlamedaService) needToReconcile(alamedaService *federatoraiv1a
 	} else if lockErr != nil {
 		return false, errors.Wrap(lockErr, "check if needs to reconcile failed")
 	}
-
 	return false, nil
 }
 
 func (r *ReconcileAlamedaService) getAlamedaServiceLock(ns, name string) (rbacv1.ClusterRole, error) {
-
 	lock := rbacv1.ClusterRole{}
 	err := r.client.Get(context.Background(), types.NamespacedName{Name: name}, &lock)
 	if err != nil {
@@ -896,12 +904,10 @@ func (r *ReconcileAlamedaService) getAlamedaServiceLock(ns, name string) (rbacv1
 		}
 		return lock, errors.Errorf("get AlamedaService lock failed: %s", err.Error())
 	}
-
 	return lock, nil
 }
 
 func (r *ReconcileAlamedaService) createAlamedaServiceLock(alamedaService *federatoraiv1alpha1.AlamedaService) error {
-
 	lock := rbacv1.ClusterRole{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: alamedaServiceLockName,
@@ -910,7 +916,6 @@ func (r *ReconcileAlamedaService) createAlamedaServiceLock(alamedaService *feder
 	if err := controllerutil.SetControllerReference(alamedaService, &lock, r.scheme); err != nil {
 		return errors.Errorf("create AlamedaService lock failed: %s", err)
 	}
-
 	err := r.client.Create(context.Background(), &lock)
 	if err != nil {
 		if k8sErrors.IsAlreadyExists(err) {
@@ -918,14 +923,11 @@ func (r *ReconcileAlamedaService) createAlamedaServiceLock(alamedaService *feder
 		}
 		return errors.Errorf("create AlamedaService lock failed: %s", err.Error())
 	}
-
 	return nil
 }
 
 func (r *ReconcileAlamedaService) syncAlamedaServiceActive(alamedaService *federatoraiv1alpha1.AlamedaService, active bool) error {
-
 	copyAlamedaService := alamedaService.DeepCopy()
-
 	if active {
 		copyAlamedaService.Status.Conditions = []federatoraiv1alpha1.AlamedaServiceStatusCondition{
 			federatoraiv1alpha1.AlamedaServiceStatusCondition{
@@ -940,11 +942,9 @@ func (r *ReconcileAlamedaService) syncAlamedaServiceActive(alamedaService *feder
 			},
 		}
 	}
-
 	if err := r.client.Update(context.Background(), copyAlamedaService); err != nil {
 		return errors.Errorf("update AlamedaService active failed: %s", err.Error())
 	}
-
 	return nil
 }
 

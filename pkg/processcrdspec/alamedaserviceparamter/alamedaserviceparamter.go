@@ -69,6 +69,7 @@ var (
 		"ConfigMap/fedemeter-config.yaml",
 		"Service/fedemeter-influxdbSV.yaml",
 		"StatefulSet/fedemeter-influxdbSS.yaml",
+		"Ingress/fedemeterIG.yaml",
 	}
 	secretList = []string{
 		"Secret/alameda-influxdb.yaml",
@@ -126,6 +127,7 @@ type Resource struct {
 	AlamdaScalerList             []string
 	RouteList                    []string
 	StatefulSetList              []string
+	IngressList                  []string
 }
 
 func GetSelfDrivingRsource() *Resource {
@@ -354,6 +356,7 @@ func GetFedemeterResource() *Resource {
 	var fedemeterSv = make([]string, 0)
 	var fedemeterCM = make([]string, 0)
 	var fedemeterSS = make([]string, 0)
+	var fedemeterIG = make([]string, 0)
 	for _, str := range fedemeterList {
 		if len(strings.Split(str, "/")) > 0 {
 			switch resource := strings.Split(str, "/")[0]; resource {
@@ -365,6 +368,8 @@ func GetFedemeterResource() *Resource {
 				fedemeterCM = append(fedemeterCM, str)
 			case "StatefulSet":
 				fedemeterSS = append(fedemeterSS, str)
+			case "Ingress":
+				fedemeterIG = append(fedemeterIG, str)
 			default:
 			}
 		}
@@ -374,6 +379,7 @@ func GetFedemeterResource() *Resource {
 		DeploymentList:  fedemeterDep,
 		ConfigMapList:   fedemeterCM,
 		StatefulSetList: fedemeterSS,
+		IngressList:     fedemeterIG,
 	}
 }
 
@@ -513,6 +519,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 	route := []string{}
 	statefulset := []string{}
 	alamdaScalerList := []string{}
+	ingress := []string{}
 	if asp.SelfDriving {
 		alamdaScalerList = append(alamdaScalerList, "AlamedaScaler/alamedaScaler-alameda.yaml")
 	}
@@ -549,6 +556,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 		dep = append(dep, "Deployment/fedemeterDM.yaml")
 		cm = append(cm, "ConfigMap/fedemeter-config.yaml")
 		statefulset = append(statefulset, "StatefulSet/fedemeter-influxdbSS.yaml")
+		ingress = append(ingress, "Ingress/fedemeterIG.yaml")
 	}
 	pvc = asp.getInstallPersistentVolumeClaimSource(pvc)
 	crd = asp.changeScalerCRDVersion(crd)
@@ -565,6 +573,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 		AlamdaScalerList:             alamdaScalerList,
 		RouteList:                    route,
 		StatefulSetList:              statefulset,
+		IngressList:                  ingress,
 	}
 }
 

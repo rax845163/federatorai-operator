@@ -14,6 +14,7 @@ import (
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	ingressv1beta1 "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	apiextv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	"k8s.io/client-go/util/cert"
@@ -133,6 +134,17 @@ func (c ComponentConfig) NewRoute(str string) *routev1.Route {
 	rt := resourceread.ReadRouteV1(rtByte)
 	rt.Namespace = c.NameSpace
 	return rt
+}
+
+func (c ComponentConfig) NewIngress(str string) *ingressv1beta1.Ingress {
+	igByte, err := assets.Asset(str)
+	if err != nil {
+		log.Error(err, "Failed to Test create ingress")
+
+	}
+	ig := resourceread.ReadIngressv1beta1(igByte)
+	ig.Namespace = c.NameSpace
+	return ig
 }
 
 func (c ComponentConfig) NewStatefulSet(str string) *appsv1.StatefulSet {
