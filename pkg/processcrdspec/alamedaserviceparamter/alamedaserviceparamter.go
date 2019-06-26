@@ -68,6 +68,7 @@ var (
 		"Service/fedemeterSV.yaml",
 		"ConfigMap/fedemeter-config.yaml",
 		"Service/fedemeter-influxdbSV.yaml",
+		"StatefulSet/fedemeter-influxdbSS.yaml",
 	}
 	secretList = []string{
 		"Secret/alameda-influxdb.yaml",
@@ -124,6 +125,7 @@ type Resource struct {
 	PersistentVolumeClaimList    []string
 	AlamdaScalerList             []string
 	RouteList                    []string
+	StatefulSetList              []string
 }
 
 func GetSelfDrivingRsource() *Resource {
@@ -351,6 +353,7 @@ func GetFedemeterResource() *Resource {
 	var fedemeterDep = make([]string, 0)
 	var fedemeterSv = make([]string, 0)
 	var fedemeterCM = make([]string, 0)
+	var fedemeterSS = make([]string, 0)
 	for _, str := range fedemeterList {
 		if len(strings.Split(str, "/")) > 0 {
 			switch resource := strings.Split(str, "/")[0]; resource {
@@ -360,14 +363,17 @@ func GetFedemeterResource() *Resource {
 				fedemeterDep = append(fedemeterDep, str)
 			case "ConfigMap":
 				fedemeterCM = append(fedemeterCM, str)
+			case "StatefulSet":
+				fedemeterSS = append(fedemeterSS, str)
 			default:
 			}
 		}
 	}
 	return &Resource{
-		ServiceList:    fedemeterSv,
-		DeploymentList: fedemeterDep,
-		ConfigMapList:  fedemeterCM,
+		ServiceList:     fedemeterSv,
+		DeploymentList:  fedemeterDep,
+		ConfigMapList:   fedemeterCM,
+		StatefulSetList: fedemeterSS,
 	}
 }
 
@@ -505,6 +511,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 	secrets := secretList
 	pvc := []string{}
 	route := []string{}
+	statefulset := []string{}
 	alamdaScalerList := []string{}
 	if asp.SelfDriving {
 		alamdaScalerList = append(alamdaScalerList, "AlamedaScaler/alamedaScaler-alameda.yaml")
@@ -541,6 +548,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 		sv = append(sv, "Service/fedemeter-influxdbSV.yaml")
 		dep = append(dep, "Deployment/fedemeterDM.yaml")
 		cm = append(cm, "ConfigMap/fedemeter-config.yaml")
+		statefulset = append(statefulset, "StatefulSet/fedemeter-influxdbSS.yaml")
 	}
 	pvc = asp.getInstallPersistentVolumeClaimSource(pvc)
 	crd = asp.changeScalerCRDVersion(crd)
@@ -556,6 +564,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 		PersistentVolumeClaimList:    pvc,
 		AlamdaScalerList:             alamdaScalerList,
 		RouteList:                    route,
+		StatefulSetList:              statefulset,
 	}
 }
 

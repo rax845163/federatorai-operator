@@ -43,6 +43,7 @@ pkg/assets/bindata.go: $(GOBINDATA_BIN)
 		Deployment/... \
 		AlamedaScaler/... \
 		Route/... \
+		StatefulSet/... \
 
 
 

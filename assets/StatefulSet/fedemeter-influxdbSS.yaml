@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: influxdb
+  namespace: kroos-tutorial
+spec:
+  serviceName: influxdb
+  selector:
+    matchLabels:
+      app : influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      #nodeSelector:
+      #  kubernetes.io/hostname: "netrg6akfi-worker-1"
+      containers:
+      - name: influxdb
+        image: quay.io/prophetstor/fedemeter-api-ubi:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8086
+        tty:  true
+        #resources:
+        #  limits:
+        #    cpu: "1000m"
+#    memory: "1000Mi"

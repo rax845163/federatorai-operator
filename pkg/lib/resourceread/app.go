@@ -27,3 +27,11 @@ func ReadDeploymentV1(objBytes []byte) *appsv1.Deployment {
 	}
 	return requiredObj.(*appsv1.Deployment)
 }
+
+func ReadStatefulSetV1(objBytes []byte) *appsv1.StatefulSet {
+	requiredObj, err := runtime.Decode(appsCodecs.UniversalDecoder(appsv1.SchemeGroupVersion), objBytes)
+	if err != nil {
+		log.Error(err, "Fail ReadStatefulSetV1")
+	}
+	return requiredObj.(*appsv1.StatefulSet)
+}

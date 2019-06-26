@@ -59,11 +59,11 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 			util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-executor-type.pvc", util.AlamedaGroup)
 			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedaexecutorCTN, "alameda-executor-type-storage", util.AlamedaGroup)
 		}
-	case util.AlamedafedemeterDPN:
+	case util.FedemeterDPN:
 		{
 			util.SetImageStruct(dep, asp.Version, util.AlamedaexecutorCTN)
 			util.SetStorageToVolumeSource(dep, asp.Storages, "fedemeter-type.pvc", util.FedemeterGroup)
-			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedafedemeterCTN, "fedemeter-type-storage", util.FedemeterGroup)
+			util.SetStorageToMountPath(dep, asp.Storages, util.FedemeterCTN, "fedemeter-type-storage", util.FedemeterGroup)
 		}
 	case util.InfluxdbDPN:
 		{

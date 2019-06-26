@@ -135,6 +135,17 @@ func (c ComponentConfig) NewRoute(str string) *routev1.Route {
 	return rt
 }
 
+func (c ComponentConfig) NewStatefulSet(str string) *appsv1.StatefulSet {
+	ssByte, err := assets.Asset(str)
+	if err != nil {
+		log.Error(err, "Failed to Test create statefulset")
+
+	}
+	ss := resourceread.ReadStatefulSetV1(ssByte)
+	ss.Namespace = c.NameSpace
+	return ss
+}
+
 func (c ComponentConfig) NewAdmissionControllerSecret() (*corev1.Secret, error) {
 
 	secret, err := c.NewSecret("Secret/admission-controller-tls.yaml")

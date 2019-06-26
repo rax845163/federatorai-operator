@@ -65,12 +65,12 @@ func SectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaservicep
 			util.SetStorageToVolumeSource(dep, asp.AlamedaExecutorSectionSet.Storages, "alameda-executor-type.pvc", util.AlamedaGroup)
 			util.SetStorageToMountPath(dep, asp.AlamedaExecutorSectionSet.Storages, util.AlamedaexecutorCTN, "alameda-executor-type.pvc", util.AlamedaGroup)
 		}
-	case util.AlamedafedemeterDPN:
+	case util.FedemeterDPN:
 		{
-			util.SetImageStruct(dep, asp.AlamedaFedemeterSectionSet, util.AlamedafedemeterCTN)
-			util.SetImagePullPolicy(dep, util.AlamedafedemeterCTN, asp.AlamedaFedemeterSectionSet.ImagePullPolicy)
+			util.SetImageStruct(dep, asp.AlamedaFedemeterSectionSet, util.FedemeterCTN)
+			util.SetImagePullPolicy(dep, util.FedemeterCTN, asp.AlamedaFedemeterSectionSet.ImagePullPolicy)
 			util.SetStorageToVolumeSource(dep, asp.AlamedaFedemeterSectionSet.Storages, "fedemeter-type.pvc", util.FedemeterGroup)
-			util.SetStorageToMountPath(dep, asp.AlamedaFedemeterSectionSet.Storages, util.AlamedafedemeterCTN, "fedemeter-type.pvc", util.FedemeterGroup)
+			util.SetStorageToMountPath(dep, asp.AlamedaFedemeterSectionSet.Storages, util.FedemeterCTN, "fedemeter-type.pvc", util.FedemeterGroup)
 		}
 	case util.InfluxdbDPN:
 		{

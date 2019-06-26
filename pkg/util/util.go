@@ -26,7 +26,7 @@ const (
 	AdmissioncontrollerDPN = "admission-controller"
 	AlamedarecommenderDPN  = "alameda-recommender"
 	AlamedaexecutorDPN     = "alameda-executor"
-	AlamedafedemeterDPN    = "alameda-fedemeter"
+	FedemeterDPN           = "fedemeter"
 	GrafanaDPN             = "alameda-grafana"
 	InfluxdbDPN            = "alameda-influxdb"
 	//container name
@@ -37,7 +37,7 @@ const (
 	AdmissioncontrollerCTN = "admission-controller"
 	AlamedarecommenderCTN  = "alameda-recommender"
 	AlamedaexecutorCTN     = "alameda-executor"
-	AlamedafedemeterCTN    = "alameda-fedemeter"
+	FedemeterCTN           = "fedemeter"
 	GetTokenCTN            = "gettoken"
 	GrafanaCTN             = "grafana"
 	InfluxdbCTN            = "influxdb"

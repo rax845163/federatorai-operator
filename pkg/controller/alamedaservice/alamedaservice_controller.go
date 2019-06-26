@@ -217,6 +217,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("sync deployment failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
+	if err := r.syncStatefulSet(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync statefulset failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
 	if err := r.syncRoute(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync route failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -574,7 +578,6 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 				log.Info("Successfully Update Resource Deployment", "resourceDep.Name", foundDep.Name)
 			}
 		}
-
 	}
 	return nil
 }
@@ -585,9 +588,8 @@ func (r *ReconcileAlamedaService) syncRoute(instance *federatoraiv1alpha1.Alamed
 		if err := controllerutil.SetControllerReference(instance, resourceRT, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceRT SetControllerReference: %s", err.Error())
 		}
-		foundSA := &routev1.Route{}
-
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceRT.Name, Namespace: resourceRT.Namespace}, foundSA)
+		foundRT := &routev1.Route{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceRT.Name, Namespace: resourceRT.Namespace}, foundRT)
 		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Creating a new Resource Route... ", "resourceRT.Name", resourceRT.Name)
 			err = r.client.Create(context.TODO(), resourceRT)
@@ -602,8 +604,42 @@ func (r *ReconcileAlamedaService) syncRoute(instance *federatoraiv1alpha1.Alamed
 	return nil
 }
 
-func (r *ReconcileAlamedaService) uninstallRoute(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+func (r *ReconcileAlamedaService) syncStatefulSet(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+	for _, FileStr := range resource.StatefulSetList {
+		resourceSS := componentConfig.NewStatefulSet(FileStr)
+		if err := controllerutil.SetControllerReference(instance, resourceSS, r.scheme); err != nil {
+			return errors.Errorf("Fail resourceSS SetControllerReference: %s", err.Error())
+		}
+		foundSS := &appsv1.StatefulSet{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSS.Name, Namespace: resourceSS.Namespace}, foundSS)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			log.Info("Creating a new Resource Route... ", "resourceSS.Name", resourceSS.Name)
+			err = r.client.Create(context.TODO(), resourceSS)
+			if err != nil {
+				return errors.Errorf("create route %s/%s failed: %s", resourceSS.Namespace, resourceSS.Name, err.Error())
+			}
+			log.Info("Successfully Creating Resource route", "resourceSS.Name", resourceSS.Name)
+		} else if err != nil {
+			return errors.Errorf("get route %s/%s failed: %s", resourceSS.Namespace, resourceSS.Name, err.Error())
+		}
+	}
+	return nil
+}
 
+func (r *ReconcileAlamedaService) uninstallStatefulSet(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+	for _, fileString := range resource.StatefulSetList {
+		resourceSS := componentConfig.NewStatefulSet(fileString)
+		err := r.client.Delete(context.TODO(), resourceSS)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			return nil
+		} else if err != nil {
+			return errors.Errorf("delete statefulset %s/%s failed: %s", resourceSS.Namespace, resourceSS.Name, err.Error())
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) uninstallRoute(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.RouteList {
 		resourceRT := componentConfig.NewRoute(fileString)
 		err := r.client.Delete(context.TODO(), resourceRT)
@@ -613,12 +649,10 @@ func (r *ReconcileAlamedaService) uninstallRoute(instance *federatoraiv1alpha1.A
 			return errors.Errorf("delete route %s/%s failed: %s", resourceRT.Namespace, resourceRT.Name, err.Error())
 		}
 	}
-
 	return nil
 }
 
 func (r *ReconcileAlamedaService) uninstallDeployment(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-
 	for _, fileString := range resource.DeploymentList {
 		resourceDep := componentConfig.NewDeployment(fileString)
 		err := r.client.Delete(context.TODO(), resourceDep)
@@ -628,12 +662,10 @@ func (r *ReconcileAlamedaService) uninstallDeployment(instance *federatoraiv1alp
 			return errors.Errorf("delete deployment %s/%s failed: %s", resourceDep.Namespace, resourceDep.Name, err.Error())
 		}
 	}
-
 	return nil
 }
 
 func (r *ReconcileAlamedaService) uninstallService(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-
 	for _, fileString := range resource.ServiceList {
 		resourceSVC := componentConfig.NewService(fileString)
 		err := r.client.Delete(context.TODO(), resourceSVC)
@@ -643,12 +675,10 @@ func (r *ReconcileAlamedaService) uninstallService(instance *federatoraiv1alpha1
 			return errors.Errorf("delete service %s/%s failed: %s", resourceSVC.Namespace, resourceSVC.Name, err.Error())
 		}
 	}
-
 	return nil
 }
 
 func (r *ReconcileAlamedaService) uninstallConfigMap(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-
 	for _, fileString := range resource.ConfigMapList {
 		resourceCM := componentConfig.NewConfigMap(fileString)
 		err := r.client.Delete(context.TODO(), resourceCM)
@@ -658,12 +688,10 @@ func (r *ReconcileAlamedaService) uninstallConfigMap(instance *federatoraiv1alph
 			return errors.Errorf("delete comfigMap %s/%s failed: %s", resourceCM.Namespace, resourceCM.Name, err.Error())
 		}
 	}
-
 	return nil
 }
 
 func (r *ReconcileAlamedaService) uninstallSecret(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-
 	for _, fileString := range resource.SecretList {
 		resourceSec, _ := componentConfig.NewSecret(fileString)
 		err := r.client.Delete(context.TODO(), resourceSec)
@@ -673,12 +701,10 @@ func (r *ReconcileAlamedaService) uninstallSecret(instance *federatoraiv1alpha1.
 			return errors.Errorf("delete secret %s/%s failed: %s", resourceSec.Namespace, resourceSec.Name, err.Error())
 		}
 	}
-
 	return nil
 }
 
 func (r *ReconcileAlamedaService) uninstallServiceAccount(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-
 	for _, fileString := range resource.ServiceAccountList {
 		resourceSA := componentConfig.NewServiceAccount(fileString)
 		err := r.client.Delete(context.TODO(), resourceSA)
@@ -688,12 +714,10 @@ func (r *ReconcileAlamedaService) uninstallServiceAccount(instance *federatoraiv
 			return errors.Errorf("delete serviceAccount %s/%s failed: %s", resourceSA.Namespace, resourceSA.Name, err.Error())
 		}
 	}
-
 	return nil
 }
 
 func (r *ReconcileAlamedaService) uninstallClusterRole(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-
 	for _, fileString := range resource.ClusterRoleList {
 		resourceCR := componentConfig.NewClusterRole(fileString)
 		err := r.client.Delete(context.TODO(), resourceCR)
@@ -703,12 +727,10 @@ func (r *ReconcileAlamedaService) uninstallClusterRole(instance *federatoraiv1al
 			return errors.Errorf("delete clusterRole %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
 		}
 	}
-
 	return nil
 }
 
 func (r *ReconcileAlamedaService) uninstallClusterRoleBinding(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-
 	for _, fileString := range resource.ClusterRoleBindingList {
 		resourceCRB := componentConfig.NewClusterRoleBinding(fileString)
 		err := r.client.Delete(context.TODO(), resourceCRB)
@@ -718,7 +740,6 @@ func (r *ReconcileAlamedaService) uninstallClusterRoleBinding(instance *federato
 			return errors.Errorf("delete clusterRoleBinding %s/%s failed: %s", resourceCRB.Namespace, resourceCRB.Name, err.Error())
 		}
 	}
-
 	return nil
 }
 
@@ -817,7 +838,9 @@ func (r *ReconcileAlamedaService) uninstallFedemeterComponent(instance *federato
 	if err := r.uninstallConfigMap(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall Fedemeter component failed")
 	}
-
+	if err := r.uninstallStatefulSet(instance, resource); err != nil {
+		return errors.Wrapf(err, "uninstall Fedemeter component failed")
+	}
 	return nil
 }
 
