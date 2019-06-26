@@ -241,10 +241,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		}
 	}
 	//Uninstall alameter Component
-	if !asp.EnableAlameter {
-		log.Info("EnableAlameter has been changed to false")
-		alameterResource := alamedaserviceparamter.GetAlameterResource()
-		if err := r.uninstallAlameterComponent(instance, alameterResource); err != nil {
+	if !asp.EnableFedemeter {
+		log.Info("EnableFedemeter has been changed to false")
+		fedemeterResource := alamedaserviceparamter.GetFedemeterResource()
+		if err := r.uninstallFedemeterComponent(instance, fedemeterResource); err != nil {
 			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
@@ -804,18 +804,18 @@ func (r *ReconcileAlamedaService) uninstallExecutionComponent(instance *federato
 	return nil
 }
 
-func (r *ReconcileAlamedaService) uninstallAlameterComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+func (r *ReconcileAlamedaService) uninstallFedemeterComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 
 	if err := r.uninstallDeployment(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall alameter component failed")
+		return errors.Wrapf(err, "uninstall Fedemeter component failed")
 	}
 
 	if err := r.uninstallService(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall alameter component failed")
+		return errors.Wrapf(err, "uninstall Fedemeter component failed")
 	}
 
 	if err := r.uninstallConfigMap(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall alameter component failed")
+		return errors.Wrapf(err, "uninstall Fedemeter component failed")
 	}
 
 	return nil

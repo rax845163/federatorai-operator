@@ -14,9 +14,10 @@ import (
 type GroupEnums string
 
 const (
-	AlamedaGroup  GroupEnums = "alameda"
-	GrafanaGroup  GroupEnums = "grafana"
-	InfluxDBGroup GroupEnums = "influxdb"
+	FedemeterGroup GroupEnums = "alameda/fedemeter"
+	AlamedaGroup   GroupEnums = "alameda"
+	GrafanaGroup   GroupEnums = "grafana"
+	InfluxDBGroup  GroupEnums = "influxdb"
 	//deployment name
 	AlamedaaiDPN           = "alameda-ai"
 	AlamedaoperatorDPN     = "alameda-operator"
@@ -25,7 +26,7 @@ const (
 	AdmissioncontrollerDPN = "admission-controller"
 	AlamedarecommenderDPN  = "alameda-recommender"
 	AlamedaexecutorDPN     = "alameda-executor"
-	AlamedaalameterDPN     = "alameda-alameter"
+	AlamedafedemeterDPN    = "alameda-fedemeter"
 	GrafanaDPN             = "alameda-grafana"
 	InfluxdbDPN            = "alameda-influxdb"
 	//container name
@@ -36,7 +37,7 @@ const (
 	AdmissioncontrollerCTN = "admission-controller"
 	AlamedarecommenderCTN  = "alameda-recommender"
 	AlamedaexecutorCTN     = "alameda-executor"
-	AlamedaalameterCTN     = "alameda-alameter"
+	AlamedafedemeterCTN    = "alameda-fedemeter"
 	GetTokenCTN            = "gettoken"
 	GrafanaCTN             = "grafana"
 	InfluxdbCTN            = "influxdb"
@@ -50,20 +51,24 @@ const (
 	OriginDeploymentPrometheusLocation = "ALAMEDA_DATAHUB_PROMETHEUS_URL"
 	OriginComfigMapPrometheusLocation  = "prometheus.yaml"
 	NamespaceService                   = "federatorai.svc"
+	DefaultNamespace                   = "federatorai"
 	//MountPath
 	DataMountPath = "/var/lib"
 	LogMountPath  = "/var/log"
 	//Recommandation config
 	OriginComfigMapRecommandation = "config.toml"
-	//Execution  config
+	//Execution config
 	OriginComfigMapExecution = "config.yml"
+	//fedemeter config
+	OriginComfigMapFedemeterInfluxDBHost = "FEDEMETER_INFLUXDB_HOST"
+	OriginComfigMapFedemeterDataHubHost  = "DATAHUB_HOST"
 	//Delete Deployment When Modify ConfigMap or Service(Temporary strategy)
 	GrafanaYaml            = "Deployment/alameda-grafanaDM.yaml"
 	GrafanaDatasourcesName = "grafana-datasources"
 )
 
 var (
-	ConfigKeyList = []string{OriginComfigMapRecommandation, OriginComfigMapExecution}
+	ConfigKeyList = []string{OriginComfigMapRecommandation, OriginComfigMapExecution, OriginComfigMapFedemeterInfluxDBHost, OriginComfigMapFedemeterDataHubHost}
 	//if disable resource protection
 	Disable_operand_resource_protection = "false"
 	log                                 = logf.Log.WithName("controller_alamedaservice")
@@ -174,7 +179,7 @@ func getVolumeLogIndex(dep *appsv1.Deployment) int {
 			if value.Name == "alameda-executor-log-storage" {
 				return index
 			}
-			if value.Name == "alameda-alameter-log-storage" {
+			if value.Name == "fedemeter-log-storage" {
 				return index
 			}
 		}
@@ -214,7 +219,7 @@ func getVolumeDataIndex(dep *appsv1.Deployment) int {
 			if value.Name == "grafana-data-storage" {
 				return index
 			}
-			if value.Name == "alameda-alameter-data-storage" {
+			if value.Name == "fedemeter-data-storage" {
 				return index
 			}
 		}

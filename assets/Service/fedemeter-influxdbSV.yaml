@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fedemeter-influxdb
+  namespace: fedemeter
+  labels:
+    app: influxdb
+spec:
+  ports:
+  - port: 8086
+    name: http-influxdb
+  selector:
+    app: influxdb

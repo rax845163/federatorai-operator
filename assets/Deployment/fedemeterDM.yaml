@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fedemeter
+  namespace: fedemeter
+spec:
+  selector:
+    matchLabels:
+      app : fedemeter
+  template:
+      metadata:
+        labels:
+          app: fedemeter
+      spec:
+        containers:
+        - name: fedemeter
+          image: quay.io/prophetstor/fedemeter-api-ubi:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+          - name: gui-alameter
+            containerPort: 8999
+          tty:  true
+          envFrom:
+            - configMapRef:
+                name: fedemeter-config
+        volumes:
+        - name: fedemeter-data-storage
+        - name: fedemeter-log-storage

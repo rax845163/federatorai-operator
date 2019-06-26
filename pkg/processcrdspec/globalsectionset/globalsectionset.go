@@ -59,11 +59,11 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 			util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-executor-type.pvc", util.AlamedaGroup)
 			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedaexecutorCTN, "alameda-executor-type-storage", util.AlamedaGroup)
 		}
-	case util.AlamedaalameterDPN:
+	case util.AlamedafedemeterDPN:
 		{
 			util.SetImageStruct(dep, asp.Version, util.AlamedaexecutorCTN)
-			util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-alameter-type.pvc", util.AlamedaGroup)
-			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedaalameterCTN, "alameda-alameter-type-storage", util.AlamedaGroup)
+			util.SetStorageToVolumeSource(dep, asp.Storages, "fedemeter-type.pvc", util.FedemeterGroup)
+			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedafedemeterCTN, "fedemeter-type-storage", util.FedemeterGroup)
 		}
 	case util.InfluxdbDPN:
 		{
@@ -93,10 +93,17 @@ func processConfigMapsDataHubService(cm *corev1.ConfigMap, namespace string) {
 		}
 	}
 }
-
+func processConfigMapsDataNamespace(cm *corev1.ConfigMap, namespace string) {
+	for _, v := range util.ConfigKeyList {
+		if strings.Contains(cm.Data[v], util.DefaultNamespace) && namespace != "" {
+			cm.Data[v] = strings.Replace(cm.Data[v], util.DefaultNamespace, namespace, -1)
+		}
+	}
+}
 func GlobalSectionSetParamterToConfigMap(cm *corev1.ConfigMap, prometheusService string, namespace string) {
 	processConfigMapsPrometheusService(cm, prometheusService) //ConfigMapData's PrometheusService
 	processConfigMapsDataHubService(cm, namespace)            //ConfigMapData's alameda-datahub service
+	processConfigMapsDataNamespace(cm, namespace)
 }
 
 func processDeploymentPrometheusService(dep *appsv1.Deployment, prometheusservice string) {
