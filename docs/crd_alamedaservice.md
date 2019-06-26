@@ -125,6 +125,9 @@ spec:
 - Field: enableGui
   - type: boolean
   - description: Federator.ai Operator will deploy GUI to visualize Alameda predictions/recommendations and cluster/node status if this field is set to _true_. Default is _true_.
+- Field: enableFedemeter
+  - type: boolean
+  - description: Federator.ai Operator will deploy Fedemeter
 - Field: version
   - type: string
   - description: It sets the version tag when pulling Alameda component images.
@@ -161,6 +164,9 @@ spec:
 - Field: alamedaExecutor
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-executor component. This field is optional.
+- Field: fedemeter
+  - type: [AlamedaComponentSpec](#alamedacomponentspec)
+  - description: Spec for fedemeter component. This field is optional.
 
 ### StorageSpec
 

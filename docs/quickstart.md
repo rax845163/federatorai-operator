@@ -57,6 +57,7 @@ spec:
                                 ## it is recommended NOT to use ephemeral data storage for Alameda influxdb component when self-Driving is enabled
   enableExecution: true
   enableGui: true
+  enableFedemeter: true
   version: latest               ## for Alameda components. (exclude grafana and influxdb)
   prometheusService: https://prometheus-k8s.openshift-monitoring:9091
   storages:                     ## see following details for where it is used in each component
