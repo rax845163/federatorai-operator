@@ -78,5 +78,5 @@ By creating this CR, **Federator.ai Operator** starts to:
 For more details, please refer to [AlamedaService CRD document](./crd_alamedaservice.md).
 
 
-In addition, users can patch a created _AlamedaService_ CR and **Federator.ai Operator** will react to it. For example, by changing the _enableexecution_ field from _true_ to _false_, Alameda recommendation execution components will be uninstalled. (Alameda is still giving prediction and recommendations. GUI can still visualize the result. Just the execution part is off)
+In addition, users can patch a created _AlamedaService_ CR and **Federator.ai Operator** will react to it. For example, by changing the _enableExecution_ field from _true_ to _false_, Alameda recommendation execution components will be uninstalled. (Alameda is still giving prediction and recommendations. GUI can still visualize the result. Just the execution part is off)
 

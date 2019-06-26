@@ -25,10 +25,10 @@ metadata:
 spec:
   selfDriving: true             ## to enable resource self-orchestration of the deployed Alameda components
                                 ## it is recommended NOT to use ephemeral data storage for Alameda influxdb component when self-Driving is enabled
-  enableexecution: true
-  enablegui: true
+  enableExecution: true
+  enableGui: true
   version: latest               ## for Alameda components. (exclude grafana and influxdb)
-  prometheusservice: https://prometheus-k8s.openshift-monitoring:9091
+  prometheusService: https://prometheus-k8s.openshift-monitoring:9091
   storages:                     ## see following details for where it is used in each component
     - usage: log                ## storage setting for log
       type: ephemeral           ## ephemeral means emptyDir{}
@@ -58,10 +58,10 @@ metadata:
 spec:
   selfDriving: true             ## to enable resource self-orchestration of the deployed Alameda components
                                 ## it is recommended NOT to use ephemeral data storage for Alameda influxdb component when self-Driving is enabled
-  enableexecution: true
-  enablegui: true
-  version: v0.3.7               ## for Alameda components. (exclude grafana and influxdb)
-  prometheusservice: https://prometheus-k8s.openshift-monitoring:9091
+  enableExecution: true
+  enableGui: true
+  version: v0.3.38              ## for Alameda components. (exclude grafana and influxdb)
+  prometheusService: https://prometheus-k8s.openshift-monitoring:9091
   storages:
     - usage: log                ## storage for log of each component
       type: ephemeral
