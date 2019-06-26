@@ -23,6 +23,9 @@ spec:
       - name: alameda-recommender
         image: quay.io/prophetstor/alameda-recommender-ubi:v0.3.8
         imagePullPolicy: Always
+        env:
+        - name: FEDERATOR_AI_SETUP_TYPE
+          value: "on-premise"
         volumeMounts:
           - name: alameda-recommender-config
             mountPath: /etc/alameda/federatorai-recommendation/config.toml
