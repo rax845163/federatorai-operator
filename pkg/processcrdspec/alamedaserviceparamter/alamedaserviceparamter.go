@@ -551,6 +551,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 		dep = append(dep, "Deployment/alameda-executorDM.yaml")
 	}
 	if asp.EnableFedemeter {
+		sa = append(sa, "ServiceAccount/fedemeterSA.yaml")
 		sv = append(sv, "Service/fedemeterSV.yaml")
 		sv = append(sv, "Service/fedemeter-influxdbSV.yaml")
 		dep = append(dep, "Deployment/fedemeterDM.yaml")

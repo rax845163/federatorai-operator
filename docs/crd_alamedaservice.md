@@ -127,7 +127,7 @@ spec:
   - description: Federator.ai Operator will deploy GUI to visualize Alameda predictions/recommendations and cluster/node status if this field is set to _true_. Default is _true_.
 - Field: enableFedemeter
   - type: boolean
-  - description: Federator.ai Operator will deploy Fedemeter
+  - description: Federator.ai Operator will deploy Fedemeter and you must add your Fedemeter serviceAccount to privileged SecurityContextConstraints
 - Field: version
   - type: string
   - description: It sets the version tag when pulling Alameda component images.
