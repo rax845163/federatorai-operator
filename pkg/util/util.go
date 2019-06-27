@@ -41,6 +41,8 @@ const (
 	GetTokenCTN            = "gettoken"
 	GrafanaCTN             = "grafana"
 	InfluxdbCTN            = "influxdb"
+	//Statefulset name
+	FedemeterInflixDBSSN = "influxdb"
 	//CRD NAME
 	AlamedaScalerName         = "alamedascalers.autoscaling.containers.ai"
 	AlamedaRecommendationName = "alamedarecommendations.autoscaling.containers.ai"
@@ -116,6 +118,33 @@ func setImageVersion(dep *appsv1.Deployment, ctn string, version string) {
 				dep.Spec.Template.Spec.Containers[index].Image = newImage
 			}
 			log.V(1).Info("SetImageVersion", dep.Spec.Template.Spec.Containers[index].Name, newImage)
+		}
+	}
+}
+
+func SetStatefulsetImageStruct(ss *appsv1.StatefulSet, value interface{}, ctn string) {
+	switch v := value.(type) {
+	case string:
+		{
+			//set global schema image version
+			if v != "" {
+				setStatefulsetImageVersion(ss, ctn, v)
+			}
+		}
+	}
+}
+
+func setStatefulsetImageVersion(ss *appsv1.StatefulSet, ctn string, version string) {
+	for index, value := range ss.Spec.Template.Spec.Containers {
+		if value.Name == ctn {
+			newImage := ""
+			oriImage := ss.Spec.Template.Spec.Containers[index].Image
+			imageStrutct := strings.Split(oriImage, ":")
+			if len(imageStrutct) != 0 {
+				newImage = fmt.Sprintf("%s:%s", strings.Join(imageStrutct[:len(imageStrutct)-1], ":"), version)
+				ss.Spec.Template.Spec.Containers[index].Image = newImage
+			}
+			log.V(1).Info("SetImageVersion", ss.Spec.Template.Spec.Containers[index].Name, newImage)
 		}
 	}
 }

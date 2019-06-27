@@ -11,6 +11,13 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
+func GlobalSectionSetParamterToStatefulset(ss *appsv1.StatefulSet, asp *alamedaserviceparamter.AlamedaServiceParamter) {
+	switch ss.Name {
+	case util.FedemeterInflixDBSSN:
+		util.SetStatefulsetImageStruct(ss, asp.Version, util.InfluxdbCTN)
+	}
+}
+
 func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaserviceparamter.AlamedaServiceParamter) {
 	processDeploymentPrometheusService(dep, asp.PrometheusService) //Global section set DeploymentSpec's PrometheusService
 

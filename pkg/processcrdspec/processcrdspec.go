@@ -25,3 +25,7 @@ func ParamterToPersistentVolumeClaim(pvc *corev1.PersistentVolumeClaim, asp *ala
 	componentsectionset.SectionSetParamterToPersistentVolumeClaim(pvc, asp) //PersistentVolumeClaim's Component Section Set
 	return pvc
 }
+func ParamterToStatefulset(ss *appsv1.StatefulSet, asp *alamedaserviceparamter.AlamedaServiceParamter) *appsv1.StatefulSet {
+	globalsectionset.GlobalSectionSetParamterToStatefulset(ss, asp)
+	return ss
+}

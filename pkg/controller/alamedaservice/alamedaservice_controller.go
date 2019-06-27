@@ -623,6 +623,7 @@ func (r *ReconcileAlamedaService) syncStatefulSet(instance *federatoraiv1alpha1.
 		if err := controllerutil.SetControllerReference(instance, resourceSS, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceSS SetControllerReference: %s", err.Error())
 		}
+		resourceSS = processcrdspec.ParamterToStatefulset(resourceSS, asp)
 		foundSS := &appsv1.StatefulSet{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSS.Name, Namespace: resourceSS.Namespace}, foundSS)
 		if err != nil && k8sErrors.IsNotFound(err) {
@@ -634,6 +635,13 @@ func (r *ReconcileAlamedaService) syncStatefulSet(instance *federatoraiv1alpha1.
 			log.Info("Successfully Creating Resource route", "resourceSS.Name", resourceSS.Name)
 		} else if err != nil {
 			return errors.Errorf("get route %s/%s failed: %s", resourceSS.Namespace, resourceSS.Name, err.Error())
+		} else {
+			log.Info("Update Resource StatefulSet:", "resourceSS.Name", resourceSS.Name)
+			err = r.client.Update(context.TODO(), resourceSS)
+			if err != nil {
+				return errors.Errorf("update StatefulSet %s/%s failed: %s", resourceSS.Namespace, resourceSS.Name, err.Error())
+			}
+			log.Info("Successfully Update Resource StatefulSet", "resourceSS.Name", resourceSS.Name)
 		}
 	}
 	return nil
