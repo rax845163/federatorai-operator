@@ -1,4 +1,5 @@
-# Federator.ai Operator
+
+# <img src="./logo.png" width=60/> Federator.ai Operator<img src="./rhcert.png" align="right" width=150/>
 
 **Federator.ai Operator** is an Operator that manages **Federator.ai** components for an OpenShift cluster. Once installed, the Federator.ai Operator provides the following features:
 - **Create/Clean up**: Launch **Federator.ai** components using the Operator.
