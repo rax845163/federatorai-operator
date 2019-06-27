@@ -30,6 +30,22 @@ spec:
           - name: alameda-recommender-config
             mountPath: /etc/alameda/federatorai-recommendation/config.toml
             subPath: config.toml
+        readinessProbe:
+          exec:
+            command:
+            - /usr/local/bin/federatorai-recommender
+            - probe
+            - --type=readiness
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - /usr/local/bin/federatorai-recommender
+            - probe
+            - --type=liveness
+          initialDelaySeconds: 5
+          periodSeconds: 5
       volumes:
         - name: alameda-recommender-data-storage
         - name: alameda-recommender-log-storage
