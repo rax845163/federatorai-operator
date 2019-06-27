@@ -61,7 +61,7 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 		}
 	case util.FedemeterDPN:
 		{
-			util.SetImageStruct(dep, asp.Version, util.AlamedaexecutorCTN)
+			util.SetImageStruct(dep, asp.Version, util.FedemeterCTN)
 			util.SetStorageToVolumeSource(dep, asp.Storages, "fedemeter-type.pvc", util.FedemeterGroup)
 			util.SetStorageToMountPath(dep, asp.Storages, util.FedemeterCTN, "fedemeter-type-storage", util.FedemeterGroup)
 		}
