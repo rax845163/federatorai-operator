@@ -277,7 +277,7 @@ func (r *ReconcileAlamedaScaler) createAlamedaWatchedResourcesToDatahub(scaler *
 				Kind: datahub_v1alpha1.Kind_ALAMEDASCALER,
 			}},
 			Policy:                        policy,
-			EnableRecommendationExecution: scaler.Spec.EnableExecution,
+			EnableRecommendationExecution: scaler.IsEnableExecution(),
 			Replicas:                      int32(len(dc.Pods)),
 		})
 	}
@@ -304,7 +304,7 @@ func (r *ReconcileAlamedaScaler) createAlamedaWatchedResourcesToDatahub(scaler *
 				Kind: datahub_v1alpha1.Kind_ALAMEDASCALER,
 			}},
 			Policy:                        policy,
-			EnableRecommendationExecution: scaler.Spec.EnableExecution,
+			EnableRecommendationExecution: scaler.IsEnableExecution(),
 			Replicas:                      int32(len(deploy.Pods)),
 		})
 	}

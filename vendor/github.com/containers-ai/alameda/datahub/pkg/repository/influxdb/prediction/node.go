@@ -69,9 +69,9 @@ func (r *NodeRepository) appendMetricDataToPoints(kind metric.ContainerMetricKin
 			return errors.New("No corresponding metricType")
 		}
 
-		granularity := ""
-		if metricData.GetGranularity() != 0 && metricData.GetGranularity() != 30 {
-			granularity = strconv.FormatInt(metricData.GetGranularity(), 10)
+		granularity := metricData.GetGranularity()
+		if granularity == 0 {
+			granularity = 30
 		}
 
 		for _, data := range metricData.GetData() {
@@ -88,7 +88,7 @@ func (r *NodeRepository) appendMetricDataToPoints(kind metric.ContainerMetricKin
 				node_entity.IsScheduled: strconv.FormatBool(isScheduled),
 				node_entity.Metric:      metricType,
 				node_entity.Kind:        kind,
-				node_entity.Granularity: granularity,
+				node_entity.Granularity: strconv.FormatInt(granularity, 10),
 			}
 			fields := map[string]interface{}{
 				node_entity.Value: valueInFloat64,

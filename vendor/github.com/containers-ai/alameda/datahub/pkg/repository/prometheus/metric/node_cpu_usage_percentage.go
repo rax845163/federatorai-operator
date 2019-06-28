@@ -27,9 +27,10 @@ func (n NodeCPUUsagePercentageRepository) ListMetricsByNodeName(nodeName string,
 
 		prometheusClient *prometheus.Prometheus
 
-		metricName        string
 		queryLabelsString string
-		queryExpression   string
+
+		queryExpressionSum string
+		queryExpressionAvg string
 
 		response prometheus.Response
 
@@ -46,20 +47,31 @@ func (n NodeCPUUsagePercentageRepository) ListMetricsByNodeName(nodeName string,
 		option(&opt)
 	}
 
-	metricName = nodeCPUUsagePercentage.MetricName
+	//metricName = nodeCPUUsagePercentage.MetricName
+	metricNameSum := nodeCPUUsagePercentage.MetricNameSum
+	metricNameAvg := nodeCPUUsagePercentage.MetricNameAvg
+
 	queryLabelsString = n.buildQueryLabelsStringByNodeName(nodeName)
 
 	if queryLabelsString != "" {
-		queryExpression = fmt.Sprintf("%s{%s}", metricName, queryLabelsString)
+		queryExpressionSum = fmt.Sprintf("%s{%s}", metricNameSum, queryLabelsString)
+		queryExpressionAvg = fmt.Sprintf("%s{%s}", metricNameAvg, queryLabelsString)
 	} else {
-		queryExpression = fmt.Sprintf("%s", metricName)
+		queryExpressionSum = fmt.Sprintf("%s", metricNameSum)
+		queryExpressionAvg = fmt.Sprintf("%s", metricNameAvg)
 	}
 
 	stepTimeInSeconds := int64(opt.stepTime.Nanoseconds() / int64(time.Second))
-	queryExpression, err = wrapQueryExpressionWithAggregationOverTimeFunction(queryExpression, opt.aggregateOverTimeFunc, stepTimeInSeconds)
+	queryExpressionSum, err = wrapQueryExpressionWithAggregationOverTimeFunction(queryExpressionSum, opt.aggregateOverTimeFunc, stepTimeInSeconds)
 	if err != nil {
 		return entities, errors.Wrap(err, "list node cpu usage metrics by node name failed")
 	}
+	queryExpressionAvg, err = wrapQueryExpressionWithAggregationOverTimeFunction(queryExpressionAvg, opt.aggregateOverTimeFunc, stepTimeInSeconds)
+	if err != nil {
+		return entities, errors.Wrap(err, "list node cpu usage metrics by node name failed")
+	}
+
+	queryExpression := fmt.Sprintf("1000 * %s * %s", queryExpressionSum, queryExpressionAvg)
 
 	response, err = prometheusClient.QueryRange(queryExpression, opt.startTime, opt.endTime, opt.stepTime)
 	if err != nil {

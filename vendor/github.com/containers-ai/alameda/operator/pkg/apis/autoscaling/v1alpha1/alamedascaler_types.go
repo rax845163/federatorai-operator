@@ -28,6 +28,11 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 type enableExecution = bool
+
+const (
+	defaultEnableExecution = false
+)
+
 type alamedaPolicy = string
 type NamespacedName = string
 
@@ -150,7 +155,7 @@ const (
 type AlamedaScalerSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 	Selector        *metav1.LabelSelector `json:"selector" protobuf:"bytes,1,name=selector"`
-	EnableExecution enableExecution       `json:"enableExecution,omitempty" protobuf:"bytes,2,name=enable_execution"`
+	EnableExecution *enableExecution      `json:"enableExecution,omitempty" protobuf:"bytes,2,name=enable_execution"`
 	// +kubebuilder:validation:Enum=stable,compact
 	Policy                alamedaPolicy   `json:"policy,omitempty" protobuf:"bytes,3,opt,name=policy"`
 	CustomResourceVersion string          `json:"customResourceVersion,omitempty" protobuf:"bytes,4,opt,name=custom_resource_version"`
@@ -198,6 +203,7 @@ func (as *AlamedaScaler) setDefaultValueToScalingTools() {
 }
 
 func (as *AlamedaScaler) SetDefaultValue() { //this function is set alamedascaler default value
+	as.setDefaultEnableExecution()
 	as.setDefaultValueToScalingTools()
 	as.setDefaultScalingTool()
 }
@@ -234,7 +240,6 @@ func (as *AlamedaScaler) GetMonitoredPods() []*AlamedaPod {
 			pods = append(pods, &cpPod)
 		}
 	}
-
 	return pods
 }
 
@@ -244,12 +249,26 @@ func (as *AlamedaScaler) GetLabelMapToSetToAlamedaRecommendationLabel() map[stri
 	return m
 }
 
+func (as *AlamedaScaler) IsEnableExecution() bool {
+	if as.Spec.EnableExecution == nil || *as.Spec.EnableExecution == false {
+		return false
+	}
+	return true
+}
+
 func (as *AlamedaScaler) IsScalingToolTypeHPA() bool {
 	return as.Spec.ScalingTool.Type == ScalingToolTypeHPA
 }
 
 func (as *AlamedaScaler) IsScalingToolTypeVPA() bool {
 	return as.Spec.ScalingTool.Type == ScalingToolTypeVPA
+}
+
+func (as *AlamedaScaler) setDefaultEnableExecution() {
+	if as.Spec.EnableExecution == nil {
+		copyDefaultEnableExecution := defaultEnableExecution
+		as.Spec.EnableExecution = &copyDefaultEnableExecution
+	}
 }
 
 func (as *AlamedaScaler) setDefaultScalingTool() {

@@ -94,7 +94,7 @@ func (v *validator) IsControllerEnabledExecution(namespace, name, kind string) (
 		namespace: %s,
 		name: %s
 	}`, namespace, name, kind, alamedaScaler.Namespace, alamedaScaler.Name)
-	return alamedaScaler.Spec.EnableExecution, nil
+	return alamedaScaler.IsEnableExecution(), nil
 }
 
 func getMatchedControllerIndices(controllers []*datahub_v1alpha1.Controller, namespace string, name string, kind datahub_v1alpha1.Kind) []int {

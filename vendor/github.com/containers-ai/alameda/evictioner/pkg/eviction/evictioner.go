@@ -374,8 +374,8 @@ func (evictioner *Evictioner) isPodEnableExecution(alamRecomm *autoscalingv1alph
 
 		scaler, err := evictioner.getAlamedaScalerInfo(alamRecomm.GetNamespace(), or.Name)
 		if err == nil {
-			enableScalerMap[fmt.Sprintf("%s/%s", alamRecomm.GetNamespace(), or.Name)] = scaler.Spec.EnableExecution
-			return scaler.Spec.EnableExecution
+			enableScalerMap[fmt.Sprintf("%s/%s", alamRecomm.GetNamespace(), or.Name)] = scaler.IsEnableExecution()
+			return scaler.IsEnableExecution()
 		}
 		return false
 	}
@@ -505,8 +505,8 @@ func NewControllerRecommendationInfoMap(client client.Client, podRecommendations
 			}
 			alamedaScalerMap[fmt.Sprintf("%s/%s", alamedaScalerNamespace, alamedaScalerName)] = alamedaScaler
 		}
-		if !alamedaScaler.Spec.EnableExecution {
-			scope.Debugf("skip PodRecommendation (%s/%s) because it's execution is not enabled.", recommendationNamespacedName.Namespace, recommendationNamespacedName.Name)
+		if !alamedaScaler.IsEnableExecution() {
+			scope.Errorf("skip PodRecommendation (%s/%s) because it's execution is not enabled.", recommendationNamespacedName.Namespace, recommendationNamespacedName.Name)
 			continue
 		}
 

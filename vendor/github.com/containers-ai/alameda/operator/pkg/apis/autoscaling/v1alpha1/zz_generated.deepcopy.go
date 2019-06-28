@@ -287,6 +287,11 @@ func (in *AlamedaScalerSpec) DeepCopyInto(out *AlamedaScalerSpec) {
 		*out = new(v1.LabelSelector)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.EnableExecution != nil {
+		in, out := &in.EnableExecution, &out.EnableExecution
+		*out = new(bool)
+		**out = **in
+	}
 	in.ScalingTool.DeepCopyInto(&out.ScalingTool)
 	return
 }

@@ -39,7 +39,7 @@ func EndTime(t *time.Time) Option {
 
 func Timeout(t *time.Time) Option {
 	return func(o *Options) {
-		o.endTime = t
+		o.timeout = t
 	}
 }
 

@@ -42,7 +42,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:b56e8eb3dc915f91db6be9d69aa1080d23e135c59eee02eb25a1bfd233687583"
+  digest = "1:8a52a93b5694d1f5cd667dd6bc428aae27cec91d65724482eeea1961f252dc8f"
   name = "github.com/containers-ai/alameda"
   packages = [
     "admission-controller",
@@ -53,8 +53,8 @@
     "pkg/utils/log",
   ]
   pruneopts = "NT"
-  revision = "d9a6a0ea76363482ce30fded5facd5b3d40853aa"
-  version = "v0.3.37"
+  revision = "3cdb8afbf517573c2ee540a486a2f1964e523e81"
+  version = "v0.3.39"
 
 [[projects]]
   branch = "master"
