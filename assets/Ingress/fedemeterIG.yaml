@@ -4,6 +4,8 @@ metadata:
   namespace: federatorai
   name: fedemeter-api
 spec:
+  tls:
+  - secretName: secret-tls
   rules:
   - host:
     http:

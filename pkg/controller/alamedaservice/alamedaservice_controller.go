@@ -460,6 +460,19 @@ func (r *ReconcileAlamedaService) createSecret(instance *federatoraiv1alpha1.Ala
 	} else if err != nil {
 		return errors.Errorf("get secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
 	}
+	secret, err = componentConfig.NewfedemeterSecret()
+	if err != nil {
+		return errors.Errorf("build secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
+	if err := controllerutil.SetControllerReference(instance, secret, r.scheme); err != nil {
+		return errors.Errorf("set controller reference to secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
+	err = r.client.Create(context.TODO(), secret)
+	if err != nil && k8sErrors.IsAlreadyExists(err) {
+		log.Info("create secret failed: secret is already exists", "secret.Namespace", secret.Namespace, "secret.Name", secret.Name)
+	} else if err != nil {
+		return errors.Errorf("get secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
 	return nil
 }
 
@@ -852,6 +865,9 @@ func (r *ReconcileAlamedaService) uninstallFedemeterComponent(instance *federato
 		return errors.Wrapf(err, "uninstall Fedemeter component failed")
 	}
 	if err := r.uninstallService(instance, resource); err != nil {
+		return errors.Wrapf(err, "uninstall Fedemeter component failed")
+	}
+	if err := r.uninstallSecret(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall Fedemeter component failed")
 	}
 	if err := r.uninstallConfigMap(instance, resource); err != nil {

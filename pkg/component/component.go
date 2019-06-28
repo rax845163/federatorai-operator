@@ -204,6 +204,15 @@ func (c ComponentConfig) NewAdmissionControllerSecret() (*corev1.Secret, error) 
 	return secret, nil
 }
 
+func (c ComponentConfig) NewfedemeterSecret() (*corev1.Secret, error) {
+	secret, err := c.NewSecret("Secret/fedemeter-tls.yaml")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to buiild fedemeter secret")
+	}
+	secret.Namespace = c.NameSpace
+	return secret, nil
+}
+
 func (c ComponentConfig) NewInfluxDBSecret() (*corev1.Secret, error) {
 
 	secret, err := c.NewSecret("Secret/alameda-influxdb.yaml")

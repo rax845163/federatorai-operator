@@ -70,6 +70,7 @@ var (
 		"Service/fedemeter-influxdbSV.yaml",
 		"StatefulSet/fedemeter-influxdbSS.yaml",
 		"Ingress/fedemeterIG.yaml",
+		"Secret/fedemeter-tls.yaml",
 	}
 	secretList = []string{
 		"Secret/alameda-influxdb.yaml",
@@ -357,6 +358,7 @@ func GetFedemeterResource() *Resource {
 	var fedemeterCM = make([]string, 0)
 	var fedemeterSS = make([]string, 0)
 	var fedemeterIG = make([]string, 0)
+	var fedemeterSCT = make([]string, 0)
 	for _, str := range fedemeterList {
 		if len(strings.Split(str, "/")) > 0 {
 			switch resource := strings.Split(str, "/")[0]; resource {
@@ -370,6 +372,8 @@ func GetFedemeterResource() *Resource {
 				fedemeterSS = append(fedemeterSS, str)
 			case "Ingress":
 				fedemeterIG = append(fedemeterIG, str)
+			case "Secret":
+				fedemeterSCT = append(fedemeterSCT, str)
 			default:
 			}
 		}
@@ -380,6 +384,7 @@ func GetFedemeterResource() *Resource {
 		ConfigMapList:   fedemeterCM,
 		StatefulSetList: fedemeterSS,
 		IngressList:     fedemeterIG,
+		SecretList:      fedemeterSCT,
 	}
 }
 
@@ -551,7 +556,8 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 		dep = append(dep, "Deployment/alameda-executorDM.yaml")
 	}
 	if asp.EnableFedemeter {
-		sa = append(sa, "ServiceAccount/fedemeterSA.yaml")
+		//sa = append(sa, "ServiceAccount/fedemeterSA.yaml")
+		secrets = append(secrets, "Secret/fedemeter-tls.yaml")
 		sv = append(sv, "Service/fedemeterSV.yaml")
 		sv = append(sv, "Service/fedemeter-influxdbSV.yaml")
 		dep = append(dep, "Deployment/fedemeterDM.yaml")

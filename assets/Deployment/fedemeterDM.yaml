@@ -12,17 +12,13 @@ spec:
         labels:
           app: fedemeter
       spec:
-        serviceAccount: fedemeter-sa
-        serviceAccountName: fedemeter-sa
         containers:
         - name: fedemeter
           image: quay.io/prophetstor/fedemeter-api-ubi:v0.3.39
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
           - name: gui-alameter
             containerPort: 8999
-          securityContext:
-            privileged: true
           tty:  true
           envFrom:
             - configMapRef:
