@@ -14,7 +14,7 @@ import (
 func GlobalSectionSetParamterToStatefulset(ss *appsv1.StatefulSet, asp *alamedaserviceparamter.AlamedaServiceParamter) {
 	switch ss.Name {
 	case util.FedemeterInflixDBSSN:
-		util.SetStatefulsetImageStruct(ss, asp.Version, util.InfluxdbCTN)
+		util.SetStatefulsetImageStruct(ss, asp.Version, util.FedemeterInflixDBSSN)
 	}
 }
 

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fedemeter
+  name: fedemeter-api
   namespace: federatorai
 spec:
   selector:
@@ -13,7 +13,7 @@ spec:
           app: fedemeter
       spec:
         containers:
-        - name: fedemeter
+        - name: fedemeter-api
           image: quay.io/prophetstor/fedemeter-api-ubi:v0.3.39
           imagePullPolicy: Always
           ports:

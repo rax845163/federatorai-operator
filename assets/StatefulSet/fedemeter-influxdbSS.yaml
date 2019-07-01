@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: influxdb
+  name: fedemeter-influxdb
   namespace: federatorai
 spec:
-  serviceName: influxdb
+  serviceName: fedemeter-influxdb
   selector:
     matchLabels:
       app : influxdb
@@ -16,12 +16,12 @@ spec:
       #nodeSelector:
       #  kubernetes.io/hostname: "netrg6akfi-worker-1"
       containers:
-      - name: influxdb
+      - name: fedemeter-influxdb
         image: quay.io/prophetstor/fedemeter-influxdb:v0.3.39
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8086
-        tty:  true
+        tty: true
         #resources:
         #  limits:
         #    cpu: "1000m"

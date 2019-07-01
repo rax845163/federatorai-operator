@@ -26,7 +26,7 @@ const (
 	AdmissioncontrollerDPN = "admission-controller"
 	AlamedarecommenderDPN  = "alameda-recommender"
 	AlamedaexecutorDPN     = "alameda-executor"
-	FedemeterDPN           = "fedemeter"
+	FedemeterDPN           = "fedemeter-api"
 	GrafanaDPN             = "alameda-grafana"
 	InfluxdbDPN            = "alameda-influxdb"
 	//container name
@@ -37,12 +37,12 @@ const (
 	AdmissioncontrollerCTN = "admission-controller"
 	AlamedarecommenderCTN  = "alameda-recommender"
 	AlamedaexecutorCTN     = "alameda-executor"
-	FedemeterCTN           = "fedemeter"
+	FedemeterCTN           = "fedemeter-api"
 	GetTokenCTN            = "gettoken"
 	GrafanaCTN             = "grafana"
 	InfluxdbCTN            = "influxdb"
 	//Statefulset name
-	FedemeterInflixDBSSN = "influxdb"
+	FedemeterInflixDBSSN = "fedemeter-influxdb"
 	//CRD NAME
 	AlamedaScalerName         = "alamedascalers.autoscaling.containers.ai"
 	AlamedaRecommendationName = "alamedarecommendations.autoscaling.containers.ai"
