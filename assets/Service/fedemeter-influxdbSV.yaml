@@ -4,10 +4,10 @@ metadata:
   name: fedemeter-influxdb
   namespace: federatorai
   labels:
-    app: influxdb
+    app: fedemeter-influxdb
 spec:
   ports:
   - port: 8086
-    name: http-influxdb
+    name: http-fedemeter-influxdb
   selector:
-    app: influxdb
+    app: fedemeter-influxdb

@@ -5,12 +5,12 @@ metadata:
   name: fedemeter-api
 spec:
   tls:
-  - secretName: secret-tls
+  - secretName: fedemeter-api
   rules:
   - host:
     http:
       paths:
       - path: /fedemeter-api/v1/
         backend:
-          serviceName: fedemeter
+          serviceName: fedemeter-api
           servicePort: 8999

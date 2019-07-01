@@ -6,18 +6,18 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app : fedemeter
+      app : fedemeter-api
   template:
       metadata:
         labels:
-          app: fedemeter
+          app: fedemeter-api
       spec:
         containers:
         - name: fedemeter-api
           image: quay.io/prophetstor/fedemeter-api-ubi:v0.3.39
           imagePullPolicy: Always
           ports:
-          - name: gui-alameter
+          - name: gui-fedemeter
             containerPort: 8999
           tty:  true
           envFrom:

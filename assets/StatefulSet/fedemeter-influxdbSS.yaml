@@ -7,11 +7,11 @@ spec:
   serviceName: fedemeter-influxdb
   selector:
     matchLabels:
-      app : influxdb
+      app : fedemeter-influxdb
   template:
     metadata:
       labels:
-        app: influxdb
+        app: fedemeter-influxdb
     spec:
       #nodeSelector:
       #  kubernetes.io/hostname: "netrg6akfi-worker-1"
