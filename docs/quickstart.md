@@ -53,7 +53,7 @@ metadata:
   name: my-alamedaservice
   namespace: alameda
 spec:
-  selfDriving: true             ## to enable resource self-orchestration of the deployed Alameda components
+  selfDriving: false             ## to enable resource self-orchestration of the deployed Alameda components
                                 ## it is recommended NOT to use ephemeral data storage for Alameda influxdb component when self-Driving is enabled
   enableExecution: true
   enableGui: true
