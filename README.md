@@ -1,5 +1,5 @@
 
-# <img src="./logo.png" width=60/> Federator.ai Operator<img src="./rhcert.png" align="right" width=150/>
+# <a href="https://github.com/containers-ai/federatorai-operator"><img src="./logo.png" width=60/></a> Federator.ai Operator<a href="https://access.redhat.com/containers/?tab=overview#/registry.connect.redhat.com/prophetstor/federatorai-operator"><img src="./rhcert.png" align="right" width=150/></a>
 
 **Federator.ai Operator** is an Operator that manages **Federator.ai** components for an OpenShift cluster. Once installed, the Federator.ai Operator provides the following features:
 - **Create/Clean up**: Launch **Federator.ai** components using the Operator.
@@ -10,7 +10,12 @@
 
 ## Federator.ai
 
-**Federator.ai** is the brain of resource orchestration for kubernetes. We use machine learning technology to provide intelligence that foresees future resource usage of your Kubernetes cluster across multiple layers. Federator.ai recommends the right sizes of containers and the right number of replications. It also elastically manages pod scaling and scheduling of your containerized applications. The overall benefit is cost reduction up to 50% and higher service quality, such as fewer OOM issues. For more information, visit [github.com/containers-ai/alameda](https://github.com/containers-ai/alameda)
+**Federator.ai** is the brain of resource orchestration for kubernetes. We use machine learning technology to provide intelligence that foresees future resource usage of your Kubernetes cluster across multiple layers. Federator.ai recommends the right sizes of containers and the right number of replications. It also elastically manages pod scaling and scheduling of your containerized applications. The benefits of **Federator.ai** include:
+- Up to 60% resource savings
+- Increased operational efficiency
+- Reduced manual configuration time with digital intelligence
+
+For more information, visit our [website](https://www.prophetstor.com/federator-ai/federator-ai-for-openshift/) and [github.com/containers-ai/alameda](https://github.com/containers-ai/alameda).
 
 ## Documentations
 Please visit [docs](./docs/)
