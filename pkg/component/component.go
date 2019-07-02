@@ -210,6 +210,17 @@ func (c ComponentConfig) NewfedemeterSecret() (*corev1.Secret, error) {
 		return nil, errors.Wrap(err, "failed to buiild fedemeter secret")
 	}
 	secret.Namespace = c.NameSpace
+	host := fmt.Sprintf("fedemeter-api.%s.svc", c.NameSpace)
+	crt, key, err := cert.GenerateSelfSignedCertKey(host, []net.IP{}, []string{})
+	if err != nil {
+		return nil, errors.Errorf("failed to buiild fedemeter secret: %s", err.Error())
+	}
+
+	if secret.Data == nil {
+		secret.Data = make(map[string][]byte)
+	}
+	secret.Data["tls.crt"] = crt
+	secret.Data["tls.key"] = key
 	return secret, nil
 }
 
