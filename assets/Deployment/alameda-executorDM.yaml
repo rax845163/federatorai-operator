@@ -28,6 +28,22 @@ spec:
           - name: alameda-executor-config
             mountPath: /etc/alameda/federatorai-execution/config.yml
             subPath: config.yml
+        readinessProbe:
+          exec:
+            command:
+            - /usr/local/bin/federatorai-executor
+            - probe
+            - --type=readiness
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - /usr/local/bin/federatorai-executor
+            - probe
+            - --type=liveness
+          initialDelaySeconds: 5
+          periodSeconds: 5
       volumes:
         - name: alameda-executor-data-storage
         - name: alameda-executor-log-storage
