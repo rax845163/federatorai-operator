@@ -3,9 +3,14 @@ kind: Ingress
 metadata:
   namespace: federatorai
   name: fedemeter-api
+  annotations:
+    ingress.kubernetes.io/cors-enable: "true"
+    ingress.kubernetes.io/cors-allow-origin: "*"
+    ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS"
+    ingress.kubernetes.io/cors-allow-credentials: "true"
 spec:
-  tls:
-  - secretName: fedemeter-api
+  #tls:
+  #- secretName: fedemeter-api
   rules:
   - host:
     http:

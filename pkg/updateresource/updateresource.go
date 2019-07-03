@@ -70,12 +70,12 @@ func MisMatchResourceService(clusterSv, sourceSv *corev1.Service) bool {
 		}
 	}
 
-	if !equality.Semantic.DeepEqual(clusterSv.Spec.Ports, sourceSv.Spec.Ports) {
+	/*if !equality.Semantic.DeepEqual(clusterSv.Spec.Ports, sourceSv.Spec.Ports) {
 		modify = true
 
 		log.V(-1).Info("change Ports")
 		clusterSv.Spec.Ports = sourceSv.Spec.Ports
-	}
+	}*/
 	if !equality.Semantic.DeepEqual(clusterSv.Spec.Selector, sourceSv.Spec.Selector) {
 		modify = true
 		log.V(-1).Info("change Selector")
