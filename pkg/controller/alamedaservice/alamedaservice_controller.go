@@ -19,6 +19,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	ingressv1beta1 "k8s.io/api/extensions/v1beta1"
+	v1beta1 "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	apiextension "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	k8sErrors "k8s.io/apimachinery/pkg/api/errors"
@@ -176,6 +177,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	if err = r.updateAlamedaService(instance, request.NamespacedName, asp); err != nil {
 		log.Error(err, "updateAlamedaService failed")
 	}
+	if err := r.syncPodSecurityPolicy(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync podSecurityPolicy failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
 	if err := r.syncClusterRole(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync clusterRole failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -218,6 +223,9 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	if err := r.syncRoute(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync route failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+	}
+	if err := r.syncDaemonSet(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync DaemonSet failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 	// if EnableExecution Or EnableGUI has been changed to false
@@ -348,6 +356,70 @@ func (r *ReconcileAlamedaService) syncClusterRoleBinding(instance *federatoraiv1
 			err = r.client.Update(context.TODO(), resourceCRB)
 			if err != nil {
 				return errors.Errorf("Update clusterRoleBinding %s/%s failed: %s", resourceCRB.Namespace, resourceCRB.Name, err.Error())
+			}
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) syncPodSecurityPolicy(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+	for _, FileStr := range resource.PodSecurityPolicyList {
+		resourcePSP := componentConfig.NewPodSecurityPolicy(FileStr)
+		if err := controllerutil.SetControllerReference(instance, resourcePSP, r.scheme); err != nil {
+			return errors.Errorf("Fail resourcePSP SetControllerReference: %s", err.Error())
+		}
+		foundPSP := &v1beta1.PodSecurityPolicy{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourcePSP.Name}, foundPSP)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			log.Info("Creating a new Resource PodSecurityPolicy... ", "resourcePSP.Name", resourcePSP.Name)
+			err = r.client.Create(context.TODO(), resourcePSP)
+			if err != nil {
+				return errors.Errorf("create PodSecurityPolicy %s/%s failed: %s", resourcePSP.Namespace, resourcePSP.Name, err.Error())
+			}
+			log.Info("Successfully Creating Resource PodSecurityPolicy", "resourcePSP.Name", resourcePSP.Name)
+		} else if err != nil {
+			return errors.Errorf("get PodSecurityPolicy %s/%s failed: %s", resourcePSP.Namespace, resourcePSP.Name, err.Error())
+		} else {
+			err = r.client.Update(context.TODO(), resourcePSP)
+			if err != nil {
+				return errors.Errorf("Update PodSecurityPolicy %s/%s failed: %s", resourcePSP.Namespace, resourcePSP.Name, err.Error())
+			}
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) syncDaemonSet(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+	for _, FileStr := range resource.DaemonSetList {
+		resourceDS := componentConfig.NewDaemonSet(FileStr)
+		if err := controllerutil.SetControllerReference(instance, resourceDS, r.scheme); err != nil {
+			return errors.Errorf("Fail resourceDS SetControllerReference: %s", err.Error())
+		}
+		//process resource DaemonSet according to AlamedaService CR
+		resourceDS = processcrdspec.ParamterToDaemonSet(resourceDS, asp)
+		foundDS := &appsv1.DaemonSet{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDS.Name, Namespace: resourceDS.Namespace}, foundDS)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			log.Info("Creating a new Resource DaemonSet... ", "resourceDS.Namespace", resourceDS.Namespace, "resourceDS.Name", resourceDS.Name)
+			err = r.client.Create(context.TODO(), resourceDS)
+			if err != nil {
+				return errors.Errorf("create DaemonSet %s/%s failed: %s", resourceDS.Namespace, resourceDS.Name, err.Error())
+			}
+			log.Info("Successfully Creating Resource DaemonSet", "resourceDS.Namespace", resourceDS.Namespace, "resourceDS.Name", resourceDS.Name)
+		} else if err != nil {
+			return errors.Errorf("get DaemonSet %s/%s failed: %s", resourceDS.Namespace, resourceDS.Name, err.Error())
+		} else {
+			if updateresource.MisMatchResourceDaemonSet(foundDS, resourceDS) {
+				log.Info("Update Resource DaemonSet:", "foundDS.Name", foundDS.Name)
+				err = r.client.Delete(context.TODO(), foundDS)
+				if err != nil {
+					return errors.Errorf("delete DaemonSet %s/%s failed: %s", foundDS.Namespace, foundDS.Name, err.Error())
+				}
+				err = r.client.Create(context.TODO(), resourceDS)
+				if err != nil {
+					return errors.Errorf("create DaemonSet %s/%s failed: %s", foundDS.Namespace, foundDS.Name, err.Error())
+				}
+				log.Info("Successfully Update Resource DaemonSet", "resourceDS.Namespace", resourceDS.Namespace, "resourceDS.Name", resourceDS.Name)
 			}
 		}
 	}

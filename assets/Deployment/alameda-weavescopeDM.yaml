@@ -1,0 +1,39 @@
+# borrowed from https://cloud.weave.works/k8s/scope.yaml?k8s-version=1.9.3
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alameda-weave-scope-app
+  labels:
+    name: alameda-weave-scope-app
+    app: alameda-weave-scope
+    alameda-weave-cloud-component: scope
+    alameda-weave-scope-component: app
+  namespace: federatorai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alameda-weave-scope
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        name: alameda-weave-scope-app
+        app: alameda-weave-scope
+        alameda-weave-cloud-component: scope
+        alameda-weave-scope-component: app
+    spec:
+      containers:
+        - name: alameda-weave-scope-app
+          args:
+            - '--no-probe'
+          env: []
+          image: quay.io/prophetstor/scope:v4.1.113
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4040
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 200m
+              memory: 200Mi

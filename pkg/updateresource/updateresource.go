@@ -95,6 +95,32 @@ func MisMatchResourceDeployment(clusterDep, sourceDep *appsv1.Deployment) bool {
 	misMatchTemplate(&modify, &clusterDep.Spec.Template, &sourceDep.Spec.Template)
 	return modify
 }
+
+func MisMatchResourceDaemonSet(clusterDS, sourceDS *appsv1.DaemonSet) bool {
+	modify := false
+	if !equality.Semantic.DeepEqual(clusterDS.Labels, sourceDS.Labels) {
+		modify = true
+		log.V(-1).Info("change Labels")
+		clusterDS.Labels = sourceDS.Labels
+	}
+	misMatchDaemonSetSelector(&modify, &clusterDS.Spec, &sourceDS.Spec)
+	misMatchDaemonSetTemplate(&modify, &clusterDS.Spec.Template, &sourceDS.Spec.Template)
+	return modify
+}
+
+func misMatchDaemonSetSelector(modify *bool, clusterDS, sourceDS *appsv1.DaemonSetSpec) {
+	if !equality.Semantic.DeepEqual(clusterDS.Selector, sourceDS.Selector) {
+		*modify = true
+		log.V(-1).Info("change Selector")
+		clusterDS.Selector = sourceDS.Selector
+	}
+}
+
+func misMatchDaemonSetTemplate(modify *bool, clusterDS, sourceDS *corev1.PodTemplateSpec) {
+	misMatchTemplateObjectMeta(modify, &clusterDS.ObjectMeta, &sourceDS.ObjectMeta)
+	misMatchTemplatePodSpec(modify, &clusterDS.Spec, &sourceDS.Spec)
+}
+
 func misMatchSelectorAndReplicas(modify *bool, clusterDep, sourceDep *appsv1.DeploymentSpec) {
 	if !equality.Semantic.DeepEqual(clusterDep.Selector, sourceDep.Selector) {
 		*modify = true

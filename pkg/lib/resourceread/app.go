@@ -35,3 +35,11 @@ func ReadStatefulSetV1(objBytes []byte) *appsv1.StatefulSet {
 	}
 	return requiredObj.(*appsv1.StatefulSet)
 }
+func ReadDaemonSetV1(objBytes []byte) *appsv1.DaemonSet {
+	requiredObj, err := runtime.Decode(appsCodecs.UniversalDecoder(appsv1.SchemeGroupVersion), objBytes)
+	if err != nil {
+		log.Error(err, "Fail to ReadDaemonSetV1OrDie")
+
+	}
+	return requiredObj.(*appsv1.DaemonSet)
+}

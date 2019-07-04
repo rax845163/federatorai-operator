@@ -15,6 +15,12 @@ func ParamterToDeployment(dep *appsv1.Deployment, asp *alamedaserviceparamter.Al
 	componentsectionset.SectionSetParamterToDeployment(dep, asp)    //DeploymentSpec's Component Section Set
 	return dep
 }
+func ParamterToDaemonSet(ds *appsv1.DaemonSet, asp *alamedaserviceparamter.AlamedaServiceParamter) *appsv1.DaemonSet {
+	updateenvvar.AssignServiceToDaemonSet(ds, ds.Namespace)       //DaemonSet's service
+	globalsectionset.GlobalSectionSetParamterToDaemonSet(ds, asp) //DaemonSet's Global Section Set
+	componentsectionset.SectionSetParamterToDaemonSet(ds, asp)    //DaemonSet's Component Section Set
+	return ds
+}
 func ParamterToConfigMap(cm *corev1.ConfigMap, asp *alamedaserviceparamter.AlamedaServiceParamter) *corev1.ConfigMap {
 	updateenvvar.AssignServiceToConfigMap(cm, cm.Namespace)                                       //ConfigMapSpec's service
 	globalsectionset.GlobalSectionSetParamterToConfigMap(cm, asp.PrometheusService, cm.Namespace) //ConfigMapSpec's PrometheusService

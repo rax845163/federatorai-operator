@@ -1,0 +1,22 @@
+# borrowed from https://cloud.weave.works/k8s/scope.yaml?k8s-version=1.9.3
+apiVersion: v1
+kind: Service
+metadata:
+  name: alameda-weave-scope-app
+  labels:
+    name: alameda-weave-scope-app
+    app: alameda-weave-scope
+    alameda-weave-cloud-component: scope
+    alameda-weave-scope-component: app
+  namespace: federatorai
+spec:
+  ports:
+    - name: app
+      port: 80
+      protocol: TCP
+      targetPort: 4040
+  selector:
+    name: alameda-weave-scope-app
+    app: alameda-weave-scope
+    alameda-weave-cloud-component: scope
+    alameda-weave-scope-component: app
