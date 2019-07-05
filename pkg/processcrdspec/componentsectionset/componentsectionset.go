@@ -87,6 +87,26 @@ func SectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaservicep
 			util.SetStorageToVolumeSource(dep, asp.GrafanaSectionSet.Storages, "my-alameda.grafana-type.pvc", util.GrafanaGroup)
 			util.SetStorageToMountPath(dep, asp.GrafanaSectionSet.Storages, util.GrafanaCTN, "grafana-type-storage", util.GrafanaGroup)
 		}
+	case util.AlamedaweavescopeDPN:
+		{
+			util.SetImageStruct(dep, asp.AlamedaWeavescopeSectionSet, util.AlamedaweavescopeCTN)
+			util.SetImagePullPolicy(dep, util.AlamedaweavescopeCTN, asp.AlamedaWeavescopeSectionSet.ImagePullPolicy)
+		}
+	case util.AlamedaweavescopeProbeDPN:
+		{
+			util.SetImageStruct(dep, asp.AlamedaWeavescopeSectionSet, util.AlamedaweavescopeProbeCTN)
+			util.SetImagePullPolicy(dep, util.AlamedaweavescopeProbeCTN, asp.AlamedaWeavescopeSectionSet.ImagePullPolicy)
+		}
+	}
+}
+
+func SectionSetParamterToDaemonSet(ds *appsv1.DaemonSet, asp *alamedaserviceparamter.AlamedaServiceParamter) {
+	switch ds.Name {
+	case util.AlamedaweavescopeAgentDS:
+		{
+			util.SetDaemonSetImageStruct(ds, asp.AlamedaWeavescopeSectionSet, util.AlamedaweavescopeAgentCTN)
+			util.SetDaemonSetImagePullPolicy(ds, util.AlamedaweavescopeAgentCTN, asp.AlamedaWeavescopeSectionSet.ImagePullPolicy)
+		}
 	}
 }
 

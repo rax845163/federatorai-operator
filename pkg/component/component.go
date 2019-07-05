@@ -15,6 +15,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	ingressv1beta1 "k8s.io/api/extensions/v1beta1"
+	v1beta1 "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	apiextv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	"k8s.io/client-go/util/cert"
@@ -60,6 +61,26 @@ func (c ComponentConfig) NewClusterRole(str string) *rbacv1.ClusterRole {
 	cr := resourceread.ReadClusterRoleV1(crByte)
 	cr.Name = strings.Replace(cr.Name, strings.Split(cr.Name, "-")[0], c.NameSpace, -1)
 	return cr
+}
+func (c ComponentConfig) NewPodSecurityPolicy(str string) *v1beta1.PodSecurityPolicy {
+	crByte, err := assets.Asset(str)
+	if err != nil {
+		log.Error(err, "Failed to Test create PodSecurityPolicy")
+	}
+	cr := resourceread.ReadPodSecurityPolicyV1beta1(crByte)
+	cr.Name = strings.Replace(cr.Name, strings.Split(cr.Name, "-")[0], c.NameSpace, -1)
+	return cr
+}
+func (c ComponentConfig) NewDaemonSet(str string) *appsv1.DaemonSet {
+	daemonSetBytes, err := assets.Asset(str)
+	if err != nil {
+		log.Error(err, "Failed to Test create DaemonSet")
+
+	}
+	d := resourceread.ReadDaemonSetV1(daemonSetBytes)
+	d.Namespace = c.NameSpace
+	d.Spec.Template = c.mutatePodTemplateSpecWithConfig(d.Spec.Template)
+	return d
 }
 func (c ComponentConfig) NewServiceAccount(str string) *corev1.ServiceAccount {
 	saByte, err := assets.Asset(str)

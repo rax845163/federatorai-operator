@@ -17,6 +17,15 @@ func AssignServiceToDeployment(dep *appsv1.Deployment, ns string) {
 		}
 	}
 }
+func AssignServiceToDaemonSet(ds *appsv1.DaemonSet, ns string) {
+	if len(ds.Spec.Template.Spec.Containers[0].Env) > 0 {
+		for index, value := range ds.Spec.Template.Spec.Containers[0].Env {
+			if strings.Contains(value.String(), util.NamespaceService) {
+				ds.Spec.Template.Spec.Containers[0].Env[index].Value = strings.Replace(ds.Spec.Template.Spec.Containers[0].Env[index].Value, util.NamespaceService, ns+".svc", -1)
+			}
+		}
+	}
+}
 func AssignServiceToConfigMap(cm *corev1.ConfigMap, ns string) {
 	if strings.Contains(cm.Data[util.OriginComfigMapPrometheusLocation], util.NamespaceService) {
 		cm.Data[util.OriginComfigMapPrometheusLocation] = strings.Replace(cm.Data[util.OriginComfigMapPrometheusLocation], util.NamespaceService, ns+".svc", -1)

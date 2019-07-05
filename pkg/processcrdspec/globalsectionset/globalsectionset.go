@@ -82,10 +82,30 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 			util.SetStorageToVolumeSource(dep, asp.Storages, "my-alameda.grafana-type.pvc", util.GrafanaGroup)
 			util.SetStorageToMountPath(dep, asp.Storages, util.GrafanaCTN, "grafana-type-storage", util.GrafanaGroup)
 		}
+	case util.AlamedaweavescopeDPN:
+		{
+			util.SetImageStruct(dep, asp.AlamedaWeavescopeSectionSet, util.AlamedaweavescopeCTN)
+			util.SetImagePullPolicy(dep, util.AlamedaweavescopeCTN, asp.AlamedaWeavescopeSectionSet.ImagePullPolicy)
+		}
+	case util.AlamedaweavescopeProbeDPN:
+		{
+			util.SetImageStruct(dep, asp.AlamedaWeavescopeSectionSet, util.AlamedaweavescopeProbeCTN)
+			util.SetImagePullPolicy(dep, util.AlamedaweavescopeProbeCTN, asp.AlamedaWeavescopeSectionSet.ImagePullPolicy)
+		}
 	}
 
 	envVars := asp.GetEnvVarsByDeployment(dep.Name)
 	updateenvvar.UpdateEnvVarsToDeployment(dep, envVars)
+}
+
+func GlobalSectionSetParamterToDaemonSet(ds *appsv1.DaemonSet, asp *alamedaserviceparamter.AlamedaServiceParamter) {
+	switch ds.Name {
+	case util.AlamedaweavescopeAgentDS:
+		{
+			util.SetDaemonSetImageStruct(ds, asp.AlamedaWeavescopeSectionSet, util.AlamedaweavescopeAgentCTN)
+			util.SetDaemonSetImagePullPolicy(ds, util.AlamedaweavescopeAgentCTN, asp.AlamedaWeavescopeSectionSet.ImagePullPolicy)
+		}
+	}
 }
 
 func processConfigMapsPrometheusService(cm *corev1.ConfigMap, prometheusservice string) {

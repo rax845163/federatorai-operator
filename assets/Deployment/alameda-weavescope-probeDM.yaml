@@ -1,0 +1,44 @@
+# borrowed from https://cloud.weave.works/k8s/scope.yaml?k8s-version=1.9.3
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alameda-weave-scope-cluster-agent
+  labels:
+    name: alameda-weave-scope-cluster-agent
+    app: alameda-weave-scope
+    alameda-weave-cloud-component: scope
+    alameda-weave-scope-component: cluster-agent
+  namespace: federatorai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: alameda-weave-scope-cluster-agent
+      app: alameda-weave-scope
+      alameda-weave-cloud-component: scope
+      alameda-weave-scope-component: cluster-agent
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        name: alameda-weave-scope-cluster-agent
+        app: alameda-weave-scope
+        alameda-weave-cloud-component: scope
+        alameda-weave-scope-component: cluster-agent
+    spec:
+      containers:
+        - name: alameda-weave-scope-cluster-agent
+          args:
+            - '--mode=probe'
+            - '--probe-only'
+            - '--probe.kubernetes.role=cluster'
+            - 'alameda-weave-scope-app.federatorai.svc.cluster.local.:80'
+          command:
+            - /home/weave/scope
+          image: 'quay.io/prophetstor/scope:v4.1.113'
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+      serviceAccountName: federatorai-alameda-weave-scope
