@@ -5,6 +5,3 @@ metadata:
   namespace: federatorai
   labels:
     app: rabbitmq
-    chart: rabbitmq-0.3.0
-    release: "alameda"
-    heritage: "Tiller"

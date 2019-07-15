@@ -5,10 +5,6 @@ metadata:
   name: alameda-rabbitmq
   labels:
     app: rabbitmq
-    chart: rabbitmq-0.3.0
-    release: "alameda"
-    heritage: "Tiller"
-    type: ClusterIP
 spec:
   ports:
     - name: amqp
@@ -19,4 +15,3 @@ spec:
       targetPort: stats
   selector:
     app: rabbitmq
-    release: "alameda"

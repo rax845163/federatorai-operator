@@ -4,9 +4,6 @@ metadata:
   name: federatorai-alameda-rabbitmq
   labels:
     app: rabbitmq
-    chart: rabbitmq-0.3.0
-    release: "alameda"
-    heritage: "Tiller"
 rules:
 - apiGroups: [""]
   resources: ["endpoints"]
