@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: federatorai
+  name: alameda-rabbitmq
+  labels:
+    app: rabbitmq
+    chart: rabbitmq-0.3.0
+    release: "alameda"
+    heritage: "Tiller"
+    type: ClusterIP
+spec:
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: amqp
+    - name: stats
+      port: 15672
+      targetPort: stats
+  selector:
+    app: rabbitmq
+    release: "alameda"

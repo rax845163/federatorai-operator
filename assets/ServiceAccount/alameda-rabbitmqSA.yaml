@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: alameda-rabbitmq
+  namespace: federatorai
+  labels:
+    app: rabbitmq
+    chart: rabbitmq-0.3.0
+    release: "alameda"
+    heritage: "Tiller"

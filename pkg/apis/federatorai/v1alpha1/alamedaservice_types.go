@@ -25,6 +25,7 @@ type AlamedaServiceSpec struct {
 	Platform          Platform      `json:"platform,omitempty"`
 	EnableExecution   bool          `json:"enableExecution"`
 	EnableGUI         bool          `json:"enableGui"`
+	EnableDispatcher  bool          `json:"enableDispatcher"`
 	SelfDriving       bool          `json:"selfDriving"`
 	EnableFedemeter   bool          `json:"enableFedemeter"`
 	Version           string        `json:"version"`
@@ -42,6 +43,7 @@ type AlamedaServiceSpec struct {
 	AlamedaExecutorSectionSet     AlamedaComponentSpec `json:"alamedaExecutor"`
 	AlamedaFedemeterSectionSet    AlamedaComponentSpec `json:"fedemeter"`
 	AlamedaWeavescopeSectionSet   AlamedaComponentSpec `json:"alameda-weavescope"`
+	AlamedaDispatcherSectionSet   AlamedaComponentSpec `json:"alameda-dispatcher"`
 }
 type AlamedaComponentSpec struct {
 	Image              string            `json:"image"`

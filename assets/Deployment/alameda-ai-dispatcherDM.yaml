@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alameda-ai-dispatcher
+  namespace: alameda
+  labels:
+    app: alameda
+    component: alameda-ai-dispatcher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alameda
+      component: alameda-ai-dispatcher
+  template:
+    metadata:
+      labels:
+        app: alameda
+        component: alameda-ai-dispatcher
+    spec:
+      volumes:
+      - name:  alameda-dispatcher-data-storage
+      - name:  alameda-dispatcher-log-storage
+      containers:
+        - name: ai-dispatcher
+          image: "quay.io/prophetstor/alameda-ai-dispatcher:latest"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ALAMEDA_AI_DISPATCHER_DATAHUB_ADDRESS
+              value: "alameda-datahub.federatorai.svc:50050"
+            - name: ALAMEDA_AI_DISPATCHER_QUEUE_URL
+              value: "amqp://admin:adminpass@alameda-rabbitmq.federatorai.svc:5672"
+          resources:
+            {}
+
+          readinessProbe:
+            exec:
+              command:
+              - /usr/local/bin/ai-dispatcher
+              - probe
+              - --type=readiness
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+              - /usr/local/bin/ai-dispatcher
+              - probe
+              - --type=liveness
+            initialDelaySeconds: 5
+            periodSeconds: 5

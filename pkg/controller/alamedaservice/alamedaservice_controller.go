@@ -247,6 +247,15 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
 	}
+	//Uninstall dispatcher Component
+	if !asp.EnableDispatcher {
+		log.Info("EnableDispatcher has been changed to false")
+		dispatcherResource := alamedaserviceparamter.GetDispatcherResource()
+		if err := r.uninstallExecutionComponent(instance, dispatcherResource); err != nil {
+			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+		}
+	}
 	//Uninstall alameter Component
 	if !asp.EnableFedemeter {
 		log.Info("EnableFedemeter has been changed to false")
