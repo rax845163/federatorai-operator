@@ -23,9 +23,10 @@ metadata:
   name: my-alamedaservice
   namespace: alameda
 spec:
-  selfDriving: true             ## to enable resource self-orchestration of the deployed Alameda components
+  selfDriving: false             ## to enable resource self-orchestration of the deployed Alameda components
                                 ## it is recommended NOT to use ephemeral data storage for Alameda influxdb component when self-Driving is enabled
   enableExecution: true
+  enableDispatcher: true        #use Dispatcher sent job to alameda-ai
   enableGui: true
   version: latest               ## for Alameda components. (exclude grafana and influxdb)
   prometheusService: https://prometheus-k8s.openshift-monitoring:9091
@@ -56,10 +57,11 @@ metadata:
   name: my-alamedaservice
   namespace: alameda
 spec:
-  selfDriving: true             ## to enable resource self-orchestration of the deployed Alameda components
+  selfDriving: false             ## to enable resource self-orchestration of the deployed Alameda components
                                 ## it is recommended NOT to use ephemeral data storage for Alameda influxdb component when self-Driving is enabled
   enableExecution: true
   enableGui: true
+  enableDispatcher: true        #use Dispatcher sent job to alameda-ai
   version: v0.3.38              ## for Alameda components. (exclude grafana and influxdb)
   prometheusService: https://prometheus-k8s.openshift-monitoring:9091
   storages:
@@ -125,6 +127,9 @@ spec:
 - Field: enableGui
   - type: boolean
   - description: Federator.ai Operator will deploy GUI to visualize Alameda predictions/recommendations and cluster/node status if this field is set to _true_. Default is _true_.
+- Field: enableDispatcher
+  - type: boolean
+  - description: Federator.ai Operator will deploy alameda-dispatcher and rabittmq to sent predict job to alameda-ai if this field is set to _true_. Default is _true_.
 - Field: enableFedemeter
   - type: boolean
   - description: Federator.ai Operator will deploy Fedemeter and you must add your Fedemeter serviceAccount to privileged SecurityContextConstraints
@@ -170,6 +175,9 @@ spec:
 - Field: alameda-weavescope
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-weavescope component. This field is optional.
+- Field: alameda-dispatcher
+  - type: [AlamedaComponentSpec](#alamedacomponentspec)
+  - description: Spec for alameda-dispatcher component. This field is optional.
 
 ### StorageSpec
 
