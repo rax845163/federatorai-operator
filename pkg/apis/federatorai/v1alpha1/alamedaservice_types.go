@@ -44,6 +44,7 @@ type AlamedaServiceSpec struct {
 	AlamedaFedemeterSectionSet    AlamedaComponentSpec `json:"fedemeter"`
 	AlamedaWeavescopeSectionSet   AlamedaComponentSpec `json:"alameda-weavescope"`
 	AlamedaDispatcherSectionSet   AlamedaComponentSpec `json:"alameda-dispatcher"`
+	AlamedaAnalyzerSectionSet     AlamedaComponentSpec `json:"alameda-analyzer"`
 }
 type AlamedaComponentSpec struct {
 	Image              string            `json:"image"`

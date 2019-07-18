@@ -32,6 +32,7 @@ const (
 	InfluxdbDPN               = "alameda-influxdb"
 	AlamedaweavescopeDPN      = "alameda-weave-scope-app"
 	AlamedaweavescopeProbeDPN = "alameda-weave-scope-cluster-agent"
+	AlamedaanalyzerDPN        = "alameda-analyzer"
 	//DaemonSet name
 	AlamedaweavescopeAgentDS = "alameda-weave-scope-agent"
 	//container name
@@ -50,6 +51,7 @@ const (
 	AlamedaweavescopeCTN      = "alameda-weave-scope-app"
 	AlamedaweavescopeProbeCTN = "alameda-weave-scope-cluster-agent"
 	AlamedaweavescopeAgentCTN = "alameda-weave-scope-agent"
+	AlamedaanalyzerCTN        = "alameda-analyzer"
 	//Statefulset name
 	FedemeterInflixDBSSN = "fedemeter-influxdb"
 	//CRD NAME
@@ -281,6 +283,9 @@ func getVolumeLogIndex(dep *appsv1.Deployment) int {
 			if value.Name == "alameda-dispatcher-log-storage" {
 				return index
 			}
+			if value.Name == "alameda-analyzer-log-storage" {
+				return index
+			}
 			if value.Name == "fedemeter-log-storage" {
 				return index
 			}
@@ -316,6 +321,9 @@ func getVolumeDataIndex(dep *appsv1.Deployment) int {
 				return index
 			}
 			if value.Name == "alameda-dispatcher-data-storage" {
+				return index
+			}
+			if value.Name == "alameda-analyzer-data-storage" {
 				return index
 			}
 			if value.Name == "influxdb-data-storage" {

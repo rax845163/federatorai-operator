@@ -72,6 +72,12 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 			util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-dispatcher-type.pvc", util.AlamedaGroup)
 			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedadispatcherCTN, "alameda-dispatcher-type-storage", util.AlamedaGroup)
 		}
+	case util.AlamedaanalyzerDPN:
+		{
+			util.SetImageStruct(dep, asp.Version, util.AlamedaanalyzerCTN)
+			util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-analyzer-type.pvc", util.AlamedaGroup)
+			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedaanalyzerCTN, "alameda-analyzer-type-storage", util.AlamedaGroup)
+		}
 	case util.FedemeterDPN:
 		{
 			util.SetImageStruct(dep, asp.Version, util.FedemeterCTN)

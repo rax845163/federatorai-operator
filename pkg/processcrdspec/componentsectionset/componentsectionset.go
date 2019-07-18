@@ -72,6 +72,13 @@ func SectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaservicep
 			util.SetStorageToVolumeSource(dep, asp.AlamedaDispatcherSectionSet.Storages, "alameda-dispatcher-type.pvc", util.AlamedaGroup)
 			util.SetStorageToMountPath(dep, asp.AlamedaDispatcherSectionSet.Storages, util.AlamedadispatcherCTN, "alameda-dispatcher-type.pvc", util.AlamedaGroup)
 		}
+	case util.AlamedaanalyzerDPN:
+		{
+			util.SetImageStruct(dep, asp.AlamedaAnalyzerSectionSet, util.AlamedaanalyzerCTN)
+			util.SetImagePullPolicy(dep, util.AlamedaanalyzerCTN, asp.AlamedaAnalyzerSectionSet.ImagePullPolicy)
+			util.SetStorageToVolumeSource(dep, asp.AlamedaAnalyzerSectionSet.Storages, "alameda-analyzer-type.pvc", util.AlamedaGroup)
+			util.SetStorageToMountPath(dep, asp.AlamedaAnalyzerSectionSet.Storages, util.AlamedaanalyzerCTN, "alameda-analyzer-type.pvc", util.AlamedaGroup)
+		}
 	case util.FedemeterDPN:
 		{
 			util.SetImageStruct(dep, asp.AlamedaFedemeterSectionSet, util.FedemeterCTN)
@@ -151,6 +158,10 @@ func SectionSetParamterToPersistentVolumeClaim(pvc *corev1.PersistentVolumeClaim
 		case fmt.Sprintf("alameda-dispatcher-%s.pvc", pvcusage):
 			{
 				util.SetStorageToPersistentVolumeClaimSpec(pvc, asp.AlamedaDispatcherSectionSet.Storages, pvcusage)
+			}
+		case fmt.Sprintf("alameda-analyzer-%s.pvc", pvcusage):
+			{
+				util.SetStorageToPersistentVolumeClaimSpec(pvc, asp.AlamedaAnalyzerSectionSet.Storages, pvcusage)
 			}
 		case fmt.Sprintf("fedemeter-%s.pvc", pvcusage):
 			{

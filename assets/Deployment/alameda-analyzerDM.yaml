@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alameda-analyzer
+  namespace: federatorai
+spec:
+  selector:
+    matchLabels:
+      app: alameda
+      component: alameda-analyzer
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: alameda
+        component: alameda-analyzer
+    spec:
+      containers:
+      - name: alameda-analyzer
+        image: quay.io/prophetstor/alameda-analyzer-ubi:v0.3.54
+        imagePullPolicy: Always
+        readinessProbe:
+          exec:
+            command:
+            - /usr/local/bin/alameda-analyzer
+            - probe
+            - --type=readiness
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - /usr/local/bin/alameda-analyzer
+            - probe
+            - --type=liveness
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        env:
+          - name: FEDERATORAI_ANALYSIS_DATAHUB_ADDRESS
+            value: "alameda-datahub.federatorai.svc"
+          - name: FEDERATORAI_ANALYSIS_DATAHUB_PORT
+            value: "50050"
+          - name: FEDERATORAI_ANALYSIS_OUTLIER_DETECT
+            value: "true"
+      volumes:
+        - name: alameda-analyzer-data-storage
+        - name: alameda-analyzer-log-storage
