@@ -37,7 +37,7 @@ spec:
           periodSeconds: 5
         env:
           - name: FEDERATORAI_ANALYSIS_DATAHUB_ADDRESS
-            value: "alameda-datahub.federatorai.svc"
+            value: "alameda-datahub.{{.NameSpace}}.svc"
           - name: FEDERATORAI_ANALYSIS_DATAHUB_PORT
             value: "50050"
           - name: FEDERATORAI_ANALYSIS_OUTLIER_DETECT

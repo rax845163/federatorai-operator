@@ -36,9 +36,9 @@ spec:
             memory: 250Mi
         env:
         - name: OPERATOR_ADDRESS
-          value: "alameda-operator.federatorai.svc:50050"
+          value: "alameda-operator.{{.NameSpace}}.svc:50050"
         - name: DATAHUB_ADDRESS
-          value: "alameda-datahub.federatorai.svc:50050"
+          value: "alameda-datahub.{{.NameSpace}}.svc:50050"
         readinessProbe:
           exec:
             command:

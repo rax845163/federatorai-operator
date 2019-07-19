@@ -30,7 +30,7 @@ spec:
             - '--probe.kubernetes.role=host'
             - '--probe.docker.bridge=docker0'
             - '--probe.docker=true'
-            - 'alameda-weave-scope-app.federatorai.svc.cluster.local.:80'
+            - 'alameda-weave-scope-app.{{.NameSpace}}.cluster.local:80'
           image: quay.io/prophetstor/scope:v4.1.113
           imagePullPolicy: IfNotPresent
           resources:

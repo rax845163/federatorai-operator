@@ -27,9 +27,9 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: ALAMEDA_AI_DISPATCHER_DATAHUB_ADDRESS
-              value: "alameda-datahub.federatorai.svc:50050"
+              value: "alameda-datahub.{{.NameSpace}}.svc:50050"
             - name: ALAMEDA_AI_DISPATCHER_QUEUE_URL
-              value: "amqp://admin:adminpass@alameda-rabbitmq.federatorai.svc:5672"
+              value: "amqp://admin:adminpass@alameda-rabbitmq.{{.NameSpace}}.svc:5672"
           resources:
             {}
 

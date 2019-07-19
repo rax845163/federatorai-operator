@@ -41,7 +41,7 @@ spec:
             fieldRef:
               fieldPath: metadata.name
         - name: ALAMEDA_OPERATOR_DATAHUB_ADDRESS
-          value: "alameda-datahub.federatorai.svc:50050"
+          value: "alameda-datahub.{{.NameSpace}}.svc:50050"
         volumeMounts:
         - name: podinfo
           mountPath: /etc/podinfo
