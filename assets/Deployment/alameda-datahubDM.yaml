@@ -33,7 +33,7 @@ spec:
             memory: 100Mi
         env:
         - name: ALAMEDA_DATAHUB_INFLUXDB_ADDRESS
-          value: https://alameda-influxdb.federatorai.svc:8086
+          value: https://alameda-influxdb.{{.NameSpace}}.svc:8086
         - name: ALAMEDA_DATAHUB_INFLUXDB_USERNAME
           value: admin
         - name: ALAMEDA_DATAHUB_INFLUXDB_PASSWORD

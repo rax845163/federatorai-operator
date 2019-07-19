@@ -33,7 +33,7 @@ spec:
             memory: 75Mi
         env:
         - name: ALAMEDA_EVICTIONER_DATAHUB_ADDRESS
-          value: "alameda-datahub.federatorai.svc:50050"
+          value: "alameda-datahub.{{.NameSpace}}.svc:50050"
         - name: ALAMEDA_EVICTIONER_EVICTION_ENABLE
           value: "true"
         readinessProbe:
