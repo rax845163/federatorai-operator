@@ -19,7 +19,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: rabbitmq
-        image: docker.io/rabbitmq:3.7.15-alpine
+        image: quay.io/prophetstor/alameda-rabbitmq:latest
         ports:
           - name: http
             protocol: TCP
