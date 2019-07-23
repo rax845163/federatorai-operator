@@ -10,8 +10,8 @@ spec:
     - name: amqp
       port: 5672
       targetPort: amqp
-    - name: stats
+    - name: http
       port: 15672
-      targetPort: stats
+      targetPort: http
   selector:
     app: rabbitmq
