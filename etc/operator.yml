@@ -1,8 +1,8 @@
-watch-namespace: "" # Set empty to watch all namespaces of resources
+watchNamespace: "" # Set empty to watch all namespaces of resources
 
 metrics:
   port: 8383
 
 log:
-  output-level: "info" # one of 'debug', 'info', 'warn', 'error' (default info)
-  output-paths: # default output path 'stdout'
+  outputLevel: "info" # one of 'debug', 'info', 'warn', 'error' (default info)
+  outputPaths: # default output path 'stdout'

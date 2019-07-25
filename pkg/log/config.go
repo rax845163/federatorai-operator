@@ -1,8 +1,8 @@
 package log
 
 type Config struct {
-	OutputLevel string   `mapstructure:"output-level"`
-	OutputPaths []string `mapstructure:"output-paths"`
+	OutputLevel string   `mapstructure:"outputLevel"`
+	OutputPaths []string `mapstructure:"outputPaths"`
 }
 
 func NewDefaultConfig() Config {
