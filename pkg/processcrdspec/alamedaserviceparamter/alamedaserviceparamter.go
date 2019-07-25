@@ -207,7 +207,7 @@ func (asp *AlamedaServiceParamter) GetAdmissionControllerEnvVars() []corev1.EnvV
 	switch asp.Platform {
 	case v1alpha1.PlatformOpenshift3_9:
 		envVars = append(envVars, corev1.EnvVar{
-			Name:  "ALAMEDA_ADMCTL_JSON_PATCH_VALIDATION_FUNC",
+			Name:  "ALAMEDA_ADMCTL_JSONPATCHVALIDATIONFUNC",
 			Value: admission_controller.JsonPatchValidationFuncOpenshift3_9,
 		})
 	}
@@ -221,7 +221,7 @@ func (asp *AlamedaServiceParamter) GetAlamedaEvictionerEnvVars() []corev1.EnvVar
 	switch asp.Platform {
 	case v1alpha1.PlatformOpenshift3_9:
 		envVars = append(envVars, corev1.EnvVar{
-			Name:  "ALAMEDA_EVICTIONER_EVICTION_PURGE_CONTAINER_CPU_MEMORY",
+			Name:  "ALAMEDA_EVICTIONER_EVICTION_PURGECONTAINERCPUMEMORY",
 			Value: "true",
 		})
 	}
