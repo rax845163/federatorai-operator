@@ -73,9 +73,6 @@ func initConfiguration() {
 
 	initViperSetting()
 	mergeViperValueWithDefaultConfig()
-
-	watchNamespace, _ = os.LookupEnv(k8sutil.WatchNamespaceEnvVar)
-	fedOperatorConfig.WatchNamespace = watchNamespace
 }
 
 func initViperSetting() {
@@ -147,10 +144,16 @@ func main() {
 		log.Error(err, "")
 		os.Exit(1)
 	}
+
+	namespace, err := k8sutil.GetWatchNamespace()
+	if err != nil {
+		log.Error(err, "Failed to get watch namespace")
+		os.Exit(1)
+	}
 	//var day time.Duration = 1*24 * time.Hour
 	// Create a new Cmd to provide shared dependencies and start components
 	mgr, err := manager.New(cfg, manager.Options{
-		Namespace:          fedOperatorConfig.WatchNamespace,
+		Namespace:          namespace,
 		MetricsBindAddress: fmt.Sprintf("%s:%d", fedOperatorConfig.Metrics.Host, fedOperatorConfig.Metrics.Port),
 		//SyncPeriod:         &day,
 	})

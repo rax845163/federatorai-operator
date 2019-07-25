@@ -6,17 +6,15 @@ import (
 
 // Config encapsultes configuration of federatorai operator
 type Config struct {
-	WatchNamespace string        `mapstructure:"watch-namespace"`
-	Metrics        MetricsConfig `mapstructure:"metrics"`
-	Log            log.Config    `mapstructure:"log"`
+	Metrics MetricsConfig `mapstructure:"metrics"`
+	Log     log.Config    `mapstructure:"log"`
 }
 
 // NewDefaultConfig creates operator default configuration
 func NewDefaultConfig() Config {
 	return Config{
-		WatchNamespace: "",
-		Metrics:        NewDefaultMetricsConfig(),
-		Log:            log.NewDefaultConfig(),
+		Metrics: NewDefaultMetricsConfig(),
+		Log:     log.NewDefaultConfig(),
 	}
 }
 

@@ -29,3 +29,35 @@ Please visit [docs](./docs/)
 * [Go modules](https://github.com/golang/go/wiki/Modules)
 * [Standard Go Project Layout](https://github.com/golang-standards/project-layout)
 * [CRI tools](https://github.com/kubernetes-sigs/cri-tools)
+
+## Usage
+
+### Configuration
+
+There are two method of configuration, the precedence from high to low is **Setting Environment Variable**, **Setting Configuration File**.
+
+#### Setting Environment Variable
+
+There are two types of environment variable that Federatorai-Operator accepts
+
+* Variables with prefix **FEDERATORAI_OPERATOR**, the available variables list are identical to the configuration file. Properties in the configuration file tree are seperated with underscore("_"). For example, to configure the logger output level, set environment variable **FEDERATORAI_OPERATOR_LOG_OUTPUTLEVEL** to the desired value.
+
+* Variables that are **not** with prefix **FEDERATORAI_OPERATOR**, the variables are listed below
+  * name: WATCH_NAMESPACE
+    * description: Federatorai-Operator will only reconcile AlamedaService in this namespace, or all namespaces if the variable is set to "".
+
+    **Notes: This variable is mandatory.**
+    
+  * name: POD_NAME
+    * description: Federatorai-Operator will get the pod with this name that the pod is where the code is running at. It expects the environment variable POD_NAME to be set by the downwards API.
+  * name: OPERATOR_NAME
+    * description: Federatorai-Operator will create a service name in _OPERATOR_NAME_ to expose metrics service.  
+  * name: DISABLE_OPERAND_RESOURCE_PROTECTION
+    * description: If _true_ Federatorai-Operator will not reconcile k8s obejcts that are owned by AlamedaService when those objects have been changed individually, which means Federatorai-Operator will only reconcile those objects when AlamedaService has been changed.  
+
+#### Setting Configuration File
+
+See the example [file](./etc/operator.yml). Assign the configuration file path when running Federatorai-Operator with flag **--config**.
+```
+$FEDERATORAI_OPERATOR_BIN --config $CONFIGURATION_FILE_PATH
+```

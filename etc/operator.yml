@@ -1,8 +1,7 @@
-watchNamespace: "" # Set empty to watch all namespaces of resources
 
 metrics:
   port: 8383
 
 log:
   outputLevel: "info" # one of 'debug', 'info', 'warn', 'error' (default info)
-  outputPaths: # default output path 'stdout'
+  outputPaths: # default output paths are 'stdout' and '/var/log/alameda/federatorai-operator.log'
