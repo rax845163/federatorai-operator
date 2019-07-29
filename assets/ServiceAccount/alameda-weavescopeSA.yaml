@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: federatorai-alameda-weave-scope
+  name: alameda-weave-scope
   labels:
-    name: federatorai-alameda-weave-scope
+    name: alameda-weave-scope
   namespace: federatorai
