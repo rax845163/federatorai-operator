@@ -14,6 +14,7 @@ import (
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	securityv1 "github.com/openshift/api/security/v1"
 	ingressv1beta1 "k8s.io/api/extensions/v1beta1"
 	v1beta1 "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -63,12 +64,20 @@ func (c ComponentConfig) NewClusterRole(str string) *rbacv1.ClusterRole {
 	return cr
 }
 func (c ComponentConfig) NewPodSecurityPolicy(str string) *v1beta1.PodSecurityPolicy {
-	crByte, err := assets.Asset(str)
+	pspByte, err := assets.Asset(str)
 	if err != nil {
 		log.Error(err, "Failed to Test create PodSecurityPolicy")
 	}
-	cr := resourceread.ReadPodSecurityPolicyV1beta1(crByte)
-	return cr
+	psp := resourceread.ReadPodSecurityPolicyV1beta1(pspByte)
+	return psp
+}
+func (c ComponentConfig) NewSecurityContextConstraints(str string) *securityv1.SecurityContextConstraints {
+	sccByte, err := assets.Asset(str)
+	if err != nil {
+		log.Error(err, "Failed to Test create SecurityContextConstraints")
+	}
+	scc := resourceread.ReadSecurityContextConstraintsV1(sccByte)
+	return scc
 }
 func (c ComponentConfig) NewDaemonSet(str string) *appsv1.DaemonSet {
 	daemonSetBytes, err := assets.Asset(str)

@@ -7,6 +7,7 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateenvvar"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	securityv1 "github.com/openshift/api/security/v1"
 )
 
 func ParamterToDeployment(dep *appsv1.Deployment, asp *alamedaserviceparamter.AlamedaServiceParamter) *appsv1.Deployment {
@@ -20,6 +21,10 @@ func ParamterToDaemonSet(ds *appsv1.DaemonSet, asp *alamedaserviceparamter.Alame
 	globalsectionset.GlobalSectionSetParamterToDaemonSet(ds, asp) //DaemonSet's Global Section Set
 	componentsectionset.SectionSetParamterToDaemonSet(ds, asp)    //DaemonSet's Component Section Set
 	return ds
+}
+func ParamterToSecurityContextConstraints(scc *securityv1.SecurityContextConstraints, asp *alamedaserviceparamter.AlamedaServiceParamter) *securityv1.SecurityContextConstraints {
+	updateenvvar.AssignServiceAccountsToSecurityContextConstraints(scc, asp.NameSpace)
+	return scc
 }
 func ParamterToConfigMap(cm *corev1.ConfigMap, asp *alamedaserviceparamter.AlamedaServiceParamter) *corev1.ConfigMap {
 	updateenvvar.AssignServiceToConfigMap(cm, cm.Namespace)                                       //ConfigMapSpec's service
