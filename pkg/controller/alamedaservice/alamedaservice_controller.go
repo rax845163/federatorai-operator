@@ -408,6 +408,7 @@ func (r *ReconcileAlamedaService) syncDaemonSet(instance *federatoraiv1alpha1.Al
 		resourceDS = processcrdspec.ParamterToDaemonSet(resourceDS, asp)
 		foundDS := &appsv1.DaemonSet{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDS.Name, Namespace: resourceDS.Namespace}, foundDS)
+
 		if err != nil && k8sErrors.IsNotFound(err) {
 			log.Info("Creating a new Resource DaemonSet... ", "resourceDS.Namespace", resourceDS.Namespace, "resourceDS.Name", resourceDS.Name)
 			err = r.client.Create(context.TODO(), resourceDS)

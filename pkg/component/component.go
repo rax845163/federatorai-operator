@@ -68,7 +68,6 @@ func (c ComponentConfig) NewPodSecurityPolicy(str string) *v1beta1.PodSecurityPo
 		log.Error(err, "Failed to Test create PodSecurityPolicy")
 	}
 	cr := resourceread.ReadPodSecurityPolicyV1beta1(crByte)
-	cr.Name = strings.Replace(cr.Name, strings.Split(cr.Name, "-")[0], c.NameSpace, -1)
 	return cr
 }
 func (c ComponentConfig) NewDaemonSet(str string) *appsv1.DaemonSet {
@@ -311,6 +310,31 @@ func (c ComponentConfig) mutatePodSecurityContextWithConfig(podSecurityContext c
 	if c.PodTemplateConfig.PodSecurityContext.FSGroup != nil {
 		fsGroup := *c.PodTemplateConfig.PodSecurityContext.FSGroup
 		copyPodSecurityContext.FSGroup = &fsGroup
+	}
+
+	if c.PodTemplateConfig.PodSecurityContext.RunAsUser != nil {
+		runAsUser := *c.PodTemplateConfig.PodSecurityContext.RunAsUser
+		copyPodSecurityContext.RunAsUser = &runAsUser
+	}
+
+	if c.PodTemplateConfig.PodSecurityContext.RunAsGroup != nil {
+		runAsGroup := *c.PodTemplateConfig.PodSecurityContext.RunAsGroup
+		copyPodSecurityContext.RunAsGroup = &runAsGroup
+	}
+
+	if c.PodTemplateConfig.PodSecurityContext.SELinuxOptions != nil {
+		seLinuxOptions := *c.PodTemplateConfig.PodSecurityContext.SELinuxOptions
+		copyPodSecurityContext.SELinuxOptions = &seLinuxOptions
+	}
+
+	if c.PodTemplateConfig.PodSecurityContext.SupplementalGroups != nil {
+		supplementalGroups := c.PodTemplateConfig.PodSecurityContext.SupplementalGroups
+		copyPodSecurityContext.SupplementalGroups = supplementalGroups
+	}
+
+	if c.PodTemplateConfig.PodSecurityContext.Sysctls != nil {
+		sysctls := c.PodTemplateConfig.PodSecurityContext.Sysctls
+		copyPodSecurityContext.Sysctls = sysctls
 	}
 
 	return *copyPodSecurityContext

@@ -41,4 +41,4 @@ spec:
             requests:
               cpu: 100m
               memory: 100Mi
-      serviceAccountName: federatorai-alameda-weave-scope
+      serviceAccountName: alameda-weave-scope
