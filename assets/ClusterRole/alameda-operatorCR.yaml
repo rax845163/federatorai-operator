@@ -17,6 +17,7 @@ rules:
   - apps
   resources:
   - replicasets
+  - statefulsets
   - deployments
   verbs:
   - get
