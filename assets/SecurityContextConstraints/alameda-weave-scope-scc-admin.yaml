@@ -1,5 +1,5 @@
-kind: SecurityContextConstraints
 apiVersion: security.openshift.io/v1
+kind: SecurityContextConstraints
 metadata:
   name: alameda-weave-scope-scc-admin
 priority: null
