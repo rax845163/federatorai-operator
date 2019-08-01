@@ -50,8 +50,10 @@ var (
 		"Secret/alameda-influxdb.yaml",
 	}
 	pspList = []string{"PodSecurityPolicy/alameda-weavescopePSP.yaml"}
-
 	dsList = []string{"DaemonSet/alamdea-weavescopeDS.yaml"}
+	sccList = []string{"SecurityContextConstraints/alameda-weave-scope-scc-admin.yaml",
+		"SecurityContextConstraints/alameda-weave-scope-scc-anyuid.yaml",
+	}
 
 	guiList = []string{
 		"ClusterRoleBinding/alameda-grafanaCRB.yaml",
@@ -158,6 +160,7 @@ type Resource struct {
 	IngressList                  []string
 	PodSecurityPolicyList        []string
 	DaemonSetList                []string
+	SecurityContextConstraintsList []string
 }
 
 func (asp *AlamedaServiceParamter) GetEnvVarsByDeployment(deploymentName string) []corev1.EnvVar {
@@ -241,6 +244,7 @@ func GetUnInstallResource() *Resource {
 		SecretList:                   secretList,
 		PodSecurityPolicyList:        pspList,
 		DaemonSetList:                dsList,
+		SecurityContextConstraintsList:    sccList,
 	}
 }
 
@@ -635,6 +639,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 	secrets := secretList
 	psp := pspList
 	ds := dsList
+	scc := sccList
 	pvc := []string{}
 	route := []string{}
 	statefulset := []string{}
@@ -706,6 +711,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 		IngressList:                  ingress,
 		PodSecurityPolicyList:        psp,
 		DaemonSetList:                ds,
+		SecurityContextConstraintsList:    scc,
 	}
 }
 

@@ -65,6 +65,7 @@ const (
 	OriginComfigMapPrometheusLocation  = "prometheus.yaml"
 	NamespaceService                   = "federatorai.svc"
 	DefaultNamespace                   = "federatorai"
+	NamespaceServiceAccount            = "serviceaccount:federatorai"
 	//MountPath
 	DataMountPath = "/var/lib"
 	LogMountPath  = "/var/log"

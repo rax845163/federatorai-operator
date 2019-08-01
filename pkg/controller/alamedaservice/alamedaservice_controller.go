@@ -19,6 +19,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	ingressv1beta1 "k8s.io/api/extensions/v1beta1"
+	securityv1 "github.com/openshift/api/security/v1"
 	v1beta1 "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	apiextension "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
@@ -179,6 +180,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	if err := r.syncPodSecurityPolicy(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync podSecurityPolicy failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+	if err := r.syncSecurityContextConstraints(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync securityContextConstraint failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 	if err := r.syncClusterRole(instance, asp, installResource); err != nil {
@@ -392,6 +397,35 @@ func (r *ReconcileAlamedaService) syncPodSecurityPolicy(instance *federatoraiv1a
 			err = r.client.Update(context.TODO(), resourcePSP)
 			if err != nil {
 				return errors.Errorf("Update PodSecurityPolicy %s/%s failed: %s", resourcePSP.Namespace, resourcePSP.Name, err.Error())
+			}
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) syncSecurityContextConstraints(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+	for _, FileStr := range resource.SecurityContextConstraintsList {
+		resourceSCC := componentConfig.NewSecurityContextConstraints(FileStr)
+		if err := controllerutil.SetControllerReference(instance, resourceSCC, r.scheme); err != nil {
+			return errors.Errorf("Fail resourceSCC SetControllerReference: %s", err.Error())
+		}
+		//process resource SecurityContextConstraints according to AlamedaService CR
+		resourceSCC = processcrdspec.ParamterToSecurityContextConstraints(resourceSCC, asp)
+		foundSCC := &securityv1.SecurityContextConstraints{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSCC.Name}, foundSCC)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			log.Info("Creating a new Resource SecurityContextConstraints... ", "resourceSCC.Name", resourceSCC.Name)
+			err = r.client.Create(context.TODO(), resourceSCC)
+			if err != nil {
+				return errors.Errorf("create SecurityContextConstraints %s/%s failed: %s", resourceSCC.Namespace, resourceSCC.Name, err.Error())
+			}
+			log.Info("Successfully Creating Resource SecurityContextConstraints", "resourceSCC.Name", resourceSCC.Name)
+		} else if err != nil {
+			return errors.Errorf("get SecurityContextConstraints %s/%s failed: %s", resourceSCC.Namespace, resourceSCC.Name, err.Error())
+		} else {
+			err = r.client.Update(context.TODO(), resourceSCC)
+			if err != nil {
+				return errors.Errorf("Update SecurityContextConstraints %s/%s failed: %s", resourceSCC.Namespace, resourceSCC.Name, err.Error())
 			}
 		}
 	}
