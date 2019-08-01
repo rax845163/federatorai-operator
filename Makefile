@@ -47,7 +47,7 @@ pkg/assets/bindata.go: $(GOBINDATA_BIN)
 		Ingress/... \
 		DaemonSet/... \
 		PodSecurityPolicy/... \
-		SecurityContextConstraint/... \
+		SecurityContextConstraints/... \
 
 
 
