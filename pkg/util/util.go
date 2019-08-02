@@ -10,7 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 
-	openshift_api_apps_v1 "github.com/openshift/api/apps"
+	openshift_api_apps_v1 "github.com/openshift/api/apps/v1"
 	"k8s.io/client-go/kubernetes"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 )
