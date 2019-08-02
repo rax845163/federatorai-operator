@@ -14,6 +14,8 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/apis"
 	"github.com/containers-ai/federatorai-operator/pkg/controller"
 	fedOperatorLog "github.com/containers-ai/federatorai-operator/pkg/log"
+	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
+	"github.com/containers-ai/federatorai-operator/pkg/util"
 	"github.com/containers-ai/federatorai-operator/pkg/version"
 	routev1 "github.com/openshift/api/route/v1"
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
@@ -184,6 +186,12 @@ func main() {
 	_, err = metrics.ExposeMetricsPort(ctx, metricsPort)
 	if err != nil {
 		log.Info(err.Error())
+	}
+
+	if exist, err := util.ServerHasOpenshiftAPIAppsV1(); err != nil {
+		log.Error(err, "Check if server has openshit api apps/v1 failed")
+	} else {
+		alamedaserviceparamter.HasOpenshiftAPI = exist
 	}
 
 	log.Info("Starting the Cmd.")

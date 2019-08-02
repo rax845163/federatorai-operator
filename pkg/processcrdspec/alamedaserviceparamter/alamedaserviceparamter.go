@@ -2,6 +2,7 @@ package alamedaserviceparamter
 
 import (
 	"strings"
+	"sync"
 
 	admission_controller "github.com/containers-ai/alameda/admission-controller"
 	"github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
@@ -11,6 +12,7 @@ import (
 
 var (
 	ConfigMapDashboardsConfig = "ConfigMap/dashboards-config.yaml"
+	HasOpenshiftAPI           = false
 )
 
 var (
@@ -317,6 +319,9 @@ func (asp *AlamedaServiceParamter) GetAlamedaEvictionerEnvVars() []corev1.EnvVar
 }
 
 func GetGUIResource() *Resource {
+
+	removeOpenshiftResource()
+
 	var guicrb = make([]string, 0)
 	var guicr = make([]string, 0)
 	var guisa = make([]string, 0)
@@ -540,7 +545,9 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 		cm = append(cm, "ConfigMap/dashboards-config.yaml")
 		sv = append(sv, "Service/alameda-grafanaSV.yaml")
 		dep = append(dep, "Deployment/alameda-grafanaDM.yaml")
-		route = append(route, "Route/alameda-grafanaRT.yaml")
+		if HasOpenshiftAPI {
+			route = append(route, "Route/alameda-grafanaRT.yaml")
+		}
 	}
 	if asp.EnableExecution {
 		crb = append(crb, "ClusterRoleBinding/alameda-evictionerCRB.yaml")
@@ -589,6 +596,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 }
 
 func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServiceParamter {
+	removeOpenshiftResource()
 	asp := &AlamedaServiceParamter{
 		NameSpace:                     instance.Namespace,
 		SelfDriving:                   instance.Spec.SelfDriving,
@@ -613,4 +621,22 @@ func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServic
 		previousCRDVersion:            instance.Status.CRDVersion,
 	}
 	return asp
+}
+
+var once sync.Once
+
+func removeOpenshiftResource() {
+	once.Do(func() {
+		if !HasOpenshiftAPI {
+			guiList = []string{
+				"ClusterRoleBinding/alameda-grafanaCRB.yaml",
+				"ClusterRole/alameda-grafanaCR.yaml",
+				"ServiceAccount/alameda-grafanaSA.yaml",
+				"ConfigMap/grafana-datasources.yaml",
+				"ConfigMap/dashboards-config.yaml",
+				"Deployment/alameda-grafanaDM.yaml",
+				"Service/alameda-grafanaSV.yaml",
+			}
+		}
+	})
 }

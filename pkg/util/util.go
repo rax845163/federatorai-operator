@@ -9,6 +9,10 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
+
+	openshift_api_apps_v1 "github.com/openshift/api/apps"
+	"k8s.io/client-go/kubernetes"
+	"sigs.k8s.io/controller-runtime/pkg/client/config"
 )
 
 type GroupEnums string
@@ -378,4 +382,41 @@ func StringInSlice(str string, list []string) bool {
 		}
 	}
 	return false
+}
+
+var (
+	hasOpenshiftAPIAppsV1 *bool
+)
+
+// ServerHasOpenshiftAPIAppsV1 returns true if the api-server has apiGroup named in "apps.openshift.io"
+func ServerHasOpenshiftAPIAppsV1() (bool, error) {
+
+	if hasOpenshiftAPIAppsV1 == nil {
+		if exist, err := serverHasAPIGroup(openshift_api_apps_v1.GroupName); err != nil {
+			return false, err
+		} else {
+			hasOpenshiftAPIAppsV1 = &exist
+		}
+	}
+
+	return *hasOpenshiftAPIAppsV1, nil
+}
+
+func serverHasAPIGroup(apiGroupName string) (bool, error) {
+
+	config, err := config.GetConfig()
+	k8sClient, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return false, err
+	}
+	apiGroups, err := k8sClient.ServerGroups()
+	if err != nil {
+		return false, err
+	}
+	for _, apiGroup := range apiGroups.Groups {
+		if apiGroup.Name == apiGroupName {
+			return true, nil
+		}
+	}
+	return false, nil
 }
