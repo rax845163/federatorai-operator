@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: federatorai-admission-controller
+  name: {{.NameSpace}}-admission-controller
 rules:
   - apiGroups:
       - "admissionregistration.k8s.io"

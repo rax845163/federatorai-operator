@@ -17,11 +17,6 @@ func AssignServiceToDeployment(dep *appsv1.Deployment, ns string) {
 		}
 	}
 }
-func AssignServiceToConfigMap(cm *corev1.ConfigMap, ns string) {
-	if strings.Contains(cm.Data[util.OriginComfigMapPrometheusLocation], util.NamespaceService) {
-		cm.Data[util.OriginComfigMapPrometheusLocation] = strings.Replace(cm.Data[util.OriginComfigMapPrometheusLocation], util.NamespaceService, ns+".svc", -1)
-	}
-}
 
 func UpdateEnvVarsToDeployment(dep *appsv1.Deployment, envVars []corev1.EnvVar) {
 

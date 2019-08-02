@@ -70,7 +70,6 @@ const (
 )
 
 var (
-	ConfigKeyList = []string{OriginComfigMapRecommandation, OriginComfigMapExecution, OriginComfigMapFedemeterInfluxDBHost, OriginComfigMapFedemeterDataHubHost}
 	//if disable resource protection
 	Disable_operand_resource_protection = "false"
 	log                                 = logf.Log.WithName("controller_alamedaservice")

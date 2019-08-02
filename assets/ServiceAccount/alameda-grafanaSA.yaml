@@ -2,4 +2,4 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: alameda-grafana
-  namespace: federatorai
+  namespace: {{.NameSpace}}

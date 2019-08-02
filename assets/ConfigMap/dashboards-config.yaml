@@ -1,9 +1,10 @@
+# This file cannot be parsed by http/template, so metadata.namespace cannot be {{.NameSpace.}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: dashboards-config
   namespace: federatorai
-data:  
+data:
   clusterhealth.json:
     |-
       {

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fedemeter-api
-  namespace: federatorai
+  namespace: {{.NameSpace}}
 spec:
   selector:
     matchLabels:

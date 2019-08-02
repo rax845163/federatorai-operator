@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: alameda-operator
-  namespace: federatorai
+  namespace: {{.NameSpace}}
   labels:
     app: alameda
     component: alameda-operator

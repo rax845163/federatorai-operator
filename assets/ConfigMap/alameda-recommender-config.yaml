@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: alameda-recommender-config
-  namespace: federatorai
+  namespace: {{.NameSpace}}
 data:
   config.toml: |-
     [global]
@@ -12,7 +12,7 @@ data:
     debug = false
 
     [datahub]
-    address = "alameda-datahub.federatorai.svc"
+    address = "alameda-datahub.{{.NameSpace}}.svc"
     port = 50050
 
     [hpa_scaling]

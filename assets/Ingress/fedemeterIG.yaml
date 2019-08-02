@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  namespace: federatorai
+  namespace: {{.NameSpace}}
   name: fedemeter-api
   annotations:
     ingress.kubernetes.io/cors-enable: "true"

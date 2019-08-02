@@ -2,7 +2,7 @@ apiVersion: autoscaling.containers.ai/v1alpha1
 kind: AlamedaScaler
 metadata:
   name: alameda
-  namespace: federatorai
+  namespace: {{.NameSpace}}
 spec:
   policy: stable
   enableExecution: true

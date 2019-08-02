@@ -1,14 +1,14 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: federatorai-alameda-datahub
+  name: {{.NameSpace}}-alameda-datahub
 rules:
-# Permission for query prometheus under namespace openshift-monitoring 
-- apiGroups: 
+# Permission for query prometheus under namespace openshift-monitoring
+- apiGroups:
   - ""
-  resources: 
+  resources:
   - namespaces
-  verbs: 
+  verbs:
   - get
 - apiGroups:
   - autoscaling.containers.ai

@@ -10,6 +10,10 @@ import (
 )
 
 var (
+	ConfigMapDashboardsConfig = "ConfigMap/dashboards-config.yaml"
+)
+
+var (
 	crbList = []string{"ClusterRoleBinding/alameda-datahubCRB.yaml",
 		"ClusterRoleBinding/alameda-operatorCRB.yaml",
 	}

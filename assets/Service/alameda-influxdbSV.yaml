@@ -4,7 +4,7 @@ metadata:
   labels:
     component: alameda-influxdb
   name: alameda-influxdb
-  namespace: federatorai
+  namespace: {{.NameSpace}}
 spec:
   ports:
   - port: 8086

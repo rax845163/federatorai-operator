@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: fedemeter-influxdb
-  namespace: federatorai
+  namespace: {{.NameSpace}}
 spec:
   serviceName: fedemeter-influxdb
   selector:
