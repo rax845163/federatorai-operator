@@ -4,7 +4,7 @@ metadata:
   labels:
     component: alameda-datahub
   name: alameda-datahub
-  namespace: federatorai
+  namespace: {{.NameSpace}}
 spec:
   ports:
   - name: grpc

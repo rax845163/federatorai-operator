@@ -4,7 +4,7 @@ metadata:
   labels:
     component: admission-controller
   name: admission-controller
-  namespace: federatorai
+  namespace: {{.NameSpace}}
 spec:
   ports:
   - port: 443

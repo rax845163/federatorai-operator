@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: federatorai
+  namespace: {{.NameSpace}}
   name: alameda-rabbitmq
   labels:
     app: rabbitmq

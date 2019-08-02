@@ -2,9 +2,9 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: fedemeter-config
-  namespace: federatorai
+  namespace: {{.NameSpace}}
 data:
-    FEDEMETER_INFLUXDB_HOST: "fedemeter-influxdb.federatorai"
+    FEDEMETER_INFLUXDB_HOST: "fedemeter-influxdb.{{.NameSpace}}"
     FEDEMETER_INFLUXDB_PORT: "8086"
-    DATAHUB_HOST: "alameda-datahub.federatorai"
+    DATAHUB_HOST: "alameda-datahub.{{.NameSpace}}"
     DATAHUB_PORT: "50050"

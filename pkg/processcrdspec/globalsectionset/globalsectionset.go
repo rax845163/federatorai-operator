@@ -125,24 +125,8 @@ func processConfigMapsPrometheusService(cm *corev1.ConfigMap, prometheusservice 
 		cm.Data[util.OriginComfigMapPrometheusLocation] = strings.Replace(cm.Data[util.OriginComfigMapPrometheusLocation], util.OriginPrometheus_URL, prometheusservice, -1)
 	}
 }
-func processConfigMapsDataHubService(cm *corev1.ConfigMap, namespace string) {
-	for _, v := range util.ConfigKeyList {
-		if strings.Contains(cm.Data[v], util.NamespaceService) && namespace != "" {
-			cm.Data[v] = strings.Replace(cm.Data[v], util.NamespaceService, namespace+".svc", -1)
-		}
-	}
-}
-func processConfigMapsDataNamespace(cm *corev1.ConfigMap, namespace string) {
-	for _, v := range util.ConfigKeyList {
-		if strings.Contains(cm.Data[v], util.DefaultNamespace) && namespace != "" {
-			cm.Data[v] = strings.Replace(cm.Data[v], util.DefaultNamespace, namespace, -1)
-		}
-	}
-}
 func GlobalSectionSetParamterToConfigMap(cm *corev1.ConfigMap, prometheusService string, namespace string) {
 	processConfigMapsPrometheusService(cm, prometheusService) //ConfigMapData's PrometheusService
-	processConfigMapsDataHubService(cm, namespace)            //ConfigMapData's alameda-datahub service
-	processConfigMapsDataNamespace(cm, namespace)
 }
 
 func processDeploymentPrometheusService(dep *appsv1.Deployment, prometheusservice string) {

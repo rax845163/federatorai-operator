@@ -12,11 +12,13 @@ import (
 	autoscaling_v1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/assets"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceread"
+	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
+	"github.com/containers-ai/federatorai-operator/pkg/util"
 	routev1 "github.com/openshift/api/route/v1"
+	securityv1 "github.com/openshift/api/security/v1"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	securityv1 "github.com/openshift/api/security/v1"
 	ingressv1beta1 "k8s.io/api/extensions/v1beta1"
 	v1beta1 "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -26,6 +28,11 @@ import (
 )
 
 var log = logf.Log.WithName("controller_alamedaservice")
+
+// assetsSkipTemplateParse contains asset files that cannnot do template parsing
+var assetsSkipTemplateParse = []string{
+	alamedaserviceparamter.ConfigMapDashboardsConfig,
+}
 
 type ComponentConfig struct {
 	NameSpace         string
@@ -44,16 +51,25 @@ func (c *ComponentConfig) SetNameSpace(ns string) {
 	c.NameSpace = ns
 }
 
+func (c ComponentConfig) templateAssets(data string) []byte {
+	tmpl, err := template.New("namespaceServiceToYaml").Parse(data)
+	if err != nil {
+		panic(err)
+	}
+	yamlBuffer := new(bytes.Buffer)
+	if err = tmpl.Execute(yamlBuffer, c); err != nil {
+		panic(err)
+	}
+	return yamlBuffer.Bytes()
+}
+
 func (c ComponentConfig) NewClusterRoleBinding(str string) *rbacv1.ClusterRoleBinding {
 	crbByte, err := assets.Asset(str)
 	if err != nil {
 		log.Error(err, "Failed to Test create clusterrolebinding")
 
 	}
-	crb := resourceread.ReadClusterRoleBindingV1(crbByte)
-	crb.Name = strings.Replace(crb.Name, strings.Split(crb.Name, "-")[0], c.NameSpace, -1)
-	crb.RoleRef.Name = crb.Name
-	crb.Subjects[0].Namespace = c.NameSpace
+	crb := resourceread.ReadClusterRoleBindingV1(c.templateAssets(string(crbByte[:])))
 	return crb
 }
 func (c ComponentConfig) NewClusterRole(str string) *rbacv1.ClusterRole {
@@ -61,8 +77,7 @@ func (c ComponentConfig) NewClusterRole(str string) *rbacv1.ClusterRole {
 	if err != nil {
 		log.Error(err, "Failed to Test create clusterrole")
 	}
-	cr := resourceread.ReadClusterRoleV1(crByte)
-	cr.Name = strings.Replace(cr.Name, strings.Split(cr.Name, "-")[0], c.NameSpace, -1)
+	cr := resourceread.ReadClusterRoleV1(c.templateAssets(string(crByte[:])))
 	return cr
 }
 func (c ComponentConfig) NewPodSecurityPolicy(str string) *v1beta1.PodSecurityPolicy {
@@ -70,7 +85,7 @@ func (c ComponentConfig) NewPodSecurityPolicy(str string) *v1beta1.PodSecurityPo
 	if err != nil {
 		log.Error(err, "Failed to Test create PodSecurityPolicy")
 	}
-	psp := resourceread.ReadPodSecurityPolicyV1beta1(pspByte)
+	psp := resourceread.ReadPodSecurityPolicyV1beta1(c.templateAssets(string(pspByte[:])))
 	return psp
 }
 func (c ComponentConfig) NewSecurityContextConstraints(str string) *securityv1.SecurityContextConstraints {
@@ -78,7 +93,7 @@ func (c ComponentConfig) NewSecurityContextConstraints(str string) *securityv1.S
 	if err != nil {
 		log.Error(err, "Failed to Test create SecurityContextConstraints")
 	}
-	scc := resourceread.ReadSecurityContextConstraintsV1(sccByte)
+	scc := resourceread.ReadSecurityContextConstraintsV1(c.templateAssets(string(sccByte[:])))
 	return scc
 }
 func (c ComponentConfig) NewDaemonSet(str string) *appsv1.DaemonSet {
@@ -87,16 +102,7 @@ func (c ComponentConfig) NewDaemonSet(str string) *appsv1.DaemonSet {
 		log.Error(err, "Failed to Test create DaemonSet")
 
 	}
-	tmpl, err := template.New("namespaceServiceToYaml").Parse(string(daemonSetBytes[:]))
-	if err != nil {
-		panic(err)
-	}
-	yamlBuffer := new(bytes.Buffer)
-	if err = tmpl.Execute(yamlBuffer, c); err != nil {
-		panic(err)
-	}
-	d := resourceread.ReadDaemonSetV1(yamlBuffer.Bytes())
-	d.Namespace = c.NameSpace
+	d := resourceread.ReadDaemonSetV1(c.templateAssets(string(daemonSetBytes[:])))
 	d.Spec.Template = c.mutatePodTemplateSpecWithConfig(d.Spec.Template)
 	return d
 }
@@ -106,18 +112,22 @@ func (c ComponentConfig) NewServiceAccount(str string) *corev1.ServiceAccount {
 		log.Error(err, "Failed to Test create serviceaccount")
 
 	}
-	sa := resourceread.ReadServiceAccountV1(saByte)
-	sa.Namespace = c.NameSpace
+	sa := resourceread.ReadServiceAccountV1(c.templateAssets(string(saByte[:])))
 	return sa
 }
 func (c ComponentConfig) NewConfigMap(str string) *corev1.ConfigMap {
 	cmByte, err := assets.Asset(str)
 	if err != nil {
 		log.Error(err, "Failed to Test create configmap")
-
 	}
-	cm := resourceread.ReadConfigMapV1(cmByte)
-	cm.Namespace = c.NameSpace
+
+	var cm *corev1.ConfigMap
+	if skipTemplateParse(str) {
+		cm = resourceread.ReadConfigMapV1(cmByte)
+		cm.Namespace = c.NameSpace
+	} else {
+		cm = resourceread.ReadConfigMapV1(c.templateAssets(string(cmByte[:])))
+	}
 	return cm
 }
 func (c ComponentConfig) NewPersistentVolumeClaim(str string) *corev1.PersistentVolumeClaim {
@@ -126,8 +136,7 @@ func (c ComponentConfig) NewPersistentVolumeClaim(str string) *corev1.Persistent
 		log.Error(err, "Failed to Test create persistentvolumeclaim")
 
 	}
-	pvc := resourceread.ReadPersistentVolumeClaimV1(pvcByte)
-	pvc.Namespace = c.NameSpace
+	pvc := resourceread.ReadPersistentVolumeClaimV1(c.templateAssets(string(pvcByte[:])))
 	return pvc
 }
 func (c ComponentConfig) NewService(str string) *corev1.Service {
@@ -136,8 +145,7 @@ func (c ComponentConfig) NewService(str string) *corev1.Service {
 		log.Error(err, "Failed to Test create service")
 
 	}
-	sv := resourceread.ReadServiceV1(svByte)
-	sv.Namespace = c.NameSpace
+	sv := resourceread.ReadServiceV1(c.templateAssets(string(svByte[:])))
 	return sv
 }
 
@@ -147,8 +155,7 @@ func (c ComponentConfig) NewAlamedaScaler(str string) *autoscaling_v1alpha1.Alam
 		log.Error(err, "Failed to Test create NewAlamedaScaler")
 
 	}
-	scaler := resourceread.ReadScalerV1(scalerByte)
-	scaler.Namespace = c.NameSpace
+	scaler := resourceread.ReadScalerV1(c.templateAssets(string(scalerByte[:])))
 	return scaler
 }
 
@@ -158,16 +165,7 @@ func (c ComponentConfig) NewDeployment(str string) *appsv1.Deployment {
 		log.Error(err, "Failed to Test create deployment")
 
 	}
-	tmpl, err := template.New("namespaceServiceToYaml").Parse(string(deploymentBytes[:]))
-	if err != nil {
-		panic(err)
-	}
-	yamlBuffer := new(bytes.Buffer)
-	if err = tmpl.Execute(yamlBuffer, c); err != nil {
-		panic(err)
-	}
-	d := resourceread.ReadDeploymentV1(yamlBuffer.Bytes())
-	d.Namespace = c.NameSpace
+	d := resourceread.ReadDeploymentV1(c.templateAssets(string(deploymentBytes[:])))
 	d.Spec.Template = c.mutatePodTemplateSpecWithConfig(d.Spec.Template)
 	return d
 }
@@ -178,8 +176,7 @@ func (c ComponentConfig) NewRoute(str string) *routev1.Route {
 		log.Error(err, "Failed to Test create route")
 
 	}
-	rt := resourceread.ReadRouteV1(rtByte)
-	rt.Namespace = c.NameSpace
+	rt := resourceread.ReadRouteV1(c.templateAssets(string(rtByte[:])))
 	return rt
 }
 
@@ -189,8 +186,7 @@ func (c ComponentConfig) NewIngress(str string) *ingressv1beta1.Ingress {
 		log.Error(err, "Failed to Test create ingress")
 
 	}
-	ig := resourceread.ReadIngressv1beta1(igByte)
-	ig.Namespace = c.NameSpace
+	ig := resourceread.ReadIngressv1beta1(c.templateAssets(string(igByte[:])))
 	return ig
 }
 
@@ -200,8 +196,7 @@ func (c ComponentConfig) NewStatefulSet(str string) *appsv1.StatefulSet {
 		log.Error(err, "Failed to Test create statefulset")
 
 	}
-	ss := resourceread.ReadStatefulSetV1(ssByte)
-	ss.Namespace = c.NameSpace
+	ss := resourceread.ReadStatefulSetV1(c.templateAssets(string(ssByte[:])))
 	return ss
 }
 
@@ -211,7 +206,6 @@ func (c ComponentConfig) NewAdmissionControllerSecret() (*corev1.Secret, error) 
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to buiild admission-controller secret")
 	}
-	secret.Namespace = c.NameSpace
 
 	caKey, err := cert.NewPrivateKey()
 	if err != nil {
@@ -256,7 +250,6 @@ func (c ComponentConfig) NewfedemeterSecret() (*corev1.Secret, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to buiild fedemeter secret")
 	}
-	secret.Namespace = c.NameSpace
 	host := fmt.Sprintf("fedemeter-api.%s.svc", c.NameSpace)
 	crt, key, err := cert.GenerateSelfSignedCertKey(host, []net.IP{}, []string{})
 	if err != nil {
@@ -277,7 +270,6 @@ func (c ComponentConfig) NewInfluxDBSecret() (*corev1.Secret, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to buiild influxdb secret")
 	}
-	secret.Namespace = c.NameSpace
 
 	host := fmt.Sprintf("admission-influxdb.%s.svc", c.NameSpace)
 	crt, key, err := cert.GenerateSelfSignedCertKey(host, []net.IP{}, []string{})
@@ -299,11 +291,10 @@ func (c ComponentConfig) NewSecret(str string) (*corev1.Secret, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build secret from assets' bin data")
 	}
-	s, err := resourceread.ReadSecretV1(secretBytes)
+	s, err := resourceread.ReadSecretV1(c.templateAssets(string(secretBytes[:])))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build secret from assets' bin data")
 	}
-	s.Namespace = c.NameSpace
 	return s, nil
 }
 
@@ -449,4 +440,8 @@ func overwritePodSecurityContextFromOKDPodSecurityContext(psc, okdPSC corev1.Pod
 	copyPSC.FSGroup = copyOKDPSC.FSGroup
 
 	return *copyPSC
+}
+
+func skipTemplateParse(asset string) bool {
+	return util.StringInSlice(asset, assetsSkipTemplateParse)
 }

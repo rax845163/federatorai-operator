@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: fedemeter-api
-  namespace: federatorai
+  namespace: {{.NameSpace}}
   labels:
     app: fedemeter-api
 spec:

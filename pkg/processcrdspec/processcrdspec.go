@@ -5,9 +5,9 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/componentsectionset"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/globalsectionset"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateenvvar"
+	securityv1 "github.com/openshift/api/security/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	securityv1 "github.com/openshift/api/security/v1"
 )
 
 func ParamterToDeployment(dep *appsv1.Deployment, asp *alamedaserviceparamter.AlamedaServiceParamter) *appsv1.Deployment {
@@ -27,7 +27,6 @@ func ParamterToSecurityContextConstraints(scc *securityv1.SecurityContextConstra
 	return scc
 }
 func ParamterToConfigMap(cm *corev1.ConfigMap, asp *alamedaserviceparamter.AlamedaServiceParamter) *corev1.ConfigMap {
-	updateenvvar.AssignServiceToConfigMap(cm, cm.Namespace)                                       //ConfigMapSpec's service
 	globalsectionset.GlobalSectionSetParamterToConfigMap(cm, asp.PrometheusService, cm.Namespace) //ConfigMapSpec's PrometheusService
 	return cm
 }

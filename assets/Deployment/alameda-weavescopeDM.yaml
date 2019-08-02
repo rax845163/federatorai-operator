@@ -8,7 +8,7 @@ metadata:
     app: alameda-weave-scope
     alameda-weave-cloud-component: scope
     alameda-weave-scope-component: app
-  namespace: federatorai
+  namespace: {{.NameSpace}}
 spec:
   replicas: 1
   selector:

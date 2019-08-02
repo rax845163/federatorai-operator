@@ -1,12 +1,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: federatorai-admission-controller
+  name: {{.NameSpace}}-admission-controller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: federatorai-admission-controller
+  name: {{.NameSpace}}-admission-controller
 subjects:
   - kind: ServiceAccount
     name: admission-controller
-    namespace: federatorai
+    namespace: {{.NameSpace}}

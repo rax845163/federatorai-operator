@@ -11,6 +11,10 @@ import (
 )
 
 var (
+	ConfigMapDashboardsConfig = "ConfigMap/dashboards-config.yaml"
+)
+
+var (
 	crbList = []string{"ClusterRoleBinding/alameda-datahubCRB.yaml",
 		"ClusterRoleBinding/alameda-operatorCRB.yaml",
 		"ClusterRoleBinding/alameda-weavescopeCRB.yaml",
@@ -50,7 +54,7 @@ var (
 		"Secret/alameda-influxdb.yaml",
 	}
 	pspList = []string{"PodSecurityPolicy/alameda-weavescopePSP.yaml"}
-	dsList = []string{"DaemonSet/alamdea-weavescopeDS.yaml"}
+	dsList  = []string{"DaemonSet/alamdea-weavescopeDS.yaml"}
 	sccList = []string{"SecurityContextConstraints/alameda-weave-scope-scc-admin.yaml",
 		"SecurityContextConstraints/alameda-weave-scope-scc-anyuid.yaml",
 	}
@@ -145,21 +149,21 @@ type AlamedaServiceParamter struct {
 }
 
 type Resource struct {
-	ClusterRoleBindingList       []string
-	ClusterRoleList              []string
-	ServiceAccountList           []string
-	CustomResourceDefinitionList []string
-	ConfigMapList                []string
-	ServiceList                  []string
-	DeploymentList               []string
-	SecretList                   []string
-	PersistentVolumeClaimList    []string
-	AlamdaScalerList             []string
-	RouteList                    []string
-	StatefulSetList              []string
-	IngressList                  []string
-	PodSecurityPolicyList        []string
-	DaemonSetList                []string
+	ClusterRoleBindingList         []string
+	ClusterRoleList                []string
+	ServiceAccountList             []string
+	CustomResourceDefinitionList   []string
+	ConfigMapList                  []string
+	ServiceList                    []string
+	DeploymentList                 []string
+	SecretList                     []string
+	PersistentVolumeClaimList      []string
+	AlamdaScalerList               []string
+	RouteList                      []string
+	StatefulSetList                []string
+	IngressList                    []string
+	PodSecurityPolicyList          []string
+	DaemonSetList                  []string
 	SecurityContextConstraintsList []string
 }
 
@@ -234,17 +238,17 @@ func (asp *AlamedaServiceParamter) GetAlamedaEvictionerEnvVars() []corev1.EnvVar
 
 func GetUnInstallResource() *Resource {
 	return &Resource{
-		ClusterRoleBindingList:       crbList,
-		ClusterRoleList:              crList,
-		ServiceAccountList:           saList,
-		CustomResourceDefinitionList: crdList,
-		ConfigMapList:                cmList,
-		ServiceList:                  svList,
-		DeploymentList:               depList,
-		SecretList:                   secretList,
-		PodSecurityPolicyList:        pspList,
-		DaemonSetList:                dsList,
-		SecurityContextConstraintsList:    sccList,
+		ClusterRoleBindingList:         crbList,
+		ClusterRoleList:                crList,
+		ServiceAccountList:             saList,
+		CustomResourceDefinitionList:   crdList,
+		ConfigMapList:                  cmList,
+		ServiceList:                    svList,
+		DeploymentList:                 depList,
+		SecretList:                     secretList,
+		PodSecurityPolicyList:          pspList,
+		DaemonSetList:                  dsList,
+		SecurityContextConstraintsList: sccList,
 	}
 }
 
@@ -696,22 +700,22 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 	pvc = asp.getInstallPersistentVolumeClaimSource(pvc)
 	crd = asp.changeScalerCRDVersion(crd)
 	return &Resource{
-		ClusterRoleBindingList:       crb,
-		ClusterRoleList:              cr,
-		ServiceAccountList:           sa,
-		CustomResourceDefinitionList: crd,
-		ConfigMapList:                cm,
-		ServiceList:                  sv,
-		DeploymentList:               dep,
-		SecretList:                   secrets,
-		PersistentVolumeClaimList:    pvc,
-		AlamdaScalerList:             alamdaScalerList,
-		RouteList:                    route,
-		StatefulSetList:              statefulset,
-		IngressList:                  ingress,
-		PodSecurityPolicyList:        psp,
-		DaemonSetList:                ds,
-		SecurityContextConstraintsList:    scc,
+		ClusterRoleBindingList:         crb,
+		ClusterRoleList:                cr,
+		ServiceAccountList:             sa,
+		CustomResourceDefinitionList:   crd,
+		ConfigMapList:                  cm,
+		ServiceList:                    sv,
+		DeploymentList:                 dep,
+		SecretList:                     secrets,
+		PersistentVolumeClaimList:      pvc,
+		AlamdaScalerList:               alamdaScalerList,
+		RouteList:                      route,
+		StatefulSetList:                statefulset,
+		IngressList:                    ingress,
+		PodSecurityPolicyList:          psp,
+		DaemonSetList:                  ds,
+		SecurityContextConstraintsList: scc,
 	}
 }
 

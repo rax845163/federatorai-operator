@@ -2,4 +2,4 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: alameda-ai
-  namespace: federatorai
+  namespace: {{.NameSpace}}

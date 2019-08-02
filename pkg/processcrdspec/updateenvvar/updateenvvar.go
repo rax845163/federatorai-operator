@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"github.com/containers-ai/federatorai-operator/pkg/util"
+	securityv1 "github.com/openshift/api/security/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	securityv1 "github.com/openshift/api/security/v1"
 )
 
 func AssignServiceToDeployment(dep *appsv1.Deployment, ns string) {
@@ -52,11 +52,6 @@ func AssignServiceAccountsToSecurityContextConstraints(scc *securityv1.SecurityC
 			newUser := strings.Replace(scc.Users[index], util.NamespaceServiceAccount, serviceAccount, -1)
 			scc.Users[index] = newUser
 		}
-	}
-}
-func AssignServiceToConfigMap(cm *corev1.ConfigMap, ns string) {
-	if strings.Contains(cm.Data[util.OriginComfigMapPrometheusLocation], util.NamespaceService) {
-		cm.Data[util.OriginComfigMapPrometheusLocation] = strings.Replace(cm.Data[util.OriginComfigMapPrometheusLocation], util.NamespaceService, ns+".svc", -1)
 	}
 }
 

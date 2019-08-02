@@ -5,4 +5,4 @@ metadata:
   name: alameda-weave-scope
   labels:
     name: alameda-weave-scope
-  namespace: federatorai
+  namespace: {{.NameSpace}}

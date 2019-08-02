@@ -8,7 +8,7 @@ metadata:
     app: alameda-weave-scope
     alameda-weave-cloud-component: scope
     alameda-weave-scope-component: agent
-  namespace: federatorai
+  namespace: {{.NameSpace}}
 spec:
   minReadySeconds: 5
   selector:

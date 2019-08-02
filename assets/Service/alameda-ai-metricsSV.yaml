@@ -4,7 +4,7 @@ metadata:
   labels:
     component: alameda-ai
   name: alameda-ai
-  namespace: federatorai
+  namespace: {{.NameSpace}}
 spec:
   selector:
     component: alameda-ai

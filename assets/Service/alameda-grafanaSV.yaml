@@ -4,7 +4,7 @@ metadata:
   labels:
     component: alameda-grafana
   name: alameda-grafana
-  namespace: federatorai
+  namespace: {{.NameSpace}}
 spec:
   ports:
   - port: 3000

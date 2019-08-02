@@ -30,7 +30,7 @@ seccompProfiles:
 supplementalGroups:
   type: RunAsAny
 users:
-- system:serviceaccount:federatorai:alameda-weave-scope
-- system:serviceaccount:federatorai:default
+- system:serviceaccount:{{.NameSpace}}:alameda-weave-scope
+- system:serviceaccount:{{.NameSpace}}:default
 volumes:
 - '*'

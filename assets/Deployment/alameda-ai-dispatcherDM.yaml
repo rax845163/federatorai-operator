@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: alameda-ai-dispatcher
-  namespace: alameda
+  namespace: {{.NameSpace}}
   labels:
     app: alameda
     component: alameda-ai-dispatcher

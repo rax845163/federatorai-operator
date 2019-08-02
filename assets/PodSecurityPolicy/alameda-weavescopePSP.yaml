@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: PodSecurityPolicy
 metadata:
-  name: federatorai-alameda-weave-scope
+  name: {{.NameSpace}}-alameda-weave-scope
 spec:
   privileged: true
   hostPID: true
