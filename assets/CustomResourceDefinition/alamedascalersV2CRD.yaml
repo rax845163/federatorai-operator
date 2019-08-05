@@ -56,8 +56,10 @@ spec:
                   type: object
                 type:
                   enum:
+                  - ""
                   - vpa
                   - hpa
+                  - N/A
                   type: string
               type: object
             selector:
@@ -74,6 +76,8 @@ spec:
                 deploymentConfigs:
                   type: object
                 deployments:
+                  type: object
+                statefulSets:
                   type: object
               type: object
           type: object
