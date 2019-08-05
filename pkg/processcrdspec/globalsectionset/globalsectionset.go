@@ -91,6 +91,7 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 		}
 	case util.GrafanaDPN:
 		{
+			util.SetImageStruct(dep, asp.Version, util.GrafanaCTN)
 			util.SetStorageToVolumeSource(dep, asp.Storages, "my-alameda.grafana-type.pvc", util.GrafanaGroup)
 			util.SetStorageToMountPath(dep, asp.Storages, util.GrafanaCTN, "grafana-type-storage", util.GrafanaGroup)
 		}
