@@ -19,6 +19,10 @@ func ParamterToConfigMap(cm *corev1.ConfigMap, asp *alamedaserviceparamter.Alame
 	globalsectionset.GlobalSectionSetParamterToConfigMap(cm, asp.PrometheusService, cm.Namespace) //ConfigMapSpec's PrometheusService
 	return cm
 }
+func ParamterToService(svc *corev1.Service, asp *alamedaserviceparamter.AlamedaServiceParamter) error {
+	err := componentsectionset.SectionSetParamterToService(svc, asp)
+	return err
+}
 func ParamterToPersistentVolumeClaim(pvc *corev1.PersistentVolumeClaim, asp *alamedaserviceparamter.AlamedaServiceParamter) *corev1.PersistentVolumeClaim {
 	globalsectionset.GlobalSectionSetParamterToPersistentVolumeClaim(pvc, asp)
 	componentsectionset.SectionSetParamterToPersistentVolumeClaim(pvc, asp) //PersistentVolumeClaim's Component Section Set

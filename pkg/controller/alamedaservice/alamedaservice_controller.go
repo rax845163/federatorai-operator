@@ -524,6 +524,9 @@ func (r *ReconcileAlamedaService) syncService(instance *federatoraiv1alpha1.Alam
 		if err := controllerutil.SetControllerReference(instance, resourceSV, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceSV SetControllerReference: %s", err.Error())
 		}
+		if err := processcrdspec.ParamterToService(resourceSV, asp); err != nil {
+			return errors.Wrapf(err, "process service (%s/%s) failed", resourceSV.Namespace, resourceSV.Name)
+		}
 		foundSV := &corev1.Service{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSV.Name, Namespace: resourceSV.Namespace}, foundSV)
 		if err != nil && k8sErrors.IsNotFound(err) {

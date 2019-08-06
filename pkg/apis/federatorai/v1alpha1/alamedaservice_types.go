@@ -20,16 +20,17 @@ type AlamedaServiceSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html
-	//AlmedaInstallOrUninstall bool   `json:"almedainstalloruninstall"`
 	// +kubebuilder:validation:Enum=openshift3.9
-	Platform          Platform      `json:"platform,omitempty"`
-	EnableExecution   bool          `json:"enableExecution"`
-	EnableGUI         bool          `json:"enableGui"`
-	SelfDriving       bool          `json:"selfDriving"`
-	EnableFedemeter   bool          `json:"enableFedemeter"`
-	Version           string        `json:"version"`
-	PrometheusService string        `json:"prometheusService"`
-	Storages          []StorageSpec `json:"storages"`
+	Platform          Platform              `json:"platform,omitempty"`
+	EnableExecution   bool                  `json:"enableExecution"`
+	EnableGUI         bool                  `json:"enableGui"`
+	SelfDriving       bool                  `json:"selfDriving"`
+	EnableFedemeter   bool                  `json:"enableFedemeter"`
+	Version           string                `json:"version"`
+	PrometheusService string                `json:"prometheusService"`
+	Storages          []StorageSpec         `json:"storages"`
+	ServiceExposures  []ServiceExposureSpec `json:"serviceExposures"`
+
 	//Component Section Schema
 	InfluxdbSectionSet            AlamedaComponentSpec `json:"alamedaInfluxdb"`
 	GrafanaSectionSet             AlamedaComponentSpec `json:"alamedaGrafana"`
@@ -42,6 +43,7 @@ type AlamedaServiceSpec struct {
 	AlamedaExecutorSectionSet     AlamedaComponentSpec `json:"alamedaExecutor"`
 	AlamedaFedemeterSectionSet    AlamedaComponentSpec `json:"fedemeter"`
 }
+
 type AlamedaComponentSpec struct {
 	Image              string            `json:"image"`
 	Version            string            `json:"version"`
@@ -49,6 +51,7 @@ type AlamedaComponentSpec struct {
 	Storages           []StorageSpec     `json:"storages"`
 	BootStrapContainer Imagestruct       `json:"bootstrap"`
 }
+
 type Imagestruct struct {
 	Image           string            `json:"image"`
 	Version         string            `json:"version"`
@@ -83,6 +86,37 @@ func (storageStruct StorageSpec) StorageIsEmpty() bool {
 		return false
 	}
 	return true
+}
+
+// ServiceExposureType defines the type of the service to be exposed
+type ServiceExposureType = string
+
+var (
+	// ServiceExposureTypeNodePort represents NodePort type
+	ServiceExposureTypeNodePort ServiceExposureType = "NodePort"
+)
+
+// ServiceExposureSpec defines the service to be exposed
+type ServiceExposureSpec struct {
+	Name string `json:"name"`
+	// +kubebuilder:validation:Enum=NodePort
+	Type     ServiceExposureType `json:"type"`
+	NodePort *NodePortSpec       `json:"nodePort,omitempty"`
+}
+
+// NodePortSpec defines the ports to be proxied from node to service
+type NodePortSpec struct {
+	Ports []PortSpec `json:"ports"`
+}
+
+// PortSpec defines the service port
+type PortSpec struct {
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=65535
+	Port int32 `json:"port"`
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=65535
+	NodePort int32 `json:"nodePort"`
 }
 
 // AlamedaServiceStatus defines the observed state of AlamedaService

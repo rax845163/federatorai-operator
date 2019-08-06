@@ -29,3 +29,9 @@ Please visit [docs](./docs/)
 * [Go modules](https://github.com/golang/go/wiki/Modules)
 * [Standard Go Project Layout](https://github.com/golang-standards/project-layout)
 * [CRI tools](https://github.com/kubernetes-sigs/cri-tools)
+
+## Develop
+
+### Requirements
+
+* [operator-sdk v0.5.0](#https://github.com/operator-framework/operator-sdk)

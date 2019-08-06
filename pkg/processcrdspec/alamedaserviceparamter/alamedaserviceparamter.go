@@ -107,6 +107,7 @@ type AlamedaServiceParamter struct {
 	Version                       string
 	PrometheusService             string
 	Storages                      []v1alpha1.StorageSpec
+	ServiceExposures              []v1alpha1.ServiceExposureSpec
 	InfluxdbSectionSet            v1alpha1.AlamedaComponentSpec
 	GrafanaSectionSet             v1alpha1.AlamedaComponentSpec
 	AlamedaAISectionSet           v1alpha1.AlamedaComponentSpec
@@ -607,6 +608,7 @@ func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServic
 		Version:                       instance.Spec.Version,
 		PrometheusService:             instance.Spec.PrometheusService,
 		Storages:                      instance.Spec.Storages,
+		ServiceExposures:              instance.Spec.ServiceExposures,
 		InfluxdbSectionSet:            instance.Spec.InfluxdbSectionSet,
 		GrafanaSectionSet:             instance.Spec.GrafanaSectionSet,
 		AlamedaAISectionSet:           instance.Spec.AlamedaAISectionSet,
@@ -620,6 +622,7 @@ func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServic
 		CurrentCRDVersion:             instance.Status.CRDVersion,
 		previousCRDVersion:            instance.Status.CRDVersion,
 	}
+
 	return asp
 }
 

@@ -50,6 +50,16 @@ const (
 	//CRD NAME
 	AlamedaScalerName         = "alamedascalers.autoscaling.containers.ai"
 	AlamedaRecommendationName = "alamedarecommendations.autoscaling.containers.ai"
+	// Service name
+	AdmissionControllerServiceName  = "admission-controller"
+	AlamedaAIServiceName            = "alameda-ai"
+	AlamedaDatahubServiceName       = "alameda-datahub"
+	AlamedaGrafanaServiceName       = "alameda-grafana"
+	AlamedaInfluxdbServiceName      = "alameda-influxdb"
+	AlamedaRabbitmqServiceName      = "alameda-rabbitmq"
+	AlamedaWeaveScopeAppServiceName = "alameda-weave-scope-app"
+	FedemeterInfluxdbServiceName    = "fedemeter-influxdb"
+	FedemeterAPIServiceName         = "fedemeter-api"
 	//CRD Version
 	OriAlamedaOperatorVersion = "v0.3.8"
 	//AlamedaService modify Prometheus's var

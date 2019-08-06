@@ -3,10 +3,12 @@ package componentsectionset
 import (
 	"fmt"
 
-	"github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
+	"github.com/pkg/errors"
 
+	"github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/util"
+
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
@@ -135,4 +137,59 @@ func SectionSetParamterToPersistentVolumeClaim(pvc *corev1.PersistentVolumeClaim
 			}
 		}
 	}
+}
+
+func SectionSetParamterToService(svc *corev1.Service, asp *alamedaserviceparamter.AlamedaServiceParamter) error {
+
+	if asp == nil {
+		return errors.New("AlamedaServiceParamter cannnot be nil")
+	}
+
+	for _, serviceExposure := range asp.ServiceExposures {
+		if svc.Name == serviceExposure.Name {
+			if err := processServiceWithServiceExposureSpec(svc, serviceExposure); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func processServiceWithServiceExposureSpec(svc *corev1.Service, serviceExposure v1alpha1.ServiceExposureSpec) error {
+
+	switch serviceExposure.Type {
+	case v1alpha1.ServiceExposureTypeNodePort:
+		if serviceExposure.NodePort == nil {
+			return errors.New("NodePort cannot be nil")
+		}
+		if err := processServiceWithNodePortSpec(svc, *serviceExposure.NodePort); err != nil {
+			return errors.Wrap(err, "process service with NodePortSpec failed")
+		}
+	default:
+		return errors.Errorf("unsupported ServiceExposureType \"%s\"", serviceExposure.Type)
+	}
+
+	return nil
+}
+
+func processServiceWithNodePortSpec(svc *corev1.Service, nodePortSpec v1alpha1.NodePortSpec) error {
+
+	svc.Spec.Type = corev1.ServiceTypeNodePort
+
+	for _, portInNodePortSpec := range nodePortSpec.Ports {
+		findPort := false
+		for i, portInService := range svc.Spec.Ports {
+			if portInNodePortSpec.Port == portInService.Port {
+				findPort = true
+				svc.Spec.Ports[i].NodePort = portInNodePortSpec.NodePort
+				break
+			}
+		}
+		if !findPort {
+			return errors.Errorf("port %d not exist in service", portInNodePortSpec.Port)
+		}
+	}
+
+	return nil
 }
