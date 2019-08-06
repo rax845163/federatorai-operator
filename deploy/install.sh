@@ -4,31 +4,14 @@
 #
 #   This script is created for installing Federator.ai Operator
 #
+#   Usage: ./install.sh $tag_name or ./install.sh
 ##################################################################
 
-show_usage()
-{
-    cat << __EOF__
-
-    Usage: $0 [-t Federator.ai_Operator_Tag]
-
-__EOF__
-    exit 1
-}
-
-while getopts "t:" o; do
-    case "${o}" in
-        t)
-            t_arg=${OPTARG}
-            ;;
-        *)
-            show_usage
-            ;;
-    esac
-done
-
-[ "${t_arg}" = "" ] && show_usage
-[ "${t_arg}" != "" ] && tag_number="${t_arg}"
+if [ "$1" != "" ];then
+    tag_number="$1"
+else
+    read -r -p "Please input Federator.ai Operator tag: " tag_number </dev/tty
+fi
 
 operator_files=( 
     "00-namespace.yaml" "01-serviceaccount.yaml"
