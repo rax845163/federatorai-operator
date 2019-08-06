@@ -142,6 +142,9 @@ spec:
 - Field: storages
   - type: [StorageSpec](#storagespec) array
   - description: This field is optional and it lists storage settings which applied to each operand.
+- Field: serviceExposures
+  - type: [ServiceExposureSpec](#serviceexposurespec) array
+  - description: This field is optional and it lists service exposure settings which applied to an Alameda component.
 - Field: alamedaOperator
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Alameda-operator component. This field is optional.
@@ -212,10 +215,32 @@ spec:
   - type: [StorageSpec](#storagespec) array
   - description: This field is optional and it lists storage settings which applied to an Alameda component.
 
+### ServiceExposureSpec
 
+- Field: name
+  - type: string
+  - description: It sets the service name to be exposed. The list of available names are equal to the services' name under [folder](../assets/Service).
+- Field: type
+  - type: string
+  - description: It sets the type of service exposure. Currently supported type is **NodePort**.
+- Field: nodePort
+  - type: [NodePortSpec](#nodeportspec)
+  - description: This field will be applied when type is NodePort.
 
+### NodePortSpec
 
+- Field: ports
+  - type: [PortSpec](#portspec) array
+  - description: This field lists the ports to be exposed by NodePort type.
 
+### PortSpec
+
+- Field: port
+  - type: integer
+  - description: It sets which service port to be proxied. 
+- Field: nodePort
+  - type: integer
+  - description: It sets which port on the node to proxy to the service port.
 
 
 
