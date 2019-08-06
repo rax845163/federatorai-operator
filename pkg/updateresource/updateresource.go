@@ -69,6 +69,9 @@ func MisMatchResourceService(clusterSv, sourceSv *corev1.Service) bool {
 			sourceSv.Spec.Ports[index].TargetPort.IntVal = okdServiceDefaultTargetPort(sourceSv.Spec.Ports[index].Port)
 		}
 	}
+	if sourceSv.Spec.Type == "" {
+		sourceSv.Spec.Type = corev1.ServiceTypeClusterIP
+	}
 
 	/*if !equality.Semantic.DeepEqual(clusterSv.Spec.Ports, sourceSv.Spec.Ports) {
 		modify = true
@@ -80,6 +83,9 @@ func MisMatchResourceService(clusterSv, sourceSv *corev1.Service) bool {
 		modify = true
 		log.V(-1).Info("change Selector")
 		clusterSv.Spec.Selector = sourceSv.Spec.Selector
+	}
+	if !equality.Semantic.DeepEqual(clusterSv.Spec.Type, sourceSv.Spec.Type) {
+		modify = true
 	}
 	return modify
 }

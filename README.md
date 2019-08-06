@@ -61,3 +61,9 @@ See the example [file](./etc/operator.yml). Assign the configuration file path w
 ```
 $FEDERATORAI_OPERATOR_BIN --config $CONFIGURATION_FILE_PATH
 ```
+
+## Develop
+
+### Requirements
+
+* [operator-sdk v0.5.0](#https://github.com/operator-framework/operator-sdk)
