@@ -6,10 +6,8 @@ metadata:
   name: alameda-grafana
   namespace: {{.NameSpace}}
 spec:
-  type: NodePort
   ports:
   - port: 3000
     targetPort: 3000
-    nodePort: 31010
   selector:
     component: alameda-grafana
