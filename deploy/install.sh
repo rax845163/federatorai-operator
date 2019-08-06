@@ -45,7 +45,7 @@ cd $file_folder
 
 for file in "${operator_files[@]}"
 do
-    echo "Downloading file $file"
+    echo "Downloading file $file ..."
     if ! curl -sL --fail https://raw.githubusercontent.com/containers-ai/federatorai-operator/${tag_number}/deploy/upstream/${file} -O; then
         echo -e "\nAbort, download file failed!!!"
         echo "Please check tag name and network"
@@ -60,6 +60,23 @@ echo -e "\nStarting apply yaml files"
 kubectl apply -f .
 
 echo -e "\nInstall Federator.ai operator $tag_number successfully"
+
+alamedaservice_example="alamedaservice_sample.yaml"
+alamedascaler_example="alamedascaler.yaml"
+
+echo -e "\nDownloading alamedaservice and alamedascaler sample files ..."
+if ! curl -sL --fail https://raw.githubusercontent.com/containers-ai/federatorai-operator/${tag_number}/example/${alamedaservice_example} -O; then
+    echo -e "\nAbort, download alamedaservice sample file failed!!!"
+    exit 2
+fi
+
+if ! curl -sL --fail https://raw.githubusercontent.com/containers-ai/alameda/${tag_number}/example/samples/nginx/${alamedascaler_example} -O; then
+    echo -e "\nAbort, download alamedascaler sample file failed!!!"
+    exit 3
+fi
+echo "Done"
+
+sed -i "s/version: latest/version: ${tag_number}/g" ${alamedaservice_example}
 
 echo -e "\nYAML files are located under $file_folder"
 cd - > /dev/null
