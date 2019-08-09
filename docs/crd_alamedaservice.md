@@ -130,6 +130,9 @@ spec:
 - Field: enableDispatcher
   - type: boolean
   - description: Federator.ai Operator will deploy alameda-dispatcher and rabittmq to sent predict job to alameda-ai if this field is set to _true_. Default is _true_.
+- Field: enableWeavescope
+  - type: boolean
+  - description: Federator.ai Operator will deploy weavescope to monitor containerized application if this field is set to _true_. Default is _false_.
 - Field: enableFedemeter
   - type: boolean
   - description: Federator.ai Operator will deploy Fedemeter and you must add your Fedemeter serviceAccount to privileged SecurityContextConstraints

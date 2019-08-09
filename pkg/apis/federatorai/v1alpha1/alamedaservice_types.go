@@ -31,6 +31,7 @@ type AlamedaServiceSpec struct {
 	PrometheusService string                `json:"prometheusService"`
 	Storages          []StorageSpec         `json:"storages"`
 	ServiceExposures  []ServiceExposureSpec `json:"serviceExposures"`
+	EnableWeavescope  bool                  `json:"enableWeavescope"`
 	//Component Section Schema
 	InfluxdbSectionSet            AlamedaComponentSpec `json:"alamedaInfluxdb"`
 	GrafanaSectionSet             AlamedaComponentSpec `json:"alamedaGrafana"`

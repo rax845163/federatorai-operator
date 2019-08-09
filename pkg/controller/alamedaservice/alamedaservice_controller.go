@@ -269,6 +269,14 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
 	}
+	//Uninstall weavescope components
+	if !asp.EnableWeavescope {
+		weavescopeResource := alamedaserviceparamter.GetWeavescopeResource()
+		if err := r.uninstallResource(weavescopeResource); err != nil {
+			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+		}
+	}
 	//Uninstall PersistentVolumeClaim Source
 	pvcResource := asp.GetUninstallPersistentVolumeClaimSource()
 	if err := r.uninstallPersistentVolumeClaim(instance, pvcResource); err != nil {
@@ -307,7 +315,7 @@ func (r *ReconcileAlamedaService) newComponentConfig(namespace corev1.Namespace)
 }
 
 func (r *ReconcileAlamedaService) createScalerforAlameda(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
-	for _, fileString := range resource.AlamdaScalerList {
+	for _, fileString := range resource.AlamedaScalerList {
 		resourceScaler := componentConfig.NewAlamedaScaler(fileString)
 		if err := controllerutil.SetControllerReference(instance, resourceScaler, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceScaler SetControllerReference: %s", err.Error())
@@ -919,7 +927,7 @@ func (r *ReconcileAlamedaService) uninstallClusterRoleBinding(instance *federato
 }
 
 func (r *ReconcileAlamedaService) uninstallAlamedaScaler(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-	for _, fileString := range resource.AlamdaScalerList {
+	for _, fileString := range resource.AlamedaScalerList {
 		resourceScaler := componentConfig.NewAlamedaScaler(fileString)
 		err := r.client.Delete(context.TODO(), resourceScaler)
 		if err != nil && k8sErrors.IsNotFound(err) {
@@ -1025,6 +1033,109 @@ func (r *ReconcileAlamedaService) uninstallPersistentVolumeClaim(instance *feder
 			}
 		}
 	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) uninstallDaemonSet(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+	for _, fileString := range resource.DaemonSetList {
+		resourceDaemonSet := componentConfig.NewDaemonSet(fileString)
+		foundDaemonSet := &appsv1.DaemonSet{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDaemonSet.Name, Namespace: resourceDaemonSet.Namespace}, foundDaemonSet)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			continue
+		} else if err != nil {
+			return errors.Errorf("get DaemonSet %s/%s failed: %s", resourceDaemonSet.Namespace, resourceDaemonSet.Name, err.Error())
+		} else {
+			err := r.client.Delete(context.TODO(), resourceDaemonSet)
+			if err != nil && k8sErrors.IsNotFound(err) {
+				return nil
+			} else if err != nil {
+				return errors.Errorf("delete DaemonSet %s/%s failed: %s", resourceDaemonSet.Namespace, resourceDaemonSet.Name, err.Error())
+			}
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) uninstallPodSecurityPolicy(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+	for _, fileString := range resource.PodSecurityPolicyList {
+		resourcePodSecurityPolicy := componentConfig.NewPodSecurityPolicy(fileString)
+		foundPodSecurityPolicy := &v1beta1.PodSecurityPolicy{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourcePodSecurityPolicy.Name, Namespace: resourcePodSecurityPolicy.Namespace}, foundPodSecurityPolicy)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			continue
+		} else if err != nil {
+			return errors.Errorf("get PodSecurityPolicy %s/%s failed: %s", resourcePodSecurityPolicy.Namespace, resourcePodSecurityPolicy.Name, err.Error())
+		} else {
+			err := r.client.Delete(context.TODO(), resourcePodSecurityPolicy)
+			if err != nil && k8sErrors.IsNotFound(err) {
+				return nil
+			} else if err != nil {
+				return errors.Errorf("delete PodSecurityPolicy %s/%s failed: %s", resourcePodSecurityPolicy.Namespace, resourcePodSecurityPolicy.Name, err.Error())
+			}
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) uninstallResource(resource alamedaserviceparamter.Resource) error {
+
+	if err := r.uninstallStatefulSet(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall StatefulSet failed")
+	}
+
+	if err := r.uninstallIngress(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall Ingress failed")
+	}
+
+	if err := r.uninstallRoute(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall Route failed")
+	}
+
+	if err := r.uninstallDeployment(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall Deployment failed")
+	}
+
+	if err := r.uninstallService(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall Service failed")
+	}
+
+	if err := r.uninstallConfigMap(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall ConfigMap failed")
+	}
+
+	if err := r.uninstallSecret(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall Secret failed")
+	}
+
+	if err := r.uninstallServiceAccount(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall ServiceAccount failed")
+	}
+
+	if err := r.uninstallClusterRole(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall ClusterRole failed")
+	}
+
+	if err := r.uninstallClusterRoleBinding(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall ClusterRoleBinding failed")
+	}
+
+	if err := r.uninstallAlamedaScaler(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall AlamedaScaler failed")
+	}
+
+	if err := r.uninstallPersistentVolumeClaim(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall PersistentVolumeClaim failed")
+	}
+
+	if err := r.uninstallDaemonSet(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall DaemonSet failed")
+	}
+
+	if err := r.uninstallPodSecurityPolicy(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall PodSecurityPolicy failed")
+	}
+
 	return nil
 }
 

@@ -1,8 +1,10 @@
 package globalsectionset
 
 import (
+	"fmt"
 	"strings"
 
+	admission_controller "github.com/containers-ai/alameda/admission-controller"
 	"github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/updateenvvar"
@@ -107,7 +109,7 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 		}
 	}
 
-	envVars := asp.GetEnvVarsByDeployment(dep.Name)
+	envVars := getEnvVarsByDeployment(dep.Name, asp)
 	updateenvvar.UpdateEnvVarsToDeployment(dep, envVars)
 }
 
@@ -156,4 +158,73 @@ func GlobalSectionSetParamterToPersistentVolumeClaim(pvc *corev1.PersistentVolum
 			util.SetStorageToPersistentVolumeClaimSpec(pvc, asp.Storages, pvcusage)
 		}
 	}
+}
+
+func getEnvVarsByDeployment(deploymentName string, asp *alamedaserviceparamter.AlamedaServiceParamter) []corev1.EnvVar {
+
+	var envVars []corev1.EnvVar
+
+	switch deploymentName {
+	case util.AdmissioncontrollerDPN:
+		envVars = getAdmissionControllerEnvVars(asp)
+	case util.AlamedaevictionerDPN:
+		envVars = getAlamedaEvictionerEnvVars(asp)
+	case util.AlamedaaiDPN:
+		envVars = getAlamedaAIEnvVars(asp)
+	default:
+	}
+
+	return envVars
+}
+
+func getAlamedaAIEnvVars(asp *alamedaserviceparamter.AlamedaServiceParamter) []corev1.EnvVar {
+
+	envVars := make([]corev1.EnvVar, 0)
+
+	switch asp.EnableDispatcher {
+	case true:
+		envVars = append(envVars, corev1.EnvVar{
+			Name:  "PREDICT_QUEUE_ENABLED",
+			Value: "true",
+		})
+		envVars = append(envVars, corev1.EnvVar{
+			Name:  "MAXIMUM_PREDICT_PROCESSES",
+			Value: "8",
+		})
+		envVars = append(envVars, corev1.EnvVar{
+			Name:  "PREDICT_QUEUE_URL",
+			Value: fmt.Sprintf("amqp://admin:adminpass@alameda-rabbitmq.%s.svc:5672", asp.NameSpace),
+		})
+	}
+
+	return envVars
+}
+
+func getAdmissionControllerEnvVars(asp *alamedaserviceparamter.AlamedaServiceParamter) []corev1.EnvVar {
+
+	envVars := make([]corev1.EnvVar, 0)
+
+	switch asp.Platform {
+	case v1alpha1.PlatformOpenshift3_9:
+		envVars = append(envVars, corev1.EnvVar{
+			Name:  "ALAMEDA_ADMCTL_JSONPATCHVALIDATIONFUNC",
+			Value: admission_controller.JsonPatchValidationFuncOpenshift3_9,
+		})
+	}
+
+	return envVars
+}
+
+func getAlamedaEvictionerEnvVars(asp *alamedaserviceparamter.AlamedaServiceParamter) []corev1.EnvVar {
+	envVars := make([]corev1.EnvVar, 0)
+
+	switch asp.Platform {
+	case v1alpha1.PlatformOpenshift3_9:
+		envVars = append(envVars, corev1.EnvVar{
+			Name:  "ALAMEDA_EVICTIONER_EVICTION_PURGECONTAINERCPUMEMORY",
+			Value: "true",
+		})
+	}
+
+	return envVars
 }
