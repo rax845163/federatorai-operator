@@ -51,8 +51,6 @@ spec:
         volumeMounts:
           - mountPath: /etc/grafana/provisioning/datasources
             name: prometheus-datasource
-          - mountPath: /etc/grafana/provisioning/dashboards
-            name: dashboardproviders
       volumes:
         - name: prometheus-datasource
           emptyDir: {}
@@ -71,11 +69,5 @@ spec:
               path: prometheus.yaml
             name: grafana-datasources
           name: datasources
-        - configMap:
-            name: dashboards-config
-            items:
-            - key: dashboardproviders.yaml
-              path: dashboardproviders.yaml
-          name: dashboardproviders
       serviceAccount: alameda-grafana
       serviceAccountName: alameda-grafana
