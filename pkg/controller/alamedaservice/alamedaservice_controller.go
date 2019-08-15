@@ -769,6 +769,15 @@ func (r *ReconcileAlamedaService) syncStatefulSet(instance *federatoraiv1alpha1.
 			return errors.Errorf("get route %s/%s failed: %s", resourceSS.Namespace, resourceSS.Name, err.Error())
 		} else {
 			log.Info("Update Resource StatefulSet:", "resourceSS.Name", resourceSS.Name)
+			if updateresource.MisMatchResourceStatefulSet(foundSS, resourceSS) {
+				log.Info("Update Resource StatefulSet:", "name", foundSS.Name)
+				err = r.client.Update(context.TODO(), foundSS)
+				if err != nil {
+					return errors.Errorf("update statefulSet %s/%s failed: %s", foundSS.Namespace, foundSS.Name, err.Error())
+				}
+				log.Info("Successfully Update Resource StatefulSet", "name", foundSS.Name)
+			}
+			log.Info("Updating Resource StatefulSet", "name", resourceSS.Name)
 			err = r.client.Update(context.TODO(), resourceSS)
 			if err != nil {
 				return errors.Errorf("update StatefulSet %s/%s failed: %s", resourceSS.Namespace, resourceSS.Name, err.Error())
