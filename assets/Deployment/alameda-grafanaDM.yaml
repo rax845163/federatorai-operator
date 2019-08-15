@@ -49,12 +49,8 @@ spec:
             cpu: 100m
             memory: 100Mi
         volumeMounts:
-          - mountPath: /var/lib/grafana/dashboards/alameda
-            name: dashboards-json
           - mountPath: /etc/grafana/provisioning/datasources
             name: prometheus-datasource
-          - mountPath: /etc/grafana/provisioning/dashboards
-            name: dashboardproviders
       volumes:
         - name: prometheus-datasource
           emptyDir: {}
@@ -73,31 +69,5 @@ spec:
               path: prometheus.yaml
             name: grafana-datasources
           name: datasources
-        - configMap:
-            name: dashboards-config
-            items:
-            - key: clusterhealth.json
-              path: clusterhealth.json
-            - key: nodehealth.json
-              path: nodehealth.json
-            - key: hpa-recommendation.json
-              path: hpa-recommendation.json
-            - key: vpa-recommendation.json
-              path: vpa-recommendation.json
-            - key: vpa-recommendation-cluster.json
-              path: vpa-recommendation-cluster.json
-            - key: vpa-recommendation-namespace.json
-              path: vpa-recommendation-namespace.json
-            - key: vpa-recommendation-alamedascaler.json
-              path: vpa-recommendation-alamedascaler.json
-            - key: prediction-1day.json
-              path: prediction-1day.json
-          name: dashboards-json
-        - configMap:
-            name: dashboards-config
-            items:
-            - key: dashboardproviders.yaml
-              path: dashboardproviders.yaml
-          name: dashboardproviders
       serviceAccount: alameda-grafana
       serviceAccountName: alameda-grafana
