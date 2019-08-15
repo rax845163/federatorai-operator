@@ -146,11 +146,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	namespace, err := k8sutil.GetWatchNamespace()
-	if err != nil {
-		log.Error(err, "Failed to get watch namespace")
-		os.Exit(1)
+	namespace, found := os.LookupEnv(k8sutil.WatchNamespaceEnvVar)
+	if !found {
+		namespace = ""
 	}
+
 	//var day time.Duration = 1*24 * time.Hour
 	// Create a new Cmd to provide shared dependencies and start components
 	mgr, err := manager.New(cfg, manager.Options{
