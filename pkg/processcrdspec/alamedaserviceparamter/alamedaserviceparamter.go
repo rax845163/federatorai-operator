@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	ConfigMapDashboardsConfig = "ConfigMap/dashboards-config.yaml"
-	HasOpenshiftAPI           = false
+	//ConfigMapDashboardsConfig = "ConfigMap/dashboards-config.yaml"
+	HasOpenshiftAPI = false
 )
 
 var (

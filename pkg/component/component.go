@@ -12,8 +12,6 @@ import (
 	autoscaling_v1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/assets"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceread"
-	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
-	"github.com/containers-ai/federatorai-operator/pkg/util"
 	routev1 "github.com/openshift/api/route/v1"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
@@ -28,9 +26,9 @@ import (
 var log = logf.Log.WithName("controller_alamedaservice")
 
 // assetsSkipTemplateParse contains asset files that cannnot do template parsing
-var assetsSkipTemplateParse = []string{
+/*var assetsSkipTemplateParse = []string{
 	alamedaserviceparamter.ConfigMapDashboardsConfig,
-}
+}*/
 
 type ComponentConfig struct {
 	NameSpace         string
@@ -94,12 +92,13 @@ func (c ComponentConfig) NewConfigMap(str string) *corev1.ConfigMap {
 	}
 
 	var cm *corev1.ConfigMap
-	if skipTemplateParse(str) {
+	cm = resourceread.ReadConfigMapV1(c.templateAssets(string(cmByte[:])))
+	/*if skipTemplateParse(str) {
 		cm = resourceread.ReadConfigMapV1(cmByte)
 		cm.Namespace = c.NameSpace
 	} else {
 		cm = resourceread.ReadConfigMapV1(c.templateAssets(string(cmByte[:])))
-	}
+	}*/
 	return cm
 }
 func (c ComponentConfig) NewPersistentVolumeClaim(str string) *corev1.PersistentVolumeClaim {
@@ -389,6 +388,6 @@ func overwritePodSecurityContextFromOKDPodSecurityContext(psc, okdPSC corev1.Pod
 	return *copyPSC
 }
 
-func skipTemplateParse(asset string) bool {
+/*func skipTemplateParse(asset string) bool {
 	return util.StringInSlice(asset, assetsSkipTemplateParse)
-}
+}*/
