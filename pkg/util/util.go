@@ -45,6 +45,7 @@ const (
 	AlamedaexecutorCTN        = "alameda-executor"
 	AlamedadispatcherCTN      = "ai-dispatcher"
 	FedemeterCTN              = "fedemeter-api"
+	FedemeterInfluxDBCTN      = "fedemeter-influxdb"
 	GetTokenCTN               = "gettoken"
 	GrafanaCTN                = "grafana"
 	InfluxdbCTN               = "influxdb"
@@ -261,6 +262,15 @@ func SetDaemonSetImagePullPolicy(ds *appsv1.DaemonSet, ctn string, imagePullPoli
 		if value.Name == ctn {
 			ds.Spec.Template.Spec.Containers[index].ImagePullPolicy = imagePullPolicy
 			log.V(1).Info("SetDaemonSetImagePullPolicy", ds.Spec.Template.Spec.Containers[index].Name, imagePullPolicy)
+		}
+	}
+}
+
+func SetStatefulSetImagePullPolicy(sts *appsv1.StatefulSet, ctn string, imagePullPolicy corev1.PullPolicy) {
+	for index, container := range sts.Spec.Template.Spec.Containers {
+		if container.Name == ctn {
+			sts.Spec.Template.Spec.Containers[index].ImagePullPolicy = imagePullPolicy
+			log.V(1).Info("SetStatefulSetImagePullPolicy", sts.Spec.Template.Spec.Containers[index].Name, imagePullPolicy)
 		}
 	}
 }

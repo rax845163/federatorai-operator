@@ -126,6 +126,14 @@ func SectionSetParamterToDaemonSet(ds *appsv1.DaemonSet, asp *alamedaservicepara
 	}
 }
 
+func SectionSetParamterToStatefulSet(ss *appsv1.StatefulSet, asp *alamedaserviceparamter.AlamedaServiceParamter) {
+	switch ss.Name {
+	case util.FedemeterInflixDBSSN:
+		util.SetStatefulsetImageStruct(ss, asp.AlamedaFedemeterSectionSet, util.FedemeterInfluxDBCTN)
+		util.SetStatefulSetImagePullPolicy(ss, util.FedemeterInfluxDBCTN, asp.InfluxdbSectionSet.ImagePullPolicy)
+	}
+}
+
 func SectionSetParamterToPersistentVolumeClaim(pvc *corev1.PersistentVolumeClaim, asp *alamedaserviceparamter.AlamedaServiceParamter) {
 	for _, pvcusage := range v1alpha1.PvcUsage {
 		switch pvc.Name {
