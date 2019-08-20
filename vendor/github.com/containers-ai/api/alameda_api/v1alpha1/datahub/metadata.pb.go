@@ -3,9 +3,11 @@
 
 package containers_ai_alameda_v1alpha1_datahub
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
+import (
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -16,9 +18,9 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-// *
+//*
 // Represents kubernetes resource with namespace and name
 type NamespacedName struct {
 	Namespace            string   `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
@@ -32,16 +34,17 @@ func (m *NamespacedName) Reset()         { *m = NamespacedName{} }
 func (m *NamespacedName) String() string { return proto.CompactTextString(m) }
 func (*NamespacedName) ProtoMessage()    {}
 func (*NamespacedName) Descriptor() ([]byte, []int) {
-	return fileDescriptor_metadata_942726ab83823fc8, []int{0}
+	return fileDescriptor_80d037a21223e92e, []int{0}
 }
+
 func (m *NamespacedName) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_NamespacedName.Unmarshal(m, b)
 }
 func (m *NamespacedName) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_NamespacedName.Marshal(b, m, deterministic)
 }
-func (dst *NamespacedName) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NamespacedName.Merge(dst, src)
+func (m *NamespacedName) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NamespacedName.Merge(m, src)
 }
 func (m *NamespacedName) XXX_Size() int {
 	return xxx_messageInfo_NamespacedName.Size(m)
@@ -71,10 +74,10 @@ func init() {
 }
 
 func init() {
-	proto.RegisterFile("alameda_api/v1alpha1/datahub/metadata.proto", fileDescriptor_metadata_942726ab83823fc8)
+	proto.RegisterFile("alameda_api/v1alpha1/datahub/metadata.proto", fileDescriptor_80d037a21223e92e)
 }
 
-var fileDescriptor_metadata_942726ab83823fc8 = []byte{
+var fileDescriptor_80d037a21223e92e = []byte{
 	// 139 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xd2, 0x4e, 0xcc, 0x49, 0xcc,
 	0x4d, 0x4d, 0x49, 0x8c, 0x4f, 0x2c, 0xc8, 0xd4, 0x2f, 0x33, 0x4c, 0xcc, 0x29, 0xc8, 0x48, 0x34,

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
+	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -100,6 +101,27 @@ var (
 	AlamedaScalerVersion        = []string{"v1", "v2"}
 	V1scalerOperatorVersionList = []string{"v0.3.6", "v0.3.7", "v0.3.8", "v0.3.9", "v0.3.10", "v0.3.11", "v0.3.12"}
 )
+
+// GetServiceAddress returns address combining dns name with port number base on port name
+func GetServiceAddress(svc *corev1.Service, portName string) (string, error) {
+
+	portNum := int32(0)
+	exist := false
+	for _, port := range svc.Spec.Ports {
+		if port.Name == portName {
+			portNum = port.Port
+			exist = true
+			break
+		}
+	}
+	if !exist {
+		return "", errors.New("port name does not exist")
+	}
+
+	namespace := svc.Namespace
+	name := svc.Name
+	return fmt.Sprintf("%s.%s.svc:%d", name, namespace, portNum), nil
+}
 
 func SetBootStrapImageStruct(dep *appsv1.Deployment, componentspec v1alpha1.AlamedaComponentSpec, ctn string) {
 	for index, value := range dep.Spec.Template.Spec.InitContainers {

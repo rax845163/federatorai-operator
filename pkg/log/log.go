@@ -20,6 +20,10 @@ func NewZaprLogger(cfg Config) (logr.Logger, error) {
 	return logger, nil
 }
 
+func NewZapLogger(cfg Config) (*zap.Logger, error) {
+	return newZapLogger(cfg)
+}
+
 func newZapLogger(cfg Config) (*zap.Logger, error) {
 
 	var zapLogLevel zapcore.Level

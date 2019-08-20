@@ -3,9 +3,11 @@
 
 package containers_ai_alameda_v1alpha1_datahub
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
+import (
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -16,9 +18,9 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-// *
+//*
 //  Recommendation policy. A policy may be either stable or compact.
 type RecommendationPolicy int32
 
@@ -33,6 +35,7 @@ var RecommendationPolicy_name = map[int32]string{
 	1: "STABLE",
 	2: "COMPACT",
 }
+
 var RecommendationPolicy_value = map[string]int32{
 	"RECOMMENDATIONPOLICY_UNDEFINED": 0,
 	"STABLE":                         1,
@@ -42,11 +45,12 @@ var RecommendationPolicy_value = map[string]int32{
 func (x RecommendationPolicy) String() string {
 	return proto.EnumName(RecommendationPolicy_name, int32(x))
 }
+
 func (RecommendationPolicy) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_predict_dade96f289d45de7, []int{0}
+	return fileDescriptor_1b6e9e6342a3cbd6, []int{0}
 }
 
-// *
+//*
 // Represents a list of predicted metric data of a container
 type ContainerPrediction struct {
 	Name                    string        `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -62,16 +66,17 @@ func (m *ContainerPrediction) Reset()         { *m = ContainerPrediction{} }
 func (m *ContainerPrediction) String() string { return proto.CompactTextString(m) }
 func (*ContainerPrediction) ProtoMessage()    {}
 func (*ContainerPrediction) Descriptor() ([]byte, []int) {
-	return fileDescriptor_predict_dade96f289d45de7, []int{0}
+	return fileDescriptor_1b6e9e6342a3cbd6, []int{0}
 }
+
 func (m *ContainerPrediction) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ContainerPrediction.Unmarshal(m, b)
 }
 func (m *ContainerPrediction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ContainerPrediction.Marshal(b, m, deterministic)
 }
-func (dst *ContainerPrediction) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ContainerPrediction.Merge(dst, src)
+func (m *ContainerPrediction) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ContainerPrediction.Merge(m, src)
 }
 func (m *ContainerPrediction) XXX_Size() int {
 	return xxx_messageInfo_ContainerPrediction.Size(m)
@@ -110,7 +115,7 @@ func (m *ContainerPrediction) GetPredictedLowerboundData() []*MetricData {
 	return nil
 }
 
-// *
+//*
 // Represents a list of predicted metrics data of a pod
 type PodPrediction struct {
 	NamespacedName       *NamespacedName        `protobuf:"bytes,1,opt,name=namespaced_name,json=namespacedName,proto3" json:"namespaced_name,omitempty"`
@@ -124,16 +129,17 @@ func (m *PodPrediction) Reset()         { *m = PodPrediction{} }
 func (m *PodPrediction) String() string { return proto.CompactTextString(m) }
 func (*PodPrediction) ProtoMessage()    {}
 func (*PodPrediction) Descriptor() ([]byte, []int) {
-	return fileDescriptor_predict_dade96f289d45de7, []int{1}
+	return fileDescriptor_1b6e9e6342a3cbd6, []int{1}
 }
+
 func (m *PodPrediction) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PodPrediction.Unmarshal(m, b)
 }
 func (m *PodPrediction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PodPrediction.Marshal(b, m, deterministic)
 }
-func (dst *PodPrediction) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PodPrediction.Merge(dst, src)
+func (m *PodPrediction) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PodPrediction.Merge(m, src)
 }
 func (m *PodPrediction) XXX_Size() int {
 	return xxx_messageInfo_PodPrediction.Size(m)
@@ -158,7 +164,7 @@ func (m *PodPrediction) GetContainerPredictions() []*ContainerPrediction {
 	return nil
 }
 
-// *
+//*
 // Represents a list of predicted metric data of a node
 type NodePrediction struct {
 	Name                    string        `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -175,16 +181,17 @@ func (m *NodePrediction) Reset()         { *m = NodePrediction{} }
 func (m *NodePrediction) String() string { return proto.CompactTextString(m) }
 func (*NodePrediction) ProtoMessage()    {}
 func (*NodePrediction) Descriptor() ([]byte, []int) {
-	return fileDescriptor_predict_dade96f289d45de7, []int{2}
+	return fileDescriptor_1b6e9e6342a3cbd6, []int{2}
 }
+
 func (m *NodePrediction) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_NodePrediction.Unmarshal(m, b)
 }
 func (m *NodePrediction) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_NodePrediction.Marshal(b, m, deterministic)
 }
-func (dst *NodePrediction) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NodePrediction.Merge(dst, src)
+func (m *NodePrediction) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NodePrediction.Merge(m, src)
 }
 func (m *NodePrediction) XXX_Size() int {
 	return xxx_messageInfo_NodePrediction.Size(m)
@@ -231,17 +238,17 @@ func (m *NodePrediction) GetPredictedLowerboundData() []*MetricData {
 }
 
 func init() {
+	proto.RegisterEnum("containers_ai.alameda.v1alpha1.datahub.RecommendationPolicy", RecommendationPolicy_name, RecommendationPolicy_value)
 	proto.RegisterType((*ContainerPrediction)(nil), "containers_ai.alameda.v1alpha1.datahub.ContainerPrediction")
 	proto.RegisterType((*PodPrediction)(nil), "containers_ai.alameda.v1alpha1.datahub.PodPrediction")
 	proto.RegisterType((*NodePrediction)(nil), "containers_ai.alameda.v1alpha1.datahub.NodePrediction")
-	proto.RegisterEnum("containers_ai.alameda.v1alpha1.datahub.RecommendationPolicy", RecommendationPolicy_name, RecommendationPolicy_value)
 }
 
 func init() {
-	proto.RegisterFile("alameda_api/v1alpha1/datahub/predict.proto", fileDescriptor_predict_dade96f289d45de7)
+	proto.RegisterFile("alameda_api/v1alpha1/datahub/predict.proto", fileDescriptor_1b6e9e6342a3cbd6)
 }
 
-var fileDescriptor_predict_dade96f289d45de7 = []byte{
+var fileDescriptor_1b6e9e6342a3cbd6 = []byte{
 	// 428 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x94, 0xcd, 0x8e, 0xd3, 0x30,
 	0x14, 0x85, 0x49, 0x5b, 0x06, 0x70, 0x61, 0xa8, 0xcc, 0x20, 0xca, 0x2c, 0x50, 0xe9, 0x02, 0x95,

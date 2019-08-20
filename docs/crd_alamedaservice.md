@@ -111,9 +111,15 @@ spec:
 - Field: spec
   - type: [AlamedaServiceSpec](#alamedaservicespec)
   - description: Spec of AlamedaService.
+- Field: status
+  - type: [AlamedaServiceStatus](#alamedaservicestatus)
+  - description: Status of AlamedaService.
 
 ### AlamedaServiceSpec
 
+- Field: keycode
+  - type: [KeycodeSpec](#keycodespec)
+  - description: (Optional) This field provides user to fill in their Alameda keycode information.
 - Field: selfDriving
   - type: boolean
   - description: If this field is set to _true_, Federator.ai Operator will create an [_AlamedaScaler_](https://github.com/containers-ai/alameda/blob/master/design/crd_alamedascaler.md) CR to self-orchestrate the resource usage of deployed Alameda components. Default is _false_.
@@ -185,6 +191,45 @@ spec:
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for alameda-dispatcher component. This field is optional.
 
+### AlamedaServiceStatus
+
+- Field: crdversion
+  - type: [AlamedaServiceStatusCRDVersion](#alamedaservicestatuscrdversion)
+  - description: The version information of AlamedaScaler CRD that federatorai-operator install into cluster.
+- Field: conditions
+  - type: [[]AlamedaServiceStatusCondition](#alamedaservicestatuscondition)
+  - description: Current states of AlamedaService.
+- Field: keycodeStatus
+  - type: [KeycodeStatus](#Keycodestatus)
+  - description: Status of the handling keycode process.
+  
+### KeycodeSpec
+
+- Field: codeNumber
+  - type: string
+  - description: Keycode provided by ProphetStor, user needs to fill in to get registration data.
+- Field: signatureData
+  - type: string
+  - description: Data to activate ProphetStor cloud service.
+
+### KeycodeStatus
+
+- Field: codeNumber
+  - type: string
+  - description: The last license keycode that applied to Federator.ai.
+- Field: registrationData
+  - type: string
+  - description: Data that user needs to send to ProphetStor to activate license.
+- Field: state
+  - type: string
+  - description: Current state of process that Federatorai-Operator handling the keycode.
+- Field: lastErrorMessage
+  - type: string
+  - description: Error message that happend when Federatorai-Operator handled keycode.
+- Field: summary
+  - type: string
+  - description: Detail information of the keycode applied to Federator.ai.
+
 ### StorageSpec
 
 - Field: usage
@@ -244,6 +289,27 @@ spec:
 - Field: nodePort
   - type: integer
   - description: It sets which port on the node to proxy to the service port.
+
+### AlamedaServiceStatusCRDVersion
+
+- Field: scalerversion
+  - type: string
+  - description: Describe the internal version that federatorai-operator install into the cluster.
+  V1 represents [file](../assets/CustomResourceDefinition/alamedascalersCRD.yaml).
+  V2 represents [file](../assets/CustomResourceDefinition/alamedascalersV2CRD.yaml). 
+- Field: crdname
+  - type: string
+  - description: The CRD name of AlamedaScaler installing into the cluster.
+
+### AlamedaServiceStatusCondition
+
+- Field: paused
+  - type: bool
+  - description: Paused represents whether federatorai-operator installs components that associate with this AlamedaService.
+  Currently, federatorai-operator will only take one AlamedaService to install per kuberenetes cluster.
+- Field: message
+  - type: string
+  - description: Detail information telling current status.
 
 
 

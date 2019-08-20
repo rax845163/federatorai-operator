@@ -3,9 +3,11 @@
 
 package containers_ai_alameda_v1alpha1_datahub
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
+import (
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -16,9 +18,9 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-// *
+//*
 // Represents the priority of a node
 type NodePriority struct {
 	Nodes                []string `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
@@ -31,16 +33,17 @@ func (m *NodePriority) Reset()         { *m = NodePriority{} }
 func (m *NodePriority) String() string { return proto.CompactTextString(m) }
 func (*NodePriority) ProtoMessage()    {}
 func (*NodePriority) Descriptor() ([]byte, []int) {
-	return fileDescriptor_pod_assignment_10c79d6ddb19ecf9, []int{0}
+	return fileDescriptor_91b44217b3c4d0e1, []int{0}
 }
+
 func (m *NodePriority) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_NodePriority.Unmarshal(m, b)
 }
 func (m *NodePriority) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_NodePriority.Marshal(b, m, deterministic)
 }
-func (dst *NodePriority) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NodePriority.Merge(dst, src)
+func (m *NodePriority) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NodePriority.Merge(m, src)
 }
 func (m *NodePriority) XXX_Size() int {
 	return xxx_messageInfo_NodePriority.Size(m)
@@ -69,16 +72,17 @@ func (m *Selector) Reset()         { *m = Selector{} }
 func (m *Selector) String() string { return proto.CompactTextString(m) }
 func (*Selector) ProtoMessage()    {}
 func (*Selector) Descriptor() ([]byte, []int) {
-	return fileDescriptor_pod_assignment_10c79d6ddb19ecf9, []int{1}
+	return fileDescriptor_91b44217b3c4d0e1, []int{1}
 }
+
 func (m *Selector) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Selector.Unmarshal(m, b)
 }
 func (m *Selector) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_Selector.Marshal(b, m, deterministic)
 }
-func (dst *Selector) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Selector.Merge(dst, src)
+func (m *Selector) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Selector.Merge(m, src)
 }
 func (m *Selector) XXX_Size() int {
 	return xxx_messageInfo_Selector.Size(m)
@@ -103,10 +107,10 @@ func init() {
 }
 
 func init() {
-	proto.RegisterFile("alameda_api/v1alpha1/datahub/pod_assignment.proto", fileDescriptor_pod_assignment_10c79d6ddb19ecf9)
+	proto.RegisterFile("alameda_api/v1alpha1/datahub/pod_assignment.proto", fileDescriptor_91b44217b3c4d0e1)
 }
 
-var fileDescriptor_pod_assignment_10c79d6ddb19ecf9 = []byte{
+var fileDescriptor_91b44217b3c4d0e1 = []byte{
 	// 218 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x32, 0x4c, 0xcc, 0x49, 0xcc,
 	0x4d, 0x4d, 0x49, 0x8c, 0x4f, 0x2c, 0xc8, 0xd4, 0x2f, 0x33, 0x4c, 0xcc, 0x29, 0xc8, 0x48, 0x34,

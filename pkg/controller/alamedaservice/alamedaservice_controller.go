@@ -2,7 +2,6 @@ package alamedaservice
 
 import (
 	"context"
-	"encoding/json"
 	"os"
 	"time"
 
@@ -14,6 +13,7 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/updateresource"
 	"github.com/containers-ai/federatorai-operator/pkg/util"
+
 	routev1 "github.com/openshift/api/route/v1"
 	securityv1 "github.com/openshift/api/security/v1"
 	"github.com/pkg/errors"
@@ -28,6 +28,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -143,6 +144,8 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("get AlamedaService failed, retry reconciling", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, err
 	}
+
+	// Check if AlamedaService need to reconcile, currently only reconcile one AlamedaService in one cluster
 	needToReconcile, err := r.needToReconcile(instance)
 	if err != nil {
 		log.V(-1).Info("check if AlamedaService needs to reconcile failed, retry reconciling", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
@@ -150,16 +153,17 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	if !needToReconcile {
 		log.Info("AlamedaService doe not need to reconcile", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name)
-		err := r.syncAlamedaServiceActive(instance, false)
+		err := r.updateAlamedaServiceActivation(instance, false)
 		if err != nil {
 			log.V(-1).Info("reconcile AlamedaService failed", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
 		return reconcile.Result{}, nil
-	}
-	if err := r.syncAlamedaServiceActive(instance, true); err != nil {
-		log.V(-1).Info("sync AlamedaService failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	} else {
+		if err := r.updateAlamedaServiceActivation(instance, true); err != nil {
+			log.V(-1).Info("reconcile AlamedaService failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+		}
 	}
 	if flag, _ := r.checkAlamedaServiceSpecIsChange(instance, request.NamespacedName); !flag && util.Disable_operand_resource_protection == "true" {
 		return reconcile.Result{}, nil
@@ -1189,8 +1193,9 @@ func (r *ReconcileAlamedaService) createAlamedaServiceLock(alamedaService *feder
 	return nil
 }
 
-func (r *ReconcileAlamedaService) syncAlamedaServiceActive(alamedaService *federatoraiv1alpha1.AlamedaService, active bool) error {
-	copyAlamedaService := alamedaService.DeepCopy()
+func (r *ReconcileAlamedaService) updateAlamedaServiceActivation(alamedaService *federatoraiv1alpha1.AlamedaService, active bool) error {
+	copyAlamedaService := &federatoraiv1alpha1.AlamedaService{}
+	r.client.Get(context.TODO(), client.ObjectKey{Namespace: alamedaService.Namespace, Name: alamedaService.Name}, copyAlamedaService)
 	if active {
 		copyAlamedaService.Status.Conditions = []federatoraiv1alpha1.AlamedaServiceStatusCondition{
 			federatoraiv1alpha1.AlamedaServiceStatusCondition{
@@ -1245,16 +1250,18 @@ func (r *ReconcileAlamedaService) updateAlamedaServiceStatus(alamedaService *fed
 
 func (r *ReconcileAlamedaService) updateAlamedaServiceAnnotations(alamedaService *federatoraiv1alpha1.AlamedaService, namespaceName client.ObjectKey) error {
 	copyAlamedaService := alamedaService.DeepCopy()
-	r.client.Get(context.TODO(), namespaceName, copyAlamedaService)
-	jsonSpec, err := json.Marshal(copyAlamedaService.Spec)
+	if err := r.client.Get(context.TODO(), namespaceName, copyAlamedaService); err != nil {
+		return errors.Errorf("get AlamedaService failed: %s", err.Error())
+	}
+	jsonSpec, err := copyAlamedaService.GetSpecAnnotationWithoutKeycode()
 	if err != nil {
-		return errors.Errorf("AlamedaService Spec json Marshal failed: %s", err.Error())
+		return errors.Errorf("get AlamedaService spec annotation without keycode failed: %s", err.Error())
 	}
 	if copyAlamedaService.Annotations != nil {
-		copyAlamedaService.Annotations["previousAlamedaServiceSpec"] = string(jsonSpec)
+		copyAlamedaService.Annotations["previousAlamedaServiceSpec"] = jsonSpec
 	} else {
 		annotations := make(map[string]string)
-		annotations["previousAlamedaServiceSpec"] = string(jsonSpec)
+		annotations["previousAlamedaServiceSpec"] = jsonSpec
 		copyAlamedaService.Annotations = annotations
 	}
 	if err := r.client.Update(context.Background(), copyAlamedaService); err != nil {
@@ -1265,11 +1272,11 @@ func (r *ReconcileAlamedaService) updateAlamedaServiceAnnotations(alamedaService
 }
 
 func (r *ReconcileAlamedaService) checkAlamedaServiceSpecIsChange(alamedaService *federatoraiv1alpha1.AlamedaService, namespaceName client.ObjectKey) (bool, error) {
-	jsonSpec, err := json.Marshal(alamedaService.Spec)
+	jsonSpec, err := alamedaService.GetSpecAnnotationWithoutKeycode()
 	if err != nil {
-		return false, errors.Errorf("AlamedaService Spec json Marshal failed: %s", err.Error())
+		return false, errors.Errorf("get AlamedaService spec annotation without keycode failed: %s", err.Error())
 	}
-	currentAlamedaServiceSpec := string(jsonSpec)
+	currentAlamedaServiceSpec := jsonSpec
 	previousAlamedaServiceSpec := alamedaService.Annotations["previousAlamedaServiceSpec"]
 	if currentAlamedaServiceSpec == previousAlamedaServiceSpec {
 		return false, nil

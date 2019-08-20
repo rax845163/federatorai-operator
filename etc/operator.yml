@@ -5,3 +5,8 @@ metrics:
 log:
   outputLevel: "info" # one of 'debug', 'info', 'warn', 'error' (default info)
   outputPaths: # default output paths are 'stdout' and '/var/log/alameda/federatorai-operator.log'
+
+grpc:
+  log:
+    outputLevel: "info" # one of 'debug', 'info', 'warn', 'error' (default info)
+    outputPaths: # default output path 'stdout'

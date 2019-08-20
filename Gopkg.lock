@@ -58,14 +58,15 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:81246bfea28e49f82641a6553deaf678f261f8229dcf362a69c853f50b922682"
+  digest = "1:7b0ee776b13af83423a5ea9e1d50e37a0c2461b90e727d3537dadfad744feb10"
   name = "github.com/containers-ai/api"
   packages = [
     "alameda_api/v1alpha1/datahub",
     "common",
+    "datahub/keycodes",
   ]
   pruneopts = "NT"
-  revision = "e2ff77574db90ebb682c48c99d7830355628fe2b"
+  revision = "e83e4c249904ab5bf6e420d176f70f2a51ce3015"
 
 [[projects]]
   digest = "1:c61f4f97321a37adcb5b4fd4fd61209cd553e46c99ee606c465553541b12a229"
@@ -199,18 +200,21 @@
   revision = "5b532d6fd5efaf7fa130d4e859a2fde0fc3a9e1b"
 
 [[projects]]
-  digest = "1:d7212166c4b7f30a20fb3de70ab7e36564900b2e36360ffd31958b5af8fed025"
+  branch = "master"
+  digest = "1:440a3032b9e2db5bbf14535c63caf0e886f13d4f1d128a4a4d9deb03f924aa0c"
   name = "github.com/golang/protobuf"
   packages = [
+    "jsonpb",
     "proto",
     "ptypes",
     "ptypes/any",
     "ptypes/duration",
+    "ptypes/empty",
+    "ptypes/struct",
     "ptypes/timestamp",
   ]
   pruneopts = "NT"
-  revision = "b5d812f8a3706043e23a9cd5babf2e5423744d30"
-  version = "v1.3.1"
+  revision = "6c65a5562fc06764971b7c5d05c76c75e84bdbf7"
 
 [[projects]]
   digest = "1:05f95ffdfcf651bdb0f05b40b69e7f5663047f8da75c72d58728acb59b5cc107"
@@ -258,6 +262,21 @@
   ]
   pruneopts = "NT"
   revision = "901d90724c7919163f472a9812253fb26761123d"
+
+[[projects]]
+  digest = "1:9f8009ee7d51965a545bbdf4912a95dac4afd9fe5c233d14b8dd59159aa18332"
+  name = "github.com/grpc-ecosystem/go-grpc-middleware"
+  packages = [
+    ".",
+    "logging",
+    "logging/zap",
+    "logging/zap/ctxzap",
+    "tags",
+    "tags/zap",
+  ]
+  pruneopts = "NT"
+  revision = "c250d6563d4d4c20252cd865923440e829844f4e"
+  version = "v1.0.0"
 
 [[projects]]
   digest = "1:52094d0f8bdf831d1a2401e9b6fee5795fdc0b2a2d1f8bb1980834c289e79129"
@@ -1114,9 +1133,12 @@
   input-imports = [
     "github.com/containers-ai/alameda/admission-controller",
     "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1",
+    "github.com/containers-ai/api/datahub/keycodes",
     "github.com/go-logr/logr",
     "github.com/go-logr/zapr",
     "github.com/go-openapi/spec",
+    "github.com/golang/protobuf/ptypes/empty",
+    "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap",
     "github.com/openshift/api/route/v1",
     "github.com/operator-framework/operator-sdk/pkg/k8sutil",
     "github.com/operator-framework/operator-sdk/pkg/leader",
@@ -1127,8 +1149,12 @@
     "github.com/stretchr/testify/assert",
     "go.uber.org/zap",
     "go.uber.org/zap/zapcore",
+    "google.golang.org/genproto/googleapis/rpc/code",
+    "google.golang.org/genproto/googleapis/rpc/status",
+    "google.golang.org/grpc",
     "k8s.io/api/apps/v1",
     "k8s.io/api/core/v1",
+    "k8s.io/api/extensions/v1beta1",
     "k8s.io/api/rbac/v1",
     "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1",
     "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset",

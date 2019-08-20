@@ -1,6 +1,8 @@
 package v1alpha1
 
 import (
+	"encoding/json"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -32,6 +34,7 @@ type AlamedaServiceSpec struct {
 	Storages          []StorageSpec         `json:"storages"`
 	ServiceExposures  []ServiceExposureSpec `json:"serviceExposures"`
 	EnableWeavescope  bool                  `json:"enableWeavescope"`
+	Keycode           KeycodeSpec           `json:"keycode"`
 	//Component Section Schema
 	InfluxdbSectionSet            AlamedaComponentSpec `json:"alamedaInfluxdb"`
 	GrafanaSectionSet             AlamedaComponentSpec `json:"alamedaGrafana"`
@@ -123,14 +126,53 @@ type PortSpec struct {
 	NodePort int32 `json:"nodePort"`
 }
 
+// KeycodeSpec contains data for keycode check
+type KeycodeSpec struct {
+	// CodeNumber provides user to apply keycode to Federator.ai
+	CodeNumber string `json:"codeNumber"`
+	// SignatureData provides user to apply signature data which is download from ProphetStor to Federator.ai
+	SignatureData string `json:"signatureData"`
+}
+
+// KeycodeState defines type of keycode processing state
+type KeycodeState string
+
+var (
+	// KeycodeStateDefault represents default state
+	KeycodeStateDefault KeycodeState
+	// KeycodeStateWaitingKeycode represents state in waiting keycode to be filled in
+	KeycodeStateWaitingKeycode KeycodeState = "WaitingKeycode"
+	// KeycodeStatePollingRegistrationData represents in poll registration data state
+	KeycodeStatePollingRegistrationData KeycodeState = "PollingRegistrationData"
+	// KeycodeStateWaitingSignatureData represents state waiting user fill in signature data
+	KeycodeStateWaitingSignatureData KeycodeState = "WaitingSignatureData"
+	// KeycodeStateDone represents state waiting user fill in signature data
+	KeycodeStateDone KeycodeState = "Done"
+)
+
+// KeycodeStatus contains current keycode information
+type KeycodeStatus struct {
+	// CodeNumber represents the last keycode user successfully applied
+	CodeNumber string `json:"codeNumber"`
+	// RegistrationData contains data that user need to send to ProphetStor to activate keycode
+	RegistrationData string `json:"registrationData"`
+	// State represents the state of keycode processing
+	State KeycodeState `json:"state"`
+	// LastErrorMessage stores the error message that happend when Federatorai-Operator handled keycode
+	LastErrorMessage string `json:"lastErrorMessage"`
+	// Summary stores the summary of the keycode
+	Summary string `json:"summary"`
+}
+
 // AlamedaServiceStatus defines the observed state of AlamedaService
 // +k8s:openapi-gen=true
 type AlamedaServiceStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book.kubebuilder.io/beyond_basics/generating_crd.html
-	CRDVersion AlamedaServiceStatusCRDVersion  `json:"crdversion"`
-	Conditions []AlamedaServiceStatusCondition `json:"conditions"`
+	CRDVersion    AlamedaServiceStatusCRDVersion  `json:"crdversion"`
+	Conditions    []AlamedaServiceStatusCondition `json:"conditions"`
+	KeycodeStatus KeycodeStatus                   `json:"keycodeStatus"`
 }
 
 type AlamedaServiceStatusCRDVersion struct {
@@ -160,6 +202,71 @@ type AlamedaService struct {
 
 	Spec   AlamedaServiceSpec   `json:"spec,omitempty"`
 	Status AlamedaServiceStatus `json:"status,omitempty"`
+}
+
+// IsCodeNumberEmpty returns true if keycode is empty
+func (as *AlamedaService) IsCodeNumberEmpty() bool {
+
+	if as.Spec.Keycode.CodeNumber == "" {
+		return true
+	}
+
+	return false
+}
+
+// IsCodeNumberUpdated returns true if current keycode is not equal to previous keycode
+func (as *AlamedaService) IsCodeNumberUpdated() bool {
+
+	if as.Spec.Keycode.CodeNumber != as.Status.KeycodeStatus.CodeNumber {
+		return true
+	}
+
+	return false
+}
+
+// SetCRDVersion sets crdVersion into AlamedaService's status
+func (as *AlamedaService) SetCRDVersion(crdVer AlamedaServiceStatusCRDVersion) {
+	as.Status.CRDVersion = crdVer
+}
+
+// SetStatusCodeNumber sets codeNumber into AlamedaService's status
+func (as *AlamedaService) SetStatusCodeNumber(codeNumber string) {
+	as.Status.KeycodeStatus.CodeNumber = codeNumber
+}
+
+// SetStatusKeycode sets keycode status into AlamedaService's status
+func (as *AlamedaService) SetStatusKeycode(status KeycodeStatus) {
+	as.Status.KeycodeStatus = status
+}
+
+// SetStatusRegistrationData sets registration data into AlamedaService's status
+func (as *AlamedaService) SetStatusRegistrationData(registrationData string) {
+	as.Status.KeycodeStatus.RegistrationData = registrationData
+}
+
+// SetStatusKeycodeState sets registration data into AlamedaService's status
+func (as *AlamedaService) SetStatusKeycodeState(state KeycodeState) {
+	as.Status.KeycodeStatus.State = state
+}
+
+// SetStatusKeycodeLastErrorMessage sets last error message into AlamedaService's keycode status
+func (as *AlamedaService) SetStatusKeycodeLastErrorMessage(msg string) {
+	as.Status.KeycodeStatus.LastErrorMessage = msg
+}
+
+// SetStatusKeycodeSummary sets keycode summary into AlamedaService's status
+func (as *AlamedaService) SetStatusKeycodeSummary(summary string) {
+	as.Status.KeycodeStatus.Summary = summary
+}
+
+// GetSpecAnnotationWithoutKeycode sets keycode summary into AlamedaService's status
+func (as AlamedaService) GetSpecAnnotationWithoutKeycode() (string, error) {
+	as.Spec.Keycode = KeycodeSpec{}
+	jsonSpec, err := json.Marshal(as.Spec)
+	if err != nil {
+		return "", err
+	}
+	return string(jsonSpec), nil
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -14,7 +14,9 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/apis"
 	"github.com/containers-ai/federatorai-operator/pkg/controller"
 	fedOperatorLog "github.com/containers-ai/federatorai-operator/pkg/log"
+	"github.com/containers-ai/federatorai-operator/pkg/protocol/grpc"
 	"github.com/containers-ai/federatorai-operator/pkg/version"
+
 	routev1 "github.com/openshift/api/route/v1"
 	securityv1 "github.com/openshift/api/security/v1"
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
@@ -107,8 +109,14 @@ func initLogger() {
 	if err != nil {
 		panic(err)
 	}
-
 	logf.SetLogger(logger)
+
+	fedOperatorConfig.GRPC.Log.AppendOutput(defaultLogOutputPath)
+	grpcLogger, err := fedOperatorLog.NewZapLogger(fedOperatorConfig.GRPC.Log)
+	if err != nil {
+		panic(err)
+	}
+	grpc.SetGRPCLogger(grpcLogger)
 }
 
 func printVersion() {

@@ -185,6 +185,11 @@ func GetSelfDrivingRsource() *Resource {
 	return &r
 }
 
+// GetAlamedaDatahubService returns service asset name of alameda-dathub
+func GetAlamedaDatahubService() string {
+	return "Service/alameda-datahubSV.yaml"
+}
+
 type AlamedaServiceParamter struct {
 	NameSpace                     string
 	SelfDriving                   bool

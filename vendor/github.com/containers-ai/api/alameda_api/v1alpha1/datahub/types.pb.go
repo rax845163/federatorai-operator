@@ -3,10 +3,12 @@
 
 package containers_ai_alameda_v1alpha1_datahub
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
-import timestamp "github.com/golang/protobuf/ptypes/timestamp"
+import (
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	timestamp "github.com/golang/protobuf/ptypes/timestamp"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -17,7 +19,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // The valid statuses of pods
 type PodPhase int32
@@ -43,6 +45,7 @@ var PodPhase_name = map[int32]string{
 	6: "Completed",
 	7: "CrashLoopBackOff",
 }
+
 var PodPhase_value = map[string]int32{
 	"Undefined":        0,
 	"Pending":          1,
@@ -57,8 +60,9 @@ var PodPhase_value = map[string]int32{
 func (x PodPhase) String() string {
 	return proto.EnumName(PodPhase_name, int32(x))
 }
+
 func (PodPhase) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_types_034d974bd9724b16, []int{0}
+	return fileDescriptor_e4b4e679ec3d6a71, []int{0}
 }
 
 // ContainerStateWaiting is a waiting state of a container
@@ -74,16 +78,17 @@ func (m *ContainerStateWaiting) Reset()         { *m = ContainerStateWaiting{} }
 func (m *ContainerStateWaiting) String() string { return proto.CompactTextString(m) }
 func (*ContainerStateWaiting) ProtoMessage()    {}
 func (*ContainerStateWaiting) Descriptor() ([]byte, []int) {
-	return fileDescriptor_types_034d974bd9724b16, []int{0}
+	return fileDescriptor_e4b4e679ec3d6a71, []int{0}
 }
+
 func (m *ContainerStateWaiting) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ContainerStateWaiting.Unmarshal(m, b)
 }
 func (m *ContainerStateWaiting) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ContainerStateWaiting.Marshal(b, m, deterministic)
 }
-func (dst *ContainerStateWaiting) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ContainerStateWaiting.Merge(dst, src)
+func (m *ContainerStateWaiting) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ContainerStateWaiting.Merge(m, src)
 }
 func (m *ContainerStateWaiting) XXX_Size() int {
 	return xxx_messageInfo_ContainerStateWaiting.Size(m)
@@ -120,16 +125,17 @@ func (m *ContainerStateRunning) Reset()         { *m = ContainerStateRunning{} }
 func (m *ContainerStateRunning) String() string { return proto.CompactTextString(m) }
 func (*ContainerStateRunning) ProtoMessage()    {}
 func (*ContainerStateRunning) Descriptor() ([]byte, []int) {
-	return fileDescriptor_types_034d974bd9724b16, []int{1}
+	return fileDescriptor_e4b4e679ec3d6a71, []int{1}
 }
+
 func (m *ContainerStateRunning) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ContainerStateRunning.Unmarshal(m, b)
 }
 func (m *ContainerStateRunning) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ContainerStateRunning.Marshal(b, m, deterministic)
 }
-func (dst *ContainerStateRunning) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ContainerStateRunning.Merge(dst, src)
+func (m *ContainerStateRunning) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ContainerStateRunning.Merge(m, src)
 }
 func (m *ContainerStateRunning) XXX_Size() int {
 	return xxx_messageInfo_ContainerStateRunning.Size(m)
@@ -163,16 +169,17 @@ func (m *ContainerStateTerminated) Reset()         { *m = ContainerStateTerminat
 func (m *ContainerStateTerminated) String() string { return proto.CompactTextString(m) }
 func (*ContainerStateTerminated) ProtoMessage()    {}
 func (*ContainerStateTerminated) Descriptor() ([]byte, []int) {
-	return fileDescriptor_types_034d974bd9724b16, []int{2}
+	return fileDescriptor_e4b4e679ec3d6a71, []int{2}
 }
+
 func (m *ContainerStateTerminated) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ContainerStateTerminated.Unmarshal(m, b)
 }
 func (m *ContainerStateTerminated) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ContainerStateTerminated.Marshal(b, m, deterministic)
 }
-func (dst *ContainerStateTerminated) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ContainerStateTerminated.Merge(dst, src)
+func (m *ContainerStateTerminated) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ContainerStateTerminated.Merge(m, src)
 }
 func (m *ContainerStateTerminated) XXX_Size() int {
 	return xxx_messageInfo_ContainerStateTerminated.Size(m)
@@ -232,16 +239,17 @@ func (m *ContainerState) Reset()         { *m = ContainerState{} }
 func (m *ContainerState) String() string { return proto.CompactTextString(m) }
 func (*ContainerState) ProtoMessage()    {}
 func (*ContainerState) Descriptor() ([]byte, []int) {
-	return fileDescriptor_types_034d974bd9724b16, []int{3}
+	return fileDescriptor_e4b4e679ec3d6a71, []int{3}
 }
+
 func (m *ContainerState) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ContainerState.Unmarshal(m, b)
 }
 func (m *ContainerState) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ContainerState.Marshal(b, m, deterministic)
 }
-func (dst *ContainerState) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ContainerState.Merge(dst, src)
+func (m *ContainerState) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ContainerState.Merge(m, src)
 }
 func (m *ContainerState) XXX_Size() int {
 	return xxx_messageInfo_ContainerState.Size(m)
@@ -287,16 +295,17 @@ func (m *ContainerStatus) Reset()         { *m = ContainerStatus{} }
 func (m *ContainerStatus) String() string { return proto.CompactTextString(m) }
 func (*ContainerStatus) ProtoMessage()    {}
 func (*ContainerStatus) Descriptor() ([]byte, []int) {
-	return fileDescriptor_types_034d974bd9724b16, []int{4}
+	return fileDescriptor_e4b4e679ec3d6a71, []int{4}
 }
+
 func (m *ContainerStatus) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ContainerStatus.Unmarshal(m, b)
 }
 func (m *ContainerStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ContainerStatus.Marshal(b, m, deterministic)
 }
-func (dst *ContainerStatus) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ContainerStatus.Merge(dst, src)
+func (m *ContainerStatus) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ContainerStatus.Merge(m, src)
 }
 func (m *ContainerStatus) XXX_Size() int {
 	return xxx_messageInfo_ContainerStatus.Size(m)
@@ -342,16 +351,17 @@ func (m *PodStatus) Reset()         { *m = PodStatus{} }
 func (m *PodStatus) String() string { return proto.CompactTextString(m) }
 func (*PodStatus) ProtoMessage()    {}
 func (*PodStatus) Descriptor() ([]byte, []int) {
-	return fileDescriptor_types_034d974bd9724b16, []int{5}
+	return fileDescriptor_e4b4e679ec3d6a71, []int{5}
 }
+
 func (m *PodStatus) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PodStatus.Unmarshal(m, b)
 }
 func (m *PodStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PodStatus.Marshal(b, m, deterministic)
 }
-func (dst *PodStatus) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PodStatus.Merge(dst, src)
+func (m *PodStatus) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PodStatus.Merge(m, src)
 }
 func (m *PodStatus) XXX_Size() int {
 	return xxx_messageInfo_PodStatus.Size(m)
@@ -384,20 +394,20 @@ func (m *PodStatus) GetReason() string {
 }
 
 func init() {
+	proto.RegisterEnum("containers_ai.alameda.v1alpha1.datahub.PodPhase", PodPhase_name, PodPhase_value)
 	proto.RegisterType((*ContainerStateWaiting)(nil), "containers_ai.alameda.v1alpha1.datahub.ContainerStateWaiting")
 	proto.RegisterType((*ContainerStateRunning)(nil), "containers_ai.alameda.v1alpha1.datahub.ContainerStateRunning")
 	proto.RegisterType((*ContainerStateTerminated)(nil), "containers_ai.alameda.v1alpha1.datahub.ContainerStateTerminated")
 	proto.RegisterType((*ContainerState)(nil), "containers_ai.alameda.v1alpha1.datahub.ContainerState")
 	proto.RegisterType((*ContainerStatus)(nil), "containers_ai.alameda.v1alpha1.datahub.ContainerStatus")
 	proto.RegisterType((*PodStatus)(nil), "containers_ai.alameda.v1alpha1.datahub.PodStatus")
-	proto.RegisterEnum("containers_ai.alameda.v1alpha1.datahub.PodPhase", PodPhase_name, PodPhase_value)
 }
 
 func init() {
-	proto.RegisterFile("alameda_api/v1alpha1/datahub/types.proto", fileDescriptor_types_034d974bd9724b16)
+	proto.RegisterFile("alameda_api/v1alpha1/datahub/types.proto", fileDescriptor_e4b4e679ec3d6a71)
 }
 
-var fileDescriptor_types_034d974bd9724b16 = []byte{
+var fileDescriptor_e4b4e679ec3d6a71 = []byte{
 	// 545 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x93, 0x5f, 0x6b, 0x13, 0x4d,
 	0x14, 0xc6, 0xdf, 0x4d, 0xba, 0x49, 0x73, 0xf2, 0xb6, 0x2e, 0x43, 0x2d, 0xa1, 0x5e, 0x28, 0x2b,

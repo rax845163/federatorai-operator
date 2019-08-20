@@ -45,9 +45,6 @@ There are two types of environment variable that Federatorai-Operator accepts
 * Variables that are **not** with prefix **FEDERATORAI_OPERATOR**, the variables are listed below
   * name: WATCH_NAMESPACE
     * description: Federatorai-Operator will only reconcile AlamedaService in this namespace, or all namespaces if the variable is set to "".
-
-    **Notes: This variable is mandatory.**
-    
   * name: POD_NAME
     * description: Federatorai-Operator will get the pod with this name that the pod is where the code is running at. It expects the environment variable POD_NAME to be set by the downwards API.
   * name: OPERATOR_NAME

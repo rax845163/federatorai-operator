@@ -3,11 +3,13 @@
 
 package containers_ai_alameda_v1alpha1_datahub
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
-import duration "github.com/golang/protobuf/ptypes/duration"
-import timestamp "github.com/golang/protobuf/ptypes/timestamp"
+import (
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	duration "github.com/golang/protobuf/ptypes/duration"
+	timestamp "github.com/golang/protobuf/ptypes/timestamp"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -18,9 +20,9 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-// *
+//*
 // Metric type. A metric may be either CPU or memory.
 type MetricType int32
 
@@ -35,6 +37,7 @@ var MetricType_name = map[int32]string{
 	1: "CPU_USAGE_SECONDS_PERCENTAGE",
 	2: "MEMORY_USAGE_BYTES",
 }
+
 var MetricType_value = map[string]int32{
 	"UNDEFINED":                    0,
 	"CPU_USAGE_SECONDS_PERCENTAGE": 1,
@@ -44,8 +47,9 @@ var MetricType_value = map[string]int32{
 func (x MetricType) String() string {
 	return proto.EnumName(MetricType_name, int32(x))
 }
+
 func (MetricType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_metric_772b24d6ff42aff3, []int{0}
+	return fileDescriptor_6fb54248461f2f1e, []int{0}
 }
 
 type TimeRange_AggregateFunction int32
@@ -59,6 +63,7 @@ var TimeRange_AggregateFunction_name = map[int32]string{
 	0: "NONE",
 	1: "MAX",
 }
+
 var TimeRange_AggregateFunction_value = map[string]int32{
 	"NONE": 0,
 	"MAX":  1,
@@ -67,11 +72,12 @@ var TimeRange_AggregateFunction_value = map[string]int32{
 func (x TimeRange_AggregateFunction) String() string {
 	return proto.EnumName(TimeRange_AggregateFunction_name, int32(x))
 }
+
 func (TimeRange_AggregateFunction) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_metric_772b24d6ff42aff3, []int{4, 0}
+	return fileDescriptor_6fb54248461f2f1e, []int{4, 0}
 }
 
-// *
+//*
 // Represents metric data of a container
 type ContainerMetric struct {
 	Name                 string        `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -85,16 +91,17 @@ func (m *ContainerMetric) Reset()         { *m = ContainerMetric{} }
 func (m *ContainerMetric) String() string { return proto.CompactTextString(m) }
 func (*ContainerMetric) ProtoMessage()    {}
 func (*ContainerMetric) Descriptor() ([]byte, []int) {
-	return fileDescriptor_metric_772b24d6ff42aff3, []int{0}
+	return fileDescriptor_6fb54248461f2f1e, []int{0}
 }
+
 func (m *ContainerMetric) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ContainerMetric.Unmarshal(m, b)
 }
 func (m *ContainerMetric) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ContainerMetric.Marshal(b, m, deterministic)
 }
-func (dst *ContainerMetric) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ContainerMetric.Merge(dst, src)
+func (m *ContainerMetric) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ContainerMetric.Merge(m, src)
 }
 func (m *ContainerMetric) XXX_Size() int {
 	return xxx_messageInfo_ContainerMetric.Size(m)
@@ -119,7 +126,7 @@ func (m *ContainerMetric) GetMetricData() []*MetricData {
 	return nil
 }
 
-// *
+//*
 // Represents metric data of a pod
 type PodMetric struct {
 	NamespacedName       *NamespacedName    `protobuf:"bytes,1,opt,name=namespaced_name,json=namespacedName,proto3" json:"namespaced_name,omitempty"`
@@ -133,16 +140,17 @@ func (m *PodMetric) Reset()         { *m = PodMetric{} }
 func (m *PodMetric) String() string { return proto.CompactTextString(m) }
 func (*PodMetric) ProtoMessage()    {}
 func (*PodMetric) Descriptor() ([]byte, []int) {
-	return fileDescriptor_metric_772b24d6ff42aff3, []int{1}
+	return fileDescriptor_6fb54248461f2f1e, []int{1}
 }
+
 func (m *PodMetric) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PodMetric.Unmarshal(m, b)
 }
 func (m *PodMetric) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PodMetric.Marshal(b, m, deterministic)
 }
-func (dst *PodMetric) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PodMetric.Merge(dst, src)
+func (m *PodMetric) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PodMetric.Merge(m, src)
 }
 func (m *PodMetric) XXX_Size() int {
 	return xxx_messageInfo_PodMetric.Size(m)
@@ -167,7 +175,7 @@ func (m *PodMetric) GetContainerMetrics() []*ContainerMetric {
 	return nil
 }
 
-// *
+//*
 // Represents metric data of a node
 type NodeMetric struct {
 	Name                 string        `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -181,16 +189,17 @@ func (m *NodeMetric) Reset()         { *m = NodeMetric{} }
 func (m *NodeMetric) String() string { return proto.CompactTextString(m) }
 func (*NodeMetric) ProtoMessage()    {}
 func (*NodeMetric) Descriptor() ([]byte, []int) {
-	return fileDescriptor_metric_772b24d6ff42aff3, []int{2}
+	return fileDescriptor_6fb54248461f2f1e, []int{2}
 }
+
 func (m *NodeMetric) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_NodeMetric.Unmarshal(m, b)
 }
 func (m *NodeMetric) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_NodeMetric.Marshal(b, m, deterministic)
 }
-func (dst *NodeMetric) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NodeMetric.Merge(dst, src)
+func (m *NodeMetric) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NodeMetric.Merge(m, src)
 }
 func (m *NodeMetric) XXX_Size() int {
 	return xxx_messageInfo_NodeMetric.Size(m)
@@ -215,7 +224,7 @@ func (m *NodeMetric) GetMetricData() []*MetricData {
 	return nil
 }
 
-// *
+//*
 // Represents a data point of time-series metric data
 type Sample struct {
 	Time                 *timestamp.Timestamp `protobuf:"bytes,1,opt,name=time,proto3" json:"time,omitempty"`
@@ -230,16 +239,17 @@ func (m *Sample) Reset()         { *m = Sample{} }
 func (m *Sample) String() string { return proto.CompactTextString(m) }
 func (*Sample) ProtoMessage()    {}
 func (*Sample) Descriptor() ([]byte, []int) {
-	return fileDescriptor_metric_772b24d6ff42aff3, []int{3}
+	return fileDescriptor_6fb54248461f2f1e, []int{3}
 }
+
 func (m *Sample) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Sample.Unmarshal(m, b)
 }
 func (m *Sample) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_Sample.Marshal(b, m, deterministic)
 }
-func (dst *Sample) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Sample.Merge(dst, src)
+func (m *Sample) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Sample.Merge(m, src)
 }
 func (m *Sample) XXX_Size() int {
 	return xxx_messageInfo_Sample.Size(m)
@@ -271,7 +281,7 @@ func (m *Sample) GetNumValue() string {
 	return ""
 }
 
-// *
+//*
 // Represents a time range definition
 //
 type TimeRange struct {
@@ -289,16 +299,17 @@ func (m *TimeRange) Reset()         { *m = TimeRange{} }
 func (m *TimeRange) String() string { return proto.CompactTextString(m) }
 func (*TimeRange) ProtoMessage()    {}
 func (*TimeRange) Descriptor() ([]byte, []int) {
-	return fileDescriptor_metric_772b24d6ff42aff3, []int{4}
+	return fileDescriptor_6fb54248461f2f1e, []int{4}
 }
+
 func (m *TimeRange) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TimeRange.Unmarshal(m, b)
 }
 func (m *TimeRange) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_TimeRange.Marshal(b, m, deterministic)
 }
-func (dst *TimeRange) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TimeRange.Merge(dst, src)
+func (m *TimeRange) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TimeRange.Merge(m, src)
 }
 func (m *TimeRange) XXX_Size() int {
 	return xxx_messageInfo_TimeRange.Size(m)
@@ -344,7 +355,7 @@ func (m *TimeRange) GetApplyTime() *timestamp.Timestamp {
 	return nil
 }
 
-// *
+//*
 // Represents a piece of metreic data
 type MetricData struct {
 	MetricType MetricType `protobuf:"varint,1,opt,name=metric_type,json=metricType,proto3,enum=containers_ai.alameda.v1alpha1.datahub.MetricType" json:"metric_type,omitempty"`
@@ -360,16 +371,17 @@ func (m *MetricData) Reset()         { *m = MetricData{} }
 func (m *MetricData) String() string { return proto.CompactTextString(m) }
 func (*MetricData) ProtoMessage()    {}
 func (*MetricData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_metric_772b24d6ff42aff3, []int{5}
+	return fileDescriptor_6fb54248461f2f1e, []int{5}
 }
+
 func (m *MetricData) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MetricData.Unmarshal(m, b)
 }
 func (m *MetricData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MetricData.Marshal(b, m, deterministic)
 }
-func (dst *MetricData) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MetricData.Merge(dst, src)
+func (m *MetricData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MetricData.Merge(m, src)
 }
 func (m *MetricData) XXX_Size() int {
 	return xxx_messageInfo_MetricData.Size(m)
@@ -402,21 +414,21 @@ func (m *MetricData) GetGranularity() int64 {
 }
 
 func init() {
+	proto.RegisterEnum("containers_ai.alameda.v1alpha1.datahub.MetricType", MetricType_name, MetricType_value)
+	proto.RegisterEnum("containers_ai.alameda.v1alpha1.datahub.TimeRange_AggregateFunction", TimeRange_AggregateFunction_name, TimeRange_AggregateFunction_value)
 	proto.RegisterType((*ContainerMetric)(nil), "containers_ai.alameda.v1alpha1.datahub.ContainerMetric")
 	proto.RegisterType((*PodMetric)(nil), "containers_ai.alameda.v1alpha1.datahub.PodMetric")
 	proto.RegisterType((*NodeMetric)(nil), "containers_ai.alameda.v1alpha1.datahub.NodeMetric")
 	proto.RegisterType((*Sample)(nil), "containers_ai.alameda.v1alpha1.datahub.Sample")
 	proto.RegisterType((*TimeRange)(nil), "containers_ai.alameda.v1alpha1.datahub.TimeRange")
 	proto.RegisterType((*MetricData)(nil), "containers_ai.alameda.v1alpha1.datahub.MetricData")
-	proto.RegisterEnum("containers_ai.alameda.v1alpha1.datahub.MetricType", MetricType_name, MetricType_value)
-	proto.RegisterEnum("containers_ai.alameda.v1alpha1.datahub.TimeRange_AggregateFunction", TimeRange_AggregateFunction_name, TimeRange_AggregateFunction_value)
 }
 
 func init() {
-	proto.RegisterFile("alameda_api/v1alpha1/datahub/metric.proto", fileDescriptor_metric_772b24d6ff42aff3)
+	proto.RegisterFile("alameda_api/v1alpha1/datahub/metric.proto", fileDescriptor_6fb54248461f2f1e)
 }
 
-var fileDescriptor_metric_772b24d6ff42aff3 = []byte{
+var fileDescriptor_6fb54248461f2f1e = []byte{
 	// 580 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x53, 0x4d, 0x6f, 0xd3, 0x40,
 	0x10, 0xad, 0x9b, 0xd0, 0x36, 0x13, 0xd1, 0xa6, 0x7b, 0x40, 0xa1, 0x20, 0x88, 0x72, 0xa8, 0x0a,
