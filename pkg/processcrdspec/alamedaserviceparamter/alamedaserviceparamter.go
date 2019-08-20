@@ -36,6 +36,8 @@ var (
 		"Deployment/alameda-recommenderDM.yaml",
 		"Deployment/alameda-analyzerDM.yaml",
 		"Secret/alameda-influxdb.yaml",
+		"Role/alameda-datahub.yaml",
+		"RoleBinding/alameda-datahub.yaml",
 	}
 
 	guiList = []string{
@@ -509,6 +511,8 @@ type Resource struct {
 	PodSecurityPolicyList          []string
 	DaemonSetList                  []string
 	SecurityContextConstraintsList []string
+	RoleBindingList                []string
+	RoleList                       []string
 }
 
 func (r *Resource) add(in Resource) {
@@ -527,6 +531,8 @@ func (r *Resource) add(in Resource) {
 	r.IngressList = append(r.IngressList, in.IngressList...)
 	r.PodSecurityPolicyList = append(r.PodSecurityPolicyList, in.PodSecurityPolicyList...)
 	r.DaemonSetList = append(r.DaemonSetList, in.DaemonSetList...)
+	r.RoleBindingList = append(r.RoleBindingList, in.RoleBindingList...)
+	r.RoleList = append(r.RoleList, in.RoleList...)
 }
 
 func (r *Resource) delete(in Resource) {
@@ -545,6 +551,8 @@ func (r *Resource) delete(in Resource) {
 	r.IngressList = util.StringSliceDelete(r.IngressList, in.IngressList)
 	r.PodSecurityPolicyList = util.StringSliceDelete(r.PodSecurityPolicyList, in.PodSecurityPolicyList)
 	r.DaemonSetList = util.StringSliceDelete(r.DaemonSetList, in.DaemonSetList)
+	r.RoleBindingList = util.StringSliceDelete(r.RoleBindingList, in.RoleBindingList)
+	r.RoleList = util.StringSliceDelete(r.RoleList, in.RoleList)
 }
 
 func getResourceFromList(resourceList []string) (Resource, error) {
@@ -564,6 +572,8 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 	var ingressList = make([]string, 0)
 	var podSecurityPolicyList = make([]string, 0)
 	var daemonSetList = make([]string, 0)
+	var roleBindingList = make([]string, 0)
+	var roleList = make([]string, 0)
 
 	for _, assetFile := range resourceList {
 		if len(strings.Split(assetFile, "/")) > 0 {
@@ -598,6 +608,10 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 				serviceAccountList = append(serviceAccountList, assetFile)
 			case "StatefulSet":
 				statefulSetList = append(statefulSetList, assetFile)
+			case "RoleBinding":
+				roleBindingList = append(roleBindingList, assetFile)
+			case "Role":
+				roleList = append(roleList, assetFile)
 			default:
 				return Resource{}, errors.Errorf("unknown kind \"%s\"", kind)
 			}
@@ -622,6 +636,8 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 		IngressList:                  ingressList,
 		PodSecurityPolicyList:        podSecurityPolicyList,
 		DaemonSetList:                daemonSetList,
+		RoleBindingList:              roleBindingList,
+		RoleList:                     roleList,
 	}, nil
 
 }

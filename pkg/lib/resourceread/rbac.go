@@ -40,3 +40,11 @@ func ReadClusterRoleV1(objBytes []byte) *rbacv1.ClusterRole {
 	}
 	return requiredObj.(*rbacv1.ClusterRole)
 }
+
+func ReadRoleV1(objBytes []byte) *rbacv1.Role {
+	requiredObj, err := runtime.Decode(rbacCodecs.UniversalDecoder(rbacv1.SchemeGroupVersion), objBytes)
+	if err != nil {
+		log.Error(err, "Fail ReadRoleV1")
+	}
+	return requiredObj.(*rbacv1.Role)
+}

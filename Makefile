@@ -48,6 +48,9 @@ pkg/assets/bindata.go: $(GOBINDATA_BIN)
 		DaemonSet/... \
 		PodSecurityPolicy/... \
 		SecurityContextConstraints/... \
+		Role/... \
+		RoleBinding/... \
+
 
 
 

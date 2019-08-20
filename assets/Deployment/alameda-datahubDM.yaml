@@ -32,6 +32,10 @@ spec:
             cpu: 50m
             memory: 100Mi
         env:
+        - name: NAMESPACE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         - name: ALAMEDA_DATAHUB_INFLUXDB_ADDRESS
           value: https://alameda-influxdb.{{.NameSpace}}.svc:8086
         - name: ALAMEDA_DATAHUB_INFLUXDB_USERNAME

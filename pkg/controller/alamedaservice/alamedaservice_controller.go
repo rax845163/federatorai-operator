@@ -201,6 +201,14 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("sync clusterRoleBinding failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
+	if err := r.syncRole(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync Role failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+	if err := r.syncRoleBinding(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync RoleBinding failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
 	if err := r.createSecret(instance, asp, installResource); err != nil {
 		log.V(-1).Info("create secret failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -531,6 +539,60 @@ func (r *ReconcileAlamedaService) syncServiceAccount(instance *federatoraiv1alph
 			err = r.client.Update(context.TODO(), resourceSA)
 			if err != nil {
 				return errors.Errorf("Update serviceAccount %s/%s failed: %s", resourceSA.Namespace, resourceSA.Name, err.Error())
+			}
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) syncRole(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+	for _, FileStr := range resource.RoleList {
+		resourceCR := componentConfig.NewRole(FileStr)
+		if err := controllerutil.SetControllerReference(instance, resourceCR, r.scheme); err != nil {
+			return errors.Errorf("Fail resourceCR SetControllerReference: %s", err.Error())
+		}
+		foundCR := &rbacv1.Role{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCR.Name}, foundCR)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			log.Info("Creating a new Resource Role... ", "resourceCR.Name", resourceCR.Name)
+			err = r.client.Create(context.TODO(), resourceCR)
+			if err != nil {
+				return errors.Errorf("create Role %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
+			}
+			log.Info("Successfully Creating Resource Role", "resourceCR.Name", resourceCR.Name)
+		} else if err != nil {
+			return errors.Errorf("get Role %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
+		} else {
+			err = r.client.Update(context.TODO(), resourceCR)
+			if err != nil {
+				return errors.Errorf("Update Role %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
+			}
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) syncRoleBinding(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+	for _, FileStr := range resource.RoleBindingList {
+		resourceCR := componentConfig.NewRoleBinding(FileStr)
+		if err := controllerutil.SetControllerReference(instance, resourceCR, r.scheme); err != nil {
+			return errors.Errorf("Fail resourceCR SetControllerReference: %s", err.Error())
+		}
+		foundCR := &rbacv1.RoleBinding{}
+		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCR.Name}, foundCR)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			log.Info("Creating a new Resource RoleBinding... ", "resourceCR.Name", resourceCR.Name)
+			err = r.client.Create(context.TODO(), resourceCR)
+			if err != nil {
+				return errors.Errorf("create RoleBinding %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
+			}
+			log.Info("Successfully Creating Resource RoleBinding", "resourceCR.Name", resourceCR.Name)
+		} else if err != nil {
+			return errors.Errorf("get RoleBinding %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
+		} else {
+			err = r.client.Update(context.TODO(), resourceCR)
+			if err != nil {
+				return errors.Errorf("Update RoleBinding %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
 			}
 		}
 	}

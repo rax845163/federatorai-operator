@@ -78,6 +78,26 @@ func (c ComponentConfig) NewClusterRole(str string) *rbacv1.ClusterRole {
 	cr := resourceread.ReadClusterRoleV1(c.templateAssets(string(crByte[:])))
 	return cr
 }
+
+func (c ComponentConfig) NewRoleBinding(str string) *rbacv1.RoleBinding {
+	crbByte, err := assets.Asset(str)
+	if err != nil {
+		log.Error(err, "Failed to Test create clusterrolebinding")
+
+	}
+	crb := resourceread.ReadRoleBindingV1(c.templateAssets(string(crbByte[:])))
+	return crb
+}
+
+func (c ComponentConfig) NewRole(str string) *rbacv1.Role {
+	crByte, err := assets.Asset(str)
+	if err != nil {
+		log.Error(err, "Failed to Test create clusterrole")
+	}
+	cr := resourceread.ReadRoleV1(c.templateAssets(string(crByte[:])))
+	return cr
+}
+
 func (c ComponentConfig) NewPodSecurityPolicy(str string) *v1beta1.PodSecurityPolicy {
 	pspByte, err := assets.Asset(str)
 	if err != nil {

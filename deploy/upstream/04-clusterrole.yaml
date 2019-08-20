@@ -104,6 +104,8 @@ rules:
   resources:
   - clusterroles
   - clusterrolebindings
+  - roles
+  - rolebindings
   verbs:
   - delete #[issue 150]for openshift v3.09
   - create
