@@ -1,0 +1,13 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: alameda-notifier-serving-cert
+  namespace: {{.NameSpace}}  
+spec:
+  commonName: alameda-notifier-webhook-service.{{.NameSpace}}.svc
+  dnsNames:
+  - alameda-notifier-webhook-service.{{.NameSpace}}.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: alameda-notifier-selfsigned-issuer
+  secretName: alameda-notifier-webhook-server-cert

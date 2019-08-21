@@ -12,9 +12,11 @@ import (
 	autoscaling_v1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/assets"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceread"
+	certmanagerv1alpha1 "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha1"
 	routev1 "github.com/openshift/api/route/v1"
 	securityv1 "github.com/openshift/api/security/v1"
 	"github.com/pkg/errors"
+	admissionregistration_v1beta1 "k8s.io/api/admissionregistration/v1beta1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	ingressv1beta1 "k8s.io/api/extensions/v1beta1"
@@ -315,6 +317,54 @@ func (c ComponentConfig) NewSecret(str string) (*corev1.Secret, error) {
 		return nil, errors.Wrap(err, "failed to build secret from assets' bin data")
 	}
 	return s, nil
+}
+
+func (c ComponentConfig) NewMutatingWebhookConfiguration(str string) (*admissionregistration_v1beta1.MutatingWebhookConfiguration, error) {
+	assetByte, err := assets.Asset(str)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build MutatingWebhookConfiguration from assets' bin data")
+	}
+	resource, err := resourceread.ReadMutatingWebhookConfiguration(c.templateAssets(string(assetByte[:])))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build MutatingWebhookConfiguration from assets' bin data")
+	}
+	return resource, nil
+}
+
+func (c ComponentConfig) NewValidatingWebhookConfiguration(str string) (*admissionregistration_v1beta1.ValidatingWebhookConfiguration, error) {
+	assetByte, err := assets.Asset(str)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build ValidatingWebhookConfiguration from assets' bin data")
+	}
+	resource, err := resourceread.ReadValidatingWebhookConfiguration(c.templateAssets(string(assetByte[:])))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build ValidatingWebhookConfiguration from assets' bin data")
+	}
+	return resource, nil
+}
+
+func (c ComponentConfig) NewCertificate(str string) (*certmanagerv1alpha1.Certificate, error) {
+	assetByte, err := assets.Asset(str)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build Certificate from assets' bin data")
+	}
+	resource, err := resourceread.ReadCertificate(c.templateAssets(string(assetByte[:])))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build Certificate from assets' bin data")
+	}
+	return resource, nil
+}
+
+func (c ComponentConfig) NewIssuer(str string) (*certmanagerv1alpha1.Issuer, error) {
+	assetByte, err := assets.Asset(str)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build Issuer from assets' bin data")
+	}
+	resource, err := resourceread.ReadIssuer(c.templateAssets(string(assetByte[:])))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build Issuer from assets' bin data")
+	}
+	return resource, nil
 }
 
 func (c ComponentConfig) RegistryCustomResourceDefinition(str string) *apiextv1beta1.CustomResourceDefinition {

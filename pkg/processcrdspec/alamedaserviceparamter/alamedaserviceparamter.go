@@ -14,30 +14,51 @@ var (
 )
 
 var (
-	defaultInstallList = []string{
+	defaultInstallLists = [][]string{
+		[]string{
+			"ClusterRole/aggregate-alameda-admin-edit-alamedaCR.yaml",
+		},
+		customResourceDefinitionList,
+		datahubList,
+		operatorList,
+		influxDBList,
+		aiEngineList,
+		recommenderList,
+		analyzerList,
+		rabbitmqList,
+		notifierList,
+	}
+
+	datahubList = []string{
 		"ClusterRoleBinding/alameda-datahubCRB.yaml",
-		"ClusterRoleBinding/alameda-operatorCRB.yaml",
 		"ClusterRole/alameda-datahubCR.yaml",
-		"ClusterRole/alameda-operatorCR.yaml",
-		"ClusterRole/aggregate-alameda-admin-edit-alamedaCR.yaml",
 		"ServiceAccount/alameda-datahubSA.yaml",
-		"ServiceAccount/alameda-operatorSA.yaml",
-		"ServiceAccount/alameda-aiSA.yaml",
-		"CustomResourceDefinition/alamedascalersCRD.yaml",
-		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
-		"ConfigMap/alameda-recommender-config.yaml",
 		"Service/alameda-datahubSV.yaml",
-		"Service/alameda-influxdbSV.yaml",
-		"Service/alameda-ai-metricsSV.yaml",
 		"Deployment/alameda-datahubDM.yaml",
-		"Deployment/alameda-operatorDM.yaml",
-		"Deployment/alameda-influxdbDM.yaml",
-		"Deployment/alameda-aiDM.yaml",
-		"Deployment/alameda-recommenderDM.yaml",
-		"Deployment/alameda-analyzerDM.yaml",
-		"Secret/alameda-influxdb.yaml",
 		"Role/alameda-datahub.yaml",
 		"RoleBinding/alameda-datahub.yaml",
+	}
+
+	operatorList = []string{
+		"ClusterRoleBinding/alameda-operatorCRB.yaml",
+		"ClusterRole/alameda-operatorCR.yaml",
+		"ServiceAccount/alameda-operatorSA.yaml",
+		"Deployment/alameda-operatorDM.yaml",
+	}
+
+	influxDBList = []string{
+		"Service/alameda-influxdbSV.yaml",
+		"Deployment/alameda-influxdbDM.yaml",
+		"Secret/alameda-influxdb.yaml",
+	}
+
+	aiEngineList = []string{
+		"ServiceAccount/alameda-aiSA.yaml",
+		"Service/alameda-ai-metricsSV.yaml",
+		"Deployment/alameda-aiDM.yaml",
+	}
+
+	rabbitmqList = []string{
 		"Deployment/alameda-rabbitmqDM.yaml",
 		"Service/alameda-rabbitmqSV.yaml",
 		"ServiceAccount/alameda-rabbitmqSA.yaml",
@@ -45,12 +66,20 @@ var (
 		"ClusterRoleBinding/alameda-rabbitmqCRB.yaml",
 	}
 
+	recommenderList = []string{
+		"ConfigMap/alameda-recommender-config.yaml",
+		"Deployment/alameda-recommenderDM.yaml",
+	}
+
+	analyzerList = []string{
+		"Deployment/alameda-analyzerDM.yaml",
+	}
+
 	guiList = []string{
 		"ClusterRoleBinding/alameda-grafanaCRB.yaml",
 		"ClusterRole/alameda-grafanaCR.yaml",
 		"ServiceAccount/alameda-grafanaSA.yaml",
 		"ConfigMap/grafana-datasources.yaml",
-		//"ConfigMap/dashboards-config.yaml",
 		"Deployment/alameda-grafanaDM.yaml",
 		"Service/alameda-grafanaSV.yaml",
 		"Route/alameda-grafanaRT.yaml",
@@ -99,8 +128,34 @@ var (
 		"ServiceAccount/alameda-weavescopeSA.yaml",
 	}
 
+	notifierList = []string{
+		"Certificate/alameda-notifier-serving-cert.yaml",
+		"ClusterRole/alameda-notifier.yaml",
+		"ClusterRoleBinding/alameda-notifier.yaml",
+		"Deployment/alameda-notifier.yaml",
+		"Issuer/alameda-notifier-selfsigned-issuer.yaml",
+		"MutatingWebhookConfiguration/alameda-notifier-mutating-webhook-configuration.yaml",
+		"Service/alameda-notifier-webhook-service.yaml",
+		"ServiceAccount/alameda-notifier.yaml",
+		"ValidatingWebhookConfiguration/alameda-notifier-validating-webhook-configuration.yaml",
+	}
+
 	selfDrivingList = []string{
 		"AlamedaScaler/alamedaScaler-alameda.yaml",
+	}
+
+	customResourceDefinitionList = []string{
+		"CustomResourceDefinition/alamedascalersCRD.yaml",
+		"CustomResourceDefinition/alamedascalersV2CRD.yaml",
+		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
+		"CustomResourceDefinition/alamedanotificationchannels.yaml",
+		"CustomResourceDefinition/alamedanotificationtopics.yaml",
+		"CustomResourceDefinition/certificaterequests.yaml",
+		"CustomResourceDefinition/certificates.yaml",
+		"CustomResourceDefinition/challenges.yaml",
+		"CustomResourceDefinition/clusterissuers.yaml",
+		"CustomResourceDefinition/issuers.yaml",
+		"CustomResourceDefinition/orders.yaml",
 	}
 
 	alamedaScalerCRD = []string{
@@ -181,6 +236,11 @@ func GetAlamedaDatahubService() string {
 	return "Service/alameda-datahubSV.yaml"
 }
 
+// GetCustomResourceDefinitions returns crd assets' name
+func GetCustomResourceDefinitions() []string {
+	return customResourceDefinitionList
+}
+
 type AlamedaServiceParamter struct {
 	NameSpace                     string
 	SelfDriving                   bool
@@ -248,10 +308,12 @@ func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServic
 // GetInstallResource returns resources that the AlamedaServiceParamter needs to install
 func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 
-	var resource *Resource
+	var resource Resource
 
-	defaultResource, _ := getResourceFromList(defaultInstallList)
-	resource = &defaultResource
+	for _, defaultInstallList := range defaultInstallLists {
+		defaultResource, _ := getResourceFromList(defaultInstallList)
+		resource.add(defaultResource)
+	}
 
 	pvcList := asp.getInstallPersistentVolumeClaimSource()
 	pvcResource, _ := getResourceFromList(pvcList)
@@ -290,7 +352,7 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 		resource.delete(defaultResource)
 	}
 
-	return resource
+	return &resource
 }
 
 func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Resource {
@@ -484,24 +546,28 @@ func sectioninstallPersistentVolumeClaimSource(pvc []string, storagestruct []v1a
 }
 
 type Resource struct {
-	ClusterRoleBindingList         []string
-	ClusterRoleList                []string
-	ServiceAccountList             []string
-	CustomResourceDefinitionList   []string
-	ConfigMapList                  []string
-	ServiceList                    []string
-	DeploymentList                 []string
-	SecretList                     []string
-	PersistentVolumeClaimList      []string
-	AlamedaScalerList              []string
-	RouteList                      []string
-	StatefulSetList                []string
-	IngressList                    []string
-	PodSecurityPolicyList          []string
-	DaemonSetList                  []string
-	SecurityContextConstraintsList []string
-	RoleBindingList                []string
-	RoleList                       []string
+	ClusterRoleBindingList             []string
+	ClusterRoleList                    []string
+	ServiceAccountList                 []string
+	CustomResourceDefinitionList       []string
+	ConfigMapList                      []string
+	ServiceList                        []string
+	DeploymentList                     []string
+	SecretList                         []string
+	PersistentVolumeClaimList          []string
+	AlamedaScalerList                  []string
+	RouteList                          []string
+	StatefulSetList                    []string
+	IngressList                        []string
+	PodSecurityPolicyList              []string
+	DaemonSetList                      []string
+	SecurityContextConstraintsList     []string
+	RoleBindingList                    []string
+	RoleList                           []string
+	CertificateList                    []string
+	IssuerList                         []string
+	MutatingWebhookConfigurationList   []string
+	ValidatingWebhookConfigurationList []string
 }
 
 func (r *Resource) add(in Resource) {
@@ -520,8 +586,13 @@ func (r *Resource) add(in Resource) {
 	r.IngressList = append(r.IngressList, in.IngressList...)
 	r.PodSecurityPolicyList = append(r.PodSecurityPolicyList, in.PodSecurityPolicyList...)
 	r.DaemonSetList = append(r.DaemonSetList, in.DaemonSetList...)
+	r.SecurityContextConstraintsList = append(r.SecurityContextConstraintsList, in.SecurityContextConstraintsList...)
 	r.RoleBindingList = append(r.RoleBindingList, in.RoleBindingList...)
 	r.RoleList = append(r.RoleList, in.RoleList...)
+	r.CertificateList = append(r.CertificateList, in.CertificateList...)
+	r.IssuerList = append(r.IssuerList, in.IssuerList...)
+	r.MutatingWebhookConfigurationList = append(r.MutatingWebhookConfigurationList, in.MutatingWebhookConfigurationList...)
+	r.ValidatingWebhookConfigurationList = append(r.ValidatingWebhookConfigurationList, in.ValidatingWebhookConfigurationList...)
 }
 
 func (r *Resource) delete(in Resource) {
@@ -540,8 +611,13 @@ func (r *Resource) delete(in Resource) {
 	r.IngressList = util.StringSliceDelete(r.IngressList, in.IngressList)
 	r.PodSecurityPolicyList = util.StringSliceDelete(r.PodSecurityPolicyList, in.PodSecurityPolicyList)
 	r.DaemonSetList = util.StringSliceDelete(r.DaemonSetList, in.DaemonSetList)
+	r.SecurityContextConstraintsList = util.StringSliceDelete(r.SecurityContextConstraintsList, in.SecurityContextConstraintsList)
 	r.RoleBindingList = util.StringSliceDelete(r.RoleBindingList, in.RoleBindingList)
 	r.RoleList = util.StringSliceDelete(r.RoleList, in.RoleList)
+	r.CertificateList = util.StringSliceDelete(r.CertificateList, in.CertificateList)
+	r.IssuerList = util.StringSliceDelete(r.IssuerList, in.IssuerList)
+	r.MutatingWebhookConfigurationList = util.StringSliceDelete(r.MutatingWebhookConfigurationList, in.MutatingWebhookConfigurationList)
+	r.ValidatingWebhookConfigurationList = util.StringSliceDelete(r.ValidatingWebhookConfigurationList, in.ValidatingWebhookConfigurationList)
 }
 
 func getResourceFromList(resourceList []string) (Resource, error) {
@@ -561,8 +637,14 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 	var ingressList = make([]string, 0)
 	var podSecurityPolicyList = make([]string, 0)
 	var daemonSetList = make([]string, 0)
+	var securityContextConstraintsList = make([]string, 0)
 	var roleBindingList = make([]string, 0)
 	var roleList = make([]string, 0)
+
+	var certificateList = make([]string, 0)
+	var issuerList = make([]string, 0)
+	var mutatingWebhookConfigurationList = make([]string, 0)
+	var validatingWebhookConfigurationList = make([]string, 0)
 
 	for _, assetFile := range resourceList {
 		if len(strings.Split(assetFile, "/")) > 0 {
@@ -579,6 +661,8 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 				customResourceDefinitionList = append(customResourceDefinitionList, assetFile)
 			case "DaemonSet":
 				daemonSetList = append(daemonSetList, assetFile)
+			case "SecurityContextConstraint":
+				securityContextConstraintsList = append(securityContextConstraintsList, assetFile)
 			case "Deployment":
 				deploymentList = append(deploymentList, assetFile)
 			case "Ingress":
@@ -601,6 +685,14 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 				roleBindingList = append(roleBindingList, assetFile)
 			case "Role":
 				roleList = append(roleList, assetFile)
+			case "Certificate":
+				certificateList = append(certificateList, assetFile)
+			case "Issuer":
+				issuerList = append(issuerList, assetFile)
+			case "MutatingWebhookConfiguration":
+				mutatingWebhookConfigurationList = append(mutatingWebhookConfigurationList, assetFile)
+			case "ValidatingWebhookConfiguration":
+				validatingWebhookConfigurationList = append(validatingWebhookConfigurationList, assetFile)
 			default:
 				return Resource{}, errors.Errorf("unknown kind \"%s\"", kind)
 			}
@@ -610,23 +702,28 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 	}
 
 	return Resource{
-		ClusterRoleBindingList:       clusterRoleBindingList,
-		ClusterRoleList:              clusterRoleList,
-		ServiceAccountList:           serviceAccountList,
-		CustomResourceDefinitionList: customResourceDefinitionList,
-		ConfigMapList:                configMapList,
-		ServiceList:                  serviceList,
-		DeploymentList:               deploymentList,
-		SecretList:                   secretList,
-		PersistentVolumeClaimList:    persistentVolumeClaimList,
-		AlamedaScalerList:            alamedaScalerList,
-		RouteList:                    routeList,
-		StatefulSetList:              statefulSetList,
-		IngressList:                  ingressList,
-		PodSecurityPolicyList:        podSecurityPolicyList,
-		DaemonSetList:                daemonSetList,
-		RoleBindingList:              roleBindingList,
-		RoleList:                     roleList,
+		ClusterRoleBindingList:             clusterRoleBindingList,
+		ClusterRoleList:                    clusterRoleList,
+		ServiceAccountList:                 serviceAccountList,
+		CustomResourceDefinitionList:       customResourceDefinitionList,
+		ConfigMapList:                      configMapList,
+		ServiceList:                        serviceList,
+		DeploymentList:                     deploymentList,
+		SecretList:                         secretList,
+		PersistentVolumeClaimList:          persistentVolumeClaimList,
+		AlamedaScalerList:                  alamedaScalerList,
+		RouteList:                          routeList,
+		StatefulSetList:                    statefulSetList,
+		IngressList:                        ingressList,
+		PodSecurityPolicyList:              podSecurityPolicyList,
+		DaemonSetList:                      daemonSetList,
+		SecurityContextConstraintsList:     securityContextConstraintsList,
+		RoleBindingList:                    roleBindingList,
+		RoleList:                           roleList,
+		CertificateList:                    certificateList,
+		IssuerList:                         issuerList,
+		MutatingWebhookConfigurationList:   mutatingWebhookConfigurationList,
+		ValidatingWebhookConfigurationList: validatingWebhookConfigurationList,
 	}, nil
 
 }

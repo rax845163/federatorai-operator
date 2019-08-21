@@ -12,10 +12,15 @@ import (
 	autoscaling_v1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	fedOperator "github.com/containers-ai/federatorai-operator"
 	"github.com/containers-ai/federatorai-operator/pkg/apis"
+	assetsBin "github.com/containers-ai/federatorai-operator/pkg/assets"
 	"github.com/containers-ai/federatorai-operator/pkg/controller"
+	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceread"
 	fedOperatorLog "github.com/containers-ai/federatorai-operator/pkg/log"
+	alamedaserviceparamter "github.com/containers-ai/federatorai-operator/pkg/processcrdspec/alamedaserviceparamter"
 	"github.com/containers-ai/federatorai-operator/pkg/protocol/grpc"
 	"github.com/containers-ai/federatorai-operator/pkg/version"
+
+	certmanagerv1alpha1 "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha1"
 
 	routev1 "github.com/openshift/api/route/v1"
 	securityv1 "github.com/openshift/api/security/v1"
@@ -25,7 +30,11 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+
+	"k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
+	k8sapierrors "k8s.io/apimachinery/pkg/api/errors"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
+	rest "k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
@@ -159,6 +168,12 @@ func main() {
 		namespace = ""
 	}
 
+	// Setup requirements before starts the manager
+	if err := setupRequirements(cfg); err != nil {
+		log.Error(err, "")
+		os.Exit(1)
+	}
+
 	//var day time.Duration = 1*24 * time.Hour
 	// Create a new Cmd to provide shared dependencies and start components
 	mgr, err := manager.New(cfg, manager.Options{
@@ -190,6 +205,11 @@ func main() {
 		log.Error(err, "")
 		os.Exit(1)
 	}
+	if err := certmanagerv1alpha1.AddToScheme(mgr.GetScheme()); err != nil {
+		log.Error(err, "")
+		os.Exit(1)
+	}
+
 	// Setup all Controllers
 	if err := controller.AddToManager(mgr); err != nil {
 		log.Error(err, "")
@@ -209,4 +229,41 @@ func main() {
 		log.Error(err, "Manager exited non-zero")
 		os.Exit(1)
 	}
+}
+
+func setupRequirements(clientConfig *rest.Config) error {
+
+	if err := setupCustomeResourceDefinitions(clientConfig); err != nil {
+		return errors.Wrap(err, "prepare CustomeResourceDefinitions failed")
+	}
+
+	return nil
+}
+
+// In order to let manager has the scheme definition of the crds,
+// it should install those crds in to the cluster before the instance of manager is created,
+func setupCustomeResourceDefinitions(clientConfig *rest.Config) error {
+
+	apiExtensionsClientset, err := clientset.NewForConfig(clientConfig)
+	if err != nil {
+		return errors.Errorf("create k8s clientset failed: %s", err.Error())
+	}
+
+	assets := alamedaserviceparamter.GetCustomResourceDefinitions()
+	for _, asset := range assets {
+		assetBytes, err := assetsBin.Asset(asset)
+		if err != nil {
+			return errors.Errorf("get asset binary data failed: %s", err.Error())
+		}
+
+		crd := resourceread.ReadCustomResourceDefinitionV1Beta1(assetBytes)
+		_, err = apiExtensionsClientset.Apiextensions().CustomResourceDefinitions().Create(crd)
+		if err != nil && k8sapierrors.IsAlreadyExists(err) {
+			log.V(-1).Info("CustomResourceDefinition is existing in cluster, will not create or update it.", "CustomResourceDefinition name", crd.Name)
+			continue
+		} else if err != nil {
+			return errors.Errorf("create CustomResourceDefinition (%s) failed: %s", crd.Name, err.Error())
+		}
+	}
+	return nil
 }

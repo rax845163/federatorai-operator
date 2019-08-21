@@ -242,3 +242,21 @@ rules:
   - watch
   - update
   - delete
+- apiGroups:
+  - notifying.containers.ai
+  resources:
+  - "*"
+  verbs:
+  - "*"
+- apiGroups:
+  - certmanager.k8s.io 
+  resources:
+  - issuers
+  - certificates 
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - delete

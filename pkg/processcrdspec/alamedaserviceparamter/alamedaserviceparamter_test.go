@@ -134,7 +134,11 @@ func TestGetInstallResource(t *testing.T) {
 		name = "test"
 	)
 
-	defaultResource, _ := getResourceFromList(defaultInstallList)
+	var defaultResource Resource
+	for _, defaultInstallList := range defaultInstallLists {
+		resource, _ := getResourceFromList(defaultInstallList)
+		defaultResource.add(resource)
+	}
 	t0 := testCase{
 		have: v1alpha1.AlamedaService{
 			ObjectMeta: metav1.ObjectMeta{Namespace: ns, Name: name},

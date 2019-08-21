@@ -1,0 +1,113 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  creationTimestamp: null
+  name: alamedanotificationtopics.notifying.containers.ai
+spec:
+  group: notifying.containers.ai
+  names:
+    kind: AlamedaNotificationTopic
+    plural: alamedanotificationtopics
+  scope: Cluster
+  validation:
+    openAPIV3Schema:
+      description: AlamedaNotificationTopic is the Schema for the alamedanotificationtopics
+        API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: AlamedaNotificationTopicSpec defines the desired state of AlamedaNotificationTopic
+          properties:
+            channel:
+              properties:
+                emails:
+                  items:
+                    properties:
+                      cc:
+                        items:
+                          type: string
+                        type: array
+                      name:
+                        type: string
+                      to:
+                        items:
+                          type: string
+                        type: array
+                    required:
+                    - name
+                    - to
+                    type: object
+                  type: array
+              type: object
+            disabled:
+              description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                Important: Run "make" to regenerate code after modifying this file'
+              type: boolean
+            topics:
+              items:
+                properties:
+                  level:
+                    items:
+                      type: string
+                    type: array
+                  source:
+                    items:
+                      properties:
+                        component:
+                          type: string
+                        host:
+                          type: string
+                      type: object
+                    type: array
+                  subject:
+                    items:
+                      description: 'EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO
+                        OWN! NOTE: json tags are required.  Any new fields you add
+                        must have json tags for the fields to be serialized.'
+                      properties:
+                        apiVersion:
+                          type: string
+                        kind:
+                          type: string
+                        name:
+                          type: string
+                        namespace:
+                          type: string
+                      type: object
+                    type: array
+                  type:
+                    items:
+                      type: string
+                    type: array
+                type: object
+              type: array
+          required:
+          - channel
+          - topics
+          type: object
+        status:
+          description: AlamedaNotificationTopicStatus defines the observed state of
+            AlamedaNotificationTopic
+          type: object
+      type: object
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
