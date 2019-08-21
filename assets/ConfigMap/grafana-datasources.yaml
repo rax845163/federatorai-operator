@@ -49,6 +49,37 @@ data:
                   "httpHeaderValue1": "Bearer"
                 },
                 "readOnly": false,
+            },
+            {
+                "name": "InfluxDB-GPU",
+                "type": "influxdb",
+                "access": "proxy",
+                "url": "http://203.145.219.107:8086",
+                "password": "",
+                "user": "",
+                "database": "gpu_counting",
+                "basicAuth": false,
+                "isDefault": false,
+                "jsonData": {
+                  "keepCookies": []
+                },
+                "readOnly": false,
+            },
+            {
+                "name": "Prometheus-GPU",
+                "type": "prometheus",
+                "access": "proxy",
+                "url": "http://203.145.219.107:9090",
+                "basicAuth": false,
+                "isDefault": false,
+                "jsonData": {
+                  "httpMethod": "GET",
+                  "keepCookies": [],
+                },
+                "secureJsonData": {
+                  "httpHeaderValue1": "Bearer"
+                },
+                "readOnly": false,
             }
         ]
     }
