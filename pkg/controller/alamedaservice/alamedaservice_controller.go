@@ -552,14 +552,14 @@ func (r *ReconcileAlamedaService) syncRole(instance *federatoraiv1alpha1.Alameda
 			return errors.Errorf("Fail resourceCR SetControllerReference: %s", err.Error())
 		}
 		foundCR := &rbacv1.Role{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCR.Name}, foundCR)
+		err := r.client.Get(context.TODO(), types.NamespacedName{Namespace: resourceCR.Namespace, Name: resourceCR.Name}, foundCR)
 		if err != nil && k8sErrors.IsNotFound(err) {
-			log.Info("Creating a new Resource Role... ", "resourceCR.Name", resourceCR.Name)
+			log.Info("Creating a new Resource Role... ", "resourceCR.Namespace", resourceCR.Namespace, "resourceCR.Name", resourceCR.Name)
 			err = r.client.Create(context.TODO(), resourceCR)
 			if err != nil {
 				return errors.Errorf("create Role %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
 			}
-			log.Info("Successfully Creating Resource Role", "resourceCR.Name", resourceCR.Name)
+			log.Info("Successfully Creating Resource Role", "resourceCR.Namespace", resourceCR.Namespace, "resourceCR.Name", resourceCR.Name)
 		} else if err != nil {
 			return errors.Errorf("get Role %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
 		} else {
@@ -579,14 +579,14 @@ func (r *ReconcileAlamedaService) syncRoleBinding(instance *federatoraiv1alpha1.
 			return errors.Errorf("Fail resourceCR SetControllerReference: %s", err.Error())
 		}
 		foundCR := &rbacv1.RoleBinding{}
-		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceCR.Name}, foundCR)
+		err := r.client.Get(context.TODO(), types.NamespacedName{Namespace: resourceCR.Namespace, Name: resourceCR.Name}, foundCR)
 		if err != nil && k8sErrors.IsNotFound(err) {
-			log.Info("Creating a new Resource RoleBinding... ", "resourceCR.Name", resourceCR.Name)
+			log.Info("Creating a new Resource RoleBinding... ", "resourceCR.Namespace", resourceCR.Namespace, "resourceCR.Name", resourceCR.Name)
 			err = r.client.Create(context.TODO(), resourceCR)
 			if err != nil {
 				return errors.Errorf("create RoleBinding %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
 			}
-			log.Info("Successfully Creating Resource RoleBinding", "resourceCR.Name", resourceCR.Name)
+			log.Info("Successfully Creating Resource RoleBinding", "resourceCR.Namespace", resourceCR.Namespace, "resourceCR.Name", resourceCR.Name)
 		} else if err != nil {
 			return errors.Errorf("get RoleBinding %s/%s failed: %s", resourceCR.Namespace, resourceCR.Name, err.Error())
 		} else {
