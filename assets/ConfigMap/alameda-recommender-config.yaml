@@ -15,6 +15,11 @@ data:
     address = "alameda-datahub.{{.NameSpace}}.svc"
     port = 50050
 
+    [fedemeter]
+    enabled = false
+    address = "fedemeter-api.federatorai.svc"
+    port = 8999
+
     [hpa_scaling]
     alpha = 0.25
     k8s_threshold = 0.8
