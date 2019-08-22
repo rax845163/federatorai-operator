@@ -27,6 +27,7 @@ var (
 		analyzerList,
 		rabbitmqList,
 		notifierList,
+		certManagerList,
 	}
 
 	datahubList = []string{
@@ -138,6 +139,43 @@ var (
 		"Service/alameda-notifier-webhook-service.yaml",
 		"ServiceAccount/alameda-notifier.yaml",
 		"ValidatingWebhookConfiguration/alameda-notifier-validating-webhook-configuration.yaml",
+	}
+
+	certManagerList = []string{
+		"APIService/apiservice.yaml",
+		"Certificate/alameda-cert-managet-webhook-ca.yaml",
+		"Certificate/alameda-cert-managet-webhook-webhook-tls.yaml",
+		"ClusterRole/alameda-cert-managet-webhook:webhook-requester.yaml",
+		"ClusterRole/alameda-cert-managet-cainjector.yaml",
+		"ClusterRole/alameda-cert-managet-cert-manager-controller-certificates.yaml",
+		"ClusterRole/alameda-cert-managet-cert-manager-controller-challenges.yaml",
+		"ClusterRole/alameda-cert-managet-cert-manager-controller-clusterissuers.yaml",
+		"ClusterRole/alameda-cert-managet-cert-manager-controller-ingress-shim.yaml",
+		"ClusterRole/alameda-cert-managet-cert-manager-controller-issuers.yaml",
+		"ClusterRole/alameda-cert-managet-cert-manager-controller-orders.yaml",
+		"ClusterRole/alameda-cert-managet-cert-manager-edit.yaml",
+		"ClusterRole/alameda-cert-managet-cert-manager-leaderelection.yaml",
+		"ClusterRole/alameda-cert-managet-cert-manager-view.yaml",
+		"ClusterRoleBinding/alameda-cert-managet-cainjector.yaml",
+		"ClusterRoleBinding/alameda-cert-managet-webhook:auth-delegator.yaml",
+		"ClusterRoleBinding/alameda-cert-managet-cert-manager-controller-certificates.yaml",
+		"ClusterRoleBinding/alameda-cert-managet-cert-manager-controller-challenges.yaml",
+		"ClusterRoleBinding/alameda-cert-managet-cert-manager-controller-clusterissuers.yaml",
+		"ClusterRoleBinding/alameda-cert-managet-cert-manager-controller-ingress-shim.yaml",
+		"ClusterRoleBinding/alameda-cert-managet-cert-manager-controller-issuers.yaml",
+		"ClusterRoleBinding/alameda-cert-managet-cert-manager-controller-orders.yaml",
+		"ClusterRoleBinding/alameda-cert-managet-cert-manager-leaderelection.yaml",
+		"RoleBinding/alameda-cert-managet-webhook:webhook-authentication-reader.yaml",
+		"Deployment/alameda-cainjector.yaml",
+		"Deployment/alameda-cert-managet-webhook.yaml",
+		"Deployment/alameda-cert-managet-cert-manager.yaml",
+		"Issuer/alameda-cert-managet-webhook-ca.yaml",
+		"Issuer/alameda-cert-managet-webhook-selfsign.yaml",
+		"Service/alameda-cert-managet-webhook.yaml",
+		"ServiceAccount/alameda-cainjector.yaml",
+		"ServiceAccount/alameda-cert-managet-webhook.yaml",
+		"ServiceAccount/alameda-cert-managet-cert-manager.yaml",
+		"ValidatingWebhookConfiguration/alameda-cert-managet-webhook.yaml",
 	}
 
 	selfDrivingList = []string{
@@ -568,6 +606,7 @@ type Resource struct {
 	IssuerList                         []string
 	MutatingWebhookConfigurationList   []string
 	ValidatingWebhookConfigurationList []string
+	APIServiceList                     []string
 }
 
 func (r *Resource) add(in Resource) {
@@ -593,6 +632,7 @@ func (r *Resource) add(in Resource) {
 	r.IssuerList = append(r.IssuerList, in.IssuerList...)
 	r.MutatingWebhookConfigurationList = append(r.MutatingWebhookConfigurationList, in.MutatingWebhookConfigurationList...)
 	r.ValidatingWebhookConfigurationList = append(r.ValidatingWebhookConfigurationList, in.ValidatingWebhookConfigurationList...)
+	r.APIServiceList = append(r.APIServiceList, in.APIServiceList...)
 }
 
 func (r *Resource) delete(in Resource) {
@@ -618,6 +658,7 @@ func (r *Resource) delete(in Resource) {
 	r.IssuerList = util.StringSliceDelete(r.IssuerList, in.IssuerList)
 	r.MutatingWebhookConfigurationList = util.StringSliceDelete(r.MutatingWebhookConfigurationList, in.MutatingWebhookConfigurationList)
 	r.ValidatingWebhookConfigurationList = util.StringSliceDelete(r.ValidatingWebhookConfigurationList, in.ValidatingWebhookConfigurationList)
+	r.APIServiceList = util.StringSliceDelete(r.APIServiceList, in.APIServiceList)
 }
 
 func getResourceFromList(resourceList []string) (Resource, error) {
@@ -640,47 +681,47 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 	var securityContextConstraintsList = make([]string, 0)
 	var roleBindingList = make([]string, 0)
 	var roleList = make([]string, 0)
-
 	var certificateList = make([]string, 0)
 	var issuerList = make([]string, 0)
 	var mutatingWebhookConfigurationList = make([]string, 0)
 	var validatingWebhookConfigurationList = make([]string, 0)
+	var apiServiceList = make([]string, 0)
 
 	for _, assetFile := range resourceList {
 		if len(strings.Split(assetFile, "/")) > 0 {
 			switch kind := strings.Split(assetFile, "/")[0]; kind {
-			case "AlamedaScaler":
-				alamedaScalerList = append(alamedaScalerList, assetFile)
-			case "ClusterRole":
-				clusterRoleList = append(clusterRoleList, assetFile)
 			case "ClusterRoleBinding":
 				clusterRoleBindingList = append(clusterRoleBindingList, assetFile)
-			case "ConfigMap":
-				configMapList = append(configMapList, assetFile)
+			case "ClusterRole":
+				clusterRoleList = append(clusterRoleList, assetFile)
+			case "ServiceAccount":
+				serviceAccountList = append(serviceAccountList, assetFile)
 			case "CustomResourceDefinition":
 				customResourceDefinitionList = append(customResourceDefinitionList, assetFile)
+			case "ConfigMap":
+				configMapList = append(configMapList, assetFile)
+			case "Service":
+				serviceList = append(serviceList, assetFile)
+			case "Deployment":
+				deploymentList = append(deploymentList, assetFile)
+			case "Secret":
+				secretList = append(secretList, assetFile)
+			case "PersistentVolumeClaim":
+				persistentVolumeClaimList = append(persistentVolumeClaimList, assetFile)
+			case "AlamedaScaler":
+				alamedaScalerList = append(alamedaScalerList, assetFile)
+			case "Route":
+				routeList = append(routeList, assetFile)
+			case "StatefulSet":
+				statefulSetList = append(statefulSetList, assetFile)
+			case "Ingress":
+				ingressList = append(ingressList, assetFile)
+			case "PodSecurityPolicy":
+				podSecurityPolicyList = append(podSecurityPolicyList, assetFile)
 			case "DaemonSet":
 				daemonSetList = append(daemonSetList, assetFile)
 			case "SecurityContextConstraint":
 				securityContextConstraintsList = append(securityContextConstraintsList, assetFile)
-			case "Deployment":
-				deploymentList = append(deploymentList, assetFile)
-			case "Ingress":
-				ingressList = append(ingressList, assetFile)
-			case "PersistentVolumeClaim":
-				persistentVolumeClaimList = append(persistentVolumeClaimList, assetFile)
-			case "PodSecurityPolicy":
-				podSecurityPolicyList = append(podSecurityPolicyList, assetFile)
-			case "Route":
-				routeList = append(routeList, assetFile)
-			case "Secret":
-				secretList = append(secretList, assetFile)
-			case "Service":
-				serviceList = append(serviceList, assetFile)
-			case "ServiceAccount":
-				serviceAccountList = append(serviceAccountList, assetFile)
-			case "StatefulSet":
-				statefulSetList = append(statefulSetList, assetFile)
 			case "RoleBinding":
 				roleBindingList = append(roleBindingList, assetFile)
 			case "Role":
@@ -693,6 +734,8 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 				mutatingWebhookConfigurationList = append(mutatingWebhookConfigurationList, assetFile)
 			case "ValidatingWebhookConfiguration":
 				validatingWebhookConfigurationList = append(validatingWebhookConfigurationList, assetFile)
+			case "APIService":
+				apiServiceList = append(apiServiceList, assetFile)
 			default:
 				return Resource{}, errors.Errorf("unknown kind \"%s\"", kind)
 			}
@@ -724,6 +767,7 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 		IssuerList:                         issuerList,
 		MutatingWebhookConfigurationList:   mutatingWebhookConfigurationList,
 		ValidatingWebhookConfigurationList: validatingWebhookConfigurationList,
+		APIServiceList:                     apiServiceList,
 	}, nil
 
 }

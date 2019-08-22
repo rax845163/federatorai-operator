@@ -1,0 +1,14 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: cert-managet-webhook-webhook-tls
+  namespace: "{{.NameSpace}}" 
+spec:
+  secretName: cert-managet-webhook-webhook-tls
+  duration: 8760h # 1y
+  issuerRef:
+    name: cert-managet-webhook-ca
+  dnsNames:
+  - cert-managet-webhook
+  - cert-managet-webhook.{{.NameSpace}}
+  - cert-managet-webhook.{{.NameSpace}}.svc

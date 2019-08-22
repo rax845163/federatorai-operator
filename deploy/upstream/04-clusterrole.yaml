@@ -30,6 +30,7 @@ rules:
   - get
   - list
   - watch
+  - update
 - apiGroups:
   - ""
   resources:
@@ -51,6 +52,7 @@ rules:
   - get
   - list
   - watch
+  - create
   - delete
   - patch
 - apiGroups:
@@ -59,6 +61,7 @@ rules:
   resources:
   - replicationcontrollers
   - ingresses
+  - ingresses/finalizers
   verbs:
   - "*"
 - apiGroups:
@@ -75,7 +78,9 @@ rules:
   - secrets
   verbs:
   - delete #[issue 150]for openshift v3.09
+  - update
   - create
+  - get
   - list
   - watch
 - apiGroups:
@@ -89,6 +94,7 @@ rules:
   - update
   - watch
   - get
+  - patch
 - apiGroups:
   - ""
   resources:
@@ -135,6 +141,8 @@ rules:
   - create
   - delete
   - get
+  - list
+  - watch
   - update
 - apiGroups:
   - admissionregistration.k8s.io
@@ -252,7 +260,20 @@ rules:
   - certmanager.k8s.io 
   resources:
   - issuers
+  - issuers/status
   - certificates 
+  - certificates/status
+  - certificates/finalizers
+  - certificaterequests
+  - certificaterequests/status
+  - challenges
+  - challenges/finalizers
+  - challenges/status
+  - clusterissuers
+  - clusterissuers/status
+  - orders
+  - orders/status
+  - orders/finalizers
   verbs:
   - create
   - get
@@ -260,3 +281,34 @@ rules:
   - watch
   - update
   - delete
+  - deletecollection
+  - patch
+- apiGroups:
+  - apiregistration.k8s.io
+  resources:
+  - apiservices
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - delete
+- apiGroups:
+  - admission.certmanager.k8s.io
+  resources:
+  - certificates
+  - certificaterequests
+  - issuers
+  - clusterissuers
+  verbs:
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - get
+  - create
+  - update
+  - patch

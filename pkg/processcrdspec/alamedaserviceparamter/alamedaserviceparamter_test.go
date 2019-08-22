@@ -1,6 +1,7 @@
 package alamedaserviceparamter
 
 import (
+	"log"
 	"testing"
 
 	"github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
@@ -179,7 +180,7 @@ func TestGetInstallResource(t *testing.T) {
 	for i, testCase := range testCases {
 		asp := NewAlamedaServiceParamter(&testCase.have)
 		actual := asp.GetInstallResource()
-
+		log.Printf("--------------%+v", actual)
 		assert.EqualValuesf(testCase.want, *actual, "test_case: index #%d ", i)
 	}
 

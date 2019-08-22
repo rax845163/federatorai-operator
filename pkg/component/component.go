@@ -16,6 +16,7 @@ import (
 	routev1 "github.com/openshift/api/route/v1"
 	securityv1 "github.com/openshift/api/security/v1"
 	"github.com/pkg/errors"
+
 	admissionregistration_v1beta1 "k8s.io/api/admissionregistration/v1beta1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -24,6 +25,7 @@ import (
 	rbacv1 "k8s.io/api/rbac/v1"
 	apiextv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	"k8s.io/client-go/util/cert"
+	apiregistrationv1beta1 "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1beta1"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 )
 
@@ -322,7 +324,7 @@ func (c ComponentConfig) NewSecret(str string) (*corev1.Secret, error) {
 func (c ComponentConfig) NewMutatingWebhookConfiguration(str string) (*admissionregistration_v1beta1.MutatingWebhookConfiguration, error) {
 	assetByte, err := assets.Asset(str)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to build MutatingWebhookConfiguration from assets' bin data")
+		return nil, errors.Wrap(err, "failed to read MutatingWebhookConfiguration from assets' bin data")
 	}
 	resource, err := resourceread.ReadMutatingWebhookConfiguration(c.templateAssets(string(assetByte[:])))
 	if err != nil {
@@ -339,6 +341,18 @@ func (c ComponentConfig) NewValidatingWebhookConfiguration(str string) (*admissi
 	resource, err := resourceread.ReadValidatingWebhookConfiguration(c.templateAssets(string(assetByte[:])))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build ValidatingWebhookConfiguration from assets' bin data")
+	}
+	return resource, nil
+}
+
+func (c ComponentConfig) NewAPIService(str string) (*apiregistrationv1beta1.APIService, error) {
+	assetByte, err := assets.Asset(str)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build APIService from assets' bin data")
+	}
+	resource, err := resourceread.ReadAPIService(c.templateAssets(string(assetByte[:])))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build APIService from assets' bin data")
 	}
 	return resource, nil
 }

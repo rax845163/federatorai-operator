@@ -31,6 +31,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
+	apiregistrationv1beta1 "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1beta1"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -183,6 +184,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	if err = r.syncCustomResourceDefinition(instance, asp, installResource); err != nil {
 		log.Error(err, "create crd failed")
 	}
+	if err := r.updateNamespaceLabel(instance.Namespace); err != nil {
+		log.V(-1).Info("update Namespace's label failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
 	if err := r.syncPodSecurityPolicy(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync podSecurityPolicy failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -240,6 +245,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	if err := r.syncValidatingWebhookConfiguration(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync ValidatingWebhookConfiguration failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+	if err := r.syncAPIService(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync APIService failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 	if err := r.syncDeployment(instance, asp, installResource); err != nil {
@@ -416,6 +425,32 @@ func (r *ReconcileAlamedaService) syncClusterRoleBinding(instance *federatoraiv1
 			}
 		}
 	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) updateNamespaceLabel(namespace string) error {
+
+	labelsForCertManager := map[string]string{
+		"certmanager.k8s.io/disable-validation": "true",
+	}
+
+	ctx := context.TODO()
+	instance := corev1.Namespace{}
+	if err := r.client.Get(ctx, types.NamespacedName{Name: namespace}, &instance); err != nil {
+		return errors.Errorf("get Namesapce failed: %s", err.Error())
+	}
+
+	newInstance := *instance.DeepCopy()
+	if newInstance.Labels == nil {
+		newInstance.Labels = make(map[string]string)
+	}
+	for k, v := range labelsForCertManager {
+		newInstance.Labels[k] = v
+	}
+	if err := r.client.Update(ctx, &newInstance); err != nil {
+		return errors.Errorf("update Namespace failed: %s", err.Error())
+	}
+
 	return nil
 }
 
@@ -888,6 +923,33 @@ func (r *ReconcileAlamedaService) syncValidatingWebhookConfiguration(instance *f
 	return nil
 }
 
+func (r *ReconcileAlamedaService) syncAPIService(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+	for _, fileString := range resource.APIServiceList {
+		apiService, err := componentConfig.NewAPIService(fileString)
+		if err != nil {
+			return errors.Wrap(err, "new APIService failed")
+		}
+		if err := controllerutil.SetControllerReference(instance, apiService, r.scheme); err != nil {
+			return errors.Errorf("Fail APIService SetControllerReference: %s", err.Error())
+		}
+		existAPIService := &apiregistrationv1beta1.APIService{}
+		err = r.client.Get(context.TODO(), types.NamespacedName{Name: apiService.Name}, existAPIService)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			log.Info("Creating a new Resource APIService... ", "name", apiService.Name)
+			err = r.client.Create(context.TODO(), apiService)
+			if err != nil {
+				return errors.Errorf("create APIService %s failed: %s", apiService.Name, err.Error())
+			}
+			log.Info("Successfully Creating Resource APIService", "name", apiService.Name)
+		} else if err != nil {
+			return errors.Errorf("get APIService %s failed: %s", apiService.Name, err.Error())
+		} else {
+			log.V(-1).Info("APIService is existing, skip creating", "name", apiService.Name)
+		}
+	}
+	return nil
+}
+
 func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.DeploymentList {
 		resourceDep := componentConfig.NewDeployment(fileString)
@@ -1180,6 +1242,22 @@ func (r *ReconcileAlamedaService) uninstallValidatingWebhookConfiguration(instan
 	return nil
 }
 
+func (r *ReconcileAlamedaService) uninstallAPIService(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+	for _, fileString := range resource.APIServiceList {
+		apiService, err := componentConfig.NewAPIService(fileString)
+		if err != nil {
+			return errors.Wrap(err, "new PIService failed")
+		}
+		err = r.client.Delete(context.TODO(), apiService)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			return nil
+		} else if err != nil {
+			return errors.Errorf("delete PIService %s failed: %s", apiService.Name, err.Error())
+		}
+	}
+	return nil
+}
+
 func (r *ReconcileAlamedaService) uninstallScalerforAlameda(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 	if err := r.uninstallAlamedaScaler(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall selfDriving scaler failed")
@@ -1383,6 +1461,10 @@ func (r *ReconcileAlamedaService) uninstallResource(resource alamedaserviceparam
 
 	if err := r.uninstallValidatingWebhookConfiguration(nil, &resource); err != nil {
 		return errors.Wrap(err, "uninstall ValidatingWebhookConfiguration failed")
+	}
+
+	if err := r.uninstallAPIService(nil, &resource); err != nil {
+		return errors.Wrap(err, "uninstall APIService failed")
 	}
 
 	return nil

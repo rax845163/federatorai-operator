@@ -1,0 +1,13 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: cert-managet-webhook-ca
+  namespace: "{{.NameSpace}}" 
+spec:
+  secretName: cert-managet-webhook-ca
+  duration: 43800h # 5y
+  issuerRef:
+    name: cert-managet-webhook-selfsign
+  commonName: "ca.webhook.cert-manager"
+  isCA: true
+ 
