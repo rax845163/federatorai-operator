@@ -44,6 +44,8 @@ spec:
           value: adminpass
         - name: ALAMEDA_DATAHUB_PROMETHEUS_URL
           value: https://prometheus-k8s.openshift-monitoring.svc:9091
+        - name: ALAMEDA_DATAHUB_RABBITMQ_URL
+          value: "amqp://admin:adminpass@alameda-rabbitmq.{{.NameSpace}}.svc:5672"
         readinessProbe:
           exec:
             command:

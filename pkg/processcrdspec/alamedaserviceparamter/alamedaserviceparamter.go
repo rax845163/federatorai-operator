@@ -38,6 +38,11 @@ var (
 		"Secret/alameda-influxdb.yaml",
 		"Role/alameda-datahub.yaml",
 		"RoleBinding/alameda-datahub.yaml",
+		"Deployment/alameda-rabbitmqDM.yaml",
+		"Service/alameda-rabbitmqSV.yaml",
+		"ServiceAccount/alameda-rabbitmqSA.yaml",
+		"ClusterRole/alameda-rabbitmqCR.yaml",
+		"ClusterRoleBinding/alameda-rabbitmqCRB.yaml",
 	}
 
 	guiList = []string{
@@ -81,14 +86,6 @@ var (
 
 	aiDispatcherList = []string{
 		"Deployment/alameda-ai-dispatcherDM.yaml",
-	}
-
-	rabbitmqList = []string{
-		"Deployment/alameda-rabbitmqDM.yaml",
-		"Service/alameda-rabbitmqSV.yaml",
-		"ServiceAccount/alameda-rabbitmqSA.yaml",
-		"ClusterRole/alameda-rabbitmqCR.yaml",
-		"ClusterRoleBinding/alameda-rabbitmqCRB.yaml",
 	}
 
 	weavescopeList = []string{
@@ -145,16 +142,8 @@ var (
 
 // GetDispatcherResource returns resource that needs to be installed for Alameda-Dispathcer
 func GetDispatcherResource() *Resource {
-
-	r := &Resource{}
-
-	rabbitMQResource, _ := getResourceFromList(rabbitmqList)
-	r.add(rabbitMQResource)
-
-	dispatcherResource, _ := getResourceFromList(aiDispatcherList)
-	r.add(dispatcherResource)
-
-	return r
+	r, _ := getResourceFromList(aiDispatcherList)
+	return &r
 }
 
 // GetExcutionResource returns resource that needs to be installed for Execution
