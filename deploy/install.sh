@@ -37,16 +37,20 @@ wait_until_pods_ready()
   period="$1"
   interval="$2"
   namespace="$3"
+  target_pod_number="$4"
 
   for ((i=0; i<$period; i+=$interval)); do
-    
-    if pods_ready $namespace; then
-      echo -e "\nAll $namespace pods are ready."
-      return 0
+
+    if [[ "`kubectl get po -n $namespace 2>/dev/null|wc -l`" -ge "$target_pod_number" ]]; then
+        if pods_ready $namespace; then
+            echo -e "\nAll $namespace pods are ready."
+            return 0
+        fi
     fi
 
     echo "Waiting for $namespace pods to be ready..."
     sleep "$interval"
+    
   done
 
   echo -e "\n$(tput setaf 1)Warning!! Waited for $period seconds, but all pods are not ready yet. Please check $namespace namespace$(tput sgr 0)"
@@ -116,8 +120,7 @@ operator_namespace=`cat 00-name*.yaml|grep "name:"|awk '{print $2}'`
 echo -e "\n$(tput setaf 2)Starting apply Federator.ai operator yaml files$(tput sgr 0)"
 kubectl apply -f .
 echo "Processing..."
-sleep 3
-wait_until_pods_ready 600 20 $operator_namespace
+wait_until_pods_ready 600 20 $operator_namespace 1
 echo -e "\n$(tput setaf 6)Install Federator.ai operator $tag_number successfully$(tput sgr 0)"
 
 alamedaservice_example="alamedaservice_sample.yaml"
@@ -249,8 +252,7 @@ __EOF__
     kubectl create ns $install_namespace &>/dev/null
     kubectl apply -f $alamedaservice_example &>/dev/null
     echo "Processing..."
-    sleep 20
-    wait_until_pods_ready 600 20 $install_namespace
+    wait_until_pods_ready 900 20 $install_namespace 5
     echo -e "$(tput setaf 6)\nInstall Alameda $tag_number successfully$(tput sgr 0)"
     get_grafana_route $install_namespace
     leave_prog
