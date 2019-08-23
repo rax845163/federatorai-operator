@@ -3,6 +3,7 @@ package alamedaservicekeycode
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
@@ -14,7 +15,6 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/util"
 
 	"github.com/pkg/errors"
-	corev1 "k8s.io/api/core/v1"
 	k8sErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 
@@ -45,6 +45,9 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 	return &ReconcileAlamedaServiceKeycode{
 		client: mgr.GetClient(),
 		scheme: mgr.GetScheme(),
+
+		datahubClientMap:     make(map[string]client_datahub.Client),
+		datahubClientMapLock: sync.Mutex{},
 	}
 }
 
@@ -69,6 +72,9 @@ type ReconcileAlamedaServiceKeycode struct {
 	// that reads objects from the cache and writes to the apiserver
 	client client.Client
 	scheme *runtime.Scheme
+
+	datahubClientMap     map[string]client_datahub.Client
+	datahubClientMapLock sync.Mutex
 }
 
 // Reconcile reconcile AlamedaService's keycode
@@ -82,7 +88,18 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	defer func() {
 
 		instance := &federatoraiv1alpha1.AlamedaService{}
-		r.client.Get(context.TODO(), client.ObjectKey{Namespace: request.Namespace, Name: request.Name}, instance)
+		err := r.client.Get(context.TODO(), client.ObjectKey{Namespace: request.Namespace, Name: request.Name}, instance)
+		if err != nil && k8sErrors.IsNotFound(err) {
+			addr, err := r.getDatahubAddressByNamespace(request.Namespace)
+			if err != nil {
+				log.V(-1).Info("Get datahub address failed, skip deleting datahub client", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "error", err.Error())
+			}
+			r.deleteDatahubClient(addr)
+			return
+		} else if err != nil {
+			log.V(-1).Info("Get AlamedaService failed, skip writing status", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "error", err.Error())
+			return
+		}
 
 		instance.SetStatusKeycodeLastErrorMessage(reconcileError.Error())
 		instance.SetStatusKeycodeState(state)
@@ -91,17 +108,17 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 		// Get keycodeRepository
 		keycodeRepository, err := r.getKeycodeRepository(request.Namespace)
 		if err != nil {
-			log.Error(err, "Get keycode summary failed", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "msg", err.Error())
+			log.V(-1).Info("Get keycode summary failed, will not write keycode summary into AlamedaService's status", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "error", err.Error())
 		} else {
 			detail, err := keycodeRepository.GetKeycodeDetail("")
 			if err != nil {
-				log.Error(err, "Get keycode summary failed", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "msg", err.Error())
+				log.V(-1).Info("Get keycode summary failed, write empty keycode summary into AlamedaService's status", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "error", err.Error())
 			}
 			instance.SetStatusKeycodeSummary(detail.Summary())
 		}
 
 		if err := r.client.Update(context.Background(), instance); err != nil {
-			log.Error(err, "Update AlamedaService status failed", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "msg", err.Error())
+			log.V(-1).Info("Update AlamedaService status failed", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "error", err.Error())
 		}
 	}()
 
@@ -115,7 +132,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
-		log.V(-1).Info("Get AlamedaService failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "msg", err.Error())
+		log.V(-1).Info("Get AlamedaService failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
 	}
 	state = alamedaService.Status.KeycodeStatus.State
@@ -124,7 +141,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	// Get keycodeRepository
 	keycodeRepository, err := r.getKeycodeRepository(alamedaService.Namespace)
 	if err != nil {
-		log.V(-1).Info("Get licese repository failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "msg", err.Error())
+		log.V(-1).Info("Get licese repository failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 		reconcileError.err = errors.Wrap(err, "get keycode repository instance failed")
 		return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
 	}
@@ -132,14 +149,14 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	// Handle deletion of AlamedaService
 	if alamedaService.DeletionTimestamp != nil {
 		if err := r.deleteAlamedaServiceDependencies(keycodeRepository, alamedaService); err != nil {
-			log.V(-1).Info("handle AlamedaService deletion failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "msg", err.Error())
+			log.V(-1).Info("handle AlamedaService deletion failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 			reconcileError.err = errors.Wrap(err, "handle AlamedaService deletion failed")
 			return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
 		}
 		return reconcile.Result{Requeue: false}, nil
 	}
 	if err := r.setupFinalizers(alamedaService); err != nil {
-		log.V(-1).Info("setup finalizers to AlamedaService failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "msg", err.Error())
+		log.V(-1).Info("setup finalizers to AlamedaService failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
 	}
 
@@ -148,7 +165,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	// seconde, keycode is not empty
 	if alamedaService.IsCodeNumberEmpty() {
 		if err := r.handleEmptyKeycode(keycodeRepository, alamedaService); err != nil {
-			log.V(-1).Info("Handle empty keycode failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "msg", err.Error())
+			log.V(-1).Info("Handle empty keycode failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 			reconcileError.err = errors.Wrap(err, "handle empty keycode failed")
 			return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
 		}
@@ -166,7 +183,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	// If keycode is updated, do the update process no matter what the current state is
 	if alamedaService.IsCodeNumberUpdated() {
 		if err := r.updateKeycode(keycodeRepository, alamedaService); err != nil {
-			log.V(-1).Info("Update keycode failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "msg", err.Error())
+			log.V(-1).Info("Update keycode failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 			reconcileError.err = errors.Wrap(err, "update keycode failed")
 			return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
 		}
@@ -178,7 +195,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	switch alamedaService.Status.KeycodeStatus.State {
 	case federatoraiv1alpha1.KeycodeStateDefault, federatoraiv1alpha1.KeycodeStateWaitingKeycode:
 		if err := r.handleKeycode(keycodeRepository, alamedaService); err != nil {
-			log.V(-1).Info("Handling keycode failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "msg", err.Error())
+			log.V(-1).Info("Handling keycode failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 			reconcileError.err = errors.Wrap(err, "handle keycode failed")
 			return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
 		}
@@ -191,7 +208,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 		// Poll registration data from keycode repository
 		registrationData, err := keycodeRepository.GetRegistrationData()
 		if err != nil {
-			log.V(-1).Info("Polling registration data failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "msg", err.Error())
+			log.V(-1).Info("Polling registration data failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 			reconcileError.err = errors.Wrap(err, "poll registration data failed")
 			return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
 		}
@@ -199,7 +216,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 		// Get keycode defailt from keycode repository
 		detail, err := keycodeRepository.GetKeycodeDetail("")
 		if err != nil {
-			log.V(-1).Info("Polling registration data failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "msg", err.Error())
+			log.V(-1).Info("Polling registration data failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 			reconcileError.err = errors.Wrap(err, "poll registration data failed")
 			return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
 		}
@@ -210,7 +227,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 		} else {
 			// Update AlamedaService keycode state to WaitingSignatureData and registration data
 			if err := r.updateAlamedaServiceStatusKeycodeRegistrationData(alamedaService.Namespace, alamedaService.Name, registrationData); err != nil {
-				log.V(-1).Info("Update AlamedaService with registration data failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "msg", err.Error())
+				log.V(-1).Info("Update AlamedaService with registration data failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 				reconcileError.err = errors.Wrap(err, "update registration data failed")
 				return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
 			}
@@ -225,7 +242,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 			return reconcile.Result{}, nil
 		}
 		if err := r.handleSignatureData(keycodeRepository, alamedaService); err != nil {
-			log.V(-1).Info("Handling signature data failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "msg", err.Error())
+			log.V(-1).Info("Handling signature data failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 			reconcileError.err = errors.Wrap(err, "handle signature data  failed")
 			return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
 		}
@@ -234,7 +251,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 		return reconcile.Result{}, nil
 	case federatoraiv1alpha1.KeycodeStateDone:
 		if err := r.updateKeycode(keycodeRepository, alamedaService); err != nil {
-			log.V(-1).Info("Update keycode failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "msg", err.Error())
+			log.V(-1).Info("Update keycode failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 			reconcileError.err = errors.Wrap(err, "update keycode failed")
 			return reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}, nil
 		}
@@ -271,6 +288,11 @@ func (r *ReconcileAlamedaServiceKeycode) deleteAlamedaServiceDependencies(keycod
 	if err := r.deleteKeycode(keycodeRepository, alamedaService); err != nil {
 		return errors.Wrap(err, "delete keycode failed")
 	}
+	datahubAddress, err := r.getDatahubAddressByNamespace(alamedaService.Namespace)
+	if err != nil {
+		return errors.Wrap(err, "get datahub address failed")
+	}
+	r.deleteDatahubClient(datahubAddress)
 
 	// Remove finalizers from AlamedaService
 	deleteFinalizers(alamedaService, finalizerList)
@@ -291,6 +313,15 @@ func (r *ReconcileAlamedaServiceKeycode) deleteKeycode(keycodeRepository reposit
 	}
 
 	return nil
+}
+
+func (r *ReconcileAlamedaServiceKeycode) deleteDatahubClient(datahubAddr string) {
+
+	if _, exist := r.datahubClientMap[datahubAddr]; exist {
+		r.datahubClientMapLock.Lock()
+		delete(r.datahubClientMap, datahubAddr)
+		r.datahubClientMapLock.Unlock()
+	}
 }
 
 func (r *ReconcileAlamedaServiceKeycode) handleEmptyKeycode(keycodeRepository repository_keycode.Interface, alamedaService *federatoraiv1alpha1.AlamedaService) error {
@@ -385,41 +416,35 @@ func (r *ReconcileAlamedaServiceKeycode) handleSignatureData(keycodeRepository r
 
 func (r *ReconcileAlamedaServiceKeycode) getKeycodeRepository(namespace string) (repository_keycode.Interface, error) {
 
-	// Get componentConfig instance
-	ns, err := r.getNamespace(namespace)
+	datahubAddress, err := r.getDatahubAddressByNamespace(namespace)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "get Datahub address failed")
 	}
-	componentFactory := r.newComponentConfig(ns)
+	if _, exist := r.datahubClientMap[datahubAddress]; !exist {
+		r.datahubClientMapLock.Lock()
+		datahubClientConfig := client_datahub.NewDefaultConfig()
+		datahubClientConfig.Address = datahubAddress
+		r.datahubClientMap[datahubAddress] = client_datahub.NewDatahubClient(datahubClientConfig)
+		r.datahubClientMapLock.Unlock()
+	}
+	datahubClient := r.datahubClientMap[datahubAddress]
+	keycodeRepository := repository_keycode_datahub.NewKeycodeRepository(&datahubClient)
+
+	return keycodeRepository, nil
+}
+
+func (r *ReconcileAlamedaServiceKeycode) getDatahubAddressByNamespace(namespace string) (string, error) {
+
+	componentFactory := component.ComponentConfig{NameSpace: namespace}
 
 	// Get datahub client instance
 	datahubServiceAssetName := alamedaserviceparamter.GetAlamedaDatahubService()
 	datahubService := componentFactory.NewService(datahubServiceAssetName)
 	datahubAddress, err := util.GetServiceAddress(datahubService, "grpc")
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	datahubClientConfig := client_datahub.NewDefaultConfig()
-	datahubClientConfig.Address = datahubAddress
-	datahubClient := client_datahub.NewDatahubClient(datahubClientConfig)
-
-	keycodeRepository := repository_keycode_datahub.NewKeycodeRepository(&datahubClient)
-
-	return keycodeRepository, nil
-}
-
-func (r *ReconcileAlamedaServiceKeycode) getNamespace(namespaceName string) (corev1.Namespace, error) {
-	namespace := corev1.Namespace{}
-	if err := r.client.Get(context.TODO(), client.ObjectKey{Name: namespaceName}, &namespace); err != nil {
-		return namespace, errors.Errorf("get namespace %s failed: %s", namespaceName, err.Error())
-	}
-	return namespace, nil
-}
-
-func (r *ReconcileAlamedaServiceKeycode) newComponentConfig(namespace corev1.Namespace) *component.ComponentConfig {
-	podTemplateConfig := component.NewDefaultPodTemplateConfig(namespace)
-	componentConfg := component.NewComponentConfig(namespace.Name, podTemplateConfig)
-	return componentConfg
+	return datahubAddress, nil
 }
 
 func (r *ReconcileAlamedaServiceKeycode) updateAlamedaServiceStatusKeycodeRegistrationData(namespace, name, data string) error {
