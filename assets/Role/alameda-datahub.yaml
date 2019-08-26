@@ -10,3 +10,4 @@ rules:
   - configmaps
   verbs:
   - update
+  - create
