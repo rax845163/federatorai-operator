@@ -48,11 +48,11 @@ spec:
           value: "alameda-datahub.{{.NameSpace}}.svc:50050"
         - name: ALAMEDA_ADMCTL_ENABLE
           value: 'true'
-        - name: ALAMEDA_ADMCTL_TLS_CERTFILE
+        - name: ALAMEDA_ADMCTL_TLSCERTFILE
           value: /etc/tls-certs/tls.crt
-        - name: ALAMEDA_ADMCTL_TLS_PRIVATE_KEYFILE
+        - name: ALAMEDA_ADMCTL_TLSPRIVATEKEYFILE
           value: /etc/tls-certs/tls.key
-        - name: ALAMEDA_ADMCTL_CA_CERTFILE
+        - name: ALAMEDA_ADMCTL_CACERTFILE
           value: /etc/tls-certs/ca.crt
         volumeMounts:
         - mountPath: /etc/tls-certs
