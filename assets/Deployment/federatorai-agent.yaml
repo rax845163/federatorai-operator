@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: federatorai-agent
+  namespace: {{.NameSpace}}
+spec:
+  selector:
+    matchLabels:
+      app: federatorai-agent
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: federatorai-agent
+    spec:
+      containers:
+      - name: federatorai-agent
+        image: quay.io/prophetstor/federatorai-agent-ubi:latest
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: federatorai-agent-config
+            mountPath: /etc/alameda/federatorai-agent/transmitter.toml
+            subPath: transmitter.toml
+          - name: federatorai-agent-config
+            mountPath: /etc/alameda/federatorai-agent/input/cost_analysis_daily.toml
+            subPath: cost_analysis_daily.toml
+          - name: federatorai-agent-config
+            mountPath: /etc/alameda/federatorai-agent/input/cost_analysis_weekly.toml
+            subPath: cost_analysis_weekly.toml
+          - name: federatorai-agent-config
+            mountPath: /etc/alameda/federatorai-agent/input/cost_analysis_monthly.toml
+            subPath: cost_analysis_monthly.toml
+      volumes:
+        - name: federatorai-agent-config
+          configMap:
+            name: federatorai-agent-config

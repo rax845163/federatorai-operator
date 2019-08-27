@@ -10,10 +10,6 @@ import (
 )
 
 var (
-	ConfigMapDashboardsConfig = "ConfigMap/dashboards-config.yaml"
-)
-
-var (
 	defaultInstallLists = [][]string{
 		[]string{
 			"ClusterRole/aggregate-alameda-admin-edit-alamedaCR.yaml",
@@ -28,6 +24,7 @@ var (
 		rabbitmqList,
 		notifierList,
 		certManagerList,
+		federatoraiAgentList,
 	}
 
 	datahubList = []string{
@@ -176,6 +173,11 @@ var (
 		"ServiceAccount/alameda-cert-managet-webhook.yaml",
 		"ServiceAccount/alameda-cert-managet-cert-manager.yaml",
 		"ValidatingWebhookConfiguration/alameda-cert-managet-webhook.yaml",
+	}
+
+	federatoraiAgentList = []string{
+		"Deployment/federatorai-agent.yaml",
+		"ConfigMap/federatorai-agent-config.yaml",
 	}
 
 	selfDrivingList = []string{

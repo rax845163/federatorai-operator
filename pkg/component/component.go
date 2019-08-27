@@ -31,11 +31,6 @@ import (
 
 var log = logf.Log.WithName("controller_alamedaservice")
 
-// assetsSkipTemplateParse contains asset files that cannnot do template parsing
-/*var assetsSkipTemplateParse = []string{
-	alamedaserviceparamter.ConfigMapDashboardsConfig,
-}*/
-
 type ComponentConfig struct {
 	NameSpace         string
 	PodTemplateConfig PodTemplateConfig
@@ -145,12 +140,6 @@ func (c ComponentConfig) NewConfigMap(str string) *corev1.ConfigMap {
 
 	var cm *corev1.ConfigMap
 	cm = resourceread.ReadConfigMapV1(c.templateAssets(string(cmByte[:])))
-	/*if skipTemplateParse(str) {
-		cm = resourceread.ReadConfigMapV1(cmByte)
-		cm.Namespace = c.NameSpace
-	} else {
-		cm = resourceread.ReadConfigMapV1(c.templateAssets(string(cmByte[:])))
-	}*/
 	return cm
 }
 func (c ComponentConfig) NewPersistentVolumeClaim(str string) *corev1.PersistentVolumeClaim {
@@ -524,7 +513,3 @@ func overwritePodSecurityContextFromOKDPodSecurityContext(psc, okdPSC corev1.Pod
 
 	return *copyPSC
 }
-
-/*func skipTemplateParse(asset string) bool {
-	return util.StringInSlice(asset, assetsSkipTemplateParse)
-}*/
