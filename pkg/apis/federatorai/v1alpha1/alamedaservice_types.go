@@ -50,6 +50,7 @@ type AlamedaServiceSpec struct {
 	AlamedaDispatcherSectionSet   AlamedaComponentSpec `json:"alameda-dispatcher"`
 	AlamedaAnalyzerSectionSet     AlamedaComponentSpec `json:"alameda-analyzer"`
 	AlamedaNotifierSectionSet     AlamedaComponentSpec `json:"alamedaNotifier"`
+	FederatoraiAgentSectionSet    AlamedaComponentSpec `json:"federatoraiAgent"`
 }
 
 type AlamedaComponentSpec struct {

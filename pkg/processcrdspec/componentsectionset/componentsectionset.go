@@ -118,6 +118,11 @@ func SectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaservicep
 		util.SetImagePullPolicy(dep, util.AlamedaNofitierCTN, asp.AlamedaNotifierSectionSet.ImagePullPolicy)
 		util.SetStorageToVolumeSource(dep, asp.AlamedaNotifierSectionSet.Storages, "alameda-notifier-type.pvc", util.AlamedaGroup)
 		util.SetStorageToMountPath(dep, asp.AlamedaNotifierSectionSet.Storages, util.AlamedaNofitierCTN, "alameda-notifier-type-storage", util.AlamedaGroup)
+	case util.FederatoraiAgentDPN:
+		util.SetImageStruct(dep, asp.FederatoraiAgentSectionSet, util.FederatoraiAgentCTN)
+		util.SetImagePullPolicy(dep, util.FederatoraiAgentCTN, asp.FederatoraiAgentSectionSet.ImagePullPolicy)
+		util.SetStorageToVolumeSource(dep, asp.FederatoraiAgentSectionSet.Storages, "federatorai-agent-type.pvc", util.AlamedaGroup)
+		util.SetStorageToMountPath(dep, asp.FederatoraiAgentSectionSet.Storages, util.FederatoraiAgentCTN, "federatorai-agent-type-storage", util.AlamedaGroup)
 	}
 }
 

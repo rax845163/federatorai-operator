@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: federatorai-agent
-        image: quay.io/prophetstor/federatorai-agent-ubi:latest
+        image: quay.io/prophetstor/federatorai-agent-ubi:v4.2.259
         imagePullPolicy: Always
         volumeMounts:
           - name: federatorai-agent-config
@@ -31,6 +31,8 @@ spec:
             mountPath: /etc/alameda/federatorai-agent/input/cost_analysis_monthly.toml
             subPath: cost_analysis_monthly.toml
       volumes:
-        - name: federatorai-agent-config
-          configMap:
-            name: federatorai-agent-config
+      - name: federatorai-agent-config
+        configMap:
+          name: federatorai-agent-config
+      - name: federatorai-agent-data-storage
+      - name: federatorai-agent-log-storage

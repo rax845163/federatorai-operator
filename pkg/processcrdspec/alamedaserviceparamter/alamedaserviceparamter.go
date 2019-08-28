@@ -308,6 +308,7 @@ type AlamedaServiceParamter struct {
 	AlamedaWeavescopeSectionSet   v1alpha1.AlamedaComponentSpec
 	AlamedaAnalyzerSectionSet     v1alpha1.AlamedaComponentSpec
 	AlamedaNotifierSectionSet     v1alpha1.AlamedaComponentSpec
+	FederatoraiAgentSectionSet    v1alpha1.AlamedaComponentSpec
 	CurrentCRDVersion             v1alpha1.AlamedaServiceStatusCRDVersion
 	previousCRDVersion            v1alpha1.AlamedaServiceStatusCRDVersion
 }
@@ -339,6 +340,7 @@ func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServic
 		AlamedaAnalyzerSectionSet:     instance.Spec.AlamedaAnalyzerSectionSet,
 		AlamedaFedemeterSectionSet:    instance.Spec.AlamedaFedemeterSectionSet,
 		AlamedaWeavescopeSectionSet:   instance.Spec.AlamedaWeavescopeSectionSet,
+		FederatoraiAgentSectionSet:    instance.Spec.FederatoraiAgentSectionSet,
 		AlamedaNotifierSectionSet:     instance.Spec.AlamedaNotifierSectionSet,
 		CurrentCRDVersion:             instance.Status.CRDVersion,
 		previousCRDVersion:            instance.Status.CRDVersion,
@@ -432,6 +434,7 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaAnalyzerSectionSet.Storages, "PersistentVolumeClaim/alameda-analyzer-log.yaml", v1alpha1.Log)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaFedemeterSectionSet.Storages, "PersistentVolumeClaim/fedemeter-log.yaml", v1alpha1.Log)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaNotifierSectionSet.Storages, "PersistentVolumeClaim/alameda-notifier-log.yaml", v1alpha1.Log)
+	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-log.yaml", v1alpha1.Log)
 
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.InfluxdbSectionSet.Storages, "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.GrafanaSectionSet.Storages, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml", v1alpha1.Data)
@@ -447,6 +450,7 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaAnalyzerSectionSet.Storages, "PersistentVolumeClaim/alameda-analyzer-data.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaFedemeterSectionSet.Storages, "PersistentVolumeClaim/fedemeter-data.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaNotifierSectionSet.Storages, "PersistentVolumeClaim/alameda-notifier-data.yaml", v1alpha1.Data)
+	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-data.yaml", v1alpha1.Data)
 
 	return &Resource{
 		PersistentVolumeClaimList: pvc,
@@ -499,6 +503,7 @@ func (asp *AlamedaServiceParamter) getInstallPersistentVolumeClaimSource() []str
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AlamedaAnalyzerSectionSet.Storages, "PersistentVolumeClaim/alameda-analyzer-log.yaml", v1alpha1.Log)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AlamedaFedemeterSectionSet.Storages, "PersistentVolumeClaim/fedemeter-log.yaml", v1alpha1.Log)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AlamedaNotifierSectionSet.Storages, "PersistentVolumeClaim/alameda-notifier-log.yaml", v1alpha1.Log)
+	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-log.yaml", v1alpha1.Log)
 	if gloabalDataFlag {
 		pvc = append(pvc, dataPVCList...)
 	}
@@ -515,6 +520,7 @@ func (asp *AlamedaServiceParamter) getInstallPersistentVolumeClaimSource() []str
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AlamedaAnalyzerSectionSet.Storages, "PersistentVolumeClaim/alameda-analyzer-data.yaml", v1alpha1.Data)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AlamedaFedemeterSectionSet.Storages, "PersistentVolumeClaim/fedemeter-data.yaml", v1alpha1.Data)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AlamedaNotifierSectionSet.Storages, "PersistentVolumeClaim/alameda-notifier-data.yaml", v1alpha1.Data)
+	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-data.yaml", v1alpha1.Data)
 	return pvc
 
 }

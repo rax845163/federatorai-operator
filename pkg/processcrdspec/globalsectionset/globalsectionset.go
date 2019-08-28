@@ -103,9 +103,13 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 			util.SetImagePullPolicy(dep, util.AlamedaweavescopeCTN, asp.AlamedaWeavescopeSectionSet.ImagePullPolicy)
 		}
 	case util.AlamedaNotifierDPN:
-			util.SetImageStruct(dep, asp.Version, util.AlamedaNofitierCTN)
-			util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-notifier-type.pvc", util.AlamedaGroup)
-			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedaNofitierCTN, "alameda-notifier-type-storage", util.AlamedaGroup)
+		util.SetImageStruct(dep, asp.Version, util.AlamedaNofitierCTN)
+		util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-notifier-type.pvc", util.AlamedaGroup)
+		util.SetStorageToMountPath(dep, asp.Storages, util.AlamedaNofitierCTN, "alameda-notifier-type-storage", util.AlamedaGroup)
+	case util.FederatoraiAgentDPN:
+		util.SetImageStruct(dep, asp.Version, util.FederatoraiAgentCTN)
+		util.SetStorageToVolumeSource(dep, asp.Storages, "federatorai-agent-type.pvc", util.AlamedaGroup)
+		util.SetStorageToMountPath(dep, asp.Storages, util.FederatoraiAgentCTN, "federatorai-agent-type-storage", util.AlamedaGroup)
 	}
 
 	envVars := getEnvVarsByDeployment(dep.Name, asp)

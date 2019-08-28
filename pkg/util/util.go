@@ -35,6 +35,7 @@ const (
 	AlamedaweavescopeProbeDPN = "alameda-weave-scope-cluster-agent"
 	AlamedaanalyzerDPN        = "alameda-analyzer"
 	AlamedaNotifierDPN        = "alameda-notifier"
+	FederatoraiAgentDPN       = "federatorai-agent"
 	//DaemonSet name
 	AlamedaweavescopeAgentDS = "alameda-weave-scope-agent"
 	//container name
@@ -56,6 +57,7 @@ const (
 	AlamedaweavescopeAgentCTN = "alameda-weave-scope-agent"
 	AlamedaanalyzerCTN        = "alameda-analyzer"
 	AlamedaNofitierCTN        = "alameda-notifier"
+	FederatoraiAgentCTN        = "federatorai-agent"
 	//Statefulset name
 	FedemeterInflixDBSSN = "fedemeter-influxdb"
 	//CRD NAME
