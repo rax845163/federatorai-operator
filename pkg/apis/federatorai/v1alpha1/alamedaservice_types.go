@@ -48,6 +48,7 @@ type AlamedaServiceSpec struct {
 	AlamedaFedemeterSectionSet    AlamedaComponentSpec `json:"fedemeter"`
 	AlamedaWeavescopeSectionSet   AlamedaComponentSpec `json:"alameda-weavescope"`
 	AlamedaDispatcherSectionSet   AlamedaComponentSpec `json:"alameda-dispatcher"`
+	AlamedaRabbitMQSectionSet     AlamedaComponentSpec `json:"alamedaRabbitMQ"`
 	AlamedaAnalyzerSectionSet     AlamedaComponentSpec `json:"alameda-analyzer"`
 	AlamedaNotifierSectionSet     AlamedaComponentSpec `json:"alamedaNotifier"`
 	FederatoraiAgentSectionSet    AlamedaComponentSpec `json:"federatoraiAgent"`

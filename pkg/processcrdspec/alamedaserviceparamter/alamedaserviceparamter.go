@@ -308,6 +308,7 @@ type AlamedaServiceParamter struct {
 	AlamedaWeavescopeSectionSet   v1alpha1.AlamedaComponentSpec
 	AlamedaAnalyzerSectionSet     v1alpha1.AlamedaComponentSpec
 	AlamedaNotifierSectionSet     v1alpha1.AlamedaComponentSpec
+	AlamedaRabbitMQSectionSet     v1alpha1.AlamedaComponentSpec
 	FederatoraiAgentSectionSet    v1alpha1.AlamedaComponentSpec
 	CurrentCRDVersion             v1alpha1.AlamedaServiceStatusCRDVersion
 	previousCRDVersion            v1alpha1.AlamedaServiceStatusCRDVersion
@@ -337,6 +338,7 @@ func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServic
 		AlamedaRecommenderSectionSet:  instance.Spec.AlamedaRecommenderSectionSet,
 		AlamedaExecutorSectionSet:     instance.Spec.AlamedaExecutorSectionSet,
 		AlamedaDispatcherSectionSet:   instance.Spec.AlamedaDispatcherSectionSet,
+		AlamedaRabbitMQSectionSet:     instance.Spec.AlamedaRabbitMQSectionSet,
 		AlamedaAnalyzerSectionSet:     instance.Spec.AlamedaAnalyzerSectionSet,
 		AlamedaFedemeterSectionSet:    instance.Spec.AlamedaFedemeterSectionSet,
 		AlamedaWeavescopeSectionSet:   instance.Spec.AlamedaWeavescopeSectionSet,

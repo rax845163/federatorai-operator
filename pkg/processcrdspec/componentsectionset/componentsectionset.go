@@ -74,6 +74,9 @@ func SectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaservicep
 			util.SetStorageToVolumeSource(dep, asp.AlamedaDispatcherSectionSet.Storages, "alameda-dispatcher-type.pvc", util.AlamedaGroup)
 			util.SetStorageToMountPath(dep, asp.AlamedaDispatcherSectionSet.Storages, util.AlamedadispatcherCTN, "alameda-dispatcher-type.pvc", util.AlamedaGroup)
 		}
+	case util.AlamedaRabbitMQDPN:
+		util.SetImageStruct(dep, asp.AlamedaRabbitMQSectionSet, util.AlamedaRabbitMQCTN)
+		util.SetImagePullPolicy(dep, util.AlamedaRabbitMQCTN, asp.AlamedaRabbitMQSectionSet.ImagePullPolicy)
 	case util.AlamedaanalyzerDPN:
 		{
 			util.SetImageStruct(dep, asp.AlamedaAnalyzerSectionSet, util.AlamedaanalyzerCTN)

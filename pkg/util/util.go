@@ -28,6 +28,7 @@ const (
 	AlamedarecommenderDPN     = "alameda-recommender"
 	AlamedaexecutorDPN        = "alameda-executor"
 	AlamedadispatcherDPN      = "alameda-ai-dispatcher"
+	AlamedaRabbitMQDPN        = "alameda-rabbitmq"
 	FedemeterDPN              = "fedemeter-api"
 	GrafanaDPN                = "alameda-grafana"
 	InfluxdbDPN               = "alameda-influxdb"
@@ -47,6 +48,7 @@ const (
 	AlamedarecommenderCTN     = "alameda-recommender"
 	AlamedaexecutorCTN        = "alameda-executor"
 	AlamedadispatcherCTN      = "ai-dispatcher"
+	AlamedaRabbitMQCTN        = "rabbitmq"
 	FedemeterCTN              = "fedemeter-api"
 	FedemeterInfluxDBCTN      = "fedemeter-influxdb"
 	GetTokenCTN               = "gettoken"
@@ -57,7 +59,7 @@ const (
 	AlamedaweavescopeAgentCTN = "alameda-weave-scope-agent"
 	AlamedaanalyzerCTN        = "alameda-analyzer"
 	AlamedaNofitierCTN        = "alameda-notifier"
-	FederatoraiAgentCTN        = "federatorai-agent"
+	FederatoraiAgentCTN       = "federatorai-agent"
 	//Statefulset name
 	FedemeterInflixDBSSN = "fedemeter-influxdb"
 	//CRD NAME
