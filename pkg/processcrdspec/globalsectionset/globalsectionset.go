@@ -102,11 +102,10 @@ func GlobalSectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedase
 			util.SetImageStruct(dep, asp.AlamedaWeavescopeSectionSet, util.AlamedaweavescopeCTN)
 			util.SetImagePullPolicy(dep, util.AlamedaweavescopeCTN, asp.AlamedaWeavescopeSectionSet.ImagePullPolicy)
 		}
-	case util.AlamedaweavescopeProbeDPN:
-		{
-			util.SetImageStruct(dep, asp.AlamedaWeavescopeSectionSet, util.AlamedaweavescopeProbeCTN)
-			util.SetImagePullPolicy(dep, util.AlamedaweavescopeProbeCTN, asp.AlamedaWeavescopeSectionSet.ImagePullPolicy)
-		}
+	case util.AlamedaNotifierDPN:
+			util.SetImageStruct(dep, asp.Version, util.AlamedaNofitierCTN)
+			util.SetStorageToVolumeSource(dep, asp.Storages, "alameda-notifier-type.pvc", util.AlamedaGroup)
+			util.SetStorageToMountPath(dep, asp.Storages, util.AlamedaNofitierCTN, "alameda-notifier-type-storage", util.AlamedaGroup)
 	}
 
 	envVars := getEnvVarsByDeployment(dep.Name, asp)

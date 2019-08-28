@@ -34,6 +34,7 @@ const (
 	AlamedaweavescopeDPN      = "alameda-weave-scope-app"
 	AlamedaweavescopeProbeDPN = "alameda-weave-scope-cluster-agent"
 	AlamedaanalyzerDPN        = "alameda-analyzer"
+	AlamedaNotifierDPN        = "alameda-notifier"
 	//DaemonSet name
 	AlamedaweavescopeAgentDS = "alameda-weave-scope-agent"
 	//container name
@@ -54,6 +55,7 @@ const (
 	AlamedaweavescopeProbeCTN = "alameda-weave-scope-cluster-agent"
 	AlamedaweavescopeAgentCTN = "alameda-weave-scope-agent"
 	AlamedaanalyzerCTN        = "alameda-analyzer"
+	AlamedaNofitierCTN        = "alameda-notifier"
 	//Statefulset name
 	FedemeterInflixDBSSN = "fedemeter-influxdb"
 	//CRD NAME
@@ -161,7 +163,7 @@ func setImageVersion(dep *appsv1.Deployment, ctn string, version string) {
 				newImage = fmt.Sprintf("%s:%s", strings.Join(imageStrutct[:len(imageStrutct)-1], ":"), version)
 				dep.Spec.Template.Spec.Containers[index].Image = newImage
 			}
-			log.V(1).Info("SetImageVersion", dep.Spec.Template.Spec.Containers[index].Name, newImage)
+			log.V(1).Info("SetImageVersion", "Deployment.Name", dep.Name, "Container.Name", dep.Spec.Template.Spec.Containers[index].Name, "Image", newImage)
 		}
 	}
 }
@@ -222,7 +224,7 @@ func SetImagePullPolicy(dep *appsv1.Deployment, ctn string, imagePullPolicy core
 	for index, value := range dep.Spec.Template.Spec.Containers {
 		if value.Name == ctn {
 			dep.Spec.Template.Spec.Containers[index].ImagePullPolicy = imagePullPolicy
-			log.V(1).Info("SetImagePullPolicy", dep.Spec.Template.Spec.Containers[index].Name, imagePullPolicy)
+			log.V(1).Info("SetImagePullPolicy", "Deployment.Name", dep.Name, "Container.Name", dep.Spec.Template.Spec.Containers[index].Name, "ImagePullPolicy", imagePullPolicy)
 		}
 	}
 }
@@ -394,7 +396,7 @@ func setEmptyDir(dep *appsv1.Deployment, index int, size string) {
 		vs := corev1.VolumeSource{EmptyDir: &corev1.EmptyDirVolumeSource{}}
 		dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
 	}
-	log.V(1).Info("SetVolumeSource", dep.Name)
+	log.V(1).Info("SetVolumeSource", "Deployment.Name", dep.Name)
 }
 
 //if user set pvc then AlamedaService set Deployment VolumeSource is PersistentVolumeClaim
@@ -402,7 +404,7 @@ func setVolumeSource(dep *appsv1.Deployment, index int, claimName string) {
 	pvcs := &corev1.PersistentVolumeClaimVolumeSource{ClaimName: claimName}
 	vs := corev1.VolumeSource{PersistentVolumeClaim: pvcs}
 	dep.Spec.Template.Spec.Volumes[index].VolumeSource = vs
-	log.V(1).Info("SetVolumeSource", dep.Name, pvcs)
+	log.V(1).Info("SetVolumeSource", "Deployment.Name", dep.Name, "PVCs", pvcs)
 }
 
 //if user set pvc then AlamedaService set pvc to Deployment's VolumeSource
