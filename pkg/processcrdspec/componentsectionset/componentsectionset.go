@@ -117,7 +117,7 @@ func SectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaservicep
 		util.SetImageStruct(dep, asp.AlamedaNotifierSectionSet, util.AlamedaNofitierCTN)
 		util.SetImagePullPolicy(dep, util.AlamedaNofitierCTN, asp.AlamedaNotifierSectionSet.ImagePullPolicy)
 		util.SetStorageToVolumeSource(dep, asp.AlamedaNotifierSectionSet.Storages, "alameda-notifier-type.pvc", util.AlamedaGroup)
-		util.SetStorageToMountPath(dep, asp.AlamedaNotifierSectionSet.Storages, util.AlamedaNofitierCTN, "alameda-notifier-type-storage.pvc", util.AlamedaGroup)
+		util.SetStorageToMountPath(dep, asp.AlamedaNotifierSectionSet.Storages, util.AlamedaNofitierCTN, "alameda-notifier-type-storage", util.AlamedaGroup)
 	}
 }
 
