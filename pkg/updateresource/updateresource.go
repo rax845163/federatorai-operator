@@ -243,7 +243,7 @@ func misMatchTemplatePodSpec(modify *bool, clusterDep, sourceDep *corev1.PodSpec
 	}
 }
 func misMatchContainers(modify *bool, clusterContainers, sourceContainers []corev1.Container) {
-	for _, sourceContainer := range sourceContainers {
+	for sourceIndex, sourceContainer := range sourceContainers {
 		for clusterIndex, clusterContainer := range clusterContainers {
 			if clusterContainer.Name == sourceContainer.Name {
 				if clusterContainer.Image != sourceContainer.Image {
@@ -275,7 +275,7 @@ func misMatchContainers(modify *bool, clusterContainers, sourceContainers []core
 					if value.ValueFrom != nil {
 						if value.ValueFrom.FieldRef != nil {
 							if resourceEmpty(value.ValueFrom.FieldRef.APIVersion) {
-								clusterContainers[clusterIndex].Env[index].ValueFrom.FieldRef.APIVersion = okdDeploymentDefaultEnvFieldRefAPIVersion
+								sourceContainers[sourceIndex].Env[index].ValueFrom.FieldRef.APIVersion = okdDeploymentDefaultEnvFieldRefAPIVersion
 							}
 						}
 					}
