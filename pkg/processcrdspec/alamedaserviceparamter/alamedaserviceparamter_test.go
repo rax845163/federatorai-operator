@@ -161,6 +161,7 @@ func TestGetInstallResource(t *testing.T) {
 		want: t1Want,
 	}
 
+	varTure := true
 	dispatcherResource := GetDispatcherResource()
 	weavescopeResource, _ := getResourceFromList(weavescopeList)
 	t2Want := defaultResource
@@ -169,7 +170,7 @@ func TestGetInstallResource(t *testing.T) {
 	t2 := testCase{
 		have: v1alpha1.AlamedaService{
 			ObjectMeta: metav1.ObjectMeta{Namespace: ns, Name: name},
-			Spec:       v1alpha1.AlamedaServiceSpec{EnableDispatcher: true, EnableWeavescope: true},
+			Spec:       v1alpha1.AlamedaServiceSpec{EnableDispatcher: &varTure, EnableWeavescope: true},
 		},
 		want: t2Want,
 	}

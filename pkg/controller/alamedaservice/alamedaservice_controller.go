@@ -149,6 +149,8 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, err
 	}
 
+	r.InitAlamedaService(instance)
+
 	// Check if AlamedaService need to reconcile, currently only reconcile one AlamedaService in one cluster
 	needToReconcile, err := r.needToReconcile(instance)
 	if err != nil {
@@ -350,6 +352,13 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 
 	log.Info("Reconcile done.", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name)
 	return reconcile.Result{}, nil
+}
+
+func (r *ReconcileAlamedaService) InitAlamedaService(alamedaService *federatoraiv1alpha1.AlamedaService) {
+	if alamedaService.Spec.EnableDispatcher == nil {
+		enableTrue := true
+		alamedaService.Spec.EnableDispatcher = &enableTrue
+	}
 }
 
 func (r *ReconcileAlamedaService) getNamespace(namespaceName string) (corev1.Namespace, error) {
@@ -1608,7 +1617,10 @@ func (r *ReconcileAlamedaService) updateAlamedaService(alamedaService *federator
 
 func (r *ReconcileAlamedaService) updateAlamedaServiceStatus(alamedaService *federatoraiv1alpha1.AlamedaService, namespaceName client.ObjectKey, asp *alamedaserviceparamter.AlamedaServiceParamter) error {
 	copyAlamedaService := alamedaService.DeepCopy()
-	r.client.Get(context.TODO(), namespaceName, copyAlamedaService)
+	if err := r.client.Get(context.TODO(), namespaceName, copyAlamedaService); err != nil {
+		return errors.Errorf("get AlamedaService failed: %s", err.Error())
+	}
+	r.InitAlamedaService(copyAlamedaService)
 	copyAlamedaService.Status.CRDVersion = asp.CurrentCRDVersion
 	if err := r.client.Update(context.Background(), copyAlamedaService); err != nil {
 		return errors.Errorf("update AlamedaService Status failed: %s", err.Error())
@@ -1622,6 +1634,7 @@ func (r *ReconcileAlamedaService) updateAlamedaServiceAnnotations(alamedaService
 	if err := r.client.Get(context.TODO(), namespaceName, copyAlamedaService); err != nil {
 		return errors.Errorf("get AlamedaService failed: %s", err.Error())
 	}
+	r.InitAlamedaService(copyAlamedaService)
 	jsonSpec, err := copyAlamedaService.GetSpecAnnotationWithoutKeycode()
 	if err != nil {
 		return errors.Errorf("get AlamedaService spec annotation without keycode failed: %s", err.Error())

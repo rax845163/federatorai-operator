@@ -26,7 +26,7 @@ type AlamedaServiceSpec struct {
 	Platform          Platform              `json:"platform,omitempty"`
 	EnableExecution   bool                  `json:"enableExecution"`
 	EnableGUI         bool                  `json:"enableGui"`
-	EnableDispatcher  bool                  `json:"enableDispatcher"`
+	EnableDispatcher  *bool                 `json:"enableDispatcher"`
 	SelfDriving       bool                  `json:"selfDriving"`
 	EnableFedemeter   bool                  `json:"enableFedemeter"`
 	Version           string                `json:"version"`

@@ -323,7 +323,7 @@ func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServic
 		Platform:                      instance.Spec.Platform,
 		EnableExecution:               instance.Spec.EnableExecution,
 		EnableGUI:                     instance.Spec.EnableGUI,
-		EnableDispatcher:              instance.Spec.EnableDispatcher,
+		EnableDispatcher:              *instance.Spec.EnableDispatcher,
 		EnableFedemeter:               instance.Spec.EnableFedemeter,
 		EnableWeavescope:              instance.Spec.EnableWeavescope,
 		Version:                       instance.Spec.Version,
