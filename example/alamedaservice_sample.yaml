@@ -4,6 +4,8 @@ metadata:
   name: my-alamedaservice
   namespace: alameda
 spec:
+  keycode:
+    codeNumber: GRV7J-LA4TX-KPPIT-S6GRS-NK4EB-ILFRQ
   selfDriving: false             ## to enable resource self-orchestration of the deployed Alameda components
                                 ## it is recommended NOT to use ephemeral data storage for Alameda influxdb component when self-Driving is enabled
   enableExecution: true
