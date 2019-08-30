@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-datasources
-  namespace: { { .NameSpace } }
+  namespace: {{.NameSpace}}
 data:
   gettoken.sh: |-
     #!/usr/bin/env sh
