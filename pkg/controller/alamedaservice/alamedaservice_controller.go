@@ -188,6 +188,14 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("update Namespace's label failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
+	if err := r.createAlamedaNotificationChannels(instance, installResource); err != nil {
+		log.V(-1).Info("create AlamedaNotificationChannels failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 10 * time.Second}, nil
+	}
+	if err := r.createAlamedaNotificationTopics(instance, installResource); err != nil {
+		log.V(-1).Info("create AlamedaNotificationTopic failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 10 * time.Second}, nil
+	}
 	if err := r.syncPodSecurityPolicy(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync podSecurityPolicy failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -451,6 +459,40 @@ func (r *ReconcileAlamedaService) updateNamespaceLabel(namespace string) error {
 		return errors.Errorf("update Namespace failed: %s", err.Error())
 	}
 
+	return nil
+}
+
+func (r *ReconcileAlamedaService) createAlamedaNotificationChannels(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+	for _, file := range resource.AlamedaNotificationChannelList {
+		src, err := componentConfig.NewAlamedaNotificationChannel(file)
+		if err != nil {
+			return errors.Errorf("get AlamedaNotificationChannel failed: file: %s, error: %s", file, err.Error())
+		}
+		if err := controllerutil.SetControllerReference(instance, src, r.scheme); err != nil {
+			return errors.Errorf("Fail AlamedaNotificationChannel SetControllerReference: %s", err.Error())
+		}
+		err = r.client.Create(context.TODO(), src)
+		if err != nil && !k8sErrors.IsAlreadyExists(err) {
+			return errors.Errorf("create AlamedaNotificationChannel %s failed: %s", src.GetName(), err.Error())
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) createAlamedaNotificationTopics(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+	for _, file := range resource.AlamedaNotificationTopic {
+		src, err := componentConfig.NewAlamedaNotificationTopic(file)
+		if err != nil {
+			return errors.Errorf("get AlamedaNotificationTopic failed: file: %s, error: %s", file, err.Error())
+		}
+		if err := controllerutil.SetControllerReference(instance, src, r.scheme); err != nil {
+			return errors.Errorf("Fail AlamedaNotificationTopic SetControllerReference: %s", err.Error())
+		}
+		err = r.client.Create(context.TODO(), src)
+		if err != nil && !k8sErrors.IsAlreadyExists(err) {
+			return errors.Errorf("create AlamedaNotificationTopic %s failed: %s", src.GetName(), err.Error())
+		}
+	}
 	return nil
 }
 
@@ -750,7 +792,7 @@ func (r *ReconcileAlamedaService) createPersistentVolumeClaim(instance *federato
 func (r *ReconcileAlamedaService) createSecret(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	secret, err := componentConfig.NewAdmissionControllerSecret()
 	if err != nil {
-		return errors.Errorf("build secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+		return errors.Errorf("build AdmissionController secret failed: %s", err.Error())
 	}
 	if err := controllerutil.SetControllerReference(instance, secret, r.scheme); err != nil {
 		return errors.Errorf("set controller reference to secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
@@ -763,7 +805,7 @@ func (r *ReconcileAlamedaService) createSecret(instance *federatoraiv1alpha1.Ala
 	}
 	secret, err = componentConfig.NewInfluxDBSecret()
 	if err != nil {
-		return errors.Errorf("build secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+		return errors.Errorf("build InfluxDB secret failed: %s", err.Error())
 	}
 	if err := controllerutil.SetControllerReference(instance, secret, r.scheme); err != nil {
 		return errors.Errorf("set controller reference to secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
@@ -776,7 +818,7 @@ func (r *ReconcileAlamedaService) createSecret(instance *federatoraiv1alpha1.Ala
 	}
 	secret, err = componentConfig.NewfedemeterSecret()
 	if err != nil {
-		return errors.Errorf("build secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+		return errors.Errorf("build Fedemeter secret failed: %s", err.Error())
 	}
 	if err := controllerutil.SetControllerReference(instance, secret, r.scheme); err != nil {
 		return errors.Errorf("set controller reference to secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())

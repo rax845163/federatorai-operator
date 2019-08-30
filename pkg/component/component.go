@@ -9,13 +9,15 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ghodss/yaml"
+	"github.com/pkg/errors"
+
 	autoscaling_v1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/assets"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceread"
 	certmanagerv1alpha1 "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha1"
 	routev1 "github.com/openshift/api/route/v1"
 	securityv1 "github.com/openshift/api/security/v1"
-	"github.com/pkg/errors"
 
 	admissionregistration_v1beta1 "k8s.io/api/admissionregistration/v1beta1"
 	appsv1 "k8s.io/api/apps/v1"
@@ -24,6 +26,7 @@ import (
 	v1beta1 "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	apiextv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	unstructuredv1 "k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/client-go/util/cert"
 	apiregistrationv1beta1 "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1beta1"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
@@ -105,6 +108,41 @@ func (c ComponentConfig) NewPodSecurityPolicy(str string) *v1beta1.PodSecurityPo
 	psp := resourceread.ReadPodSecurityPolicyV1beta1(c.templateAssets(string(pspByte[:])))
 	return psp
 }
+
+func (c ComponentConfig) NewAlamedaNotificationChannel(str string) (*unstructuredv1.Unstructured, error) {
+	assetBytes, err := assets.Asset(str)
+	if err != nil {
+		return nil, errors.Errorf("get asset bytes failed: %s", err.Error())
+	}
+	assetBytes = c.templateAssets(string(assetBytes[:]))
+	assetJSONBytes, err := yaml.YAMLToJSON(assetBytes)
+	if err != nil {
+		return nil, errors.Errorf("get asset JSON bytes failed: %s", err.Error())
+	}
+	obj, err := resourceread.ReadJSONBytes(assetJSONBytes)
+	if err != nil {
+		return nil, errors.Errorf("get AlamedaNotificationChannel failed: %s", err.Error())
+	}
+	return obj, nil
+}
+
+func (c ComponentConfig) NewAlamedaNotificationTopic(str string) (*unstructuredv1.Unstructured, error) {
+	assetBytes, err := assets.Asset(str)
+	if err != nil {
+		return nil, errors.Errorf("get asset bytes failed: %s", err.Error())
+	}
+	assetBytes = c.templateAssets(string(assetBytes[:]))
+	assetJSONBytes, err := yaml.YAMLToJSON(assetBytes)
+	if err != nil {
+		return nil, errors.Errorf("get asset JSON bytes failed: %s", err.Error())
+	}
+	obj, err := resourceread.ReadJSONBytes(assetJSONBytes)
+	if err != nil {
+		return nil, errors.Errorf("get AlamedaNotificationTopic failed: %s", err.Error())
+	}
+	return obj, nil
+}
+
 func (c ComponentConfig) NewSecurityContextConstraints(str string) *securityv1.SecurityContextConstraints {
 	sccByte, err := assets.Asset(str)
 	if err != nil {

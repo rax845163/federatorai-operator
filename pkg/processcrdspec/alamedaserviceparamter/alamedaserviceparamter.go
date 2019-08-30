@@ -136,6 +136,8 @@ var (
 		"Service/alameda-notifier-webhook-service.yaml",
 		"ServiceAccount/alameda-notifier.yaml",
 		"ValidatingWebhookConfiguration/alameda-notifier-validating-webhook-configuration.yaml",
+		"AlamedaNotificationChannel/sample.yaml",
+		"AlamedaNotificationTopic/sample.yaml",
 	}
 
 	certManagerList = []string{
@@ -625,6 +627,8 @@ type Resource struct {
 	MutatingWebhookConfigurationList   []string
 	ValidatingWebhookConfigurationList []string
 	APIServiceList                     []string
+	AlamedaNotificationChannelList     []string
+	AlamedaNotificationTopic           []string
 }
 
 func (r *Resource) add(in Resource) {
@@ -651,6 +655,8 @@ func (r *Resource) add(in Resource) {
 	r.MutatingWebhookConfigurationList = append(r.MutatingWebhookConfigurationList, in.MutatingWebhookConfigurationList...)
 	r.ValidatingWebhookConfigurationList = append(r.ValidatingWebhookConfigurationList, in.ValidatingWebhookConfigurationList...)
 	r.APIServiceList = append(r.APIServiceList, in.APIServiceList...)
+	r.AlamedaNotificationChannelList = append(r.AlamedaNotificationChannelList, in.AlamedaNotificationChannelList...)
+	r.AlamedaNotificationTopic = append(r.AlamedaNotificationTopic, in.AlamedaNotificationTopic...)
 }
 
 func (r *Resource) delete(in Resource) {
@@ -677,6 +683,8 @@ func (r *Resource) delete(in Resource) {
 	r.MutatingWebhookConfigurationList = util.StringSliceDelete(r.MutatingWebhookConfigurationList, in.MutatingWebhookConfigurationList)
 	r.ValidatingWebhookConfigurationList = util.StringSliceDelete(r.ValidatingWebhookConfigurationList, in.ValidatingWebhookConfigurationList)
 	r.APIServiceList = util.StringSliceDelete(r.APIServiceList, in.APIServiceList)
+	r.AlamedaNotificationChannelList = util.StringSliceDelete(r.AlamedaNotificationChannelList, in.AlamedaNotificationChannelList)
+	r.AlamedaNotificationTopic = util.StringSliceDelete(r.AlamedaNotificationTopic, in.AlamedaNotificationTopic)
 }
 
 func getResourceFromList(resourceList []string) (Resource, error) {
@@ -704,6 +712,8 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 	var mutatingWebhookConfigurationList = make([]string, 0)
 	var validatingWebhookConfigurationList = make([]string, 0)
 	var apiServiceList = make([]string, 0)
+	var alamedaNotificationChannelList = make([]string, 0)
+	var alamedaNotificationTopicList = make([]string, 0)
 
 	for _, assetFile := range resourceList {
 		if len(strings.Split(assetFile, "/")) > 0 {
@@ -754,6 +764,10 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 				validatingWebhookConfigurationList = append(validatingWebhookConfigurationList, assetFile)
 			case "APIService":
 				apiServiceList = append(apiServiceList, assetFile)
+			case "AlamedaNotificationChannel":
+				alamedaNotificationChannelList = append(alamedaNotificationChannelList, assetFile)
+			case "AlamedaNotificationTopic":
+				alamedaNotificationTopicList = append(alamedaNotificationTopicList, assetFile)
 			default:
 				return Resource{}, errors.Errorf("unknown kind \"%s\"", kind)
 			}
@@ -786,6 +800,8 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 		MutatingWebhookConfigurationList:   mutatingWebhookConfigurationList,
 		ValidatingWebhookConfigurationList: validatingWebhookConfigurationList,
 		APIServiceList:                     apiServiceList,
+		AlamedaNotificationChannelList:     alamedaNotificationChannelList,
+		AlamedaNotificationTopic:           alamedaNotificationTopicList,
 	}, nil
 
 }
