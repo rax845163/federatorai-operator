@@ -8,6 +8,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 
 	autoscaling_v1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	fedOperator "github.com/containers-ai/federatorai-operator"
@@ -32,8 +33,10 @@ import (
 	"github.com/spf13/viper"
 	apiregistrationv1beta1 "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1beta1"
 
+	apiextensionv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	"k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	k8sapierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/util/wait"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	rest "k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
@@ -60,6 +63,8 @@ var (
 	log = logf.Log.WithName("manager")
 
 	watchNamespace = ""
+
+	registerdAPIResources = make(map[string]bool)
 )
 
 func init() {
@@ -175,6 +180,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err := waitCRDReady(cfg); err != nil {
+		log.Error(err, "")
+		os.Exit(1)
+	}
+
 	//var day time.Duration = 1*24 * time.Hour
 	// Create a new Cmd to provide shared dependencies and start components
 	mgr, err := manager.New(cfg, manager.Options{
@@ -262,6 +272,7 @@ func setupCustomeResourceDefinitions(clientConfig *rest.Config) error {
 		}
 
 		crd := resourceread.ReadCustomResourceDefinitionV1Beta1(assetBytes)
+		addCRDToRegisterdAPIResources(crd)
 		_, err = apiExtensionsClientset.Apiextensions().CustomResourceDefinitions().Create(crd)
 		if err != nil && k8sapierrors.IsAlreadyExists(err) {
 			log.V(-1).Info("CustomResourceDefinition is existing in cluster, will not create or update it.", "CustomResourceDefinition name", crd.Name)
@@ -270,5 +281,69 @@ func setupCustomeResourceDefinitions(clientConfig *rest.Config) error {
 			return errors.Errorf("create CustomResourceDefinition (%s) failed: %s", crd.Name, err.Error())
 		}
 	}
+	return nil
+}
+
+func addCRDToRegisterdAPIResources(crd *apiextensionv1beta1.CustomResourceDefinition) {
+
+	group := crd.Spec.Group
+	kind := crd.Spec.Names.Kind
+
+	if crd.Spec.Version != "" {
+		version := crd.Spec.Version
+		groupVersionKind := fmt.Sprintf("%s/%s/%s", group, version, kind)
+		addAPIResource(groupVersionKind, registerdAPIResources)
+	}
+
+	for _, crdVersion := range crd.Spec.Versions {
+		version := crdVersion.Name
+		groupVersionKind := fmt.Sprintf("%s/%s/%s", group, version, kind)
+		addAPIResource(groupVersionKind, registerdAPIResources)
+	}
+}
+
+func addAPIResource(groupVersionKind string, gvkMap map[string]bool) {
+	gvkMap[groupVersionKind] = true
+}
+
+func deleteAPIResource(groupVersionKind string, gvkMap map[string]bool) {
+	delete(gvkMap, groupVersionKind)
+}
+
+func waitCRDReady(clientConfig *rest.Config) error {
+
+	waitInterval := 500 * time.Millisecond
+	if err := wait.Poll(waitInterval, 30*time.Second, func() (bool, error) {
+		apiExtensionsClientset, err := clientset.NewForConfig(clientConfig)
+		if err != nil {
+			log.V(-1).Info("Create k8s clientset failed, will retry", "msg", err.Error())
+			return false, nil
+		}
+
+		apiList, err := apiExtensionsClientset.DiscoveryClient.ServerResources()
+		if err != nil {
+			log.V(-1).Info("Get k8s ServerResources failed, will retry", "msg", err.Error())
+			return false, nil
+		}
+
+		for _, apiResourceList := range apiList {
+			for _, apiResource := range apiResourceList.APIResources {
+				groupVersion := apiResourceList.GroupVersion // fmt.Sprintf("%s/%s",group,version)
+				kind := apiResource.Kind
+				groupVersionKind := fmt.Sprintf("%s/%s", groupVersion, kind)
+				deleteAPIResource(groupVersionKind, registerdAPIResources)
+			}
+		}
+
+		ok := len(registerdAPIResources) == 0
+		if !ok {
+			log.V(-1).Info("Server does not have required apiResources, will retry fetching")
+		}
+		return ok, nil
+
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }
