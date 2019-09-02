@@ -5,7 +5,7 @@ metadata:
   namespace: "{{.NameSpace}}"
   labels:
     app: alameda
-    component: alameda-cainjector
+    component: cert-managet-cainjector
 spec:
   replicas: 1
   selector:

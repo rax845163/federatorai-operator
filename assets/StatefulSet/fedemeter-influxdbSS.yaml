@@ -3,6 +3,9 @@ kind: StatefulSet
 metadata:
   name: fedemeter-influxdb
   namespace: {{.NameSpace}}
+  labels:
+    app: alameda
+    component: fedemeter-influxdb
 spec:
   serviceName: fedemeter-influxdb
   selector:

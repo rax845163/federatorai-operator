@@ -4,8 +4,9 @@ kind: DaemonSet
 metadata:
   name: alameda-weave-scope-agent
   labels:
+    app: alameda
+    component: alameda-weave-scope-agent
     name: alameda-weave-scope-agent
-    app: alameda-weave-scope
     alameda-weave-cloud-component: scope
     alameda-weave-scope-component: agent
   namespace: {{.NameSpace}}

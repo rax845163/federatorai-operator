@@ -4,7 +4,8 @@ metadata:
   namespace: {{.NameSpace}}
   name: alameda-rabbitmq
   labels:
-    app: rabbitmq
+    app: alameda
+    component: alameda-rabbitmq 
 spec:
   replicas: 1
   selector:

@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: fedemeter-api
   namespace: {{.NameSpace}}
+  labels:
+    app: alameda
+    component: fedemeter-api
 spec:
   selector:
     matchLabels:

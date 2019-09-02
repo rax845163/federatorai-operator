@@ -136,8 +136,8 @@ var (
 		"Service/alameda-notifier-webhook-service.yaml",
 		"ServiceAccount/alameda-notifier.yaml",
 		"ValidatingWebhookConfiguration/alameda-notifier-validating-webhook-configuration.yaml",
-		"AlamedaNotificationChannel/sample.yaml",
-		"AlamedaNotificationTopic/sample.yaml",
+		"AlamedaNotificationChannel/default.yaml",
+		"AlamedaNotificationTopic/default.yaml",
 	}
 
 	certManagerList = []string{

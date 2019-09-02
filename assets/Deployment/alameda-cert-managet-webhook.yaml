@@ -5,7 +5,7 @@ metadata:
   namespace: "{{.NameSpace}}"
   labels:
     app: alameda
-    component: alameda-cert-managet-webhook
+    component: cert-managet-webhook
 spec:
   replicas: 1
   selector:

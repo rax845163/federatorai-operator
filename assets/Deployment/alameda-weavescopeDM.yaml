@@ -4,8 +4,9 @@ kind: Deployment
 metadata:
   name: alameda-weave-scope-app
   labels:
+    app: alameda
+    component: alameda-weave-scope-app
     name: alameda-weave-scope-app
-    app: alameda-weave-scope
     alameda-weave-cloud-component: scope
     alameda-weave-scope-component: app
   namespace: {{.NameSpace}}

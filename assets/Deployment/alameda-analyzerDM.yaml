@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: alameda-analyzer
   namespace: {{.NameSpace}}
+  labels:
+    app: alameda
+    component: alameda-analyzer
 spec:
   selector:
     matchLabels:

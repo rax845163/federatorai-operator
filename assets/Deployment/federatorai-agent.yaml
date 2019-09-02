@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: federatorai-agent
   namespace: {{.NameSpace}}
+  labels:
+    app: alameda
+    component: federatorai-agent
 spec:
   selector:
     matchLabels:

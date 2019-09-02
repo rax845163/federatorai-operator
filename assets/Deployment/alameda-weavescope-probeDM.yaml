@@ -4,8 +4,9 @@ kind: Deployment
 metadata:
   name: alameda-weave-scope-cluster-agent
   labels:
+    app: alameda
+    component: alameda-weave-scope-cluster-agent
     name: alameda-weave-scope-cluster-agent
-    app: alameda-weave-scope
     alameda-weave-cloud-component: scope
     alameda-weave-scope-component: cluster-agent
   namespace: {{.NameSpace}}

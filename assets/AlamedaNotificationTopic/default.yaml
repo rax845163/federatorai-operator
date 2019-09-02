@@ -1,11 +1,11 @@
 apiVersion: notifying.containers.ai/v1alpha1
 kind: AlamedaNotificationTopic
 metadata:
-  name: sample
+  name: default
 spec:
   channel:
     emails:
-      - name: sample
+      - name: default
         to:
           - "" # to@example.com
         cc:

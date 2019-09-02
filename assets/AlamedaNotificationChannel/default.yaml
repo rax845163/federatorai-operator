@@ -4,7 +4,7 @@ metadata:
   annotations:
     notifying.containers.ai/test-channel: "" # start
     notifying.containers.ai/test-channel-to: "" # to@example.com
-  name: sample
+  name: default
 spec:
   type: email
   email:
