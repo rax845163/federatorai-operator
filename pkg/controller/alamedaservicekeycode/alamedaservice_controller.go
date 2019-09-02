@@ -17,6 +17,7 @@ import (
 	"github.com/pkg/errors"
 	k8sErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -27,10 +28,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
+const (
+	retryLimitDuration time.Duration = 30 * time.Minute
+)
+
 var (
 	_               reconcile.Reconciler = &ReconcileAlamedaServiceKeycode{}
 	log                                  = logf.Log.WithName("controller_alamedaservicekeycode")
-	requeueDuration                      = 1 * time.Second
+	requeueDuration                      = 30 * time.Second
 	finalizerList                        = []string{"keycode.alamedaservices.federatorai.containers.ai"}
 )
 
@@ -48,6 +53,9 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 
 		datahubClientMap:     make(map[string]client_datahub.Client),
 		datahubClientMapLock: sync.Mutex{},
+
+		firstRetryTimeCache: make(map[types.NamespacedName]*time.Time),
+		firstRetryTimeLock:  sync.Mutex{},
 	}
 }
 
@@ -75,6 +83,9 @@ type ReconcileAlamedaServiceKeycode struct {
 
 	datahubClientMap     map[string]client_datahub.Client
 	datahubClientMapLock sync.Mutex
+
+	firstRetryTimeCache map[types.NamespacedName]*time.Time
+	firstRetryTimeLock  sync.Mutex
 }
 
 // Reconcile reconcile AlamedaService's keycode
@@ -85,6 +96,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	var reconcileResult = reconcile.Result{}
 	var keycodeSpec = federatoraiv1alpha1.KeycodeSpec{}
 	var keycodeStatus = federatoraiv1alpha1.KeycodeStatus{}
+	defer r.handleFirstRetryTime(&reconcileResult, request.NamespacedName)
 	defer func() {
 
 		instance := &federatoraiv1alpha1.AlamedaService{}
@@ -137,6 +149,15 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	}
 	keycodeSpec = alamedaService.Spec.Keycode
 	keycodeStatus = alamedaService.Status.KeycodeStatus
+
+	if firstRetryTime := r.getFirstRetryTime(request.NamespacedName); firstRetryTime != nil {
+		now := time.Now()
+		if now.Sub(*firstRetryTime) > retryLimitDuration {
+			log.Error(nil, "Exceeds retry limit, stop reconciing.", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name)
+			reconcileResult.Requeue = false
+			return reconcileResult, nil
+		}
+	}
 
 	// Get keycodeRepository
 	keycodeRepository, err := r.getKeycodeRepository(alamedaService.Namespace)
@@ -280,6 +301,17 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	}
 }
 
+// handleFirstRetryTime set/resets first retry time when requeue is true/false
+func (r *ReconcileAlamedaServiceKeycode) handleFirstRetryTime(reconcileResult *reconcile.Result, namespacedName types.NamespacedName) {
+
+	if reconcileResult.Requeue == true {
+		t := time.Now()
+		r.setFirstRetryTimeIfNotExist(namespacedName, &t)
+	} else {
+		r.setFirstRetryTime(namespacedName, nil)
+	}
+}
+
 func (r *ReconcileAlamedaServiceKeycode) setupFinalizers(alamedaService *federatoraiv1alpha1.AlamedaService) error {
 
 	needToAppend := false
@@ -315,6 +347,8 @@ func (r *ReconcileAlamedaServiceKeycode) deleteAlamedaServiceDependencies(keycod
 	if err := r.client.Update(context.Background(), alamedaService); err != nil {
 		return errors.Errorf("remove finalizers from AlamedaService failed: %s", err.Error())
 	}
+
+	r.deleteFirstRetryTime(types.NamespacedName{Namespace: alamedaService.Namespace, Name: alamedaService.Name})
 
 	return nil
 }
@@ -440,6 +474,33 @@ func (r *ReconcileAlamedaServiceKeycode) getDatahubAddressByNamespace(namespace 
 		return "", err
 	}
 	return datahubAddress, nil
+}
+
+func (r *ReconcileAlamedaServiceKeycode) setFirstRetryTimeIfNotExist(namespacedName types.NamespacedName, t *time.Time) {
+	if r.getFirstRetryTime(namespacedName) == nil {
+		r.setFirstRetryTime(namespacedName, t)
+	}
+}
+
+func (r *ReconcileAlamedaServiceKeycode) setFirstRetryTime(namespacedName types.NamespacedName, t *time.Time) {
+
+	r.firstRetryTimeLock.Lock()
+	defer r.firstRetryTimeLock.Unlock()
+	r.firstRetryTimeCache[namespacedName] = t
+}
+
+func (r *ReconcileAlamedaServiceKeycode) getFirstRetryTime(namespacedName types.NamespacedName) *time.Time {
+
+	r.firstRetryTimeLock.Lock()
+	defer r.firstRetryTimeLock.Unlock()
+	return r.firstRetryTimeCache[namespacedName]
+}
+
+func (r *ReconcileAlamedaServiceKeycode) deleteFirstRetryTime(namespacedName types.NamespacedName) {
+
+	r.firstRetryTimeLock.Lock()
+	defer r.firstRetryTimeLock.Unlock()
+	delete(r.firstRetryTimeCache, namespacedName)
 }
 
 func appendFinalizers(alamedaService *federatoraiv1alpha1.AlamedaService, finalizers []string) {
