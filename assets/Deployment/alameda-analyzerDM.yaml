@@ -43,6 +43,16 @@ spec:
             value: "alameda-datahub.{{.NameSpace}}.svc"
           - name: FEDERATORAI_ANALYSIS_DATAHUB_PORT
             value: "50050"
+          - name: FEDERATORAI_ANALYSIS_OUTLIER_SETTING_DBSCAN_EPS
+            value: "0.3"
+          - name: FEDERATORAI_ANALYSIS_OUTLIER_SETTING_DBSCAN_MINPTS
+            value: "5"
+          - name: FEDERATORAI_ANALYSIS_OUTLIER_SETTING_DETECT_LEVEL
+            value: "5"
+          - name: FEDERATORAI_ANALYSIS_OUTLIER_SETTING_DETECT_DELAY
+            value: "30"
+          - name: FEDERATORAI_ANALYSIS_OUTLIER_SETTING_OBSERVED_SIZE
+            value: "120"
           - name: FEDERATORAI_ANALYSIS_OUTLIER_DETECT
             value: "true"
       volumes:
