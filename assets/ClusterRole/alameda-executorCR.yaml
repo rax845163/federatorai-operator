@@ -16,6 +16,15 @@ rules:
   - update
   - patch
 - apiGroups:
+  - apps
+  resources:
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - update
+  - patch
+- apiGroups:
   - apps.openshift.io
   resources:
   - deploymentconfigs
