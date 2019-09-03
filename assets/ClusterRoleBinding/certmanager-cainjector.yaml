@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{.NameSpace}}-certmanager-cainjector 
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{.NameSpace}}-certmanager-cainjector
+subjects:
+  - name: certmanager-cainjector
+    namespace: "{{.NameSpace}}"
+    kind: ServiceAccount
