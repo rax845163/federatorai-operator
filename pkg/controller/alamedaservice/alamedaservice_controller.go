@@ -190,14 +190,6 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("update Namespace's label failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-	if err := r.createAlamedaNotificationChannels(instance, installResource); err != nil {
-		log.V(-1).Info("create AlamedaNotificationChannels failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: 10 * time.Second}, nil
-	}
-	if err := r.createAlamedaNotificationTopics(instance, installResource); err != nil {
-		log.V(-1).Info("create AlamedaNotificationTopic failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: 10 * time.Second}, nil
-	}
 	if err := r.syncPodSecurityPolicy(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync podSecurityPolicy failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -223,14 +215,6 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	if err := r.syncRoleBinding(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync RoleBinding failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
-	}
-	if err := r.syncIssuer(instance, asp, installResource); err != nil {
-		log.V(-1).Info("sync Issuer failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
-	}
-	if err := r.syncCertificate(instance, asp, installResource); err != nil {
-		log.V(-1).Info("sync Certificate failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 	if err := r.createSecret(instance, asp, installResource); err != nil {
@@ -279,6 +263,22 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	if err := r.syncDaemonSet(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync DaemonSet failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+	if err := r.syncIssuer(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync Issuer failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+	if err := r.syncCertificate(instance, asp, installResource); err != nil {
+		log.V(-1).Info("sync Certificate failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+	}
+	if err := r.createAlamedaNotificationChannels(instance, installResource); err != nil {
+		log.V(-1).Info("create AlamedaNotificationChannels failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 10 * time.Second}, nil
+	}
+	if err := r.createAlamedaNotificationTopics(instance, installResource); err != nil {
+		log.V(-1).Info("create AlamedaNotificationTopic failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 10 * time.Second}, nil
 	}
 	// if EnableExecution Or EnableGUI has been changed to false
 	//Uninstall Execution Component
