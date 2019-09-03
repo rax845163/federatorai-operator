@@ -106,7 +106,10 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 			if err != nil {
 				log.V(-1).Info("Get datahub address failed, skip deleting datahub client", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "error", err.Error())
 			}
-			r.deleteDatahubClient(addr)
+			err = r.deleteDatahubClient(addr)
+			if err != nil {
+				log.V(-1).Info("Deleting datahub client failed", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "error", err.Error())
+			}
 			return
 		} else if err != nil {
 			log.V(-1).Info("Get AlamedaService failed, skip writing status", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "error", err.Error())
@@ -365,13 +368,18 @@ func (r *ReconcileAlamedaServiceKeycode) deleteKeycode(keycodeRepository reposit
 	return nil
 }
 
-func (r *ReconcileAlamedaServiceKeycode) deleteDatahubClient(datahubAddr string) {
+func (r *ReconcileAlamedaServiceKeycode) deleteDatahubClient(datahubAddr string) error {
 
-	if _, exist := r.datahubClientMap[datahubAddr]; exist {
+	if client, exist := r.datahubClientMap[datahubAddr]; exist {
 		r.datahubClientMapLock.Lock()
+		defer r.datahubClientMapLock.Unlock()
+		if err := client.Close(); err != nil {
+			return err
+		}
 		delete(r.datahubClientMap, datahubAddr)
-		r.datahubClientMapLock.Unlock()
 	}
+
+	return nil
 }
 
 func (r *ReconcileAlamedaServiceKeycode) needToReconcile(alamedaService *federatoraiv1alpha1.AlamedaService) bool {

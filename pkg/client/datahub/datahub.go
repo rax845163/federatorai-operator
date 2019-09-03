@@ -35,6 +35,11 @@ func (d *Client) Ping() error {
 	return nil
 }
 
+// Close closes grpc connection
+func (d *Client) Close() error {
+	return d.conn.Close()
+}
+
 // AddKeycode adds keycode to Alameda-Datahub
 func (d *Client) AddKeycode(keycode string) error {
 	ctx := context.TODO()
