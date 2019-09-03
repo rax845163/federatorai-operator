@@ -10,7 +10,7 @@ webhooks:
     caBundle: Cg==
     service:
       name: alameda-notifier-webhook-service
-      namespace: alameda      
+      namespace: {{.NameSpace}}      
       path: /validate-notifying-containers-ai-v1alpha1-alamedanotificationchannel
   failurePolicy: Fail
   name: valamedanotificationchannel.containers.ai
@@ -28,7 +28,7 @@ webhooks:
     caBundle: Cg==
     service:
       name: alameda-notifier-webhook-service
-      namespace: alameda      
+      namespace: {{.NameSpace}}      
       path: /validate-notifying-containers-ai-v1alpha1-alamedanotificationtopic
   failurePolicy: Fail
   name: valamedanotificationtopic.containers.ai
