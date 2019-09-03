@@ -2,20 +2,25 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   namespace: {{.NameSpace}}
-  name: fedemeter-api
+  name: fedemeter-swagger
   annotations:
     ingress.kubernetes.io/cors-enable: "true"
     ingress.kubernetes.io/cors-allow-origin: "*"
     ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS"
     ingress.kubernetes.io/cors-allow-credentials: "true"
 spec:
-  tls:
-    - secretName: fedemeter-api
   rules:
-  - host:
-    http:
+  - http:
       paths:
       - path: /fedemeter-api/v1/
+        backend:
+          serviceName: fedemeter-api
+          servicePort: 8888
+      - path: /swagger
+        backend:
+          serviceName: fedemeter-api
+          servicePort: 8888
+      - path: /static
         backend:
           serviceName: fedemeter-api
           servicePort: 8888

@@ -21,7 +21,7 @@ spec:
           imagePullPolicy: Always
           ports:
           - name: gui-fedemeter
-            containerPort: 8999
+            containerPort: 8888
           tty:  true
           envFrom:
             - configMapRef:

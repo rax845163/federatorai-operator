@@ -108,6 +108,7 @@ var (
 		"Service/fedemeter-influxdbSV.yaml",
 		"StatefulSet/fedemeter-influxdbSS.yaml",
 		"Ingress/fedemeterIG.yaml",
+		"Ingress/fedemeterSwaggerIG.yaml",
 		"Secret/fedemeter-tls.yaml",
 	}
 
