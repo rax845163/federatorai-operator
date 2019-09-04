@@ -31,6 +31,10 @@ spec:
           command:
           - federatorai-operator
           env:
+            - name: NAMESPACE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
 #            - name: FEDERATORAI_OPERATOR_WATCH_NAMESPACE
 #              valueFrom:
 #                fieldRef:
@@ -42,5 +46,7 @@ spec:
             - name: OPERATOR_NAME
               value: "federatorai-operator"
             - name: DISABLE_OPERAND_RESOURCE_PROTECTION
+              value: "true"
+            - name: FEDERATORAI_OPERATOR_REQUIREMENTS_CERTMANAGER
               value: "true"
 

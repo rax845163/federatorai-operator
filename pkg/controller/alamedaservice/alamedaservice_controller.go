@@ -186,10 +186,6 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	if err = r.syncCustomResourceDefinition(instance, asp, installResource); err != nil {
 		log.Error(err, "create crd failed")
 	}
-	if err := r.updateNamespaceLabel(instance.Namespace); err != nil {
-		log.V(-1).Info("update Namespace's label failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
-	}
 	if err := r.syncPodSecurityPolicy(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync podSecurityPolicy failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
@@ -442,32 +438,6 @@ func (r *ReconcileAlamedaService) syncClusterRoleBinding(instance *federatoraiv1
 			}
 		}
 	}
-	return nil
-}
-
-func (r *ReconcileAlamedaService) updateNamespaceLabel(namespace string) error {
-
-	labelsForCertManager := map[string]string{
-		"certmanager.k8s.io/disable-validation": "true",
-	}
-
-	ctx := context.TODO()
-	instance := corev1.Namespace{}
-	if err := r.client.Get(ctx, types.NamespacedName{Name: namespace}, &instance); err != nil {
-		return errors.Errorf("get Namesapce failed: %s", err.Error())
-	}
-
-	newInstance := *instance.DeepCopy()
-	if newInstance.Labels == nil {
-		newInstance.Labels = make(map[string]string)
-	}
-	for k, v := range labelsForCertManager {
-		newInstance.Labels[k] = v
-	}
-	if err := r.client.Update(ctx, &newInstance); err != nil {
-		return errors.Errorf("update Namespace failed: %s", err.Error())
-	}
-
 	return nil
 }
 

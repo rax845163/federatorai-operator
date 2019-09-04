@@ -63,6 +63,23 @@ func (c ComponentConfig) templateAssets(data string) []byte {
 	return yamlBuffer.Bytes()
 }
 
+func (c ComponentConfig) NewUnstructed(str string) (*unstructuredv1.Unstructured, error) {
+	assetBytes, err := assets.Asset(str)
+	if err != nil {
+		return nil, errors.Errorf("get asset bytes failed: %s", err.Error())
+	}
+	assetBytes = c.templateAssets(string(assetBytes[:]))
+	assetJSONBytes, err := yaml.YAMLToJSON(assetBytes)
+	if err != nil {
+		return nil, errors.Errorf("get asset JSON bytes failed: %s", err.Error())
+	}
+	obj, err := resourceread.ReadJSONBytes(assetJSONBytes)
+	if err != nil {
+		return nil, errors.Errorf("get Unstructed failed: %s", err.Error())
+	}
+	return obj, nil
+}
+
 func (c ComponentConfig) NewClusterRoleBinding(str string) *rbacv1.ClusterRoleBinding {
 	crbByte, err := assets.Asset(str)
 	if err != nil {

@@ -5,19 +5,33 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/protocol/grpc"
 )
 
+// RequirementsConfig encapsultes the truth of requirements resources
+type RequirementsConfig struct {
+	CertManager bool `mapstructure:"certManager"`
+}
+
+// NewDefaultRequirementsConfig creates default configuration
+func NewDefaultRequirementsConfig() RequirementsConfig {
+	return RequirementsConfig{
+		CertManager: true,
+	}
+}
+
 // Config encapsultes configuration of federatorai operator
 type Config struct {
-	Metrics MetricsConfig `mapstructure:"metrics"`
-	Log     log.Config    `mapstructure:"log"`
-	GRPC    grpc.Config   `mapstructure:"grpc"`
+	Requirements RequirementsConfig `mapstructure:"requirements"`
+	Metrics      MetricsConfig      `mapstructure:"metrics"`
+	Log          log.Config         `mapstructure:"log"`
+	GRPC         grpc.Config        `mapstructure:"grpc"`
 }
 
 // NewDefaultConfig creates operator default configuration
 func NewDefaultConfig() Config {
 	return Config{
-		Metrics: NewDefaultMetricsConfig(),
-		Log:     log.NewDefaultConfig(),
-		GRPC:    grpc.NewDefaultConfig(),
+		Requirements: NewDefaultRequirementsConfig(),
+		Metrics:      NewDefaultMetricsConfig(),
+		Log:          log.NewDefaultConfig(),
+		GRPC:         grpc.NewDefaultConfig(),
 	}
 }
 
