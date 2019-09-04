@@ -36,7 +36,6 @@ var (
 	_               reconcile.Reconciler = &ReconcileAlamedaServiceKeycode{}
 	log                                  = logf.Log.WithName("controller_alamedaservicekeycode")
 	requeueDuration                      = 30 * time.Second
-	finalizerList                        = []string{"keycode.alamedaservices.federatorai.containers.ai"}
 )
 
 // Add creates a new AlamedaService Controller and adds it to the Manager. The Manager will set fields on the Controller
@@ -142,7 +141,11 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	err := r.client.Get(context.TODO(), request.NamespacedName, alamedaService)
 	if err != nil {
 		if k8sErrors.IsNotFound(err) {
+			if err := r.deleteAlamedaServiceDependencies(alamedaService); err != nil {
+				log.V(-1).Info("Handle AlamedaService deletion failed", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
+			}
 			log.Info("AlamedaService not found, skip keycode reconciling", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name)
+			reconcileResult.Requeue = false
 			return reconcileResult, nil
 		}
 		// Error reading the object - requeue the request.
@@ -167,22 +170,6 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	if err != nil {
 		log.V(-1).Info("Get licese repository failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 		keycodeStatus.LastErrorMessage = errors.Wrap(err, "get keycode repository instance failed").Error()
-		reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
-		return reconcileResult, nil
-	}
-
-	// Handle deletion of AlamedaService
-	if alamedaService.DeletionTimestamp != nil {
-		if err := r.deleteAlamedaServiceDependencies(keycodeRepository, alamedaService); err != nil {
-			log.V(-1).Info("handle AlamedaService deletion failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
-			keycodeStatus.LastErrorMessage = errors.Wrap(err, "handle AlamedaService deletion failed").Error()
-			reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
-			return reconcileResult, nil
-		}
-		return reconcile.Result{Requeue: false}, nil
-	}
-	if err := r.setupFinalizers(alamedaService); err != nil {
-		log.V(-1).Info("setup finalizers to AlamedaService failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
 		reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
 		return reconcileResult, nil
 	}
@@ -315,41 +302,13 @@ func (r *ReconcileAlamedaServiceKeycode) handleFirstRetryTime(reconcileResult *r
 	}
 }
 
-func (r *ReconcileAlamedaServiceKeycode) setupFinalizers(alamedaService *federatoraiv1alpha1.AlamedaService) error {
+func (r *ReconcileAlamedaServiceKeycode) deleteAlamedaServiceDependencies(alamedaService *federatoraiv1alpha1.AlamedaService) error {
 
-	needToAppend := false
-	for _, finalizer := range finalizerList {
-		if !util.StringInSlice(finalizer, alamedaService.Finalizers) {
-			needToAppend = true
-			break
-		}
-	}
-	if needToAppend {
-		appendFinalizers(alamedaService, finalizerList)
-		if err := r.client.Update(context.Background(), alamedaService); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (r *ReconcileAlamedaServiceKeycode) deleteAlamedaServiceDependencies(keycodeRepository repository_keycode.Interface, alamedaService *federatoraiv1alpha1.AlamedaService) error {
-
-	if err := r.deleteKeycode(keycodeRepository, alamedaService); err != nil {
-		return errors.Wrap(err, "delete keycode failed")
-	}
 	datahubAddress, err := r.getDatahubAddressByNamespace(alamedaService.Namespace)
 	if err != nil {
 		return errors.Wrap(err, "get datahub address failed")
 	}
 	r.deleteDatahubClient(datahubAddress)
-
-	// Remove finalizers from AlamedaService
-	deleteFinalizers(alamedaService, finalizerList)
-	if err := r.client.Update(context.Background(), alamedaService); err != nil {
-		return errors.Errorf("remove finalizers from AlamedaService failed: %s", err.Error())
-	}
 
 	r.deleteFirstRetryTime(types.NamespacedName{Namespace: alamedaService.Namespace, Name: alamedaService.Name})
 
@@ -509,32 +468,4 @@ func (r *ReconcileAlamedaServiceKeycode) deleteFirstRetryTime(namespacedName typ
 	r.firstRetryTimeLock.Lock()
 	defer r.firstRetryTimeLock.Unlock()
 	delete(r.firstRetryTimeCache, namespacedName)
-}
-
-func appendFinalizers(alamedaService *federatoraiv1alpha1.AlamedaService, finalizers []string) {
-
-	existFinalizers := alamedaService.GetFinalizers()
-
-	appendList := make([]string, 0)
-	for _, finalizer := range finalizers {
-		if !util.StringInSlice(finalizer, existFinalizers) {
-			appendList = append(appendList, finalizer)
-		}
-	}
-
-	alamedaService.Finalizers = append(alamedaService.Finalizers, appendList...)
-}
-
-func deleteFinalizers(alamedaService *federatoraiv1alpha1.AlamedaService, finalizers []string) {
-
-	existFinalizers := alamedaService.GetFinalizers()
-
-	preservedList := make([]string, 0)
-	for _, existFinalizer := range existFinalizers {
-		if !util.StringInSlice(existFinalizer, finalizers) {
-			preservedList = append(preservedList, existFinalizer)
-		}
-	}
-
-	alamedaService.Finalizers = preservedList
 }
