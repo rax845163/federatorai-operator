@@ -14,7 +14,6 @@ import (
 	fedOperator "github.com/containers-ai/federatorai-operator"
 	"github.com/containers-ai/federatorai-operator/pkg/apis"
 	assetsBin "github.com/containers-ai/federatorai-operator/pkg/assets"
-	"github.com/containers-ai/federatorai-operator/pkg/component"
 	"github.com/containers-ai/federatorai-operator/pkg/controller"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceread"
 	fedOperatorLog "github.com/containers-ai/federatorai-operator/pkg/log"
@@ -32,7 +31,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	corev1 "k8s.io/api/core/v1"
 	apiregistrationv1beta1 "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1beta1"
 
 	apiextensionv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
@@ -41,7 +39,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	rest "k8s.io/client-go/rest"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
@@ -256,14 +253,6 @@ func main() {
 
 func setupRequirements(clientConfig *rest.Config) error {
 
-	if fedOperatorConfig.Requirements.CertManager {
-		log.Info("Creating CertManger...")
-		if err := createCertManager(clientConfig); err != nil {
-			return errors.Wrap(err, "create certManager failed")
-		}
-		log.Info("Create CertManger done")
-	}
-
 	return nil
 }
 
@@ -293,57 +282,6 @@ func createCustomeResourceDefinitions(clientConfig *rest.Config) error {
 			return errors.Errorf("create CustomResourceDefinition (%s) failed: %s", crd.Name, err.Error())
 		}
 	}
-	return nil
-}
-
-func createCertManager(clientConfig *rest.Config) error {
-
-	cli, err := client.New(clientConfig, client.Options{})
-	if err != nil {
-		return errors.Errorf("new client failed: %s", err.Error())
-	}
-
-	runningNamespaceName := os.Getenv("NAMESPACE_NAME")
-	runningNamespace := corev1.Namespace{}
-	if err := cli.Get(context.TODO(), client.ObjectKey{Name: runningNamespaceName}, &runningNamespace); err != nil {
-		return errors.Errorf("get Namespace failed: %s", err.Error())
-	}
-
-	if err := updateNamespaceLabel(cli, *runningNamespace.DeepCopy()); err != nil {
-		return errors.Wrap(err, "update Namespace labels failed")
-	}
-
-	components := component.NewComponentConfig(runningNamespaceName, component.NewDefaultPodTemplateConfig(runningNamespace))
-	resource := alamedaserviceparamter.GetCertManagerRsource()
-	for _, file := range resource.GetAll() {
-		unstructed, err := components.NewUnstructed(file)
-		if err != nil {
-			return err
-		}
-		if err := cli.Create(context.TODO(), unstructed); err != nil && !k8sapierrors.IsAlreadyExists(err) {
-			return errors.Errorf("create asset (%s) failed: %s", file, err.Error())
-		}
-	}
-
-	return nil
-}
-
-func updateNamespaceLabel(cli client.Client, namespace corev1.Namespace) error {
-
-	labelsForCertManager := map[string]string{
-		"certmanager.k8s.io/disable-validation": "true",
-	}
-
-	if namespace.Labels == nil {
-		namespace.Labels = make(map[string]string)
-	}
-	for k, v := range labelsForCertManager {
-		namespace.Labels[k] = v
-	}
-	if err := cli.Update(context.TODO(), &namespace); err != nil {
-		return errors.Errorf("update Namespace (%s) failed: %s", namespace.Name, err.Error())
-	}
-
 	return nil
 }
 

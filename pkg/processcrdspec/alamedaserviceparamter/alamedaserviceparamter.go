@@ -140,43 +140,6 @@ var (
 		"AlamedaNotificationTopic/default.yaml",
 	}
 
-	certManagerList = []string{
-		"APIService/certmanager.yaml",
-		"Certificate/certmanager-webhook-ca.yaml",
-		"Certificate/certmanager-webhook-webhook-tls.yaml",
-		"ClusterRole/certmanager-cainjector.yaml",
-		"ClusterRole/certmanager-cert-manager-controller-certificates.yaml",
-		"ClusterRole/certmanager-cert-manager-controller-challenges.yaml",
-		"ClusterRole/certmanager-cert-manager-controller-clusterissuers.yaml",
-		"ClusterRole/certmanager-cert-manager-controller-ingress-shim.yaml",
-		"ClusterRole/certmanager-cert-manager-controller-issuers.yaml",
-		"ClusterRole/certmanager-cert-manager-controller-orders.yaml",
-		"ClusterRole/certmanager-cert-manager-edit.yaml",
-		"ClusterRole/certmanager-cert-manager-leaderelection.yaml",
-		"ClusterRole/certmanager-cert-manager-view.yaml",
-		"ClusterRole/certmanager-webhook:webhook-requester.yaml",
-		"ClusterRoleBinding/certmanager-cainjector.yaml",
-		"ClusterRoleBinding/certmanager-cert-manager-controller-certificates.yaml",
-		"ClusterRoleBinding/certmanager-cert-manager-controller-challenges.yaml",
-		"ClusterRoleBinding/certmanager-cert-manager-controller-clusterissuers.yaml",
-		"ClusterRoleBinding/certmanager-cert-manager-controller-ingress-shim.yaml",
-		"ClusterRoleBinding/certmanager-cert-manager-controller-issuers.yaml",
-		"ClusterRoleBinding/certmanager-cert-manager-controller-orders.yaml",
-		"ClusterRoleBinding/certmanager-cert-manager-leaderelection.yaml",
-		"ClusterRoleBinding/certmanager-webhook:auth-delegator.yaml",
-		"Deployment/certmanager-cainjector.yaml",
-		"Deployment/certmanager-cert-manager.yaml",
-		"Deployment/certmanager-webhook.yaml",
-		"Issuer/certmanager-webhook-ca.yaml",
-		"Issuer/certmanager-webhook-selfsign.yaml",
-		"RoleBinding/certmanager-webhook:webhook-authentication-reader.yaml",
-		"Service/certmanager-webhook.yaml",
-		"ServiceAccount/certmanager-cainjector.yaml",
-		"ServiceAccount/certmanager-cert-manager.yaml",
-		"ServiceAccount/certmanager-webhook.yaml",
-		"ValidatingWebhookConfiguration/certmanager-webhook.yaml",
-	}
-
 	federatoraiAgentList = []string{
 		"Deployment/federatorai-agent.yaml",
 		"ConfigMap/federatorai-agent-config.yaml",
@@ -192,12 +155,6 @@ var (
 		"CustomResourceDefinition/alamedarecommendationsCRD.yaml",
 		"CustomResourceDefinition/alamedanotificationchannels.yaml",
 		"CustomResourceDefinition/alamedanotificationtopics.yaml",
-		"CustomResourceDefinition/certificaterequests.yaml",
-		"CustomResourceDefinition/certificates.yaml",
-		"CustomResourceDefinition/challenges.yaml",
-		"CustomResourceDefinition/clusterissuers.yaml",
-		"CustomResourceDefinition/issuers.yaml",
-		"CustomResourceDefinition/orders.yaml",
 	}
 
 	alamedaScalerCRD = []string{
@@ -270,12 +227,6 @@ func GetWeavescopeResource() Resource {
 // GetSelfDrivingRsource returns resource that needs to be installed for Alameda self driving
 func GetSelfDrivingRsource() *Resource {
 	r, _ := getResourceFromList(selfDrivingList)
-	return &r
-}
-
-// GetCertManagerRsource returns resource that needs to be installed for cert manager
-func GetCertManagerRsource() *Resource {
-	r, _ := getResourceFromList(certManagerList)
 	return &r
 }
 
