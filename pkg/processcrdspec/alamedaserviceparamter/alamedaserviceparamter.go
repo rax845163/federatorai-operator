@@ -641,7 +641,13 @@ func (r *Resource) GetAll() []string {
 
 	files := make([]string, 0)
 
-	for _, file := range r.ClusterRoleBindingList {
+	for _, file := range r.CustomResourceDefinitionList {
+		files = append(files, file)
+	}
+	for _, file := range r.PodSecurityPolicyList {
+		files = append(files, file)
+	}
+	for _, file := range r.SecurityContextConstraintsList {
 		files = append(files, file)
 	}
 	for _, file := range r.ClusterRoleList {
@@ -650,16 +656,13 @@ func (r *Resource) GetAll() []string {
 	for _, file := range r.ServiceAccountList {
 		files = append(files, file)
 	}
-	for _, file := range r.CustomResourceDefinitionList {
+	for _, file := range r.ClusterRoleBindingList {
 		files = append(files, file)
 	}
-	for _, file := range r.ConfigMapList {
+	for _, file := range r.RoleList {
 		files = append(files, file)
 	}
-	for _, file := range r.ServiceList {
-		files = append(files, file)
-	}
-	for _, file := range r.DeploymentList {
+	for _, file := range r.RoleBindingList {
 		files = append(files, file)
 	}
 	for _, file := range r.SecretList {
@@ -668,37 +671,10 @@ func (r *Resource) GetAll() []string {
 	for _, file := range r.PersistentVolumeClaimList {
 		files = append(files, file)
 	}
-	for _, file := range r.AlamedaScalerList {
+	for _, file := range r.ConfigMapList {
 		files = append(files, file)
 	}
-	for _, file := range r.RouteList {
-		files = append(files, file)
-	}
-	for _, file := range r.StatefulSetList {
-		files = append(files, file)
-	}
-	for _, file := range r.IngressList {
-		files = append(files, file)
-	}
-	for _, file := range r.PodSecurityPolicyList {
-		files = append(files, file)
-	}
-	for _, file := range r.DaemonSetList {
-		files = append(files, file)
-	}
-	for _, file := range r.SecurityContextConstraintsList {
-		files = append(files, file)
-	}
-	for _, file := range r.RoleBindingList {
-		files = append(files, file)
-	}
-	for _, file := range r.RoleList {
-		files = append(files, file)
-	}
-	for _, file := range r.CertificateList {
-		files = append(files, file)
-	}
-	for _, file := range r.IssuerList {
+	for _, file := range r.ServiceList {
 		files = append(files, file)
 	}
 	for _, file := range r.MutatingWebhookConfigurationList {
@@ -710,10 +686,35 @@ func (r *Resource) GetAll() []string {
 	for _, file := range r.APIServiceList {
 		files = append(files, file)
 	}
+	for _, file := range r.DeploymentList {
+		files = append(files, file)
+	}
+	for _, file := range r.StatefulSetList {
+		files = append(files, file)
+	}
+	for _, file := range r.IngressList {
+		files = append(files, file)
+	}
+	for _, file := range r.RouteList {
+		files = append(files, file)
+	}
+	for _, file := range r.DaemonSetList {
+		files = append(files, file)
+	}
+	for _, file := range r.IssuerList {
+		files = append(files, file)
+	}
+	for _, file := range r.CertificateList {
+		files = append(files, file)
+	}
 	for _, file := range r.AlamedaNotificationChannelList {
 		files = append(files, file)
 	}
 	for _, file := range r.AlamedaNotificationTopic {
+		files = append(files, file)
+	}
+
+	for _, file := range r.AlamedaScalerList {
 		files = append(files, file)
 	}
 
