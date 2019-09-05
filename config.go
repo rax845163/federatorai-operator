@@ -7,14 +7,11 @@ import (
 
 // RequirementsConfig encapsultes the truth of requirements resources
 type RequirementsConfig struct {
-	CertManager bool `mapstructure:"certManager"`
 }
 
 // NewDefaultRequirementsConfig creates default configuration
 func NewDefaultRequirementsConfig() RequirementsConfig {
-	return RequirementsConfig{
-		CertManager: true,
-	}
+	return RequirementsConfig{}
 }
 
 // Config encapsultes configuration of federatorai operator

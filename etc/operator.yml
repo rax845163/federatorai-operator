@@ -1,5 +1,4 @@
 requirements:
-  certManager: true
 
 metrics:
   port: 8383

@@ -46,7 +46,5 @@ spec:
             - name: OPERATOR_NAME
               value: "federatorai-operator"
             - name: DISABLE_OPERAND_RESOURCE_PROTECTION
-              value: "true"
-            - name: FEDERATORAI_OPERATOR_REQUIREMENTS_CERTMANAGER
-              value: "true"
+              value: "true" 
 
