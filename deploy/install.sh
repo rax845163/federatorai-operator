@@ -12,7 +12,7 @@
 #                   -s persistent -l 11 -d 12 -c managed-nfs-storage
 #
 #   3. Silent Mode - Ephemeral storage
-#      Usage: ./install.sh -t v4.2.260 -n alameda -e y -p https://prometheus-k8s.openshift-monitoring:9091 \
+#      Usage: ./install.sh -t v4.2.260 -n federatorai -e y -p https://prometheus-k8s.openshift-monitoring:9091 \
 #                   -s ephemeral
 #
 #   -t = tag_number
@@ -57,16 +57,25 @@ wait_until_pods_ready()
   namespace="$3"
   target_pod_number="$4"
 
+  wait_pod_creating=1
   for ((i=0; i<$period; i+=$interval)); do
 
-    if [[ "`kubectl get po -n $namespace 2>/dev/null|wc -l`" -ge "$target_pod_number" ]]; then
+    if [[ "$wait_pod_creating" = "1" ]]; then
+        # check if pods created
+        if [[ "`kubectl get po -n $namespace 2>/dev/null|wc -l`" -ge "$target_pod_number" ]]; then
+            wait_pod_creating=0
+        else
+            echo "Waiting for pods in namespace $namespace to be created..."
+        fi
+    else
+        # check if pods running
         if pods_ready $namespace; then
             echo -e "\nAll $namespace pods are ready."
             return 0
         fi
+        echo "Waiting for pods in namespace $namespace to be ready..."
     fi
 
-    echo "Waiting for $namespace pods to be ready..."
     sleep "$interval"
     
   done
@@ -210,9 +219,15 @@ sed -i "s/name: federatorai/name: ${install_namespace}/g" 00*.yaml
 sed -i "s/namespace: federatorai/namespace: ${install_namespace}/g" 01*.yaml 03*.yaml 05*.yaml 06*.yaml 07*.yaml
 
 echo -e "\n$(tput setaf 2)Starting apply Federator.ai operator yaml files$(tput sgr 0)"
-kubectl apply -f .
-echo "Processing..."
-wait_until_pods_ready 600 20 $install_namespace 1
+for yaml_fn in `ls [0-9]*.yaml | sort -n`; do
+    echo "Applying ${yaml_fn}..."
+    kubectl apply -f ${yaml_fn}
+    if [ "$?" != "0" ]; then
+        echo -e "\n$(tput setaf 1)Error in applying yaml file ${yaml_fn}.$(tput sgr 0)"
+        exit 5
+    fi
+done
+wait_until_pods_ready 600 30 $install_namespace 1
 echo -e "\n$(tput setaf 6)Install Federator.ai operator $tag_number successfully$(tput sgr 0)"
 
 alamedaservice_example="alamedaservice_sample.yaml"
@@ -345,7 +360,7 @@ __EOF__
 
     kubectl apply -f $alamedaservice_example &>/dev/null
     echo "Processing..."
-    wait_until_pods_ready 900 20 $install_namespace 5
+    wait_until_pods_ready 900 60 $install_namespace 5
     echo -e "$(tput setaf 6)\nInstall Alameda $tag_number successfully$(tput sgr 0)"
     get_grafana_route $install_namespace
     leave_prog
