@@ -24,6 +24,7 @@ var (
 		rabbitmqList,
 		notifierList,
 		federatoraiAgentList,
+		fedemeterList,
 	}
 
 	datahubList = []string{
@@ -247,7 +248,6 @@ type AlamedaServiceParamter struct {
 	EnableExecution               bool
 	EnableGUI                     bool
 	EnableDispatcher              bool
-	EnableFedemeter               bool
 	EnableWeavescope              bool
 	Version                       string
 	PrometheusService             string
@@ -281,7 +281,6 @@ func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServic
 		EnableExecution:               instance.Spec.EnableExecution,
 		EnableGUI:                     instance.Spec.EnableGUI,
 		EnableDispatcher:              *instance.Spec.EnableDispatcher,
-		EnableFedemeter:               instance.Spec.EnableFedemeter,
 		EnableWeavescope:              instance.Spec.EnableWeavescope,
 		Version:                       instance.Spec.Version,
 		PrometheusService:             instance.Spec.PrometheusService,
@@ -339,10 +338,6 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 	if asp.EnableDispatcher {
 		r := GetDispatcherResource()
 		resource.add(*r)
-	}
-	if asp.EnableFedemeter {
-		r, _ := getResourceFromList(fedemeterList)
-		resource.add(r)
 	}
 	if asp.EnableWeavescope {
 		weavescopeResource := GetWeavescopeResource()

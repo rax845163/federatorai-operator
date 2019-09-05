@@ -28,7 +28,6 @@ type AlamedaServiceSpec struct {
 	EnableGUI         bool                  `json:"enableGui"`
 	EnableDispatcher  *bool                 `json:"enableDispatcher"`
 	SelfDriving       bool                  `json:"selfDriving"`
-	EnableFedemeter   bool                  `json:"enableFedemeter"`
 	Version           string                `json:"version"`
 	PrometheusService string                `json:"prometheusService"`
 	Storages          []StorageSpec         `json:"storages"`

@@ -304,15 +304,6 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
 	}
-	//Uninstall alameter Component
-	if !asp.EnableFedemeter {
-		log.Info("EnableFedemeter has been changed to false")
-		fedemeterResource := alamedaserviceparamter.GetFedemeterResource()
-		if err := r.uninstallFedemeterComponent(instance, fedemeterResource); err != nil {
-			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
-		}
-	}
 	//Uninstall weavescope components
 	if !asp.EnableWeavescope {
 		weavescopeResource := alamedaserviceparamter.GetWeavescopeResource()
