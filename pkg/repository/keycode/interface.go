@@ -27,5 +27,6 @@ type Interface interface {
 	SendSignatureData(string) error
 	GetRegistrationData() (string, error)
 	GetKeycodeDetail(string) (Detail, error)
+	ListKeycodes() ([]Detail, error)
 	DeleteKeycode(string) error
 }

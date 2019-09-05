@@ -40,6 +40,21 @@ func (d *Client) Close() error {
 	return d.conn.Close()
 }
 
+// ListKeycodes lists keycode from Alameda-Datahub
+func (d *Client) ListKeycodes() ([]*keycodes.Keycode, error) {
+
+	ctx := context.TODO()
+	req := keycodes.ListKeycodesRequest{}
+	resp, err := d.keycodesClient.ListKeycodes(ctx, &req)
+	if err != nil {
+		return []*keycodes.Keycode{}, errors.Errorf("List keycodes from Alameda-Datahub failed: %s", err.Error())
+	} else if !isResponseStatusOK(resp.Status) {
+		return []*keycodes.Keycode{}, errors.Errorf("List keycodes from Alameda-Datahub failed: %s", getResponseStatusDetail(resp.Status))
+	}
+
+	return resp.Keycodes, nil
+}
+
 // AddKeycode adds keycode to Alameda-Datahub
 func (d *Client) AddKeycode(keycode string) error {
 	ctx := context.TODO()

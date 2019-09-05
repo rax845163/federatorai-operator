@@ -74,6 +74,7 @@ func (d *KeycodeRepository) GetKeycodeDetail(code string) (repository_keycode.De
 		expireTime = &t
 	}
 	summary := repository_keycode.Detail{
+		Keycode:        keycode.Keycode,
 		KeycodeType:    keycode.KeycodeType,
 		KeycodeVersion: keycode.KeycodeVersion,
 		ApplyTime:      applyTime,
@@ -83,6 +84,46 @@ func (d *KeycodeRepository) GetKeycodeDetail(code string) (repository_keycode.De
 	}
 
 	return summary, nil
+}
+
+// ListKeycodes lists keycode from Alameda-Datahub
+func (d *KeycodeRepository) ListKeycodes() ([]repository_keycode.Detail, error) {
+
+	keycodes, err := d.client.ListKeycodes()
+	if err != nil {
+		return []repository_keycode.Detail{}, err
+	}
+
+	details := make([]repository_keycode.Detail, len(keycodes))
+	for i, keycode := range keycodes {
+		var applyTime *time.Time
+		if keycode.ApplyTime != nil {
+			t, err := ptypes.Timestamp(keycode.ApplyTime)
+			if err != nil {
+				return []repository_keycode.Detail{}, errors.Errorf("convert timestamp failed: %s", err.Error())
+			}
+			applyTime = &t
+		}
+		var expireTime *time.Time
+		if keycode.ExpireTime != nil {
+			t, err := ptypes.Timestamp(keycode.ExpireTime)
+			if err != nil {
+				return []repository_keycode.Detail{}, errors.Errorf("convert timestamp failed: %s", err.Error())
+			}
+			expireTime = &t
+		}
+		details[i] = repository_keycode.Detail{
+			Keycode:        keycode.Keycode,
+			KeycodeType:    keycode.KeycodeType,
+			KeycodeVersion: keycode.KeycodeVersion,
+			ApplyTime:      applyTime,
+			ExpireTime:     expireTime,
+			LicenseState:   keycode.LicenseState,
+			Registered:     keycode.Registered,
+		}
+	}
+
+	return details, nil
 }
 
 // DeleteKeycode deletes keycode from Alameda-Datahub
