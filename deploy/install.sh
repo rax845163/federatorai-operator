@@ -50,6 +50,67 @@ leave_prog()
     cd $current_location > /dev/null
 }
 
+webhook_reminder()
+{
+    if [ "$openshift_version" != "" ]; then
+        echo -e "\n========================================"
+        echo -e "$(tput setaf 9)Note!$(tput setaf 10) Below $(tput setaf 9)two admission plugins $(tput setaf 10)needed to be enabled on $(tput setaf 9)every master nodes $(tput setaf 10)to let VPA Execution and Email Notifier working properly."
+        echo -e "$(tput setaf 6)1. ValidatingAdmissionWebhook 2. MutatingAdmissionWebhook$(tput sgr 0)"
+        echo -e "Steps: (On every master nodes)"
+        echo -e "A. Edit /etc/origin/master/master-config.yaml"
+        echo -e "B. Insert following content after admissionConfig:pluginConfig:"
+        echo -e "$(tput setaf 3)     ValidatingAdmissionWebhook:"
+        echo -e "      configuration:"
+        echo -e "        kind: DefaultAdmissionConfig"
+        echo -e "        apiVersion: v1"
+        echo -e "        disable: false"
+        echo -e "     MutatingAdmissionWebhook:"
+        echo -e "      configuration:"
+        echo -e "        kind: DefaultAdmissionConfig"
+        echo -e "        apiVersion: v1"
+        echo -e "        disable: false"
+        echo -e "$(tput sgr 0)C. Save the file."
+        echo -e "D. Execute below commands to restart OpenShift api and controller:"
+        echo -e "$(tput setaf 6)1. master-restart api 2. master-restart controllers$(tput sgr 0)"
+    fi
+}
+
+check_version()
+{
+    openshift_version=`oc version 2>/dev/null|grep "oc v"|cut -d '.' -f2`
+    k8s_version=`kubectl version 2>/dev/null|grep Server|grep -o "Minor:\"[0-9]*\""|cut -d '"' -f2`
+    openshift_required_version="9"
+    k8s_required_version="11"
+    if [ "$openshift_version" != "" ] && [ "$openshift_version" -lt "$openshift_required_version" ]; then
+        echo -e "\n$(tput setaf 10)Error! OpenShift version less than 3.$openshift_required_version is not supported by Federator.ai$(tput sgr 0)"
+        exit 5
+    elif [ "$openshift_version" = "" ] && [ "$k8s_version" != "" ] && [ "$k8s_version" -lt "$k8s_required_version" ]; then
+        echo -e "\n$(tput setaf 10)Error! Kubernetes version less than 1.$k8s_required_version is not supported by Federator.ai$(tput sgr 0)"
+        exit 6
+    fi
+}
+
+check_alameda_datahub_tag()
+{
+    period="$1"
+    interval="$2"
+    namespace="$3"
+
+    for ((i=0; i<$period; i+=$interval)); do
+        datahub_pod_name=`kubectl get pod -n $namespace -o name 2>/dev/null|grep datahub`
+        current_tag=`kubectl get $datahub_pod_name -n $namespace -o yaml 2>/dev/null|grep image:|head -1|cut -d ':' -f3`
+        if [ "$current_tag" = "$tag_number" ]; then
+            echo -e "\ndatahub pod is there.\n"
+            return 0
+        fi
+        echo "Waiting for datahub pod with current tag number shows up..."
+        sleep "$interval"
+    done
+    echo -e "\n$(tput setaf 1)Warning!! Waited for $period seconds, but datahub pod doesn't show up. Please check $namespace namespace$(tput sgr 0)"
+    leave_prog
+    exit 7
+}
+
 wait_until_pods_ready()
 {
   period="$1"
@@ -87,14 +148,18 @@ wait_until_pods_ready()
 
 get_grafana_route()
 {
-    if [[ "$openshift_version" != "" ]] ; then
-        link=`oc get route -n $1|grep grafana|awk '{print $2}'`
+    if [ "$openshift_version" != "" ] ; then
+        link=`oc get route -n $1 2>/dev/null|grep grafana|awk '{print $2}'`
+        if [ "$link" != "" ] ; then
         echo -e "\n========================================"
         echo "You can now access GUI through $(tput setaf 6)http://${link} $(tput sgr 0)"
         echo "Default login credential is $(tput setaf 6)admin/admin$(tput sgr 0)"
         echo -e "\nAlso, you can start to apply alamedascaler CR for namespace you would like to monitor."
         echo "$(tput setaf 6)Review administration guide for further details.$(tput sgr 0)"
         echo "========================================"
+        else
+            echo "Warning! Failed to obtain grafana route address."
+        fi
     fi
 }
 
@@ -148,6 +213,10 @@ done
 [ "${d_arg}" != "" ] && data_size="${d_arg}"
 [ "${c_arg}" != "" ] && storage_class="${c_arg}"
 
+echo "Checking environment version..."
+check_version
+echo "...Passed"
+
 if [ "$silent_mode_disabled" = "y" ];then
 
     while [[ "$info_correct" != "y" ]] && [[ "$info_correct" != "Y" ]]
@@ -184,13 +253,17 @@ else
     echo -e "----------------------------------------\n"
 fi
 
-openshift_version=`oc version 2>/dev/null|grep "oc v"|cut -d '.' -f2`
-
 operator_files=( 
-    "00-namespace.yaml" "01-serviceaccount.yaml"
-    "02-alamedaservice.crd.yaml" "03-federatorai-operator.deployment.yaml"
-    "04-clusterrole.yaml" "05-clusterrolebinding.yaml"
-    "06-role.yaml" "07-rolebinding.yaml"
+    "00-namespace.yaml"
+    "01-serviceaccount.yaml"
+    "02-alamedaservice.crd.yaml"
+    "03-cert-manager-crd.yaml"
+    "04-cert-manager.deployment.yaml"
+    "05-federatorai-operator.deployment.yaml"
+    "06-clusterrole.yaml"
+    "07-clusterrolebinding.yaml"
+    "08-role.yaml"
+    "09-rolebinding.yaml"
 )
 
 file_folder="/tmp/install-op"
@@ -213,20 +286,43 @@ done
 
 # Modify federator.ai operator yaml(s)
 # for tag
-sed -i "s/ubi:latest/ubi:${tag_number}/g" 03*.yaml
+sed -i "s/ubi:latest/ubi:${tag_number}/g" 05*.yaml
 # for namespace
 sed -i "s/name: federatorai/name: ${install_namespace}/g" 00*.yaml
-sed -i "s/namespace: federatorai/namespace: ${install_namespace}/g" 01*.yaml 03*.yaml 05*.yaml 06*.yaml 07*.yaml
+sed -i "s/federatorai/${install_namespace}/g" 04*.yaml
+sed -i "s/namespace: federatorai/namespace: ${install_namespace}/g" 01*.yaml 05*.yaml 07*.yaml 08*.yaml 09*.yaml
 
 echo -e "\n$(tput setaf 2)Starting apply Federator.ai operator yaml files$(tput sgr 0)"
+
+kubectl get APIService v1beta1.admission.certmanager.k8s.io >/dev/null 2>&1
+if [ "$?" = "0" ]; then
+    # system has certmanager
+    # check if it is deployed by ProphetStor
+    annotation=`kubectl get APIService v1beta1.admission.certmanager.k8s.io -o 'jsonpath={.metadata.annotations.app\.kubernetes\.io\/managed-by}' 2>/dev/null`
+    if [ "$annotation" != "federator.ai" ]; then
+        install_certmanager="n"
+    fi 
+fi
+
 for yaml_fn in `ls [0-9]*.yaml | sort -n`; do
+
+    if [ "$install_certmanager" = "n" ]; then
+        if [ "$yaml_fn" = "`ls 03*.yaml`" ] || [ "$yaml_fn" = "`ls 04*.yaml`" ]; then
+           # Only apply 03 and 04 yaml when
+           # 1. certmanager is deployed by ProphetStor
+           # 2. certmanager is not installed
+           echo "Skipping ${yaml_fn}..."
+           continue
+        fi
+    fi
     echo "Applying ${yaml_fn}..."
     kubectl apply -f ${yaml_fn}
     if [ "$?" != "0" ]; then
         echo -e "\n$(tput setaf 1)Error in applying yaml file ${yaml_fn}.$(tput sgr 0)"
-        exit 5
+        exit 8
     fi
 done
+
 wait_until_pods_ready 600 30 $install_namespace 1
 echo -e "\n$(tput setaf 6)Install Federator.ai operator $tag_number successfully$(tput sgr 0)"
 
@@ -360,12 +456,15 @@ __EOF__
 
     kubectl apply -f $alamedaservice_example &>/dev/null
     echo "Processing..."
+    check_alameda_datahub_tag 120 20 $install_namespace
     wait_until_pods_ready 900 60 $install_namespace 5
-    echo -e "$(tput setaf 6)\nInstall Alameda $tag_number successfully$(tput sgr 0)"
+    webhook_reminder
     get_grafana_route $install_namespace
+    echo -e "$(tput setaf 6)\nInstall Alameda $tag_number successfully$(tput sgr 0)"
     leave_prog
     exit 0
 fi
 
+webhook_reminder
 leave_prog
 exit 0
