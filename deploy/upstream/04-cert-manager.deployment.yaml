@@ -353,8 +353,6 @@ metadata:
     app: webhook
     app.kubernetes.io/name: webhook
     app.kubernetes.io/instance:  certmanager
-    app.kubernetes.io/managed-by: Tiller
-    helm.sh/chart: webhook-v0.9.1
   annotations:
     certmanager.k8s.io/inject-apiserver-ca: "true"
 webhooks:
