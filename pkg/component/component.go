@@ -312,6 +312,51 @@ func (c ComponentConfig) NewAdmissionControllerSecret() (*corev1.Secret, error) 
 	return secret, nil
 }
 
+func (c ComponentConfig) NewTLSSecret(assetFile, cn string) (*corev1.Secret, error) {
+
+	secret, err := c.NewSecret(assetFile)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to buiild secret")
+	}
+
+	caKey, err := cert.NewPrivateKey()
+	if err != nil {
+		return nil, errors.Wrap(err, "new ca private key failed")
+	}
+
+	caCertCfg := cert.Config{}
+	caCert, err := cert.NewSelfSignedCACert(caCertCfg, caKey)
+	if err != nil {
+		return nil, errors.Wrap(err, "new ca cert failed")
+	}
+
+	privateKey, err := cert.NewPrivateKey()
+	if err != nil {
+		return nil, errors.Wrap(err, "new private key failed")
+	}
+
+	certCfg := cert.Config{
+		CommonName: cn,
+		Usages: []x509.ExtKeyUsage{
+			x509.ExtKeyUsageClientAuth,
+			x509.ExtKeyUsageServerAuth,
+		},
+	}
+	certificate, err := cert.NewSignedCert(certCfg, privateKey, caCert, caKey)
+	if err != nil {
+		return nil, errors.Wrap(err, "new certificate failed")
+	}
+
+	if secret.Data == nil {
+		secret.Data = make(map[string][]byte)
+	}
+	secret.Data["ca.crt"] = cert.EncodeCertPEM(caCert)
+	secret.Data["tls.crt"] = cert.EncodeCertPEM(certificate)
+	secret.Data["tls.key"] = cert.EncodePrivateKeyPEM(privateKey)
+
+	return secret, nil
+}
+
 func (c ComponentConfig) NewfedemeterSecret() (*corev1.Secret, error) {
 	secret, err := c.NewSecret("Secret/fedemeter-tls.yaml")
 	if err != nil {
@@ -356,7 +401,7 @@ func (c ComponentConfig) NewInfluxDBSecret() (*corev1.Secret, error) {
 func (c ComponentConfig) NewSecret(str string) (*corev1.Secret, error) {
 	secretBytes, err := assets.Asset(str)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to build secret from assets' bin data")
+		return nil, errors.Wrap(err, "failed to read secret from assets' bin data")
 	}
 	s, err := resourceread.ReadSecretV1(c.templateAssets(string(secretBytes[:])))
 	if err != nil {

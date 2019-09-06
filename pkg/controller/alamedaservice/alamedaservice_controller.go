@@ -14,12 +14,9 @@ import (
 	"github.com/containers-ai/federatorai-operator/pkg/updateresource"
 	"github.com/containers-ai/federatorai-operator/pkg/util"
 
-	certmanagerv1alpha1 "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha1"
-
 	routev1 "github.com/openshift/api/route/v1"
 	securityv1 "github.com/openshift/api/security/v1"
 	"github.com/pkg/errors"
-	admissionregistrationv1beta1 "k8s.io/api/admissionregistration/v1beta1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	ingressv1beta1 "k8s.io/api/extensions/v1beta1"
@@ -31,7 +28,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
-	apiregistrationv1beta1 "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1beta1"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -229,16 +225,12 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("sync service failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-	if err := r.syncMutatingWebhookConfiguration(instance, asp, installResource); err != nil {
-		log.V(-1).Info("sync MutatingWebhookConfiguration failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+	if err := r.createMutatingWebhookConfiguration(instance, asp, installResource); err != nil {
+		log.V(-1).Info("create MutatingWebhookConfiguration failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-	if err := r.syncValidatingWebhookConfiguration(instance, asp, installResource); err != nil {
-		log.V(-1).Info("sync ValidatingWebhookConfiguration failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
-	}
-	if err := r.syncAPIService(instance, asp, installResource); err != nil {
-		log.V(-1).Info("sync APIService failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+	if err := r.createValidatingWebhookConfiguration(instance, asp, installResource); err != nil {
+		log.V(-1).Info("create ValidatingWebhookConfiguration failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 	if err := r.syncDeployment(instance, asp, installResource); err != nil {
@@ -258,14 +250,6 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	}
 	if err := r.syncDaemonSet(instance, asp, installResource); err != nil {
 		log.V(-1).Info("sync DaemonSet failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
-	}
-	if err := r.syncIssuer(instance, asp, installResource); err != nil {
-		log.V(-1).Info("sync Issuer failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
-		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
-	}
-	if err := r.syncCertificate(instance, asp, installResource); err != nil {
-		log.V(-1).Info("sync Certificate failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
 	if err := r.createAlamedaNotificationChannels(instance, installResource); err != nil {
@@ -669,72 +653,6 @@ func (r *ReconcileAlamedaService) syncRoleBinding(instance *federatoraiv1alpha1.
 	return nil
 }
 
-func (r *ReconcileAlamedaService) syncIssuer(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
-	for _, FileStr := range resource.IssuerList {
-		issuer, err := componentConfig.NewIssuer(FileStr)
-		if err != nil {
-			return errors.Wrap(err, "new Issuer failed")
-		} else if issuer == nil {
-			return errors.Errorf("new Issuer failed, Issuer is nil")
-		}
-		if err := controllerutil.SetControllerReference(instance, issuer, r.scheme); err != nil {
-			return errors.Errorf("Fail issuer SetControllerReference: %s", err.Error())
-		}
-		existIssuer := &certmanagerv1alpha1.Issuer{}
-		err = r.client.Get(context.TODO(), types.NamespacedName{Namespace: issuer.Namespace, Name: issuer.Name}, existIssuer)
-		if err != nil && k8sErrors.IsNotFound(err) {
-			log.Info("Creating a new Resource Issuer... ", "namespace", issuer.Namespace, "name", issuer.Name)
-			err = r.client.Create(context.TODO(), issuer)
-			if err != nil {
-				return errors.Errorf("create Issuer %s/%s failed: %s", issuer.Namespace, issuer.Name, err.Error())
-			}
-			log.Info("Successfully Creating Resource Issuer", "namespace", issuer.Namespace, "name", issuer.Name)
-		} else if err != nil {
-			return errors.Errorf("get Issuer %s/%s failed: %s", issuer.Namespace, issuer.Name, err.Error())
-		} else {
-			newIssuer := updateresource.UpdateIssuer(*issuer, *existIssuer)
-			err = r.client.Update(context.TODO(), &newIssuer)
-			if err != nil {
-				return errors.Errorf("update Issuer %s/%s failed: %s", issuer.Namespace, issuer.Name, err.Error())
-			}
-		}
-	}
-	return nil
-}
-
-func (r *ReconcileAlamedaService) syncCertificate(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
-	for _, FileStr := range resource.CertificateList {
-		certificate, err := componentConfig.NewCertificate(FileStr)
-		if err != nil {
-			return errors.Wrap(err, "new Certificate failed")
-		} else if certificate == nil {
-			return errors.Errorf("new Certificate failed, Certificate is nil")
-		}
-		if err := controllerutil.SetControllerReference(instance, certificate, r.scheme); err != nil {
-			return errors.Errorf("Fail certificate SetControllerReference: %s", err.Error())
-		}
-		existCertificate := &certmanagerv1alpha1.Certificate{}
-		err = r.client.Get(context.TODO(), types.NamespacedName{Namespace: certificate.Namespace, Name: certificate.Name}, existCertificate)
-		if err != nil && k8sErrors.IsNotFound(err) {
-			log.Info("Creating a new Resource Certificate... ", "namespace", certificate.Namespace, "name", certificate.Name)
-			err = r.client.Create(context.TODO(), certificate)
-			if err != nil {
-				return errors.Errorf("create Certificate %s/%s failed: %s", certificate.Namespace, certificate.Name, err.Error())
-			}
-			log.Info("Successfully create Resource Certificate", "namespace", certificate.Namespace, "name", certificate.Name)
-		} else if err != nil {
-			return errors.Errorf("get Certificate %s/%s failed: %s", certificate.Namespace, certificate.Name, err.Error())
-		} else {
-			newCertificate := updateresource.UpdateCertificate(*certificate, *existCertificate)
-			err = r.client.Update(context.TODO(), &newCertificate)
-			if err != nil {
-				return errors.Errorf("update Certificate %s/%s failed: %s", certificate.Namespace, certificate.Name, err.Error())
-			}
-		}
-	}
-	return nil
-}
-
 func (r *ReconcileAlamedaService) createPersistentVolumeClaim(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, FileStr := range resource.PersistentVolumeClaimList {
 		resourcePVC := componentConfig.NewPersistentVolumeClaim(FileStr)
@@ -799,6 +717,25 @@ func (r *ReconcileAlamedaService) createSecret(instance *federatoraiv1alpha1.Ala
 	} else if err != nil {
 		return errors.Errorf("get secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
 	}
+
+	notifierWebhookServiceAsset := alamedaserviceparamter.GetAlamedaNotifierWebhookService()
+	notifierWebhookService := componentConfig.NewService(notifierWebhookServiceAsset)
+	notifierWebhookServiceAddress := util.GetServiceDNS(notifierWebhookService)
+	notifierWebhookServiceCertSecretAsset := alamedaserviceparamter.GetAlamedaNotifierWebhookServerCertSecret()
+	notifierWebhookServiceSecret, err := componentConfig.NewTLSSecret(notifierWebhookServiceCertSecretAsset, notifierWebhookServiceAddress)
+	if err != nil {
+		return errors.Errorf("build secret failed: %s", err.Error())
+	}
+	if err := controllerutil.SetControllerReference(instance, secret, r.scheme); err != nil {
+		return errors.Errorf("set controller reference to secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
+	err = r.client.Create(context.TODO(), notifierWebhookServiceSecret)
+	if err != nil && k8sErrors.IsAlreadyExists(err) {
+		log.Info("create secret failed: secret is already exists", "secret.Namespace", secret.Namespace, "secret.Name", secret.Name)
+	} else if err != nil {
+		return errors.Errorf("get secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
+
 	return nil
 }
 
@@ -881,7 +818,18 @@ func (r *ReconcileAlamedaService) syncService(instance *federatoraiv1alpha1.Alam
 	return nil
 }
 
-func (r *ReconcileAlamedaService) syncMutatingWebhookConfiguration(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+func (r *ReconcileAlamedaService) getSecret(namespace, name string) (corev1.Secret, error) {
+
+	secret := corev1.Secret{}
+	err := r.client.Get(context.TODO(), client.ObjectKey{Namespace: namespace, Name: name}, &secret)
+	if err != nil {
+		return secret, errors.Errorf("get secret (%s/%s) failed", namespace, name)
+	}
+
+	return secret, nil
+}
+
+func (r *ReconcileAlamedaService) createMutatingWebhookConfiguration(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.MutatingWebhookConfigurationList {
 		mutatingWebhookConfiguration, err := componentConfig.NewMutatingWebhookConfiguration(fileString)
 		if err != nil {
@@ -890,25 +838,28 @@ func (r *ReconcileAlamedaService) syncMutatingWebhookConfiguration(instance *fed
 		if err := controllerutil.SetControllerReference(instance, mutatingWebhookConfiguration, r.scheme); err != nil {
 			return errors.Errorf("Fail MutatingWebhookConfiguration SetControllerReference: %s", err.Error())
 		}
-		existMutatingWebhookConfiguration := &admissionregistrationv1beta1.MutatingWebhookConfiguration{}
-		err = r.client.Get(context.TODO(), types.NamespacedName{Name: mutatingWebhookConfiguration.Name}, existMutatingWebhookConfiguration)
-		if err != nil && k8sErrors.IsNotFound(err) {
-			log.Info("Creating a new Resource MutatingWebhookConfiguration... ", "name", mutatingWebhookConfiguration.Name)
-			err = r.client.Create(context.TODO(), mutatingWebhookConfiguration)
-			if err != nil {
-				return errors.Errorf("create MutatingWebhookConfiguration %s failed: %s", mutatingWebhookConfiguration.Name, err.Error())
-			}
-			log.Info("Successfully Creating Resource MutatingWebhookConfiguration", "name", mutatingWebhookConfiguration.Name)
-		} else if err != nil {
-			return errors.Errorf("get MutatingWebhookConfiguration %s failed: %s", mutatingWebhookConfiguration.Name, err.Error())
-		} else {
-			log.V(-1).Info("MutatingWebhookConfiguration is existing, skip creating", "name", mutatingWebhookConfiguration.Name)
+
+		secretName := mutatingWebhookConfiguration.ObjectMeta.Annotations["secret.name"]
+		secret, err := r.getSecret(instance.Namespace, secretName)
+		if err != nil {
+			return errors.Errorf("get secret failed: %s", err.Error())
 		}
+		caCert := secret.Data["ca.crt"]
+		for i := range mutatingWebhookConfiguration.Webhooks {
+			mutatingWebhookConfiguration.Webhooks[i].ClientConfig.CABundle = caCert
+		}
+
+		log.Info("Creating a new Resource MutatingWebhookConfiguration... ", "name", mutatingWebhookConfiguration.Name)
+		err = r.client.Create(context.TODO(), mutatingWebhookConfiguration)
+		if err != nil && !k8sErrors.IsAlreadyExists(err) {
+			return errors.Errorf("create MutatingWebhookConfiguration %s failed: %s", mutatingWebhookConfiguration.Name, err.Error())
+		}
+		log.Info("Successfully Creating Resource MutatingWebhookConfiguration", "name", mutatingWebhookConfiguration.Name)
 	}
 	return nil
 }
 
-func (r *ReconcileAlamedaService) syncValidatingWebhookConfiguration(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
+func (r *ReconcileAlamedaService) createValidatingWebhookConfiguration(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, fileString := range resource.ValidatingWebhookConfigurationList {
 		validatingWebhookConfiguration, err := componentConfig.NewValidatingWebhookConfiguration(fileString)
 		if err != nil {
@@ -917,46 +868,21 @@ func (r *ReconcileAlamedaService) syncValidatingWebhookConfiguration(instance *f
 		if err := controllerutil.SetControllerReference(instance, validatingWebhookConfiguration, r.scheme); err != nil {
 			return errors.Errorf("Fail ValidatingWebhookConfiguration SetControllerReference: %s", err.Error())
 		}
-		existValidatingWebhookConfiguration := &admissionregistrationv1beta1.ValidatingWebhookConfiguration{}
-		err = r.client.Get(context.TODO(), types.NamespacedName{Name: validatingWebhookConfiguration.Name}, existValidatingWebhookConfiguration)
-		if err != nil && k8sErrors.IsNotFound(err) {
-			log.Info("Creating a new Resource ValidatingWebhookConfiguration... ", "name", validatingWebhookConfiguration.Name)
-			err = r.client.Create(context.TODO(), validatingWebhookConfiguration)
-			if err != nil {
-				return errors.Errorf("create ValidatingWebhookConfiguration %s failed: %s", validatingWebhookConfiguration.Name, err.Error())
-			}
-			log.Info("Successfully Creating Resource ValidatingWebhookConfiguration", "name", validatingWebhookConfiguration.Name)
-		} else if err != nil {
-			return errors.Errorf("get ValidatingWebhookConfiguration %s failed: %s", validatingWebhookConfiguration.Name, err.Error())
-		} else {
-			log.V(-1).Info("ValidatingWebhookConfiguration is existing, skip creating", "name", validatingWebhookConfiguration.Name)
-		}
-	}
-	return nil
-}
 
-func (r *ReconcileAlamedaService) syncAPIService(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
-	for _, fileString := range resource.APIServiceList {
-		apiService, err := componentConfig.NewAPIService(fileString)
+		secretName := validatingWebhookConfiguration.ObjectMeta.Annotations["secret.name"]
+		secret, err := r.getSecret(instance.Namespace, secretName)
 		if err != nil {
-			return errors.Wrap(err, "new APIService failed")
+			return errors.Errorf("get secret failed: %s", err.Error())
 		}
-		if err := controllerutil.SetControllerReference(instance, apiService, r.scheme); err != nil {
-			return errors.Errorf("Fail APIService SetControllerReference: %s", err.Error())
+		caCert := secret.Data["ca.crt"]
+		for i := range validatingWebhookConfiguration.Webhooks {
+			validatingWebhookConfiguration.Webhooks[i].ClientConfig.CABundle = caCert
 		}
-		existAPIService := &apiregistrationv1beta1.APIService{}
-		err = r.client.Get(context.TODO(), types.NamespacedName{Name: apiService.Name}, existAPIService)
-		if err != nil && k8sErrors.IsNotFound(err) {
-			log.Info("Creating a new Resource APIService... ", "name", apiService.Name)
-			err = r.client.Create(context.TODO(), apiService)
-			if err != nil {
-				return errors.Errorf("create APIService %s failed: %s", apiService.Name, err.Error())
-			}
-			log.Info("Successfully Creating Resource APIService", "name", apiService.Name)
-		} else if err != nil {
-			return errors.Errorf("get APIService %s failed: %s", apiService.Name, err.Error())
-		} else {
-			log.V(-1).Info("APIService is existing, skip creating", "name", apiService.Name)
+
+		log.Info("Creating a new Resource ValidatingWebhookConfiguration... ", "name", validatingWebhookConfiguration.Name)
+		err = r.client.Create(context.TODO(), validatingWebhookConfiguration)
+		if err != nil && !k8sErrors.IsAlreadyExists(err) {
+			return errors.Errorf("create ValidatingWebhookConfiguration %s failed: %s", validatingWebhookConfiguration.Name, err.Error())
 		}
 	}
 	return nil
@@ -1254,22 +1180,6 @@ func (r *ReconcileAlamedaService) uninstallValidatingWebhookConfiguration(instan
 	return nil
 }
 
-func (r *ReconcileAlamedaService) uninstallAPIService(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-	for _, fileString := range resource.APIServiceList {
-		apiService, err := componentConfig.NewAPIService(fileString)
-		if err != nil {
-			return errors.Wrap(err, "new PIService failed")
-		}
-		err = r.client.Delete(context.TODO(), apiService)
-		if err != nil && k8sErrors.IsNotFound(err) {
-			return nil
-		} else if err != nil {
-			return errors.Errorf("delete PIService %s failed: %s", apiService.Name, err.Error())
-		}
-	}
-	return nil
-}
-
 func (r *ReconcileAlamedaService) uninstallScalerforAlameda(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 	if err := r.uninstallAlamedaScaler(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall selfDriving scaler failed")
@@ -1473,10 +1383,6 @@ func (r *ReconcileAlamedaService) uninstallResource(resource alamedaserviceparam
 
 	if err := r.uninstallValidatingWebhookConfiguration(nil, &resource); err != nil {
 		return errors.Wrap(err, "uninstall ValidatingWebhookConfiguration failed")
-	}
-
-	if err := r.uninstallAPIService(nil, &resource); err != nil {
-		return errors.Wrap(err, "uninstall APIService failed")
 	}
 
 	return nil
