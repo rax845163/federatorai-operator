@@ -23,8 +23,10 @@ spec:
       - name: alameda-notifier
         image: quay.io/prophetstor/alameda-notifier-ubi:v4.2.259        
         env:
-          - name: ALAMEDA_NOTIFIER_RABBITMQ_URL 
-            value: "amqp://admin:adminpass@alameda-rabbitmq.{{.NameSpace}}.svc:5672" 
+          - name: ALAMEDA_NOTIFIER_DATAHUB_ADDRESS
+            value: "alameda-datahub.{{.NameSpace}}.svc:50050"
+          - name: ALAMEDA_NOTIFIER_RABBITMQ_URL
+            value: "amqp://admin:adminpass@alameda-rabbitmq.{{.NameSpace}}.svc:5672"
         readinessProbe:
           exec:
             command:
