@@ -36,7 +36,7 @@ data:
       default = 3 # second
 
     [fedemeter]
-      url = "http://fedemeter-api:8999/fedemeter-api/v1"
+      url = "http://fedemeter-api:8888/fedemeter-api/v1"
       username = ""
       password = ""
 
@@ -57,7 +57,7 @@ data:
       default = 3 # second
 
     [fedemeter]
-      url = "http://fedemeter-api:8999/fedemeter-api/v1"
+      url = "http://fedemeter-api:8888/fedemeter-api/v1"
       username = ""
       password = ""
 
@@ -78,7 +78,7 @@ data:
       default = 3 # second
 
     [fedemeter]
-      url = "http://fedemeter-api:8999/fedemeter-api/v1"
+      url = "http://fedemeter-api:8888/fedemeter-api/v1"
       username = ""
       password = ""
 

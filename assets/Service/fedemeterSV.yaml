@@ -7,10 +7,8 @@ metadata:
     app: fedemeter-api
 spec:
   ports:
-  - port: 8999
-    targetPort: 8999
-    nodePort: 31000
+  - port: 8888
+    targetPort: 8888
     name: fedemeter-api
   selector:
     app: fedemeter-api
-  type: NodePort
