@@ -45,11 +45,11 @@ func ReadServiceV1(objBytes []byte) *corev1.Service {
 func ReadSecretV1(objBytes []byte) (*corev1.Secret, error) {
 	requiredObj, err := runtime.Decode(coreCodecs.UniversalDecoder(corev1.SchemeGroupVersion), objBytes)
 	if err != nil {
-		return nil, errors.Errorf("failed to read core v1 secret: %s", err.Error())
+		return nil, errors.Errorf("failed to decode core v1 secret: %s", err.Error())
 	}
 	secret, ok := requiredObj.(*corev1.Secret)
 	if !ok {
-		return nil, errors.Errorf("failed to read core v1 secret")
+		return nil, errors.Errorf("failed to convert to core v1 secret")
 	}
 	return secret, nil
 }

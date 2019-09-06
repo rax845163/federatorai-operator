@@ -129,6 +129,13 @@ func GetServiceAddress(svc *corev1.Service, portName string) (string, error) {
 	return fmt.Sprintf("%s.%s.svc:%d", name, namespace, portNum), nil
 }
 
+// GetServiceDNS returns service dns
+func GetServiceDNS(svc *corev1.Service) string {
+	namespace := svc.Namespace
+	name := svc.Name
+	return fmt.Sprintf("%s.%s.svc", name, namespace)
+}
+
 func SetBootStrapImageStruct(dep *appsv1.Deployment, componentspec v1alpha1.AlamedaComponentSpec, ctn string) {
 	for index, value := range dep.Spec.Template.Spec.InitContainers {
 		if value.Name == ctn {

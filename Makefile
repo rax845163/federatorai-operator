@@ -35,7 +35,6 @@ pkg/assets/bindata.go: $(GOBINDATA_BIN)
 		AlamedaNotificationChannel/... \
 		AlamedaNotificationTopic/... \
 		AlamedaScaler/... \
-		Certificate/... \
 		ClusterRole/... \
 		ClusterRoleBinding/... \
 		ConfigMap/... \
@@ -43,7 +42,6 @@ pkg/assets/bindata.go: $(GOBINDATA_BIN)
 		DaemonSet/... \
 		Deployment/... \
 		Ingress/... \
-		Issuer/... \
 		MutatingWebhookConfiguration/... \
 		PersistentVolumeClaim/... \
 		PodSecurityPolicy/... \

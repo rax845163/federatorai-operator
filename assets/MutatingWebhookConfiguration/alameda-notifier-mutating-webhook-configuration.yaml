@@ -2,7 +2,7 @@ apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingWebhookConfiguration
 metadata:
   annotations:
-    certmanager.k8s.io/inject-ca-from: {{.NameSpace}}/alameda-notifier-serving-cert
+    secret.name: alameda-notifier-webhook-server-cert
   creationTimestamp: null
   name: alameda-notifier-mutating-webhook-configuration
 webhooks:

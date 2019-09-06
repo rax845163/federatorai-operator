@@ -128,17 +128,16 @@ var (
 	}
 
 	notifierList = []string{
-		"Certificate/alameda-notifier-serving-cert.yaml",
 		"ClusterRole/alameda-notifier.yaml",
 		"ClusterRoleBinding/alameda-notifier.yaml",
 		"Deployment/alameda-notifier.yaml",
-		"Issuer/alameda-notifier-selfsigned-issuer.yaml",
 		"MutatingWebhookConfiguration/alameda-notifier-mutating-webhook-configuration.yaml",
 		"Service/alameda-notifier-webhook-service.yaml",
 		"ServiceAccount/alameda-notifier.yaml",
 		"ValidatingWebhookConfiguration/alameda-notifier-validating-webhook-configuration.yaml",
 		"AlamedaNotificationChannel/default.yaml",
 		"AlamedaNotificationTopic/default.yaml",
+		"Secret/alameda-notifier-webhook-server-cert.yaml",
 	}
 
 	federatoraiAgentList = []string{
@@ -234,6 +233,16 @@ func GetSelfDrivingRsource() *Resource {
 // GetAlamedaDatahubService returns service asset name of alameda-dathub
 func GetAlamedaDatahubService() string {
 	return "Service/alameda-datahubSV.yaml"
+}
+
+// GetAlamedaNotifierWebhookService returns service asset name of alameda-notifier-webhook-service
+func GetAlamedaNotifierWebhookService() string {
+	return "Service/alameda-notifier-webhook-service.yaml"
+}
+
+// GetAlamedaNotifierWebhookServerCertSecret returns secret asset name of alameda-notifier-webhook-server-cert
+func GetAlamedaNotifierWebhookServerCertSecret() string {
+	return "Secret/alameda-notifier-webhook-server-cert.yaml"
 }
 
 // GetCustomResourceDefinitions returns crd assets' name
@@ -574,11 +583,8 @@ type Resource struct {
 	SecurityContextConstraintsList     []string
 	RoleBindingList                    []string
 	RoleList                           []string
-	CertificateList                    []string
-	IssuerList                         []string
 	MutatingWebhookConfigurationList   []string
 	ValidatingWebhookConfigurationList []string
-	APIServiceList                     []string
 	AlamedaNotificationChannelList     []string
 	AlamedaNotificationTopic           []string
 }
@@ -629,9 +635,6 @@ func (r *Resource) GetAll() []string {
 	for _, file := range r.ValidatingWebhookConfigurationList {
 		files = append(files, file)
 	}
-	for _, file := range r.APIServiceList {
-		files = append(files, file)
-	}
 	for _, file := range r.DeploymentList {
 		files = append(files, file)
 	}
@@ -645,12 +648,6 @@ func (r *Resource) GetAll() []string {
 		files = append(files, file)
 	}
 	for _, file := range r.DaemonSetList {
-		files = append(files, file)
-	}
-	for _, file := range r.IssuerList {
-		files = append(files, file)
-	}
-	for _, file := range r.CertificateList {
 		files = append(files, file)
 	}
 	for _, file := range r.AlamedaNotificationChannelList {
@@ -686,11 +683,8 @@ func (r *Resource) add(in Resource) {
 	r.SecurityContextConstraintsList = append(r.SecurityContextConstraintsList, in.SecurityContextConstraintsList...)
 	r.RoleBindingList = append(r.RoleBindingList, in.RoleBindingList...)
 	r.RoleList = append(r.RoleList, in.RoleList...)
-	r.CertificateList = append(r.CertificateList, in.CertificateList...)
-	r.IssuerList = append(r.IssuerList, in.IssuerList...)
 	r.MutatingWebhookConfigurationList = append(r.MutatingWebhookConfigurationList, in.MutatingWebhookConfigurationList...)
 	r.ValidatingWebhookConfigurationList = append(r.ValidatingWebhookConfigurationList, in.ValidatingWebhookConfigurationList...)
-	r.APIServiceList = append(r.APIServiceList, in.APIServiceList...)
 	r.AlamedaNotificationChannelList = append(r.AlamedaNotificationChannelList, in.AlamedaNotificationChannelList...)
 	r.AlamedaNotificationTopic = append(r.AlamedaNotificationTopic, in.AlamedaNotificationTopic...)
 }
@@ -714,11 +708,8 @@ func (r *Resource) delete(in Resource) {
 	r.SecurityContextConstraintsList = util.StringSliceDelete(r.SecurityContextConstraintsList, in.SecurityContextConstraintsList)
 	r.RoleBindingList = util.StringSliceDelete(r.RoleBindingList, in.RoleBindingList)
 	r.RoleList = util.StringSliceDelete(r.RoleList, in.RoleList)
-	r.CertificateList = util.StringSliceDelete(r.CertificateList, in.CertificateList)
-	r.IssuerList = util.StringSliceDelete(r.IssuerList, in.IssuerList)
 	r.MutatingWebhookConfigurationList = util.StringSliceDelete(r.MutatingWebhookConfigurationList, in.MutatingWebhookConfigurationList)
 	r.ValidatingWebhookConfigurationList = util.StringSliceDelete(r.ValidatingWebhookConfigurationList, in.ValidatingWebhookConfigurationList)
-	r.APIServiceList = util.StringSliceDelete(r.APIServiceList, in.APIServiceList)
 	r.AlamedaNotificationChannelList = util.StringSliceDelete(r.AlamedaNotificationChannelList, in.AlamedaNotificationChannelList)
 	r.AlamedaNotificationTopic = util.StringSliceDelete(r.AlamedaNotificationTopic, in.AlamedaNotificationTopic)
 }
@@ -743,11 +734,8 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 	var securityContextConstraintsList = make([]string, 0)
 	var roleBindingList = make([]string, 0)
 	var roleList = make([]string, 0)
-	var certificateList = make([]string, 0)
-	var issuerList = make([]string, 0)
 	var mutatingWebhookConfigurationList = make([]string, 0)
 	var validatingWebhookConfigurationList = make([]string, 0)
-	var apiServiceList = make([]string, 0)
 	var alamedaNotificationChannelList = make([]string, 0)
 	var alamedaNotificationTopicList = make([]string, 0)
 
@@ -790,16 +778,10 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 				roleBindingList = append(roleBindingList, assetFile)
 			case "Role":
 				roleList = append(roleList, assetFile)
-			case "Certificate":
-				certificateList = append(certificateList, assetFile)
-			case "Issuer":
-				issuerList = append(issuerList, assetFile)
 			case "MutatingWebhookConfiguration":
 				mutatingWebhookConfigurationList = append(mutatingWebhookConfigurationList, assetFile)
 			case "ValidatingWebhookConfiguration":
 				validatingWebhookConfigurationList = append(validatingWebhookConfigurationList, assetFile)
-			case "APIService":
-				apiServiceList = append(apiServiceList, assetFile)
 			case "AlamedaNotificationChannel":
 				alamedaNotificationChannelList = append(alamedaNotificationChannelList, assetFile)
 			case "AlamedaNotificationTopic":
@@ -831,11 +813,8 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 		SecurityContextConstraintsList:     securityContextConstraintsList,
 		RoleBindingList:                    roleBindingList,
 		RoleList:                           roleList,
-		CertificateList:                    certificateList,
-		IssuerList:                         issuerList,
 		MutatingWebhookConfigurationList:   mutatingWebhookConfigurationList,
 		ValidatingWebhookConfigurationList: validatingWebhookConfigurationList,
-		APIServiceList:                     apiServiceList,
 		AlamedaNotificationChannelList:     alamedaNotificationChannelList,
 		AlamedaNotificationTopic:           alamedaNotificationTopicList,
 	}, nil
