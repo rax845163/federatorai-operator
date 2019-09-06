@@ -254,16 +254,10 @@ else
 fi
 
 operator_files=( 
-    "00-namespace.yaml"
-    "01-serviceaccount.yaml"
-    "02-alamedaservice.crd.yaml"
-    "03-cert-manager-crd.yaml"
-    "04-cert-manager.deployment.yaml"
-    "05-federatorai-operator.deployment.yaml"
-    "06-clusterrole.yaml"
-    "07-clusterrolebinding.yaml"
-    "08-role.yaml"
-    "09-rolebinding.yaml"
+    "00-namespace.yaml" "01-serviceaccount.yaml"
+    "02-alamedaservice.crd.yaml" "03-federatorai-operator.deployment.yaml"
+    "04-clusterrole.yaml" "05-clusterrolebinding.yaml"
+    "06-role.yaml" "07-rolebinding.yaml"
 )
 
 file_folder="/tmp/install-op"
@@ -286,35 +280,34 @@ done
 
 # Modify federator.ai operator yaml(s)
 # for tag
-sed -i "s/ubi:latest/ubi:${tag_number}/g" 05*.yaml
+sed -i "s/ubi:latest/ubi:${tag_number}/g" 03*.yaml
 # for namespace
 sed -i "s/name: federatorai/name: ${install_namespace}/g" 00*.yaml
-sed -i "s/federatorai/${install_namespace}/g" 04*.yaml
-sed -i "s/namespace: federatorai/namespace: ${install_namespace}/g" 01*.yaml 05*.yaml 07*.yaml 08*.yaml 09*.yaml
+sed -i "s/namespace: federatorai/namespace: ${install_namespace}/g" 01*.yaml 03*.yaml 05*.yaml 06*.yaml 07*.yaml
 
 echo -e "\n$(tput setaf 2)Starting apply Federator.ai operator yaml files$(tput sgr 0)"
 
-kubectl get APIService v1beta1.admission.certmanager.k8s.io >/dev/null 2>&1
-if [ "$?" = "0" ]; then
-    # system has certmanager
-    # check if it is deployed by ProphetStor
-    annotation=`kubectl get APIService v1beta1.admission.certmanager.k8s.io -o 'jsonpath={.metadata.annotations.app\.kubernetes\.io\/managed-by}' 2>/dev/null`
-    if [ "$annotation" != "federator.ai" ]; then
-        install_certmanager="n"
-    fi 
-fi
+# kubectl get APIService v1beta1.admission.certmanager.k8s.io >/dev/null 2>&1
+# if [ "$?" = "0" ]; then
+#     # system has certmanager
+#     # check if it is deployed by ProphetStor
+#     annotation=`kubectl get APIService v1beta1.admission.certmanager.k8s.io -o 'jsonpath={.metadata.annotations.app\.kubernetes\.io\/managed-by}' 2>/dev/null`
+#     if [ "$annotation" != "federator.ai" ]; then
+#         install_certmanager="n"
+#     fi 
+# fi
 
 for yaml_fn in `ls [0-9]*.yaml | sort -n`; do
 
-    if [ "$install_certmanager" = "n" ]; then
-        if [ "$yaml_fn" = "`ls 03*.yaml`" ] || [ "$yaml_fn" = "`ls 04*.yaml`" ]; then
-           # Only apply 03 and 04 yaml when
-           # 1. certmanager is deployed by ProphetStor
-           # 2. certmanager is not installed
-           echo "Skipping ${yaml_fn}..."
-           continue
-        fi
-    fi
+    # if [ "$install_certmanager" = "n" ]; then
+    #     if [ "$yaml_fn" = "`ls 03*.yaml`" ] || [ "$yaml_fn" = "`ls 04*.yaml`" ]; then
+    #        # Only apply 03 and 04 yaml when
+    #        # 1. certmanager is deployed by ProphetStor
+    #        # 2. certmanager is not installed
+    #        echo "Skipping ${yaml_fn}..."
+    #        continue
+    #     fi
+    # fi
     echo "Applying ${yaml_fn}..."
     kubectl apply -f ${yaml_fn}
     if [ "$?" != "0" ]; then
