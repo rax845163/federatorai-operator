@@ -125,6 +125,7 @@ wait_until_pods_ready()
         # check if pods created
         if [[ "`kubectl get po -n $namespace 2>/dev/null|wc -l`" -ge "$target_pod_number" ]]; then
             wait_pod_creating=0
+            echo -e "\nChecking pods..."
         else
             echo "Waiting for pods in namespace $namespace to be created..."
         fi
