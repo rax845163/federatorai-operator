@@ -124,10 +124,12 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 		keycodeRepository, err := r.getKeycodeRepository(request.Namespace)
 		if err != nil {
 			log.V(-1).Info("Get keycode summary failed, will not write keycode summary into AlamedaService's status", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "error", err.Error())
+			reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
 		} else {
 			detail, err := keycodeRepository.GetKeycodeDetail("")
 			if err != nil {
 				log.V(-1).Info("Get keycode summary failed, write empty keycode summary into AlamedaService's status", "AlamedaService.Namespace", request.Namespace, "AlamedaService.Name", request.Name, "error", err.Error())
+				reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
 			}
 			instance.SetStatusKeycodeSummary(detail.Summary())
 		}
@@ -346,11 +348,16 @@ func (r *ReconcileAlamedaServiceKeycode) handleEmptyKeycode(keycodeRepository re
 		return nil
 	}
 
-	// Delete keycode to keycode repository
-	prevAppliedKeycode := alamedaService.Status.KeycodeStatus.CodeNumber
-	if prevAppliedKeycode != "" {
-		if err := keycodeRepository.DeleteKeycode(prevAppliedKeycode); err != nil {
-			return errors.Wrap(err, "delete keycode from keycode repository failed")
+	details, err := keycodeRepository.ListKeycodes()
+	if err != nil {
+		return errors.Wrap(err, "list keycodes failed")
+	}
+	for _, detail := range details {
+		if detail.Keycode == "" {
+			continue
+		}
+		if err := keycodeRepository.DeleteKeycode(detail.Keycode); err != nil {
+			return errors.Wrap(err, "delete keycode failed")
 		}
 	}
 
