@@ -311,18 +311,6 @@ func (r *ReconcileAlamedaServiceKeycode) deleteAlamedaServiceDependencies(alamed
 	return nil
 }
 
-func (r *ReconcileAlamedaServiceKeycode) deleteKeycode(keycodeRepository repository_keycode.Interface, alamedaService *federatoraiv1alpha1.AlamedaService) error {
-
-	codeNum := alamedaService.Status.KeycodeStatus.CodeNumber
-	if codeNum != "" {
-		if err := keycodeRepository.DeleteKeycode(codeNum); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (r *ReconcileAlamedaServiceKeycode) deleteDatahubClient(datahubAddr string) error {
 
 	if client, exist := r.datahubClientMap[datahubAddr]; exist {
@@ -419,22 +407,6 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 	}
 
 	return nil
-}
-
-func (r *ReconcileAlamedaServiceKeycode) isKeycodeExist(keycodeRepository repository_keycode.Interface, keycode string) (bool, error) {
-
-	details, err := keycodeRepository.ListKeycodes()
-	if err != nil {
-		return false, errors.Wrap(err, "list keycodes failed")
-	}
-
-	for _, detail := range details {
-		if detail.Keycode == keycode {
-			return true, nil
-		}
-	}
-
-	return false, nil
 }
 
 func (r *ReconcileAlamedaServiceKeycode) isKeycodeSpecialCase(keycode string) bool {
