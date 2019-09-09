@@ -36,10 +36,14 @@ pods_ready()
 
   namespace="$1"
 
-  all_pods="$(kubectl get po -n $namespace -o 'jsonpath={.items[*].metadata.name}')"
-  for pod in $all_pods; do
-    is_pod_ready $pod $namespace || return 1
-  done
+  kubectl get pod -n $namespace \
+    -o=jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}' \
+      | while read name status _junk; do
+          if [ "$status" != "True" ]; then
+            echo "Waiting pod $name in namespace $namespace to be ready..."
+            return 1
+          fi
+        done || return 1
 
   return 0
 }
@@ -97,13 +101,12 @@ check_alameda_datahub_tag()
     namespace="$3"
 
     for ((i=0; i<$period; i+=$interval)); do
-        datahub_pod_name=`kubectl get pod -n $namespace -o name 2>/dev/null|grep datahub`
-        current_tag=`kubectl get $datahub_pod_name -n $namespace -o yaml 2>/dev/null|grep image:|head -1|cut -d ':' -f3`
+         current_tag="`kubectl get pod -n $namespace -o custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[*].image | grep datahub | head -1 | cut -d ':' -f2`"
         if [ "$current_tag" = "$tag_number" ]; then
             echo -e "\ndatahub pod is there.\n"
             return 0
         fi
-        echo "Waiting for datahub pod with current tag number shows up..."
+        echo "Waiting for datahub pod with current tag number shows up as $tag_number ..."
         sleep "$interval"
     done
     echo -e "\n$(tput setaf 1)Warning!! Waited for $period seconds, but datahub pod doesn't show up. Please check $namespace namespace$(tput sgr 0)"
@@ -450,7 +453,7 @@ __EOF__
 
     kubectl apply -f $alamedaservice_example &>/dev/null
     echo "Processing..."
-    check_alameda_datahub_tag 120 20 $install_namespace
+    check_alameda_datahub_tag 900 60 $install_namespace
     wait_until_pods_ready 900 60 $install_namespace 5
     webhook_reminder
     get_grafana_route $install_namespace
