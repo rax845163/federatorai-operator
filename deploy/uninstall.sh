@@ -32,20 +32,13 @@ remove_all_alamedaservice()
     sleep 10
 }
 
+parse_version(){
+    echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'
+}
+
 download_operator_yaml_if_needed()
 {
-    operator_files=( 
-        "00-namespace.yaml"
-        "01-serviceaccount.yaml"
-        "02-alamedaservice.crd.yaml"
-        "03-cert-manager-crd.yaml"
-        "04-cert-manager.deployment.yaml"
-        "05-federatorai-operator.deployment.yaml"
-        "06-clusterrole.yaml"
-        "07-clusterrolebinding.yaml"
-        "08-role.yaml"
-        "09-rolebinding.yaml"
-    )
+    operator_files=`curl --silent https://api.github.com/repos/containers-ai/federatorai-operator/contents/deploy/upstream?ref=${tag_number} 2>&1|grep "\"name\":"|cut -d ':' -f2|cut -d '"' -f2`
 
     for file in "${operator_files[@]}"
     do
@@ -59,15 +52,23 @@ download_operator_yaml_if_needed()
         fi
     done
 
+    tag_without_v="${tag_number:1}"
+
     if [ "$installed_namespace" != "" ]; then
-        sed -i "s/ubi:latest/ubi:${tag_number}/g" 05*.yaml
-        # for namespace
-        sed -i "s/name: federatorai/name: ${installed_namespace}/g" 00*.yaml
-        sed -i "s/federatorai/${installed_namespace}/g" 04*.yaml
-        sed -i "s/namespace: federatorai/namespace: ${installed_namespace}/g" 01*.yaml 05*.yaml 07*.yaml 08*.yaml 09*.yaml
+        if [ $(parse_version $tag_without_v) -ge $(parse_version "4.2.272") ] && [ $(parse_version $tag_without_v) -le $(parse_version "4.2.275") ]; then
+            sed -i "s/ubi:latest/ubi:${tag_number}/g" 05*.yaml
+            # for namespace
+            sed -i "s/name: federatorai/name: ${installed_namespace}/g" 00*.yaml
+            sed -i "s/federatorai/${installed_namespace}/g" 04*.yaml
+            sed -i "s/namespace: federatorai/namespace: ${installed_namespace}/g" 01*.yaml 05*.yaml 07*.yaml 08*.yaml 09*.yaml
+        else
+            sed -i "s/ubi:latest/ubi:${tag_number}/g" 03*.yaml
+            # for namespace
+            sed -i "s/name: federatorai/name: ${installed_namespace}/g" 00*.yaml
+            sed -i "s/namespace: federatorai/namespace: ${installed_namespace}/g" 01*.yaml 03*.yaml 05*.yaml 06*.yaml 07*.yaml
+        fi
     fi
-    # for tag
-    
+
 }
 
 remove_operator_yaml()
