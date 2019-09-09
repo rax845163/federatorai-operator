@@ -39,6 +39,12 @@ spec:
           value: "alameda-operator.{{.NameSpace}}.svc:50050"
         - name: DATAHUB_ADDRESS
           value: "alameda-datahub.{{.NameSpace}}.svc:50050"
+        - name: PREDICT_QUEUE_ENABLED
+          value: "true"
+        - name: PREDICT_QUEUE_URL
+          value: "amqp://admin:adminpass@alameda-rabbitmq.{{.NameSpace}}.svc:5672"
+        - name: MAXIMUM_PREDICT_PROCESSES
+          value: "4"
         readinessProbe:
           exec:
             command:
