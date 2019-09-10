@@ -22,11 +22,12 @@ During the deployment, **Federator.ai Operator** will install a CRD called _Alam
 $ git clone https://github.com/containers-ai/federatorai-operator.git
 ```
 
-2. Apply the K8s manifests
+2. Execute the install script and follow the prompts
 ```
-$ kubectl apply -f federatorai-operator/deploy/upstream/
+$ bash <federatorai-operator>/deploy/install.sh
 ```
-This will pull **Federator.ai Operator** image from `quay.io/prophetstor` and deploy it into `federatorai` namespace. You should see `federatorai-operator` pod is running after few seconds.
+
+**Note:** The script also provides non-interactive installation. Please see the comments in the front of the script for examples.
 
 #### Deployment by Operator-Lifecycle-Management Framework
 
@@ -80,4 +81,12 @@ For more details, please refer to [AlamedaService CRD document](./crd_alamedaser
 
 
 In addition, users can patch a created _AlamedaService_ CR and **Federator.ai Operator** will react to it. For example, by changing the _enableExecution_ field from _true_ to _false_, Alameda recommendation execution components will be uninstalled. (Alameda is still giving prediction and recommendations. GUI can still visualize the result. Just the execution part is off)
+
+## Teardown
+
+Execute the uninstall script and follow the prompts.
+```
+$ bash <federatorai-operator>/deploy/uninstall.sh
+```
+
 
