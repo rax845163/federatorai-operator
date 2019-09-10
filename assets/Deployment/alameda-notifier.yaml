@@ -23,6 +23,14 @@ spec:
       - name: alameda-notifier
         image: quay.io/prophetstor/alameda-notifier-ubi:v4.2.259        
         env:
+          - name: NAMESPACE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
           - name: ALAMEDA_NOTIFIER_DATAHUB_ADDRESS
             value: "alameda-datahub.{{.NameSpace}}.svc:50050"
           - name: ALAMEDA_NOTIFIER_RABBITMQ_URL
