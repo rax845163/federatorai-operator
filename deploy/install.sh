@@ -221,6 +221,13 @@ echo "Checking environment version..."
 check_version
 echo "...Passed"
 
+previous_alameda_namespace="`kubectl get pods --all-namespaces |grep "alameda-ai-"|awk '{print $1}'|head -1`"
+previous_tag="`kubectl get pods -n $previous_alameda_namespace -o custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[*].image 2>/dev/null| grep datahub | head -1 | cut -d ':' -f2`"
+previous_operator_namespace="`kubectl get pods --all-namespaces |grep "federatorai-operator-"|awk '{print $1}'`"
+if [ "$previous_alameda_namespace" != "" ];then
+    need_upgrade="y"
+fi
+
 if [ "$silent_mode_disabled" = "y" ];then
 
     while [[ "$info_correct" != "y" ]] && [[ "$info_correct" != "Y" ]]
@@ -231,11 +238,19 @@ if [ "$silent_mode_disabled" = "y" ];then
 
         read -r -p "$(tput setaf 2)Please input Federator.ai Operator tag:$(tput sgr 0) " tag_number </dev/tty
 
-        default="federatorai"
-        read -r -p "$(tput setaf 2)Enter the namespace you want to install Federator.ai [default: federatorai]: $(tput sgr 0)" install_namespace </dev/tty
-        install_namespace=${install_namespace:-$default}
+        if [ "$need_upgrade" = "y" ];then
+            echo -e "\n$(tput setaf 11)Previous build with tag$(tput setaf 1) $previous_tag $(tput setaf 11)detected in namespace$(tput setaf 1) $previous_alameda_namespace$(tput sgr 0)"
+            install_namespace="$previous_alameda_namespace"
+        else
+            default="federatorai"
+            read -r -p "$(tput setaf 2)Enter the namespace you want to install Federator.ai [default: federatorai]: $(tput sgr 0)" install_namespace </dev/tty
+            install_namespace=${install_namespace:-$default}
+        fi
 
         echo -e "\n----------------------------------------"
+        if [ "$need_upgrade" = "y" ];then
+            echo "$(tput setaf 11)Upgrade:$(tput sgr 0)"
+        fi
         echo "tag_number = $tag_number"
         echo "install_namespace = $install_namespace"
         echo "----------------------------------------"
@@ -285,6 +300,10 @@ done
 # Modify federator.ai operator yaml(s)
 # for tag
 sed -i "s/ubi:latest/ubi:${tag_number}/g" 03*.yaml
+if [ "$need_upgrade" = "y" ];then
+    # for upgrade - stop operator before applying new alamedaservice
+    sed -i "s/replicas: 1/replicas: 0/g" 03*.yaml
+fi
 # for namespace
 sed -i "s/name: federatorai/name: ${install_namespace}/g" 00*.yaml
 sed -i "s/namespace: federatorai/namespace: ${install_namespace}/g" 01*.yaml 03*.yaml 05*.yaml 06*.yaml 07*.yaml
@@ -300,6 +319,18 @@ echo -e "\n$(tput setaf 2)Starting apply Federator.ai operator yaml files$(tput 
 #         install_certmanager="n"
 #     fi 
 # fi
+
+if [ "$need_upgrade" = "y" ];then
+    # for upgrade - delete old federatorai-operator deployment before apply new yaml(s)
+    old_deployment="`kubectl get deployment -o name -n $previous_operator_namespace 2>/dev/null|grep federatorai-operator`"
+    if [ "$old_deployment" != "" ];then
+        kubectl delete $old_deployment -n $previous_operator_namespace
+        if [ "$?" != "0" ]; then
+            echo -e "\n$(tput setaf 1)Error in deleting old Federator.ai operator deployment.$(tput sgr 0)"
+            exit 8
+        fi
+    fi
+fi
 
 for yaml_fn in `ls [0-9]*.yaml | sort -n`; do
 
@@ -452,6 +483,11 @@ __EOF__
     fi
 
     kubectl apply -f $alamedaservice_example &>/dev/null
+    if [ "$need_upgrade" = "y" ];then
+        # for upgrade - start operator after applying new alamedaservice
+        kubectl patch deployment federatorai-operator -n $install_namespace -p '{"spec":{"replicas": 1}}'
+    fi
+
     echo "Processing..."
     check_alameda_datahub_tag 900 60 $install_namespace
     wait_until_pods_ready 900 60 $install_namespace 5
@@ -460,6 +496,11 @@ __EOF__
     echo -e "$(tput setaf 6)\nInstall Alameda $tag_number successfully$(tput sgr 0)"
     leave_prog
     exit 0
+else
+    if [ "$need_upgrade" = "y" ];then
+        # for upgrade - start operator after applying new alamedaservice
+        kubectl patch deployment federatorai-operator -n $install_namespace -p '{"spec":{"replicas": 1}}'
+    fi
 fi
 
 webhook_reminder
