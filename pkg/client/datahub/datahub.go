@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 
+	datahubv1alpha1 "github.com/containers-ai/api/alameda_api/v1alpha1/datahub"
 	"github.com/containers-ai/api/datahub/keycodes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/genproto/googleapis/rpc/code"
@@ -16,6 +17,7 @@ import (
 // Client wraps datahub client
 type Client struct {
 	conn           *grpc.ClientConn
+	v1alpha1Client datahubv1alpha1.DatahubServiceClient
 	keycodesClient keycodes.KeycodesServiceClient
 }
 
@@ -23,9 +25,11 @@ type Client struct {
 func NewDatahubClient(config Config) Client {
 	dialOptions := []grpc.DialOption{grpc.WithInsecure()}
 	conn, _ := grpc.Dial(config.Address, dialOptions...)
+	v1alpha1Client := datahubv1alpha1.NewDatahubServiceClient(conn)
 	keycodesClient := keycodes.NewKeycodesServiceClient(conn)
 	return Client{
 		conn:           conn,
+		v1alpha1Client: v1alpha1Client,
 		keycodesClient: keycodesClient,
 	}
 }
@@ -38,6 +42,23 @@ func (d *Client) Ping() error {
 // Close closes grpc connection
 func (d *Client) Close() error {
 	return d.conn.Close()
+}
+
+// CreateEvents creates events to Alameda-Datahub
+func (d *Client) CreateEvents(events []*datahubv1alpha1.Event) error {
+
+	ctx := context.TODO()
+	req := datahubv1alpha1.CreateEventsRequest{
+		Events: events,
+	}
+	respStatus, err := d.v1alpha1Client.CreateEvents(ctx, &req)
+	if err != nil {
+		return errors.Errorf("create events to Alameda-Datahub failed: %s", err.Error())
+	} else if !isResponseStatusOK(respStatus) {
+		return errors.Errorf("create events to Alameda-Datahub failed: %s", getResponseStatusDetail(respStatus))
+	}
+
+	return nil
 }
 
 // ListKeycodes lists keycode from Alameda-Datahub

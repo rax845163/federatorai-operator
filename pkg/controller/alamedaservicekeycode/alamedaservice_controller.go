@@ -2,9 +2,11 @@ package alamedaservicekeycode
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
+	datahubv1alpha1 "github.com/containers-ai/api/alameda_api/v1alpha1/datahub"
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	client_datahub "github.com/containers-ai/federatorai-operator/pkg/client/datahub"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
@@ -27,8 +29,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
+type namespace = string
+
 const (
-	retryLimitDuration time.Duration = 30 * time.Minute
+	retryLimitDuration                  time.Duration = 30 * time.Minute
+	addKeycodeSuccessMessageTemplate                  = "Add keycode %s success"
+	deleteKeycodeSuccessMessageTemplate               = "Delete keycode %s success"
+	addKeycodeFailedMessageTemplate                   = "Add keycode %s failed"
+	deleteKeycodeFailedMessageTemplate                = "Delete keycode %s failed"
 )
 
 var (
@@ -52,11 +60,14 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 		client: mgr.GetClient(),
 		scheme: mgr.GetScheme(),
 
-		datahubClientMap:     make(map[string]client_datahub.Client),
+		datahubClientMap:     make(map[namespace]client_datahub.Client),
 		datahubClientMapLock: sync.Mutex{},
 
 		firstRetryTimeCache: make(map[types.NamespacedName]*time.Time),
 		firstRetryTimeLock:  sync.Mutex{},
+
+		eventChanMap:     make(map[namespace]chan datahubv1alpha1.Event),
+		eventChanMapLock: sync.Mutex{},
 	}
 }
 
@@ -82,11 +93,14 @@ type ReconcileAlamedaServiceKeycode struct {
 	client client.Client
 	scheme *runtime.Scheme
 
-	datahubClientMap     map[string]client_datahub.Client
+	datahubClientMap     map[namespace]client_datahub.Client
 	datahubClientMapLock sync.Mutex
 
 	firstRetryTimeCache map[types.NamespacedName]*time.Time
 	firstRetryTimeLock  sync.Mutex
+
+	eventChanMap     map[namespace]chan datahubv1alpha1.Event
+	eventChanMapLock sync.Mutex
 }
 
 // Reconcile reconcile AlamedaService's keycode
@@ -97,6 +111,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	var reconcileResult = reconcile.Result{}
 	var keycodeSpec = federatoraiv1alpha1.KeycodeSpec{}
 	var keycodeStatus = federatoraiv1alpha1.KeycodeStatus{}
+	defer r.flushEvents(request.Namespace)
 	defer r.handleFirstRetryTime(&reconcileResult, request.NamespacedName)
 	defer func() {
 
@@ -341,12 +356,17 @@ func (r *ReconcileAlamedaServiceKeycode) handleEmptyKeycode(keycodeRepository re
 		return errors.Wrap(err, "list keycodes failed")
 	}
 	for _, detail := range details {
-		if detail.Keycode == "" {
+		codeNumber := detail.Keycode
+		if codeNumber == "" {
 			continue
 		}
-		if err := keycodeRepository.DeleteKeycode(detail.Keycode); err != nil {
+		if err := keycodeRepository.DeleteKeycode(codeNumber); err != nil {
+			e := newLicenseEvent(alamedaService.Namespace, fmt.Sprintf(deleteKeycodeFailedMessageTemplate, codeNumber), datahubv1alpha1.EventLevel_EVENT_LEVEL_WARNING)
+			r.addEvent(alamedaService.Namespace, e)
 			return errors.Wrap(err, "delete keycode failed")
 		}
+		e := newLicenseEvent(alamedaService.Namespace, fmt.Sprintf(deleteKeycodeSuccessMessageTemplate, codeNumber), datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
+		r.addEvent(alamedaService.Namespace, e)
 	}
 
 	return nil
@@ -365,6 +385,8 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 	if len(details) == 0 {
 		// Apply keycode to keycode repository
 		if err := keycodeRepository.SendKeycode(keycode); err != nil {
+			e := newLicenseEvent(alamedaService.Namespace, fmt.Sprintf(addKeycodeFailedMessageTemplate, keycode), datahubv1alpha1.EventLevel_EVENT_LEVEL_WARNING)
+			r.addEvent(alamedaService.Namespace, e)
 			return errors.Wrap(err, "send keycode to keycode repository failed")
 		}
 		keycodeStatus.CodeNumber = keycodeSpec.CodeNumber
@@ -382,12 +404,17 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 		} else {
 
 			for _, detail := range details {
-				if detail.Keycode == "" {
+				codeNumber := detail.Keycode
+				if codeNumber == "" {
 					continue
 				}
-				if err := keycodeRepository.DeleteKeycode(detail.Keycode); err != nil {
+				if err := keycodeRepository.DeleteKeycode(codeNumber); err != nil {
+					e := newLicenseEvent(alamedaService.Namespace, fmt.Sprintf(deleteKeycodeFailedMessageTemplate, keycode), datahubv1alpha1.EventLevel_EVENT_LEVEL_WARNING)
+					r.addEvent(alamedaService.Namespace, e)
 					return errors.Wrap(err, "delete keycode failed")
 				}
+				e := newLicenseEvent(alamedaService.Namespace, fmt.Sprintf(deleteKeycodeSuccessMessageTemplate, codeNumber), datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
+				r.addEvent(alamedaService.Namespace, e)
 			}
 
 			keycodeSpec.SignatureData = ""
@@ -401,6 +428,8 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 			if err := keycodeRepository.SendKeycode(keycode); err != nil {
 				return errors.Wrap(err, "send keycode to keycode repository failed")
 			}
+			e := newLicenseEvent(alamedaService.Namespace, fmt.Sprintf(addKeycodeSuccessMessageTemplate, keycode), datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
+			r.addEvent(alamedaService.Namespace, e)
 			keycodeStatus.CodeNumber = keycodeSpec.CodeNumber
 			keycodeStatus.State = federatoraiv1alpha1.KeycodeStatePollingRegistrationData
 		}
@@ -437,14 +466,7 @@ func (r *ReconcileAlamedaServiceKeycode) getKeycodeRepository(namespace string) 
 	if err != nil {
 		return nil, errors.Wrap(err, "get Datahub address failed")
 	}
-	if _, exist := r.datahubClientMap[datahubAddress]; !exist {
-		r.datahubClientMapLock.Lock()
-		datahubClientConfig := client_datahub.NewDefaultConfig()
-		datahubClientConfig.Address = datahubAddress
-		r.datahubClientMap[datahubAddress] = client_datahub.NewDatahubClient(datahubClientConfig)
-		r.datahubClientMapLock.Unlock()
-	}
-	datahubClient := r.datahubClientMap[datahubAddress]
+	datahubClient := r.getOrCreateDatahubClient(datahubAddress)
 	keycodeRepository := repository_keycode_datahub.NewKeycodeRepository(&datahubClient)
 
 	return keycodeRepository, nil
@@ -462,6 +484,18 @@ func (r *ReconcileAlamedaServiceKeycode) getDatahubAddressByNamespace(namespace 
 		return "", err
 	}
 	return datahubAddress, nil
+}
+
+func (r *ReconcileAlamedaServiceKeycode) getOrCreateDatahubClient(datahubAddress string) client_datahub.Client {
+
+	if _, exist := r.datahubClientMap[datahubAddress]; !exist {
+		r.datahubClientMapLock.Lock()
+		defer r.datahubClientMapLock.Unlock()
+		datahubClientConfig := client_datahub.NewDefaultConfig()
+		datahubClientConfig.Address = datahubAddress
+		r.datahubClientMap[datahubAddress] = client_datahub.NewDatahubClient(datahubClientConfig)
+	}
+	return r.datahubClientMap[datahubAddress]
 }
 
 func (r *ReconcileAlamedaServiceKeycode) setFirstRetryTimeIfNotExist(namespacedName types.NamespacedName, t *time.Time) {
@@ -489,4 +523,63 @@ func (r *ReconcileAlamedaServiceKeycode) deleteFirstRetryTime(namespacedName typ
 	r.firstRetryTimeLock.Lock()
 	defer r.firstRetryTimeLock.Unlock()
 	delete(r.firstRetryTimeCache, namespacedName)
+}
+
+func (r *ReconcileAlamedaServiceKeycode) getEventChan(namespace namespace) chan datahubv1alpha1.Event {
+
+	var eventChan chan datahubv1alpha1.Event
+	var exist bool
+	if eventChan, exist = r.eventChanMap[namespace]; !exist {
+		r.eventChanMapLock.Lock()
+		r.eventChanMap[namespace] = make(chan datahubv1alpha1.Event, 100)
+		r.eventChanMapLock.Unlock()
+	}
+	eventChan = r.eventChanMap[namespace]
+	return eventChan
+}
+
+func (r *ReconcileAlamedaServiceKeycode) addEvent(namespace namespace, e datahubv1alpha1.Event) {
+
+	var eventChan chan datahubv1alpha1.Event
+	var exist bool
+	if eventChan, exist = r.eventChanMap[namespace]; !exist {
+		r.eventChanMapLock.Lock()
+		r.eventChanMap[namespace] = make(chan datahubv1alpha1.Event, 100)
+		eventChan = r.eventChanMap[namespace]
+		r.eventChanMapLock.Unlock()
+	}
+
+	eventChan <- e
+}
+
+func (r *ReconcileAlamedaServiceKeycode) flushEvents(namespace namespace) error {
+	log.V(1).Info("Flush events...")
+
+	datahubAddress, err := r.getDatahubAddressByNamespace(namespace)
+	if err != nil {
+		log.V(-1).Info("Flush events failed: get datahub address failed %s", err.Error())
+	}
+
+	cli := r.getOrCreateDatahubClient(datahubAddress)
+
+	var events []*datahubv1alpha1.Event
+	eventChan := r.getEventChan(namespace)
+Loop:
+	for {
+		select {
+		case event := <-eventChan:
+			copyEvent := event
+			events = append(events, &copyEvent)
+		default:
+			break Loop
+		}
+	}
+
+	err = cli.CreateEvents(events)
+	if err != nil {
+		log.V(-1).Info("Flush events failed: %s", err.Error())
+	}
+
+	log.V(1).Info("Flush events done")
+	return nil
 }

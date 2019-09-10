@@ -58,7 +58,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:7b0ee776b13af83423a5ea9e1d50e37a0c2461b90e727d3537dadfad744feb10"
+  digest = "1:8aa5f131fc390ef1d3a00c5f23db8ce2c9caee71ef63080749eebceb97ba8c03"
   name = "github.com/containers-ai/api"
   packages = [
     "alameda_api/v1alpha1/datahub",
@@ -66,7 +66,7 @@
     "datahub/keycodes",
   ]
   pruneopts = "NT"
-  revision = "e83e4c249904ab5bf6e420d176f70f2a51ce3015"
+  revision = "c333486576eded865a7ba2e1e19baf993cd00fdb"
 
 [[projects]]
   digest = "1:c61f4f97321a37adcb5b4fd4fd61209cd553e46c99ee606c465553541b12a229"
@@ -1157,7 +1157,9 @@
   input-imports = [
     "github.com/containers-ai/alameda/admission-controller",
     "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1",
+    "github.com/containers-ai/api/alameda_api/v1alpha1/datahub",
     "github.com/containers-ai/api/datahub/keycodes",
+    "github.com/ghodss/yaml",
     "github.com/go-logr/logr",
     "github.com/go-logr/zapr",
     "github.com/go-openapi/spec",
@@ -1191,10 +1193,12 @@
     "k8s.io/apimachinery/pkg/api/errors",
     "k8s.io/apimachinery/pkg/api/resource",
     "k8s.io/apimachinery/pkg/apis/meta/v1",
+    "k8s.io/apimachinery/pkg/apis/meta/v1/unstructured",
     "k8s.io/apimachinery/pkg/runtime",
     "k8s.io/apimachinery/pkg/runtime/schema",
     "k8s.io/apimachinery/pkg/runtime/serializer",
     "k8s.io/apimachinery/pkg/types",
+    "k8s.io/apimachinery/pkg/util/uuid",
     "k8s.io/apimachinery/pkg/util/wait",
     "k8s.io/client-go/kubernetes",
     "k8s.io/client-go/plugin/pkg/client/auth/gcp",

@@ -39,3 +39,20 @@ func (d *KeycodeRepository) GetKeycodeDetail(code string) (repository_keycode.De
 func (d *KeycodeRepository) DeleteKeycode(keycode string) error {
 	return nil
 }
+
+func (d *KeycodeRepository) ListKeycodes() ([]repository_keycode.Detail, error) {
+
+	details := []repository_keycode.Detail{
+		repository_keycode.Detail{
+			Keycode:        "test-keycode",
+			KeycodeType:    "test-keycode-type",
+			KeycodeVersion: 0,
+			ApplyTime:      nil,
+			ExpireTime:     nil,
+			LicenseState:   "test-keycode-state",
+			Registered:     true,
+		},
+	}
+
+	return details, nil
+}
