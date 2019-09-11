@@ -486,7 +486,7 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 func (r *ReconcileAlamedaServiceKeycode) isKeycodeSpecialCase(keycode string) bool {
 
 	for _, c := range keycodeSpecialCases {
-		keycode = strings.ReplaceAll(keycode, "-", "")
+		keycode = strings.Replace(keycode, "-", "", -1)
 		if c == keycode {
 			return true
 		}
