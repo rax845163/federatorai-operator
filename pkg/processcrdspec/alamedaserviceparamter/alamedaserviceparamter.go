@@ -70,6 +70,9 @@ var (
 	}
 
 	analyzerList = []string{
+		"ClusterRoleBinding/alameda-analyzerCRB.yaml",
+		"ClusterRole/alameda-analyzerCR.yaml",
+		"ServiceAccount/alameda-analyzerSA.yaml",
 		"Deployment/alameda-analyzerDM.yaml",
 	}
 
