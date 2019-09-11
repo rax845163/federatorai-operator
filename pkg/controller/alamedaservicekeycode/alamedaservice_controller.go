@@ -79,9 +79,15 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 		firstRetryTimeCache: make(map[types.NamespacedName]*time.Time),
 		firstRetryTimeLock:  sync.Mutex{},
 
+		clusterID:        clusterID,
 		eventChanMap:     make(map[namespace]chan datahubv1alpha1.Event),
 		eventChanMapLock: sync.Mutex{},
-		clusterID:        clusterID,
+
+		lastReconcileTaskMap: make(map[namespace]struct {
+			codeNumber string
+			state      federatoraiv1alpha1.KeycodeState
+		}),
+		lastReconcileTaskMapLock: sync.Mutex{},
 	}
 }
 
@@ -116,6 +122,12 @@ type ReconcileAlamedaServiceKeycode struct {
 	clusterID        string
 	eventChanMap     map[namespace]chan datahubv1alpha1.Event
 	eventChanMapLock sync.Mutex
+
+	lastReconcileTaskMap map[namespace]struct {
+		codeNumber string
+		state      federatoraiv1alpha1.KeycodeState
+	}
+	lastReconcileTaskMapLock sync.Mutex
 }
 
 // Reconcile reconcile AlamedaService's keycode
@@ -124,9 +136,9 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	log.Info("Reconcile Keycode")
 
 	var reconcileResult = reconcile.Result{}
-	var keycodeSpec = federatoraiv1alpha1.KeycodeSpec{}
-	var keycodeStatus = federatoraiv1alpha1.KeycodeStatus{}
-	defer r.flushEvents(request.Namespace)
+	alamedaService := &federatoraiv1alpha1.AlamedaService{}
+	defer r.setLastReconcileTask(request.Namespace, alamedaService)
+	defer r.flushEvents(request.Namespace, alamedaService)
 	defer r.handleFirstRetryTime(&reconcileResult, request.NamespacedName)
 	defer func() {
 
@@ -147,8 +159,8 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 			return
 		}
 
-		instance.Spec.Keycode = keycodeSpec
-		instance.Status.KeycodeStatus = keycodeStatus
+		instance.Spec.Keycode = alamedaService.Spec.Keycode
+		instance.Status.KeycodeStatus = alamedaService.Status.KeycodeStatus
 
 		// Get keycodeRepository
 		keycodeRepository, err := r.getKeycodeRepository(request.Namespace)
@@ -171,7 +183,6 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	}()
 
 	// Fetch the AlamedaService instance
-	alamedaService := &federatoraiv1alpha1.AlamedaService{}
 	err := r.client.Get(context.TODO(), request.NamespacedName, alamedaService)
 	if err != nil {
 		if k8sErrors.IsNotFound(err) {
@@ -187,8 +198,6 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 		reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
 		return reconcileResult, nil
 	}
-	keycodeSpec = alamedaService.Spec.Keycode
-	keycodeStatus = alamedaService.Status.KeycodeStatus
 
 	if firstRetryTime := r.getFirstRetryTime(request.NamespacedName); firstRetryTime != nil {
 		now := time.Now()
@@ -203,7 +212,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	keycodeRepository, err := r.getKeycodeRepository(alamedaService.Namespace)
 	if err != nil {
 		log.V(-1).Info("Get licese repository failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
-		keycodeStatus.LastErrorMessage = errors.Wrap(err, "get keycode repository instance failed").Error()
+		alamedaService.Status.KeycodeStatus.LastErrorMessage = errors.Wrap(err, "get keycode repository instance failed").Error()
 		reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
 		return reconcileResult, nil
 	}
@@ -214,12 +223,12 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	if alamedaService.IsCodeNumberEmpty() {
 		if err := r.handleEmptyKeycode(keycodeRepository, alamedaService); err != nil {
 			log.V(-1).Info("Handle empty keycode failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
-			keycodeStatus.LastErrorMessage = errors.Wrap(err, "handle empty keycode failed").Error()
+			alamedaService.Status.KeycodeStatus.LastErrorMessage = errors.Wrap(err, "handle empty keycode failed").Error()
 			reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
 			return reconcileResult, nil
 		}
-		keycodeSpec = federatoraiv1alpha1.KeycodeSpec{}
-		keycodeStatus = federatoraiv1alpha1.KeycodeStatus{State: federatoraiv1alpha1.KeycodeStateWaitingKeycode}
+		alamedaService.Spec.Keycode = federatoraiv1alpha1.KeycodeSpec{}
+		alamedaService.Status.KeycodeStatus = federatoraiv1alpha1.KeycodeStatus{State: federatoraiv1alpha1.KeycodeStateWaitingKeycode}
 		log.Info("Handle empty keycode done", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name)
 		return reconcileResult, nil
 	}
@@ -232,9 +241,9 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 
 	// If keycode is updated, do the update process no matter what the current state is
 	if alamedaService.IsCodeNumberUpdated() {
-		if err := r.handleKeycode(keycodeRepository, alamedaService, &keycodeSpec, &keycodeStatus); err != nil {
+		if err := r.handleKeycode(keycodeRepository, alamedaService); err != nil {
 			log.V(-1).Info("Update keycode failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
-			keycodeStatus.LastErrorMessage = errors.Wrap(err, "update keycode failed").Error()
+			alamedaService.Status.KeycodeStatus.LastErrorMessage = errors.Wrap(err, "update keycode failed").Error()
 			reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
 			return reconcileResult, nil
 		}
@@ -246,9 +255,9 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 	// Keycode is not changed, process keycode by the current state
 	switch alamedaService.Status.KeycodeStatus.State {
 	case federatoraiv1alpha1.KeycodeStateDefault, federatoraiv1alpha1.KeycodeStateWaitingKeycode:
-		if err := r.handleKeycode(keycodeRepository, alamedaService, &keycodeSpec, &keycodeStatus); err != nil {
+		if err := r.handleKeycode(keycodeRepository, alamedaService); err != nil {
 			log.V(-1).Info("Handling keycode failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
-			keycodeStatus.LastErrorMessage = errors.Wrap(err, "handle keycode failed").Error()
+			alamedaService.Status.KeycodeStatus.LastErrorMessage = errors.Wrap(err, "handle keycode failed").Error()
 			reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
 			return reconcileResult, nil
 		}
@@ -262,7 +271,7 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 		registrationData, err := keycodeRepository.GetRegistrationData()
 		if err != nil {
 			log.V(-1).Info("Polling registration data failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
-			keycodeStatus.LastErrorMessage = errors.Wrap(err, "poll registration data failed").Error()
+			alamedaService.Status.KeycodeStatus.LastErrorMessage = errors.Wrap(err, "poll registration data failed").Error()
 			reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
 			return reconcileResult, nil
 		}
@@ -271,14 +280,14 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 		detail, err := keycodeRepository.GetKeycodeDetail("")
 		if err != nil {
 			log.V(-1).Info("Polling registration data failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
-			keycodeStatus.LastErrorMessage = errors.Wrap(err, "poll registration data failed").Error()
+			alamedaService.Status.KeycodeStatus.LastErrorMessage = errors.Wrap(err, "poll registration data failed").Error()
 			reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
 			return reconcileResult, nil
 		}
 		if detail.Registered {
-			keycodeSpec.SignatureData = registrationData
-			keycodeStatus = federatoraiv1alpha1.KeycodeStatus{
-				CodeNumber:       keycodeSpec.CodeNumber,
+			alamedaService.Spec.Keycode.SignatureData = registrationData
+			alamedaService.Status.KeycodeStatus = federatoraiv1alpha1.KeycodeStatus{
+				CodeNumber:       alamedaService.Spec.Keycode.CodeNumber,
 				RegistrationData: "",
 				State:            federatoraiv1alpha1.KeycodeStateDone,
 				LastErrorMessage: "",
@@ -286,8 +295,8 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 			}
 			log.Info("Keycode has been registered, move state to \"Done\"", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name)
 		} else {
-			keycodeStatus = federatoraiv1alpha1.KeycodeStatus{
-				CodeNumber:       keycodeSpec.CodeNumber,
+			alamedaService.Status.KeycodeStatus = federatoraiv1alpha1.KeycodeStatus{
+				CodeNumber:       alamedaService.Spec.Keycode.CodeNumber,
 				RegistrationData: registrationData,
 				State:            federatoraiv1alpha1.KeycodeStateWaitingSignatureData,
 				LastErrorMessage: "",
@@ -303,12 +312,12 @@ func (r *ReconcileAlamedaServiceKeycode) Reconcile(request reconcile.Request) (r
 		}
 		if err := r.handleSignatureData(keycodeRepository, alamedaService); err != nil {
 			log.V(-1).Info("Handling signature data failed, retry reconciling keycode", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name, "error", err.Error())
-			keycodeStatus.LastErrorMessage = errors.Wrap(err, "handle signature data  failed").Error()
+			alamedaService.Status.KeycodeStatus.LastErrorMessage = errors.Wrap(err, "handle signature data  failed").Error()
 			reconcileResult = reconcile.Result{Requeue: true, RequeueAfter: requeueDuration}
 			return reconcileResult, nil
 		}
-		keycodeStatus.LastErrorMessage = ""
-		keycodeStatus.State = federatoraiv1alpha1.KeycodeStateDone
+		alamedaService.Status.KeycodeStatus.LastErrorMessage = ""
+		alamedaService.Status.KeycodeStatus.State = federatoraiv1alpha1.KeycodeStateDone
 		log.Info("Handling signature data done", "AlamedaService.Namespace", alamedaService.Namespace, "AlamedaService.Name", alamedaService.Name)
 		return reconcileResult, nil
 	default:
@@ -337,6 +346,8 @@ func (r *ReconcileAlamedaServiceKeycode) deleteAlamedaServiceDependencies(alamed
 	r.deleteDatahubClient(datahubAddress)
 
 	r.deleteFirstRetryTime(types.NamespacedName{Namespace: alamedaService.Namespace, Name: alamedaService.Name})
+	r.deleteEventChan(alamedaService.Namespace)
+	r.deleteLastReconcileTask(alamedaService.Namespace)
 
 	return nil
 }
@@ -395,8 +406,7 @@ func (r *ReconcileAlamedaServiceKeycode) handleEmptyKeycode(keycodeRepository re
 	return nil
 }
 
-func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository repository_keycode.Interface, alamedaService *federatoraiv1alpha1.AlamedaService,
-	keycodeSpec *federatoraiv1alpha1.KeycodeSpec, keycodeStatus *federatoraiv1alpha1.KeycodeStatus) error {
+func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository repository_keycode.Interface, alamedaService *federatoraiv1alpha1.AlamedaService) error {
 
 	// Check if keycode is existing
 	keycode := alamedaService.Spec.Keycode.CodeNumber
@@ -422,18 +432,18 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 			r.clusterID,
 			datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
 		r.addEvent(alamedaService.Namespace, e)
-		keycodeStatus.CodeNumber = keycodeSpec.CodeNumber
-		keycodeStatus.State = federatoraiv1alpha1.KeycodeStatePollingRegistrationData
+		alamedaService.Status.KeycodeStatus.CodeNumber = alamedaService.Spec.Keycode.CodeNumber
+		alamedaService.Status.KeycodeStatus.State = federatoraiv1alpha1.KeycodeStatePollingRegistrationData
 	} else {
 		// If keycode is special case, get the existing keycode for user
 		if r.isKeycodeSpecialCase(keycode) {
-			keycodeSpec.CodeNumber = details[0].Keycode
-			keycodeSpec.SignatureData = ""
-			keycodeStatus.CodeNumber = details[0].Keycode
-			keycodeStatus.RegistrationData = ""
-			keycodeStatus.State = federatoraiv1alpha1.KeycodeStatePollingRegistrationData
-			keycodeStatus.LastErrorMessage = ""
-			keycodeStatus.Summary = ""
+			alamedaService.Spec.Keycode.CodeNumber = details[0].Keycode
+			alamedaService.Spec.Keycode.SignatureData = ""
+			alamedaService.Status.KeycodeStatus.CodeNumber = details[0].Keycode
+			alamedaService.Status.KeycodeStatus.RegistrationData = ""
+			alamedaService.Status.KeycodeStatus.State = federatoraiv1alpha1.KeycodeStatePollingRegistrationData
+			alamedaService.Status.KeycodeStatus.LastErrorMessage = ""
+			alamedaService.Status.KeycodeStatus.Summary = ""
 		} else {
 
 			for _, detail := range details {
@@ -458,12 +468,12 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 				r.addEvent(alamedaService.Namespace, e)
 			}
 
-			keycodeSpec.SignatureData = ""
-			keycodeStatus.CodeNumber = ""
-			keycodeStatus.RegistrationData = ""
-			keycodeStatus.State = federatoraiv1alpha1.KeycodeStateWaitingKeycode
-			keycodeStatus.LastErrorMessage = ""
-			keycodeStatus.Summary = ""
+			alamedaService.Spec.Keycode.SignatureData = ""
+			alamedaService.Status.KeycodeStatus.CodeNumber = ""
+			alamedaService.Status.KeycodeStatus.RegistrationData = ""
+			alamedaService.Status.KeycodeStatus.State = federatoraiv1alpha1.KeycodeStateWaitingKeycode
+			alamedaService.Status.KeycodeStatus.LastErrorMessage = ""
+			alamedaService.Status.KeycodeStatus.Summary = ""
 
 			// Apply keycode to keycode repository
 			if err := keycodeRepository.SendKeycode(keycode); err != nil {
@@ -475,8 +485,8 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 				r.clusterID,
 				datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
 			r.addEvent(alamedaService.Namespace, e)
-			keycodeStatus.CodeNumber = keycodeSpec.CodeNumber
-			keycodeStatus.State = federatoraiv1alpha1.KeycodeStatePollingRegistrationData
+			alamedaService.Status.KeycodeStatus.CodeNumber = alamedaService.Spec.Keycode.CodeNumber
+			alamedaService.Status.KeycodeStatus.State = federatoraiv1alpha1.KeycodeStatePollingRegistrationData
 		}
 	}
 
@@ -584,6 +594,13 @@ func (r *ReconcileAlamedaServiceKeycode) getEventChan(namespace namespace) chan 
 	return eventChan
 }
 
+func (r *ReconcileAlamedaServiceKeycode) deleteEventChan(namespace namespace) {
+
+	r.eventChanMapLock.Lock()
+	defer r.eventChanMapLock.Unlock()
+	delete(r.eventChanMap, namespace)
+}
+
 func (r *ReconcileAlamedaServiceKeycode) addEvent(namespace namespace, e datahubv1alpha1.Event) {
 
 	var eventChan chan datahubv1alpha1.Event
@@ -598,7 +615,8 @@ func (r *ReconcileAlamedaServiceKeycode) addEvent(namespace namespace, e datahub
 	eventChan <- e
 }
 
-func (r *ReconcileAlamedaServiceKeycode) flushEvents(namespace namespace) error {
+func (r *ReconcileAlamedaServiceKeycode) flushEvents(namespace namespace, alamedaService *federatoraiv1alpha1.AlamedaService) error {
+
 	log.V(1).Info("Flush events...")
 
 	datahubAddress, err := r.getDatahubAddressByNamespace(namespace)
@@ -621,6 +639,10 @@ Loop:
 		}
 	}
 
+	if !r.needToflushEvents(namespace, alamedaService) {
+		log.V(1).Info("Need not to flush events")
+		return nil
+	}
 	err = cli.CreateEvents(events)
 	if err != nil {
 		log.V(-1).Info("Flush events failed: %s", "error", err.Error())
@@ -628,4 +650,48 @@ Loop:
 
 	log.V(1).Info("Flush events done")
 	return nil
+}
+
+func (r *ReconcileAlamedaServiceKeycode) needToflushEvents(namespace namespace, alamedaService *federatoraiv1alpha1.AlamedaService) bool {
+
+	if alamedaService == nil || alamedaService.DeletionTimestamp != nil {
+		return true
+	}
+
+	lastReconcileTask := r.getLastReconcileTask(namespace)
+	if lastReconcileTask.codeNumber == alamedaService.Spec.Keycode.CodeNumber &&
+		lastReconcileTask.state == alamedaService.Status.KeycodeStatus.State {
+		return false
+	}
+
+	return true
+}
+
+func (r *ReconcileAlamedaServiceKeycode) setLastReconcileTask(namespace namespace, alamedaService *federatoraiv1alpha1.AlamedaService) {
+	if alamedaService == nil || alamedaService.DeletionTimestamp != nil {
+		return
+	}
+	r.lastReconcileTaskMapLock.Lock()
+	defer r.lastReconcileTaskMapLock.Unlock()
+	r.lastReconcileTaskMap[namespace] = struct {
+		codeNumber string
+		state      federatoraiv1alpha1.KeycodeState
+	}{
+		codeNumber: alamedaService.Spec.Keycode.CodeNumber,
+		state:      alamedaService.Status.KeycodeStatus.State,
+	}
+}
+
+func (r *ReconcileAlamedaServiceKeycode) getLastReconcileTask(namespace namespace) struct {
+	codeNumber string
+	state      federatoraiv1alpha1.KeycodeState
+} {
+	return r.lastReconcileTaskMap[namespace]
+}
+
+func (r *ReconcileAlamedaServiceKeycode) deleteLastReconcileTask(namespace namespace) {
+
+	r.lastReconcileTaskMapLock.Lock()
+	defer r.lastReconcileTaskMapLock.Unlock()
+	delete(r.lastReconcileTaskMap, namespace)
 }
