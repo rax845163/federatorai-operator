@@ -40,7 +40,7 @@ download_operator_yaml_if_needed()
 {
     operator_files=`curl --silent https://api.github.com/repos/containers-ai/federatorai-operator/contents/deploy/upstream?ref=${tag_number} 2>&1|grep "\"name\":"|cut -d ':' -f2|cut -d '"' -f2`
 
-    for file in "${operator_files[@]}"
+    for file in `echo $operator_files`
     do
         if [ ! -f "$file" ]; then
             echo "Downloading file $file ..."
