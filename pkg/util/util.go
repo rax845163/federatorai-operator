@@ -1,6 +1,7 @@
 package util
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -8,7 +9,9 @@ import (
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	k8sErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 )
 
@@ -540,4 +543,29 @@ func StringSliceDelete(slice1 []string, slice2 []string) []string {
 	}
 
 	return diff
+}
+
+// GetClusterUID returns metadata.uid from "cluster-info" configMap.
+func GetClusterUID(k8sClient client.Client) (string, error) {
+	possibleNSList := []string{
+		"kube-service-catalog", "kube-public",
+	}
+	var errorList []string
+	clusterID := ""
+	for _, possibleNS := range possibleNSList {
+		clusterInfoCM := &corev1.ConfigMap{}
+		err := k8sClient.Get(context.Background(), client.ObjectKey{
+			Name:      "cluster-info",
+			Namespace: possibleNS,
+		}, clusterInfoCM)
+		if err == nil {
+			return string(clusterInfoCM.GetUID()), nil
+		} else if !k8sErrors.IsNotFound(err) {
+			errorList = append(errorList, err.Error())
+		}
+	}
+	if len(errorList) == 0 {
+		return clusterID, errors.New("no cluster info found")
+	}
+	return clusterID, errors.New(strings.Join(errorList, ","))
 }

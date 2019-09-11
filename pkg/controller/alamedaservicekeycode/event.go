@@ -11,11 +11,10 @@ const (
 	componentName = "federatorai-operator"
 )
 
-func newLicenseEvent(namespace, message string, level datahubv1alpha1.EventLevel) datahubv1alpha1.Event {
+func newLicenseEvent(namespace, message, clusterID string, level datahubv1alpha1.EventLevel) datahubv1alpha1.Event {
 
 	now := ptypes.TimestampNow()
 	id := uuid.NewUUID()
-	clusterID := ""
 	source := datahubv1alpha1.EventSource{
 		Host:      "",
 		Component: componentName,

@@ -3,6 +3,7 @@ package alamedaservicekeycode
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -44,7 +45,7 @@ var (
 	log                                      = logf.Log.WithName("controller_alamedaservicekeycode")
 	requeueDuration                          = 30 * time.Second
 	keycodeSpecialCases                      = []string{
-		"GRV7J-LA4TX-KPPIT-S6GRS-NK4EB-ILFRQ",
+		"GRV7JLA4TXKPPITS6GRSNK4EBILFRQ",
 	}
 )
 
@@ -56,6 +57,18 @@ func Add(mgr manager.Manager) error {
 
 // newReconciler returns a new reconcile.Reconciler
 func newReconciler(mgr manager.Manager) reconcile.Reconciler {
+
+	var clusterID string
+	tmpClient, err := client.New(mgr.GetConfig(), client.Options{})
+	if err != nil {
+		log.V(-1).Info("Get tmp client failed, will use \"\" as clusterID when sending event.", "error", err.Error())
+	} else {
+		clusterID, err = util.GetClusterUID(tmpClient)
+		if err != nil {
+			log.V(-1).Info("Get clusterID failed, will use \"\" as clusterID when sending event.", "error", err.Error())
+		}
+	}
+
 	return &ReconcileAlamedaServiceKeycode{
 		client: mgr.GetClient(),
 		scheme: mgr.GetScheme(),
@@ -68,6 +81,7 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 
 		eventChanMap:     make(map[namespace]chan datahubv1alpha1.Event),
 		eventChanMapLock: sync.Mutex{},
+		clusterID:        clusterID,
 	}
 }
 
@@ -99,6 +113,7 @@ type ReconcileAlamedaServiceKeycode struct {
 	firstRetryTimeCache map[types.NamespacedName]*time.Time
 	firstRetryTimeLock  sync.Mutex
 
+	clusterID        string
 	eventChanMap     map[namespace]chan datahubv1alpha1.Event
 	eventChanMapLock sync.Mutex
 }
@@ -361,11 +376,19 @@ func (r *ReconcileAlamedaServiceKeycode) handleEmptyKeycode(keycodeRepository re
 			continue
 		}
 		if err := keycodeRepository.DeleteKeycode(codeNumber); err != nil {
-			e := newLicenseEvent(alamedaService.Namespace, fmt.Sprintf(deleteKeycodeFailedMessageTemplate, codeNumber), datahubv1alpha1.EventLevel_EVENT_LEVEL_WARNING)
+			e := newLicenseEvent(
+				alamedaService.Namespace,
+				fmt.Sprintf(deleteKeycodeFailedMessageTemplate, codeNumber),
+				r.clusterID,
+				datahubv1alpha1.EventLevel_EVENT_LEVEL_WARNING)
 			r.addEvent(alamedaService.Namespace, e)
 			return errors.Wrap(err, "delete keycode failed")
 		}
-		e := newLicenseEvent(alamedaService.Namespace, fmt.Sprintf(deleteKeycodeSuccessMessageTemplate, codeNumber), datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
+		e := newLicenseEvent(
+			alamedaService.Namespace,
+			fmt.Sprintf(deleteKeycodeSuccessMessageTemplate, codeNumber),
+			r.clusterID,
+			datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
 		r.addEvent(alamedaService.Namespace, e)
 	}
 
@@ -385,10 +408,20 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 	if len(details) == 0 {
 		// Apply keycode to keycode repository
 		if err := keycodeRepository.SendKeycode(keycode); err != nil {
-			e := newLicenseEvent(alamedaService.Namespace, fmt.Sprintf(addKeycodeFailedMessageTemplate, keycode), datahubv1alpha1.EventLevel_EVENT_LEVEL_WARNING)
+			e := newLicenseEvent(
+				alamedaService.Namespace,
+				fmt.Sprintf(addKeycodeFailedMessageTemplate, keycode),
+				r.clusterID,
+				datahubv1alpha1.EventLevel_EVENT_LEVEL_WARNING)
 			r.addEvent(alamedaService.Namespace, e)
 			return errors.Wrap(err, "send keycode to keycode repository failed")
 		}
+		e := newLicenseEvent(
+			alamedaService.Namespace,
+			fmt.Sprintf(addKeycodeSuccessMessageTemplate, keycode),
+			r.clusterID,
+			datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
+		r.addEvent(alamedaService.Namespace, e)
 		keycodeStatus.CodeNumber = keycodeSpec.CodeNumber
 		keycodeStatus.State = federatoraiv1alpha1.KeycodeStatePollingRegistrationData
 	} else {
@@ -409,11 +442,19 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 					continue
 				}
 				if err := keycodeRepository.DeleteKeycode(codeNumber); err != nil {
-					e := newLicenseEvent(alamedaService.Namespace, fmt.Sprintf(deleteKeycodeFailedMessageTemplate, keycode), datahubv1alpha1.EventLevel_EVENT_LEVEL_WARNING)
+					e := newLicenseEvent(
+						alamedaService.Namespace,
+						fmt.Sprintf(deleteKeycodeFailedMessageTemplate, keycode),
+						r.clusterID,
+						datahubv1alpha1.EventLevel_EVENT_LEVEL_WARNING)
 					r.addEvent(alamedaService.Namespace, e)
 					return errors.Wrap(err, "delete keycode failed")
 				}
-				e := newLicenseEvent(alamedaService.Namespace, fmt.Sprintf(deleteKeycodeSuccessMessageTemplate, codeNumber), datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
+				e := newLicenseEvent(
+					alamedaService.Namespace,
+					fmt.Sprintf(deleteKeycodeSuccessMessageTemplate, codeNumber),
+					r.clusterID,
+					datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
 				r.addEvent(alamedaService.Namespace, e)
 			}
 
@@ -428,7 +469,11 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 			if err := keycodeRepository.SendKeycode(keycode); err != nil {
 				return errors.Wrap(err, "send keycode to keycode repository failed")
 			}
-			e := newLicenseEvent(alamedaService.Namespace, fmt.Sprintf(addKeycodeSuccessMessageTemplate, keycode), datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
+			e := newLicenseEvent(
+				alamedaService.Namespace,
+				fmt.Sprintf(addKeycodeSuccessMessageTemplate, keycode),
+				r.clusterID,
+				datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
 			r.addEvent(alamedaService.Namespace, e)
 			keycodeStatus.CodeNumber = keycodeSpec.CodeNumber
 			keycodeStatus.State = federatoraiv1alpha1.KeycodeStatePollingRegistrationData
@@ -441,6 +486,7 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 func (r *ReconcileAlamedaServiceKeycode) isKeycodeSpecialCase(keycode string) bool {
 
 	for _, c := range keycodeSpecialCases {
+		keycode = strings.ReplaceAll(keycode, "-", "")
 		if c == keycode {
 			return true
 		}
@@ -577,7 +623,7 @@ Loop:
 
 	err = cli.CreateEvents(events)
 	if err != nil {
-		log.V(-1).Info("Flush events failed: %s", err.Error())
+		log.V(-1).Info("Flush events failed: %s", "error", err.Error())
 	}
 
 	log.V(1).Info("Flush events done")
