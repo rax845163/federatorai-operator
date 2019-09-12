@@ -39,3 +39,9 @@ rules:
   - horizontalpodautoscalers
   verbs:
   - list
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
