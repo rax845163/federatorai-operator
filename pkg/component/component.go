@@ -35,15 +35,17 @@ import (
 var log = logf.Log.WithName("controller_alamedaservice")
 
 type ComponentConfig struct {
-	NameSpace         string
-	PodTemplateConfig PodTemplateConfig
+	NameSpace                   string
+	PodTemplateConfig           PodTemplateConfig
+	PrometheusOperatorNamespace string
 }
 
-func NewComponentConfig(namespace string, ptc PodTemplateConfig) *ComponentConfig {
+func NewComponentConfig(namespace, promNamespace string, ptc PodTemplateConfig) *ComponentConfig {
 
 	return &ComponentConfig{
-		NameSpace:         namespace,
-		PodTemplateConfig: ptc,
+		NameSpace:                   namespace,
+		PodTemplateConfig:           ptc,
+		PrometheusOperatorNamespace: promNamespace,
 	}
 }
 

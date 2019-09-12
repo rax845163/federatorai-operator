@@ -2,6 +2,9 @@ package v1alpha1
 
 import (
 	"encoding/json"
+	"strings"
+
+	"github.com/pkg/errors"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -269,6 +272,26 @@ func (as AlamedaService) GetSpecAnnotationWithoutKeycode() (string, error) {
 		return "", err
 	}
 	return string(jsonSpec), nil
+}
+
+// GetPrometheusNamespace returns prometheus running namespace by parsing PrometheusService
+func (as AlamedaService) GetPrometheusNamespace() (string, error) {
+
+	ps := as.Spec.PrometheusService
+	slashes := "://"
+	slashesIndex := strings.Index(ps, slashes)
+	domainNameAndPath := ps[slashesIndex+len(slashes):]
+
+	semicolon := ":"
+	semicolonIndex := strings.Index(domainNameAndPath, semicolon)
+	domainName := domainNameAndPath[:semicolonIndex]
+
+	tokens := strings.Split(domainName, ".")
+	if len(tokens) < 2 {
+		return "", errors.New("length of slice < 2 ,seperate prometheus service by \",\" ")
+	}
+
+	return tokens[1], nil
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -54,6 +54,7 @@ var (
 		"ServiceAccount/alameda-aiSA.yaml",
 		"Service/alameda-ai-metricsSV.yaml",
 		"Deployment/alameda-aiDM.yaml",
+		"ServiceMonitor/alameda-ai.yaml",
 	}
 
 	rabbitmqList = []string{
@@ -589,7 +590,8 @@ type Resource struct {
 	MutatingWebhookConfigurationList   []string
 	ValidatingWebhookConfigurationList []string
 	AlamedaNotificationChannelList     []string
-	AlamedaNotificationTopic           []string
+	AlamedaNotificationTopicList       []string
+	ServiceMonitorList                 []string
 }
 
 func (r *Resource) GetAll() []string {
@@ -656,7 +658,10 @@ func (r *Resource) GetAll() []string {
 	for _, file := range r.AlamedaNotificationChannelList {
 		files = append(files, file)
 	}
-	for _, file := range r.AlamedaNotificationTopic {
+	for _, file := range r.AlamedaNotificationTopicList {
+		files = append(files, file)
+	}
+	for _, file := range r.ServiceMonitorList {
 		files = append(files, file)
 	}
 
@@ -689,7 +694,8 @@ func (r *Resource) add(in Resource) {
 	r.MutatingWebhookConfigurationList = append(r.MutatingWebhookConfigurationList, in.MutatingWebhookConfigurationList...)
 	r.ValidatingWebhookConfigurationList = append(r.ValidatingWebhookConfigurationList, in.ValidatingWebhookConfigurationList...)
 	r.AlamedaNotificationChannelList = append(r.AlamedaNotificationChannelList, in.AlamedaNotificationChannelList...)
-	r.AlamedaNotificationTopic = append(r.AlamedaNotificationTopic, in.AlamedaNotificationTopic...)
+	r.AlamedaNotificationTopicList = append(r.AlamedaNotificationTopicList, in.AlamedaNotificationTopicList...)
+	r.ServiceMonitorList = append(r.ServiceMonitorList, in.ServiceMonitorList...)
 }
 
 func (r *Resource) delete(in Resource) {
@@ -714,7 +720,8 @@ func (r *Resource) delete(in Resource) {
 	r.MutatingWebhookConfigurationList = util.StringSliceDelete(r.MutatingWebhookConfigurationList, in.MutatingWebhookConfigurationList)
 	r.ValidatingWebhookConfigurationList = util.StringSliceDelete(r.ValidatingWebhookConfigurationList, in.ValidatingWebhookConfigurationList)
 	r.AlamedaNotificationChannelList = util.StringSliceDelete(r.AlamedaNotificationChannelList, in.AlamedaNotificationChannelList)
-	r.AlamedaNotificationTopic = util.StringSliceDelete(r.AlamedaNotificationTopic, in.AlamedaNotificationTopic)
+	r.AlamedaNotificationTopicList = util.StringSliceDelete(r.AlamedaNotificationTopicList, in.AlamedaNotificationTopicList)
+	r.ServiceMonitorList = util.StringSliceDelete(r.ServiceMonitorList, in.ServiceMonitorList)
 }
 
 func getResourceFromList(resourceList []string) (Resource, error) {
@@ -741,6 +748,7 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 	var validatingWebhookConfigurationList = make([]string, 0)
 	var alamedaNotificationChannelList = make([]string, 0)
 	var alamedaNotificationTopicList = make([]string, 0)
+	var serviceMonitorList = make([]string, 0)
 
 	for _, assetFile := range resourceList {
 		if len(strings.Split(assetFile, "/")) > 0 {
@@ -789,6 +797,8 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 				alamedaNotificationChannelList = append(alamedaNotificationChannelList, assetFile)
 			case "AlamedaNotificationTopic":
 				alamedaNotificationTopicList = append(alamedaNotificationTopicList, assetFile)
+			case "ServiceMonitor":
+				serviceMonitorList = append(serviceMonitorList, assetFile)
 			default:
 				return Resource{}, errors.Errorf("unknown kind \"%s\"", kind)
 			}
@@ -819,7 +829,8 @@ func getResourceFromList(resourceList []string) (Resource, error) {
 		MutatingWebhookConfigurationList:   mutatingWebhookConfigurationList,
 		ValidatingWebhookConfigurationList: validatingWebhookConfigurationList,
 		AlamedaNotificationChannelList:     alamedaNotificationChannelList,
-		AlamedaNotificationTopic:           alamedaNotificationTopicList,
+		AlamedaNotificationTopicList:       alamedaNotificationTopicList,
+		ServiceMonitorList:                 serviceMonitorList,
 	}, nil
 
 }

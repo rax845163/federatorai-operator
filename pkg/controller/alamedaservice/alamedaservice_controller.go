@@ -2,6 +2,7 @@ package alamedaservice
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
@@ -177,7 +178,11 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("get namespace failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-	componentConfig = r.newComponentConfig(ns)
+	componentConfig, err = r.newComponentConfig(ns, instance)
+	if err != nil {
+		log.Error(err, "New ComponentConfig failed", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name)
+		return reconcile.Result{Requeue: false}, nil
+	}
 	installResource := asp.GetInstallResource()
 	if err = r.syncCustomResourceDefinition(instance, asp, installResource); err != nil {
 		log.Error(err, "create crd failed")
@@ -260,6 +265,10 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("create AlamedaNotificationTopic failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 10 * time.Second}, nil
 	}
+	if err := r.createServiceMonitors(instance, installResource); err != nil {
+		log.V(-1).Info("create ServiceMonitors failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+		return reconcile.Result{Requeue: true, RequeueAfter: 10 * time.Second}, nil
+	}
 	// if EnableExecution Or EnableGUI has been changed to false
 	//Uninstall Execution Component
 	if !asp.EnableExecution {
@@ -340,10 +349,14 @@ func (r *ReconcileAlamedaService) getNamespace(namespaceName string) (corev1.Nam
 	return namespace, nil
 }
 
-func (r *ReconcileAlamedaService) newComponentConfig(namespace corev1.Namespace) *component.ComponentConfig {
+func (r *ReconcileAlamedaService) newComponentConfig(namespace corev1.Namespace, alamedaService *federatoraiv1alpha1.AlamedaService) (*component.ComponentConfig, error) {
+	promNamespace, err := alamedaService.GetPrometheusNamespace()
+	if err != nil {
+		return &component.ComponentConfig{}, errors.Wrap(err, "get prometheus namespace failed")
+	}
 	podTemplateConfig := component.NewDefaultPodTemplateConfig(namespace)
-	componentConfg := component.NewComponentConfig(namespace.Name, podTemplateConfig)
-	return componentConfg
+	componentConfg := component.NewComponentConfig(namespace.Name, promNamespace, podTemplateConfig)
+	return componentConfg, nil
 }
 
 func (r *ReconcileAlamedaService) createScalerforAlameda(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
@@ -434,7 +447,7 @@ func (r *ReconcileAlamedaService) createAlamedaNotificationChannels(instance *fe
 }
 
 func (r *ReconcileAlamedaService) createAlamedaNotificationTopics(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-	for _, file := range resource.AlamedaNotificationTopic {
+	for _, file := range resource.AlamedaNotificationTopicList {
 		src, err := componentConfig.NewAlamedaNotificationTopic(file)
 		if err != nil {
 			return errors.Errorf("get AlamedaNotificationTopic failed: file: %s, error: %s", file, err.Error())
@@ -445,6 +458,25 @@ func (r *ReconcileAlamedaService) createAlamedaNotificationTopics(instance *fede
 		err = r.client.Create(context.TODO(), src)
 		if err != nil && !k8sErrors.IsAlreadyExists(err) {
 			return errors.Errorf("create AlamedaNotificationTopic %s failed: %s", src.GetName(), err.Error())
+		}
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) createServiceMonitors(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
+	for _, file := range resource.ServiceMonitorList {
+		src, err := componentConfig.NewUnstructed(file)
+		if err != nil {
+			return errors.Errorf("get ServiceMonitor failed: file: %s, error: %s", file, err.Error())
+		}
+		if err := controllerutil.SetControllerReference(instance, src, r.scheme); err != nil {
+			return errors.Errorf("Fail ServiceMonitor SetControllerReference: %s", err.Error())
+		}
+		err = r.client.Create(context.TODO(), src)
+		if err != nil {
+			reason := k8sErrors.ReasonForError(err)
+			fmt.Printf("!!!!!!!!!!! %+v \n", reason)
+			return errors.Errorf("create ServiceMonitor %s failed: %s", src.GetName(), err.Error())
 		}
 	}
 	return nil

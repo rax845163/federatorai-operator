@@ -52,6 +52,7 @@ pkg/assets/bindata.go: $(GOBINDATA_BIN)
 		SecurityContextConstraints/... \
 		Service/... \
 		ServiceAccount/... \
+		ServiceMonitor/... \
 		StatefulSet/... \
 		ValidatingWebhookConfiguration/... \
 

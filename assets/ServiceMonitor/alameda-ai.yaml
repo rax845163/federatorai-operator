@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: alameda-ai-metrics
+  namespace: {{.PrometheusOperatorNamespace}}
+  labels:
+    k8s-app: alameda
+spec:
+  endpoints:
+  - port: ai-metrics
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      component: alameda-ai
