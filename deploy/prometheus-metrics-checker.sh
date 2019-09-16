@@ -31,16 +31,22 @@ prometheus_pod_name="`kubectl get pods -l "${key}=${value}" -n $prometheus_names
 echo -e "\tprometheus_pod_name=$prometheus_pod_name"
 
 echo -e "\nCheck all current prometheus metrics ..."
-prometheus_metrics_list="`kubectl exec $prometheus_pod_name -n $prometheus_namespace -- curl -s http://localhost:9090/api/v1/label/__name__/values 2>/dev/null|python -m json.tool 2>/dev/null`"
 
-if [ "$prometheus_metrics_list" = "" ];then
-    prometheus_metrics_list="`curl -s http://${prometheus_svc_name}.${prometheus_namespace}.svc:9090/api/v1/label/__name__/values 2>/dev/null|python -m json.tool 2>/dev/null`"
+# Method 1
+prometheus_metrics_list="`curl -s http://${prometheus_svc_name}.${prometheus_namespace}.svc:9090/api/v1/label/__name__/values 2>/dev/null|python -m json.tool 2>/dev/null`"
+if [ "$prometheus_metrics_list" != "" ];then
+    suggested_prometheus_url="http://${prometheus_svc_name}.${prometheus_namespace}.svc:9090"
 fi
 
+# Method 2
 if [ "$prometheus_metrics_list" = "" ];then
     prometheus_metrics_list=$(kubectl run -it --rm debug --image=containersai/alpine-curl --restart=Never -- -w "\n" http://${prometheus_svc_name}.${prometheus_namespace}:9090/api/v1/label/__name__/values 2>/dev/null | grep -v "pod \"debug\" deleted"|python -m json.tool 2>/dev/null)
+    if [ "$prometheus_metrics_list" != "" ];then
+        suggested_prometheus_url="http://${prometheus_svc_name}.${prometheus_namespace}:9090"
+    fi
 fi
 
+# Method 3
 openshift_minor_version=`oc version 2>/dev/null|grep "oc v"|cut -d '.' -f2`
 if [ "$prometheus_metrics_list" = "" ] && [ "$openshift_minor_version" != "" ];then
     while [[ "$interactive_enabled" != "y" ]] && [[ "$interactive_enabled" != "n" ]]
@@ -60,6 +66,15 @@ if [ "$prometheus_metrics_list" = "" ] && [ "$openshift_minor_version" != "" ];t
         prometheus_svc_name=`kubectl get svc -n ${prometheus_namespace}|grep 9091|awk '{print $1}'`
         prometheus_metrics_list=$(kubectl run -it --rm debug --image=containersai/alpine-curl --restart=Never -- -w "\n" -k -H "Authorization: Bearer ${access_token}" https://${prometheus_svc_name}.${prometheus_namespace}:9091/api/v1/label/__name__/values 2>/dev/null | grep -v "pod \"debug\" deleted"|python -m json.tool 2>/dev/null)
     fi
+
+    if [ "$prometheus_metrics_list" != "" ];then
+        suggested_prometheus_url="https://${prometheus_svc_name}.${prometheus_namespace}:9091"
+    fi
+fi
+
+# Method 4
+if [ "$prometheus_metrics_list" = "" ];then
+    prometheus_metrics_list="`kubectl exec $prometheus_pod_name -n $prometheus_namespace -- curl -s http://localhost:9090/api/v1/label/__name__/values 2>/dev/null|python -m json.tool 2>/dev/null`"
 fi
 
 [ "${prometheus_metrics_list}" = "" ] && echo -e "\n$(tput setaf 10)Warning! prometheus_metrics_list is empty due to prometheus api query failed$(tput sgr 0)"
@@ -86,6 +101,11 @@ done
 echo -e "======================================================================================"
 if [ "$check_result_passed" = "y" ];then
     echo -e "\n$(tput setaf 11)Prometheus metrics check - Passed\n$(tput sgr 0)"
+
+    if [ "$suggested_prometheus_url" != "" ];then
+        echo -e "$(tput setaf 10)Suggest to use below Prometheus URL while installing Federator.ai:$(tput sgr 0)"
+        echo -e "$(tput setaf 11)${suggested_prometheus_url}\n$(tput sgr 0)"
+    fi
 else
     echo -e "\n$(tput setaf 11)Prometheus metrics check - Failed\n"
     echo "Check this page for further details:"
