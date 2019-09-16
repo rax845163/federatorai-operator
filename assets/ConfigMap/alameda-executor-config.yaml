@@ -12,3 +12,6 @@ data:
       check-cycle: 3   # second
       expire-time: 300 # second
       enable: true
+    gRPC:
+      log:
+        outputLevel: "warn"
