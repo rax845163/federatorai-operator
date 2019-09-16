@@ -42,19 +42,22 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:8a52a93b5694d1f5cd667dd6bc428aae27cec91d65724482eeea1961f252dc8f"
+  digest = "1:dce1b19d0e6925e783e02cd256dec622d38d668015a3a38fce999c620f841485"
   name = "github.com/containers-ai/alameda"
   packages = [
     "admission-controller",
     "admission-controller/pkg/service",
     "operator/pkg/apis/autoscaling/v1alpha1",
     "operator/pkg/utils",
+    "pkg/consts",
     "pkg/framework/datahub",
+    "pkg/grpc",
+    "pkg/utils/kubernetes",
     "pkg/utils/log",
   ]
-  pruneopts = "NT"
-  revision = "3cdb8afbf517573c2ee540a486a2f1964e523e81"
-  version = "v0.3.39"
+  pruneopts = "UT"
+  revision = "2fb7d4225edbd446cf078d4e9b6f1147c2785165"
+  version = "v4.2.292"
 
 [[projects]]
   branch = "master"
@@ -412,15 +415,17 @@
   version = "1.0.1"
 
 [[projects]]
-  digest = "1:8bc8f43d2332d035857c92581df240f247c287629d5f60c751df609f9b6215c5"
+  branch = "master"
+  digest = "1:608f4cddd743c352714ad1503efc106ca2c691ec3ab59dfa9218bebaa489235a"
   name = "github.com/openshift/api"
   packages = [
+    "apps",
+    "apps/v1",
     "route/v1",
     "security/v1",
   ]
   pruneopts = "NT"
-  revision = "0d921e363e951d89f583292c60d013c318df64dc"
-  version = "v3.9.0"
+  revision = "9f80b7806f586aca652fc85eada9f99c0b3dde8c"
 
 [[projects]]
   branch = "master"
@@ -1157,6 +1162,7 @@
   input-imports = [
     "github.com/containers-ai/alameda/admission-controller",
     "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1",
+    "github.com/containers-ai/alameda/pkg/utils/kubernetes",
     "github.com/containers-ai/api/alameda_api/v1alpha1/datahub",
     "github.com/containers-ai/api/datahub/keycodes",
     "github.com/ghodss/yaml",

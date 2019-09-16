@@ -1,0 +1,150 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admission-controller
+  namespace: alameda
+spec:
+  ports:
+    - port: 443
+      targetPort: 8000
+  selector:
+    app: admission-controller
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admission-controller
+  namespace: alameda
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: alameda:admission-controller
+rules:
+  - apiGroups:
+      - "admissionregistration.k8s.io"
+    resources:
+      - mutatingwebhookconfigurations
+    verbs:
+      - get
+      - create
+      - update
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+      - patch
+  - apiGroups:
+      - extensions
+      - apps
+    resources:
+      - replicasets
+      - deployments
+      - statefulsets
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - extensions
+      - ""
+    resources:
+      - replicationcontrollers
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - apps.openshift.io
+    resources:
+      - deploymentconfigs
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - autoscaling.containers.ai
+    resources:
+      - alamedascalers
+    verbs:
+      - get
+  - apiGroups:
+      - federatorai.containers.ai
+    resources:
+      - alamedaservices
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: alameda:admission-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: alameda:admission-controller
+subjects:
+  - kind: ServiceAccount
+    name: admission-controller
+    namespace: alameda
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: admission-controller
+  namespace: alameda
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: admission-controller
+    spec:
+      serviceAccountName: admission-controller
+      containers:
+        - image: admission-controller:latest
+          imagePullPolicy: Always
+          name: admission-controller
+          resources:
+            limits:
+              cpu: 200m
+              memory: 500Mi
+            requests:
+              cpu: 50m
+              memory: 200Mi
+          env:
+            - name: ALAMEDA_ADMCTL_DEPLOYEDNAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ALAMEDA_ADMCTL_ENABLE
+              value: "false"
+            - name: ALAMEDA_ADMCTL_CA_CERTFILE
+              value: "/etc/tls-certs/caCert.pem"
+            - name: ALAMEDA_ADMCTL_TLS_CERTFILE
+              value: "/etc/tls-certs/serverCert.pem"
+            - name: ALAMEDA_ADMCTL_TLS_PRIVATE_KEYFILE
+              value: "/etc/tls-certs/serverKey.pem"
+            - name: NAMESPACE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace   
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name 
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: tls-certs
+              mountPath: "/etc/tls-certs"
+              readOnly: true
+      serviceAccount: admission-controller
+      volumes:
+        - name: tls-certs
+          secret:
+            secretName: admission-controller-tls-certs

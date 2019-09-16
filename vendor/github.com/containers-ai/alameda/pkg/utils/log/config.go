@@ -27,7 +27,12 @@ limitations under the License.
 package log
 
 import (
+	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -40,9 +45,9 @@ import (
 )
 
 type Config struct {
-	SetLogCallers   bool   `mapstructure:"set-logcallers"`
-	StackTraceLevel string `mapstructure:"stacktrace-level"`
-	OutputLevel     string `mapstructure:"output-level"`
+	SetLogCallers   bool   `mapstructure:"setLogcallers"`
+	StackTraceLevel string `mapstructure:"stacktraceLevel"`
+	OutputLevel     string `mapstructure:"outputLevel"`
 }
 
 func NewDefaultConfig() Config {
@@ -181,7 +186,12 @@ func formatDate(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	buf[25] = byte((micros)%10) + '0'
 	buf[26] = 'Z'
 
-	enc.AppendString(string(buf))
+	devMode := os.Getenv("DEVELOPMENT_MODE")
+	if devMode == "true" {
+		enc.AppendString(fmt.Sprintf("%s %-5d %s", string(buf), GetGID(), GetFileLine(6)))
+	} else {
+		enc.AppendString(fmt.Sprintf("%s %-5d", string(buf), GetGID()))
+	}
 }
 
 func updateScopes(options *Options, core zapcore.Core, errSink zapcore.WriteSyncer) error {
@@ -296,4 +306,24 @@ func Sync() error {
 	}
 
 	return err
+}
+
+func GetGID() uint64 {
+	b := make([]byte, 64)
+	b = b[:runtime.Stack(b, false)]
+	b = bytes.TrimPrefix(b, []byte("goroutine "))
+	b = b[:bytes.IndexByte(b, ' ')]
+	n, _ := strconv.ParseUint(string(b), 10, 64)
+	return n
+}
+
+func GetFileLine(callerLvl int) string {
+	_, file, number, ok := runtime.Caller(callerLvl)
+
+	fileBaseName := filepath.Base(file)
+	fileParentName := filepath.Base(filepath.Dir(file))
+	if ok {
+		return fmt.Sprintf("%s/%s:%d", fileParentName, fileBaseName, number)
+	}
+	return ""
 }

@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	alamedautilsk8s "github.com/containers-ai/alameda/pkg/utils/kubernetes"
 	datahubv1alpha1 "github.com/containers-ai/api/alameda_api/v1alpha1/datahub"
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	client_datahub "github.com/containers-ai/federatorai-operator/pkg/client/datahub"
@@ -63,7 +64,7 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 	if err != nil {
 		log.V(-1).Info("Get tmp client failed, will use \"\" as clusterID when sending event.", "error", err.Error())
 	} else {
-		clusterID, err = util.GetClusterUID(tmpClient)
+		clusterID, err = alamedautilsk8s.GetClusterUID(tmpClient)
 		if err != nil {
 			log.V(-1).Info("Get clusterID failed, will use \"\" as clusterID when sending event.", "error", err.Error())
 		}

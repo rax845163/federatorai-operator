@@ -58,15 +58,17 @@ func (p *AlamedaPod) GetNamespacedName() NamespacedName {
 }
 
 type AlamedaResource struct {
-	Namespace string                        `json:"namespace" protobuf:"bytes,1,opt,name=namespace"`
-	Name      string                        `json:"name" protobuf:"bytes,2,opt,name=name"`
-	UID       string                        `json:"uid" protobuf:"bytes,3,opt,name=uid"`
-	Pods      map[NamespacedName]AlamedaPod `json:"pods" protobuf:"bytes,4,opt,name=pods"`
+	Namespace    string                        `json:"namespace" protobuf:"bytes,1,opt,name=namespace"`
+	Name         string                        `json:"name" protobuf:"bytes,2,opt,name=name"`
+	UID          string                        `json:"uid" protobuf:"bytes,3,opt,name=uid"`
+	Pods         map[NamespacedName]AlamedaPod `json:"pods" protobuf:"bytes,4,opt,name=pods"`
+	SpecReplicas *int32                        `json:"specReplicas" protobuf:"varint,5,opt,name=spec_replicas"`
 }
 
 type AlamedaController struct {
 	Deployments       map[NamespacedName]AlamedaResource `json:"deployments,omitempty" protobuf:"bytes,1,opt,name=deployments"`
 	DeploymentConfigs map[NamespacedName]AlamedaResource `json:"deploymentConfigs,omitempty" protobuf:"bytes,2,opt,name=deployment_configs"`
+	StatefulSets      map[NamespacedName]AlamedaResource `json:"statefulSets,omitempty" protobuf:"bytes,3,opt,name=stateful_sets"`
 }
 
 type AlamedaControllerType int
@@ -74,17 +76,20 @@ type AlamedaControllerType int
 const (
 	DeploymentController       AlamedaControllerType = 1
 	DeploymentConfigController AlamedaControllerType = 2
+	StatefulSetController      AlamedaControllerType = 3
 )
 
 var (
 	AlamedaControllerTypeName = map[AlamedaControllerType]string{
 		DeploymentController:       "deployment",
 		DeploymentConfigController: "deploymentconfig",
+		StatefulSetController:      "statefulset",
 	}
 
 	K8SKindToAlamedaControllerType = map[string]AlamedaControllerType{
 		"Deployment":       DeploymentController,
 		"DeploymentConfig": DeploymentConfigController,
+		"StatefulSet":      StatefulSetController,
 	}
 )
 
@@ -110,8 +115,9 @@ func NewDefaultTriggerThreshold() TriggerThreshold {
 
 type ExecutionStrategy struct {
 	// +kubebuilder:validation:Pattern=^\d*[1-9]+\d*(%?$)$|^\d*[1-9]+\d*\.\d*(%?$)$|^\d*\.\d*[1-9]+\d*(%?$)$
-	MaxUnavailable   string            `json:"maxUnavailable,omitempty" protobuf:"bytes,1,name=max_unavailable"`
-	TriggerThreshold *TriggerThreshold `json:"triggerThreshold,omitempty" protobuf:"bytes,2,name=trigger_threshold"`
+	MaxUnavailable   string                       `json:"maxUnavailable,omitempty" protobuf:"bytes,1,name=max_unavailable"`
+	TriggerThreshold *TriggerThreshold            `json:"triggerThreshold,omitempty" protobuf:"bytes,2,name=trigger_threshold"`
+	Resources        *corev1.ResourceRequirements `json:"resources,omitempty" protobuf:"bytes,3,name=resources"`
 }
 
 const (
@@ -133,22 +139,14 @@ type ScalingToolType = string
 const (
 	ScalingToolTypeVPA     ScalingToolType = "vpa"
 	ScalingToolTypeHPA     ScalingToolType = "hpa"
-	ScalingToolTypeDefault ScalingToolType = ScalingToolTypeHPA
+	ScalingToolTypeDefault ScalingToolType = "N/A"
 )
 
 type ScalingToolSpec struct {
-	// +kubebuilder:validation:Enum=vpa,hpa
+	// +kubebuilder:validation:Enum=,vpa,hpa,N/A
 	Type              string             `json:"type,omitempty" protobuf:"bytes,1,name=type"`
 	ExecutionStrategy *ExecutionStrategy `json:"executionStrategy,omitempty" protobuf:"bytes,2,name=execution_strategy"`
 }
-
-type scalingToolType string
-
-const (
-	EnableVPA          scalingToolType = "vpa"
-	EnableHPA          scalingToolType = "hpa"
-	DefaultScalingTool bool            = true
-)
 
 // AlamedaScalerSpec defines the desired state of AlamedaScaler
 // INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
@@ -180,31 +178,8 @@ type AlamedaScaler struct {
 	Status AlamedaScalerStatus `json:"status,omitempty"`
 }
 
-type ScalingToolstruct struct {
-	VpaFlag bool
-	HpaFlag bool
-}
-
-var (
-	ScalingTool ScalingToolstruct = ScalingToolstruct{VpaFlag: false, HpaFlag: false}
-)
-
-func (as *AlamedaScaler) setDefaultValueToScalingTools() {
-	sct := ScalingToolstruct{VpaFlag: false, HpaFlag: false}
-	switch as.Spec.ScalingTool.Type {
-	case string(EnableVPA):
-		sct.VpaFlag = true
-	case string(EnableHPA):
-		sct.HpaFlag = true
-	default:
-		sct.VpaFlag = DefaultScalingTool
-	}
-	ScalingTool = sct
-}
-
 func (as *AlamedaScaler) SetDefaultValue() { //this function is set alamedascaler default value
 	as.setDefaultEnableExecution()
-	as.setDefaultValueToScalingTools()
 	as.setDefaultScalingTool()
 }
 
@@ -212,18 +187,16 @@ func (as *AlamedaScaler) SetCustomResourceVersion(v string) {
 	as.Spec.CustomResourceVersion = v
 }
 
+func (as *AlamedaScaler) SetStatusAlamedaController(ac AlamedaController) {
+	as.Status.AlamedaController = ac
+}
+
 func (as *AlamedaScaler) GenCustomResourceVersion() string {
 	v := as.ResourceVersion
 	return v
 }
 
-func (as *AlamedaScaler) ResetStatusAlamedaController() {
-	as.Status.AlamedaController = AlamedaController{
-		Deployments:       make(map[NamespacedName]AlamedaResource),
-		DeploymentConfigs: make(map[NamespacedName]AlamedaResource),
-	}
-}
-
+// GetMonitoredPods returns pods restoring in AlamedaScaler.Status
 func (as *AlamedaScaler) GetMonitoredPods() []*AlamedaPod {
 	pods := make([]*AlamedaPod, 0)
 
@@ -240,6 +213,14 @@ func (as *AlamedaScaler) GetMonitoredPods() []*AlamedaPod {
 			pods = append(pods, &cpPod)
 		}
 	}
+
+	for _, alamedaResource := range as.Status.AlamedaController.StatefulSets {
+		for _, pod := range alamedaResource.Pods {
+			cpPod := pod
+			pods = append(pods, &cpPod)
+		}
+	}
+
 	return pods
 }
 
@@ -247,6 +228,78 @@ func (as *AlamedaScaler) GetLabelMapToSetToAlamedaRecommendationLabel() map[stri
 	m := make(map[string]string)
 	m["alamedascaler"] = fmt.Sprintf("%s.%s", as.GetName(), as.GetNamespace())
 	return m
+}
+
+func (as *AlamedaScaler) GetRequestCPUMilliCores() string {
+
+	cpuMilliCores := ""
+
+	executionStrategy := as.Spec.ScalingTool.ExecutionStrategy
+	if executionStrategy != nil {
+		if executionStrategy.Resources != nil {
+			if executionStrategy.Resources.Requests != nil {
+				if executionStrategy.Resources.Requests.Cpu() != nil {
+					cpuMilliCores = fmt.Sprintf("%d", executionStrategy.Resources.Requests.Cpu().MilliValue())
+				}
+			}
+		}
+	}
+
+	return cpuMilliCores
+}
+
+func (as *AlamedaScaler) GetRequestMemoryBytes() string {
+
+	memoryBytes := ""
+
+	executionStrategy := as.Spec.ScalingTool.ExecutionStrategy
+	if executionStrategy != nil {
+		if executionStrategy.Resources != nil {
+			if executionStrategy.Resources.Requests != nil {
+				if executionStrategy.Resources.Requests.Memory() != nil {
+					memoryBytes = fmt.Sprintf("%d", executionStrategy.Resources.Requests.Memory().Value())
+				}
+			}
+		}
+	}
+
+	return memoryBytes
+}
+
+func (as *AlamedaScaler) GetLimitCPUMilliCores() string {
+
+	cpuMilliCores := ""
+
+	executionStrategy := as.Spec.ScalingTool.ExecutionStrategy
+	if executionStrategy != nil {
+		if executionStrategy.Resources != nil {
+			if executionStrategy.Resources.Limits != nil {
+				if executionStrategy.Resources.Limits.Cpu() != nil {
+					cpuMilliCores = fmt.Sprintf("%d", executionStrategy.Resources.Limits.Cpu().MilliValue())
+				}
+			}
+		}
+	}
+
+	return cpuMilliCores
+}
+
+func (as *AlamedaScaler) GetLimitMemoryBytes() string {
+
+	memoryBytes := ""
+
+	executionStrategy := as.Spec.ScalingTool.ExecutionStrategy
+	if executionStrategy != nil {
+		if executionStrategy.Resources != nil {
+			if executionStrategy.Resources.Limits != nil {
+				if executionStrategy.Resources.Limits.Memory() != nil {
+					memoryBytes = fmt.Sprintf("%d", executionStrategy.Resources.Limits.Memory().Value())
+				}
+			}
+		}
+	}
+
+	return memoryBytes
 }
 
 func (as *AlamedaScaler) IsEnableExecution() bool {
@@ -262,6 +315,37 @@ func (as *AlamedaScaler) IsScalingToolTypeHPA() bool {
 
 func (as *AlamedaScaler) IsScalingToolTypeVPA() bool {
 	return as.Spec.ScalingTool.Type == ScalingToolTypeVPA
+}
+
+// HasAlamedaPod returns true if the pod is reocording in AlamedaScaler.Status
+func (as *AlamedaScaler) HasAlamedaPod(namespace, name string) bool {
+
+	for _, deployment := range as.Status.AlamedaController.Deployments {
+		deploymentNS := deployment.Namespace
+		for _, pod := range deployment.Pods {
+			if deploymentNS == namespace && pod.Name == name {
+				return true
+			}
+		}
+	}
+	for _, deploymentConfig := range as.Status.AlamedaController.DeploymentConfigs {
+		deploymentConfigNS := deploymentConfig.Namespace
+		for _, pod := range deploymentConfig.Pods {
+			if deploymentConfigNS == namespace && pod.Name == name {
+				return true
+			}
+		}
+	}
+	for _, statefulSet := range as.Status.AlamedaController.StatefulSets {
+		statefulSetNS := statefulSet.Namespace
+		for _, pod := range statefulSet.Pods {
+			if statefulSetNS == namespace && pod.Name == name {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func (as *AlamedaScaler) setDefaultEnableExecution() {
