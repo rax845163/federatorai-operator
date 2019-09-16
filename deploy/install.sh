@@ -56,7 +56,7 @@ leave_prog()
 
 webhook_reminder()
 {
-    if [ "$openshift_version" != "" ]; then
+    if [ "$openshift_minor_version" != "" ]; then
         echo -e "\n========================================"
         echo -e "$(tput setaf 9)Note!$(tput setaf 10) Below $(tput setaf 9)two admission plugins $(tput setaf 10)needed to be enabled on $(tput setaf 9)every master nodes $(tput setaf 10)to let VPA Execution and Email Notifier working properly."
         echo -e "$(tput setaf 6)1. ValidatingAdmissionWebhook 2. MutatingAdmissionWebhook$(tput sgr 0)"
@@ -81,14 +81,31 @@ webhook_reminder()
 
 check_version()
 {
-    openshift_version=`oc version 2>/dev/null|grep "oc v"|cut -d '.' -f2`
-    k8s_version=`kubectl version 2>/dev/null|grep Server|grep -o "Minor:\"[0-9]*\""|cut -d '"' -f2`
-    openshift_required_version="9"
+    openshift_required_minor_version="9"
     k8s_required_version="11"
-    if [ "$openshift_version" != "" ] && [ "$openshift_version" -lt "$openshift_required_version" ]; then
-        echo -e "\n$(tput setaf 10)Error! OpenShift version less than 3.$openshift_required_version is not supported by Federator.ai$(tput sgr 0)"
+
+    oc version 2>/dev/null|grep "oc v"|grep -q " v[4-9]"
+    if [ "$?" = "0" ];then
+        # oc version is 4-9, passed
+        return 0
+    fi
+
+    oc version 2>/dev/null|grep "oc v"|grep -q " v[0-2]"
+    if [ "$?" = "0" ];then
+        # oc version is 0-2, failed
+        echo -e "\n$(tput setaf 10)Error! OpenShift version less than 3.$openshift_required_minor_version is not supported by Federator.ai$(tput sgr 0)"
         exit 5
-    elif [ "$openshift_version" = "" ] && [ "$k8s_version" != "" ] && [ "$k8s_version" -lt "$k8s_required_version" ]; then
+    fi
+
+    # oc major version = 3
+    openshift_minor_version=`oc version 2>/dev/null|grep "oc v"|cut -d '.' -f2`
+    # k8s version = 1.x
+    k8s_version=`kubectl version 2>/dev/null|grep Server|grep -o "Minor:\"[0-9]*\""|cut -d '"' -f2`
+
+    if [ "$openshift_minor_version" != "" ] && [ "$openshift_minor_version" -lt "$openshift_required_minor_version" ]; then
+        echo -e "\n$(tput setaf 10)Error! OpenShift version less than 3.$openshift_required_minor_version is not supported by Federator.ai$(tput sgr 0)"
+        exit 5
+    elif [ "$openshift_minor_version" = "" ] && [ "$k8s_version" != "" ] && [ "$k8s_version" -lt "$k8s_required_version" ]; then
         echo -e "\n$(tput setaf 10)Error! Kubernetes version less than 1.$k8s_required_version is not supported by Federator.ai$(tput sgr 0)"
         exit 6
     fi
@@ -152,7 +169,7 @@ wait_until_pods_ready()
 
 get_grafana_route()
 {
-    if [ "$openshift_version" != "" ] ; then
+    if [ "$openshift_minor_version" != "" ] ; then
         link=`oc get route -n $1 2>/dev/null|grep grafana|awk '{print $2}'`
         if [ "$link" != "" ] ; then
         echo -e "\n========================================"
@@ -398,9 +415,9 @@ if [ "$silent_mode_disabled" = "y" ];then
             read -r -p "$(tput setaf 127)Do you want to enable execution? [default: y]: $(tput sgr 0): " enable_execution </dev/tty
             enable_execution=${enable_execution:-$default}
 
-            if [[ "$openshift_version" == "11" ]]; then
+            if [[ "$openshift_minor_version" == "11" ]]; then
                 default="https://prometheus-k8s.openshift-monitoring:9091"
-            elif [[ "$openshift_version" == "9" ]]; then
+            elif [[ "$openshift_minor_version" == "9" ]]; then
                 default="http://prom-prometheus-operator-prometheus.monitoring.svc:9090"
             else
                 default="https://prometheus-k8s.openshift-monitoring:9091"
