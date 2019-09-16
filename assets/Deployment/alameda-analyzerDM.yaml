@@ -49,7 +49,7 @@ spec:
           - name: FEDERATORAI_ANALYSIS_OUTLIER_SETTING_DBSCAN_MINPTS
             value: "5"
           - name: FEDERATORAI_ANALYSIS_OUTLIER_SETTING_DETECT_LEVEL
-            value: "0"
+            value: "6"
           - name: FEDERATORAI_ANALYSIS_OUTLIER_SETTING_DETECT_DELAY
             value: "60"
           - name: FEDERATORAI_ANALYSIS_OUTLIER_SETTING_OBSERVED_SIZE
