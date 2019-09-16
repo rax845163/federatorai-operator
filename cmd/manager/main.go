@@ -12,6 +12,7 @@ import (
 
 	autoscaling_v1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
 	fedOperator "github.com/containers-ai/federatorai-operator"
+	assets "github.com/containers-ai/federatorai-operator/assets"
 	"github.com/containers-ai/federatorai-operator/pkg/apis"
 	assetsBin "github.com/containers-ai/federatorai-operator/pkg/assets"
 	"github.com/containers-ai/federatorai-operator/pkg/controller"
@@ -39,6 +40,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	rest "k8s.io/client-go/rest"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
@@ -186,7 +188,7 @@ func main() {
 
 	// Setup requirements before starts the manager
 	if err := setupRequirements(cfg); err != nil {
-		log.Error(err, "")
+		log.Error(err, "setup requirements failed")
 		os.Exit(1)
 	}
 
@@ -253,6 +255,10 @@ func main() {
 
 func setupRequirements(clientConfig *rest.Config) error {
 
+	if err := createConfigMaps(clientConfig); err != nil {
+		return errors.Wrapf(err, "create configMaps failed")
+	}
+
 	return nil
 }
 
@@ -309,6 +315,30 @@ func addAPIResource(groupVersionKind string, gvkMap map[string]bool) {
 
 func deleteAPIResource(groupVersionKind string, gvkMap map[string]bool) {
 	delete(gvkMap, groupVersionKind)
+}
+
+func createConfigMaps(clientConfig *rest.Config) error {
+
+	cli, err := client.New(clientConfig, client.Options{})
+	if err != nil {
+		return errors.Errorf("new k8s client failed: %s", err.Error())
+	}
+
+	ctx := context.TODO()
+	files := assets.GetRequiredConfigMaps()
+	for _, file := range files {
+		fileBytes, err := assetsBin.Asset(file)
+		if err != nil {
+			return errors.Errorf("get asset's bytes failed: %s", err.Error())
+		}
+		configMap := resourceread.ReadConfigMapV1(fileBytes)
+		err = cli.Create(ctx, configMap)
+		if err != nil && !k8sapierrors.IsAlreadyExists(err) {
+			return errors.Errorf("create configMap %s/%s failed: %s", configMap.Namespace, configMap.Name, err.Error())
+		}
+	}
+
+	return nil
 }
 
 func waitCRDReady(clientConfig *rest.Config) error {

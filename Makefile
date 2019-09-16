@@ -32,28 +32,7 @@ endif
 pkg/assets/bindata.go: $(GOBINDATA_BIN)
 	# Using "-modtime 1" to make generate target deterministic. It sets all file time stamps to unix timestamp 1
 	cd assets && $(GOBINDATA_BIN) -pkg assets -o ../$@ \
-		AlamedaNotificationChannel/... \
-		AlamedaNotificationTopic/... \
-		AlamedaScaler/... \
-		ClusterRole/... \
-		ClusterRoleBinding/... \
-		ConfigMap/... \
-		CustomResourceDefinition/... \
-		DaemonSet/... \
-		Deployment/... \
-		Ingress/... \
-		MutatingWebhookConfiguration/... \
-		PersistentVolumeClaim/... \
-		PodSecurityPolicy/... \
-		Role/... \
-		RoleBinding/... \
-		Route/... \
-		Secret/... \
-		SecurityContextConstraints/... \
-		Service/... \
-		ServiceAccount/... \
-		StatefulSet/... \
-		ValidatingWebhookConfiguration/... \
+		./... \
 
 
 
