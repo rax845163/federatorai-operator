@@ -38,7 +38,28 @@ if [ "$prometheus_metrics_list" = "" ];then
 fi
 
 if [ "$prometheus_metrics_list" = "" ];then
-    prometheus_metrics_list=$(kubectl run -it --rm debug --image=containersai/alpine-curl --restart=Never -- -w "\n" http://${prometheus_svc_name}.${prometheus_namespace}:9090/api/v1/label/__name__/values | grep -v "pod \"debug\" deleted"|python -m json.tool 2>/dev/null)
+    prometheus_metrics_list=$(kubectl run -it --rm debug --image=containersai/alpine-curl --restart=Never -- -w "\n" http://${prometheus_svc_name}.${prometheus_namespace}:9090/api/v1/label/__name__/values 2>/dev/null | grep -v "pod \"debug\" deleted"|python -m json.tool 2>/dev/null)
+fi
+
+openshift_minor_version=`oc version 2>/dev/null|grep "oc v"|cut -d '.' -f2`
+if [ "$prometheus_metrics_list" = "" ] && [ "$openshift_minor_version" != "" ];then
+    while [[ "$interactive_enabled" != "y" ]] && [[ "$interactive_enabled" != "n" ]]
+    do
+        default="y"
+        read -r -p "$(tput setaf 2)Do you want to input OpenShift admin account&password to query prometheus metrics? [default: y]: $(tput sgr 0)" interactive_enabled </dev/tty
+        interactive_enabled=${interactive_enabled:-$default}
+    done
+
+    if [ "$interactive_enabled" = "y" ];then
+        read -r -p "Input OpenShift admin account: " user_account
+        read -rs -p "Input OpenShift admin password: " user_password
+        echo ""
+        base64_info=`echo -n "${user_account}:${user_password}" | base64`
+        access_token=`curl -k -H "Authorization: Basic ${base64_info}" -I https://localhost:8443/oauth/authorize\?response_type\=token\&client_id\=openshift-challenging-client 2>&1 | grep -oP "access_token=\K[^&]*"`
+        # svc for 9091
+        prometheus_svc_name=`kubectl get svc -n ${prometheus_namespace}|grep 9091|awk '{print $1}'`
+        prometheus_metrics_list=$(kubectl run -it --rm debug --image=containersai/alpine-curl --restart=Never -- -w "\n" -k -H "Authorization: Bearer ${access_token}" https://${prometheus_svc_name}.${prometheus_namespace}:9091/api/v1/label/__name__/values 2>/dev/null | grep -v "pod \"debug\" deleted"|python -m json.tool 2>/dev/null)
+    fi
 fi
 
 [ "${prometheus_metrics_list}" = "" ] && echo -e "\n$(tput setaf 10)Warning! prometheus_metrics_list is empty due to prometheus api query failed$(tput sgr 0)"
