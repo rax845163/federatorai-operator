@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: alameda-vpa-executor
-        image: quay.io/prophetstor/alameda-admission-ubi:v0.3.8
+        image: quay.io/prophetstor/alameda-vpa-executor:v0.3.8
         imagePullPolicy: IfNotPresent
         resources:
           requests:
