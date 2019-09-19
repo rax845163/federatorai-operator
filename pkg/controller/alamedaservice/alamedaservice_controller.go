@@ -736,6 +736,24 @@ func (r *ReconcileAlamedaService) createSecret(instance *federatoraiv1alpha1.Ala
 		return errors.Errorf("get secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
 	}
 
+	vpaExecutorWebhookServiceAsset := alamedaserviceparamter.GetAlamedaVPAExecutorService()
+	vpaExecutorWebhookService := componentConfig.NewService(vpaExecutorWebhookServiceAsset)
+	vpaExecutorWebhookServiceAddress := util.GetServiceDNS(vpaExecutorWebhookService)
+	vpaExecutorWebhookServiceCertSecretAsset := alamedaserviceparamter.GetAlamedaVPAExecutorServerCertSecret()
+	vpaExecutorWebhookServiceSecret, err := componentConfig.NewTLSSecret(vpaExecutorWebhookServiceCertSecretAsset, vpaExecutorWebhookServiceAddress)
+	if err != nil {
+		return errors.Errorf("build secret failed: %s", err.Error())
+	}
+	if err := controllerutil.SetControllerReference(instance, secret, r.scheme); err != nil {
+		return errors.Errorf("set controller reference to secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
+	err = r.client.Create(context.TODO(), vpaExecutorWebhookServiceSecret)
+	if err != nil && k8sErrors.IsAlreadyExists(err) {
+		log.Info("create secret failed: secret is already exists", "secret.Namespace", secret.Namespace, "secret.Name", secret.Name)
+	} else if err != nil {
+		return errors.Errorf("get secret %s/%s failed: %s", secret.Namespace, secret.Name, err.Error())
+	}
+
 	return nil
 }
 

@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vpa-executor
+  namespace: federatorai
+  labels:
+    app: alameda
+    component: vpa-executor
+  annotations:
+    description: Defines how to deploy the vpa-executor
+    template.alpha.openshift.io/wait-for-ready: 'true'
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      component: vpa-executor
+  template:
+    metadata:
+      name: vpa-executor
+      labels:
+        app: alameda
+        component: vpa-executor
+    spec:
+      containers:
+      - name: vpa-executor
+        image: quay.io/prophetstor/alameda-admission-ubi:v0.3.8
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 45m
+            memory: 75Mi
+        env:
+        - name: NAMESPACE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ALAMEDA_VPA_EXECUTOR_DATAHUB_ADDRESS
+          value: "alameda-datahub.federatorai.svc:50050"
+        - name: ALAMEDA_VPA_EXECUTOR_ADMISSIONCONTROLLER_TLSCERTFILE
+          value: /etc/tls-certs/tls.crt
+        - name: ALAMEDA_VPA_EXECUTOR_ADMISSIONCONTROLLER_TLSPRIVATEKEYFILE
+          value: /etc/tls-certs/tls.key
+        - name: ALAMEDA_VPA_EXECUTOR_ADMISSIONCONTROLLER_CACERTFILE
+          value: /etc/tls-certs/ca.crt
+        volumeMounts:
+        - mountPath: /etc/tls-certs
+          name: tls-certs
+          readOnly: false
+      volumes:
+      - name:  vpa-executor-data-storage
+      - name:  vpa-executor-log-storage
+      - name: tls-certs
+        secret:
+          secretName: alameda-vpa-executor-server-cert
+      serviceAccount: vpa-executor

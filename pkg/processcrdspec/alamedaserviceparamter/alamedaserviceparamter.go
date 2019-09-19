@@ -87,16 +87,13 @@ var (
 	}
 
 	excutionList = []string{
-		"ClusterRoleBinding/alameda-evictionerCRB.yaml",
-		"ClusterRoleBinding/admission-controllerCRB.yaml",
-		"ClusterRole/alameda-evictionerCR.yaml",
-		"ClusterRole/admission-controllerCR.yaml",
-		"ServiceAccount/alameda-evictionerSA.yaml",
-		"ServiceAccount/admission-controllerSA.yaml",
-		"Secret/admission-controller-tls.yaml",
-		"Deployment/admission-controllerDM.yaml",
-		"Deployment/alameda-evictionerDM.yaml",
-		"Service/admission-controllerSV.yaml",
+		"ClusterRole/alameda-vpa-executorCR.yaml",
+		"ClusterRoleBinding/alameda-vpa-executorCRB.yaml",
+		"Deployment/alameda-vpa-executorDM.yaml",
+		"MutatingWebhookConfiguration/alameda-vpa-executor-mutating-webhook-configuration.yaml",
+		"Secret/alameda-vpa-executor-server-cert.yaml",
+		"Service/alameda-vpa-executorSV.yaml",
+		"ServiceAccount/alameda-vpa-executorSA.yaml",
 		"Deployment/alameda-executorDM.yaml",
 		"ServiceAccount/alameda-executorSA.yaml",
 		"ClusterRole/alameda-executorCR.yaml",
@@ -243,9 +240,19 @@ func GetAlamedaNotifierWebhookService() string {
 	return "Service/alameda-notifier-webhook-service.yaml"
 }
 
+// GetAlamedaVPAExecutorService returns service asset name of alameda-vpa-executorSV
+func GetAlamedaVPAExecutorService() string {
+	return "Service/alameda-vpa-executorSV.yaml"
+}
+
 // GetAlamedaNotifierWebhookServerCertSecret returns secret asset name of alameda-notifier-webhook-server-cert
 func GetAlamedaNotifierWebhookServerCertSecret() string {
 	return "Secret/alameda-notifier-webhook-server-cert.yaml"
+}
+
+// GetAlamedaNotifierWebhookServerCertSecret returns secret asset name of alameda-notifier-webhook-server-cert
+func GetAlamedaVPAExecutorServerCertSecret() string {
+	return "Secret/alameda-vpa-executor-server-cert.yaml"
 }
 
 // GetCustomResourceDefinitions returns crd assets' name
