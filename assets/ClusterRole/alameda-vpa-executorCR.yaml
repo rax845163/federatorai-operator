@@ -9,6 +9,8 @@ rules:
       - mutatingwebhookconfigurations
     verbs:
       - get
+      - list
+      - watch
       - create
       - update
       - delete
@@ -19,6 +21,7 @@ rules:
     verbs:
       - get
       - list
+      - watch
       - patch
   - apiGroups:
       - extensions
@@ -30,6 +33,7 @@ rules:
     verbs:
       - get
       - list
+      - watch
   - apiGroups:
       - extensions
       - ""
@@ -38,6 +42,7 @@ rules:
     verbs:
       - get
       - list
+      - watch
   - apiGroups:
       - apps.openshift.io
     resources:
@@ -45,12 +50,15 @@ rules:
     verbs:
       - get
       - list
+      - watch
   - apiGroups:
       - autoscaling.containers.ai
     resources:
       - alamedascalers
     verbs:
       - get
+      - list
+      - watch
   - apiGroups:
       - federatorai.containers.ai
     resources:
@@ -65,3 +73,5 @@ rules:
       - configmaps
     verbs:
       - get
+      - list
+      - watch
