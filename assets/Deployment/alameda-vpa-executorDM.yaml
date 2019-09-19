@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vpa-executor
+  name: alameda-vpa-executor
   namespace: federatorai
   labels:
     app: alameda
-    component: vpa-executor
+    component: alameda-vpa-executor
   annotations:
-    description: Defines how to deploy the vpa-executor
+    description: Defines how to deploy the alameda-vpa-executor
     template.alpha.openshift.io/wait-for-ready: 'true'
 spec:
   replicas: 1
@@ -15,16 +15,16 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      component: vpa-executor
+      component: alameda-vpa-executor
   template:
     metadata:
-      name: vpa-executor
+      name: alameda-vpa-executor
       labels:
         app: alameda
-        component: vpa-executor
+        component: alameda-vpa-executor
     spec:
       containers:
-      - name: vpa-executor
+      - name: alameda-vpa-executor
         image: quay.io/prophetstor/alameda-admission-ubi:v0.3.8
         imagePullPolicy: IfNotPresent
         resources:
@@ -53,9 +53,9 @@ spec:
           name: tls-certs
           readOnly: false
       volumes:
-      - name:  vpa-executor-data-storage
-      - name:  vpa-executor-log-storage
+      - name:  alameda-vpa-executor-data-storage
+      - name:  alameda-vpa-executor-log-storage
       - name: tls-certs
         secret:
           secretName: alameda-vpa-executor-server-cert
-      serviceAccount: vpa-executor
+      serviceAccount: alameda-vpa-executor
