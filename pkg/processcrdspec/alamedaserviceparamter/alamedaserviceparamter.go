@@ -25,6 +25,7 @@ var (
 		notifierList,
 		federatoraiAgentList,
 		fedemeterList,
+		federatoraiAgentGPUList,
 	}
 
 	datahubList = []string{
@@ -146,6 +147,11 @@ var (
 	federatoraiAgentList = []string{
 		"Deployment/federatorai-agent.yaml",
 		"ConfigMap/federatorai-agent-config.yaml",
+	}
+
+	federatoraiAgentGPUList = []string{
+		"ConfigMap/federatorai-agent-gpu-config.yaml",
+		"Deployment/federatorai-agent-gpuDM.yaml",
 	}
 
 	selfDrivingList = []string{

@@ -177,7 +177,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 		log.V(-1).Info("get namespace failed, retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 		return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 	}
-	componentConfig = r.newComponentConfig(ns)
+	componentConfig = r.newComponentConfig(ns, *instance)
 	installResource := asp.GetInstallResource()
 	if err = r.syncCustomResourceDefinition(instance, asp, installResource); err != nil {
 		log.Error(err, "create crd failed")
@@ -340,9 +340,9 @@ func (r *ReconcileAlamedaService) getNamespace(namespaceName string) (corev1.Nam
 	return namespace, nil
 }
 
-func (r *ReconcileAlamedaService) newComponentConfig(namespace corev1.Namespace) *component.ComponentConfig {
+func (r *ReconcileAlamedaService) newComponentConfig(namespace corev1.Namespace, alamedaService federatoraiv1alpha1.AlamedaService) *component.ComponentConfig {
 	podTemplateConfig := component.NewDefaultPodTemplateConfig(namespace)
-	componentConfg := component.NewComponentConfig(namespace.Name, podTemplateConfig)
+	componentConfg := component.NewComponentConfig(namespace.Name, podTemplateConfig, alamedaService)
 	return componentConfg
 }
 

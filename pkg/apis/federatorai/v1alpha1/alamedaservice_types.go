@@ -35,22 +35,23 @@ type AlamedaServiceSpec struct {
 	EnableWeavescope  bool                  `json:"enableWeavescope"`
 	Keycode           KeycodeSpec           `json:"keycode"`
 	//Component Section Schema
-	InfluxdbSectionSet            AlamedaComponentSpec `json:"alamedaInfluxdb"`
-	GrafanaSectionSet             AlamedaComponentSpec `json:"alamedaGrafana"`
-	AlamedaAISectionSet           AlamedaComponentSpec `json:"alamedaAi"`
-	AlamedaOperatorSectionSet     AlamedaComponentSpec `json:"alamedaOperator"`
-	AlamedaDatahubSectionSet      AlamedaComponentSpec `json:"alamedaDatahub"`
-	AlamedaEvictionerSectionSet   AlamedaComponentSpec `json:"alamedaEvictioner"`
-	AdmissionControllerSectionSet AlamedaComponentSpec `json:"alamedaAdmissionController"`
-	AlamedaRecommenderSectionSet  AlamedaComponentSpec `json:"alamedaRecommender"`
-	AlamedaExecutorSectionSet     AlamedaComponentSpec `json:"alamedaExecutor"`
-	AlamedaFedemeterSectionSet    AlamedaComponentSpec `json:"fedemeter"`
-	AlamedaWeavescopeSectionSet   AlamedaComponentSpec `json:"alameda-weavescope"`
-	AlamedaDispatcherSectionSet   AlamedaComponentSpec `json:"alameda-dispatcher"`
-	AlamedaRabbitMQSectionSet     AlamedaComponentSpec `json:"alamedaRabbitMQ"`
-	AlamedaAnalyzerSectionSet     AlamedaComponentSpec `json:"alameda-analyzer"`
-	AlamedaNotifierSectionSet     AlamedaComponentSpec `json:"alamedaNotifier"`
-	FederatoraiAgentSectionSet    AlamedaComponentSpec `json:"federatoraiAgent"`
+	InfluxdbSectionSet            AlamedaComponentSpec    `json:"alamedaInfluxdb"`
+	GrafanaSectionSet             AlamedaComponentSpec    `json:"alamedaGrafana"`
+	AlamedaAISectionSet           AlamedaComponentSpec    `json:"alamedaAi"`
+	AlamedaOperatorSectionSet     AlamedaComponentSpec    `json:"alamedaOperator"`
+	AlamedaDatahubSectionSet      AlamedaComponentSpec    `json:"alamedaDatahub"`
+	AlamedaEvictionerSectionSet   AlamedaComponentSpec    `json:"alamedaEvictioner"`
+	AdmissionControllerSectionSet AlamedaComponentSpec    `json:"alamedaAdmissionController"`
+	AlamedaRecommenderSectionSet  AlamedaComponentSpec    `json:"alamedaRecommender"`
+	AlamedaExecutorSectionSet     AlamedaComponentSpec    `json:"alamedaExecutor"`
+	AlamedaFedemeterSectionSet    AlamedaComponentSpec    `json:"fedemeter"`
+	AlamedaWeavescopeSectionSet   AlamedaComponentSpec    `json:"alameda-weavescope"`
+	AlamedaDispatcherSectionSet   AlamedaComponentSpec    `json:"alameda-dispatcher"`
+	AlamedaRabbitMQSectionSet     AlamedaComponentSpec    `json:"alamedaRabbitMQ"`
+	AlamedaAnalyzerSectionSet     AlamedaComponentSpec    `json:"alameda-analyzer"`
+	AlamedaNotifierSectionSet     AlamedaComponentSpec    `json:"alamedaNotifier"`
+	FederatoraiAgentSectionSet    AlamedaComponentSpec    `json:"federatoraiAgent"`
+	FederatoraiAgentGPUSectionSet FederatoraiAgentGPUSpec `json:"federatoraiAgentGPU"`
 }
 
 type AlamedaComponentSpec struct {
@@ -59,6 +60,24 @@ type AlamedaComponentSpec struct {
 	ImagePullPolicy    corev1.PullPolicy `json:"imagepullpolicy"`
 	Storages           []StorageSpec     `json:"storages"`
 	BootStrapContainer Imagestruct       `json:"bootstrap"`
+}
+
+type FederatoraiAgentGPUSpec struct {
+	AlamedaComponentSpec
+	Prometheus *PrometheusConfig `json:"prometheus"`
+	InfluxDB   *InfluxDBConfig   `json:"influxDB"`
+}
+
+type PrometheusConfig struct {
+	Address  string `json:"address"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type InfluxDBConfig struct {
+	Address  string `json:"address"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type Imagestruct struct {

@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: federatorai-agent-gpu
+  namespace: {{.NameSpace}}
+  labels:
+    app: alameda
+    component: federatorai-agent-gpu
+spec:
+  selector:
+    matchLabels:
+      app: alameda
+      component: federatorai-agent-gpu
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: alameda
+        component: federatorai-agent-gpu
+    spec:
+      containers:
+      - name: federatorai-agent-gpu
+        image: quay.io/prophetstor/federatorai-agent-gpu:v4.2.300
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: federatorai-agent-gpu-config
+            mountPath: /etc/alameda/federatorai-agent/transmitter.toml
+            subPath: transmitter.toml
+          - name: federatorai-agent-gpu-config
+            mountPath: /etc/alameda/federatorai-agent/input/influx_prometheus.toml
+            subPath: influx_prometheus.toml
+      volumes:
+        - name: federatorai-agent-gpu-config
+          configMap:
+            name: federatorai-agent-gpu-config

@@ -190,6 +190,12 @@ spec:
 - Field: alameda-dispatcher
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for alameda-dispatcher component. This field is optional.
+- Field: federatoraiAgent
+  - type: [AlamedaComponentSpec](#alamedacomponentspec)
+  - description: Spec for Federatorai-Agent component. This field is optional.
+- Field: federatoraiAgentGPU
+  - type: [FederatoraiAgentGPUSpec](#federatoraiagentgpuspec)
+  - description: Spec for Federatorai-Agent-GPU component. This field is optional.
 
 ### AlamedaServiceStatus
 
@@ -262,6 +268,51 @@ spec:
 - Field: storages
   - type: [StorageSpec](#storagespec) array
   - description: This field is optional and it lists storage settings which applied to an Alameda component.
+
+### FederatoraiAgentGPUSpec
+
+- Field: image
+  - type: string
+  - description: It sets the image name to be pulled.
+- Field: imagePullPolicy
+  - type: string
+  - description: It follows the K8s [image spec](https://kubernetes.io/docs/concepts/containers/images/) of container to pull images. Default is _IfNotPresent_.
+- Field: version
+  - type: string
+  - description: It sets the version tag of image to be pulled.
+- Field: storages
+  - type: [StorageSpec](#storagespec) array
+  - description: This field is optional and it lists storage settings which applied to an Alameda component.
+- Field: prometheus
+  - type: [PrometheusConfig](#prometheusconfig)
+  - description: This field tells Federatorai-Agent-GPU the configuration of Prometheus datasource. Default _nil_.
+- Field: influxdb
+  - type: [InfluxDBConfig](#influxdbConfig)
+  - description: This field tells Federatorai-Agent-GPU the configuration of InfluxDB datasource. Default _nil_.
+
+### PrometheusConfig
+
+- Field: address
+  - type: string
+  - description: This field sets the address of Prometheus. Default _""_.
+- Field: username
+  - type: string
+  - description: This field sets the username in authentication information when quering Prometheus. Default _""_.
+- Field: password
+  - type: string
+  - description: This field sets the password in authentication information when quering Prometheus. Default _""_.
+
+### InfluxDBConfig
+
+- Field: address
+  - type: string
+  - description: This field sets the address of InfluxDB. Default _""_.
+- Field: username
+  - type: string
+  - description: This field sets the username in authentication information when quering InfluxDB. Default _""_.
+- Field: password
+  - type: string
+  - description: This field sets the password in authentication information when quering InfluxDB. Default _""_.
 
 ### ServiceExposureSpec
 

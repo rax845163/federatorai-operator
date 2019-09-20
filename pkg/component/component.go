@@ -13,9 +13,9 @@ import (
 	"github.com/pkg/errors"
 
 	autoscaling_v1alpha1 "github.com/containers-ai/alameda/operator/pkg/apis/autoscaling/v1alpha1"
+	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	"github.com/containers-ai/federatorai-operator/pkg/assets"
 	"github.com/containers-ai/federatorai-operator/pkg/lib/resourceread"
-	certmanagerv1alpha1 "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha1"
 	routev1 "github.com/openshift/api/route/v1"
 	securityv1 "github.com/openshift/api/security/v1"
 
@@ -35,16 +35,32 @@ import (
 var log = logf.Log.WithName("controller_alamedaservice")
 
 type ComponentConfig struct {
-	NameSpace         string
-	PodTemplateConfig PodTemplateConfig
+	NameSpace           string
+	PodTemplateConfig   PodTemplateConfig
+	FederatoraiAgentGPU FederatoraiAgentGPUConfig
 }
 
-func NewComponentConfig(namespace string, ptc PodTemplateConfig) *ComponentConfig {
+func NewComponentConfig(namespace string, ptc PodTemplateConfig, alamedaService federatoraiv1alpha1.AlamedaService) *ComponentConfig {
 
-	return &ComponentConfig{
-		NameSpace:         namespace,
-		PodTemplateConfig: ptc,
+	c := ComponentConfig{
+		NameSpace:           namespace,
+		PodTemplateConfig:   ptc,
+		FederatoraiAgentGPU: NewDefaultFederatoraiAgentGPUConfig(),
 	}
+
+	faiAgentGPUSectionSet := alamedaService.Spec.FederatoraiAgentGPUSectionSet
+	if faiAgentGPUSectionSet.Prometheus != nil {
+		c.FederatoraiAgentGPU.Datasource.Prometheus.Address = faiAgentGPUSectionSet.Prometheus.Address
+		c.FederatoraiAgentGPU.Datasource.Prometheus.Username = faiAgentGPUSectionSet.Prometheus.Username
+		c.FederatoraiAgentGPU.Datasource.Prometheus.Password = faiAgentGPUSectionSet.Prometheus.Password
+	}
+	if faiAgentGPUSectionSet.InfluxDB != nil {
+		c.FederatoraiAgentGPU.Datasource.InfluxDB.Address = faiAgentGPUSectionSet.InfluxDB.Address
+		c.FederatoraiAgentGPU.Datasource.InfluxDB.Username = faiAgentGPUSectionSet.InfluxDB.Username
+		c.FederatoraiAgentGPU.Datasource.InfluxDB.Password = faiAgentGPUSectionSet.InfluxDB.Password
+	}
+
+	return &c
 }
 
 func (c *ComponentConfig) SetNameSpace(ns string) {
@@ -442,30 +458,6 @@ func (c ComponentConfig) NewAPIService(str string) (*apiregistrationv1beta1.APIS
 	resource, err := resourceread.ReadAPIService(c.templateAssets(string(assetByte[:])))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build APIService from assets' bin data")
-	}
-	return resource, nil
-}
-
-func (c ComponentConfig) NewCertificate(str string) (*certmanagerv1alpha1.Certificate, error) {
-	assetByte, err := assets.Asset(str)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to build Certificate from assets' bin data")
-	}
-	resource, err := resourceread.ReadCertificate(c.templateAssets(string(assetByte[:])))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to build Certificate from assets' bin data")
-	}
-	return resource, nil
-}
-
-func (c ComponentConfig) NewIssuer(str string) (*certmanagerv1alpha1.Issuer, error) {
-	assetByte, err := assets.Asset(str)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to build Issuer from assets' bin data")
-	}
-	resource, err := resourceread.ReadIssuer(c.templateAssets(string(assetByte[:])))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to build Issuer from assets' bin data")
 	}
 	return resource, nil
 }
