@@ -9,7 +9,7 @@ webhooks:
     service:
       name: alameda-vpa-executor
       namespace: {{.NameSpace}} 
-      path: / 
+      path: /pods
   name: mutating-webhook.alameda-vpa-executor.{{.NameSpace}}.svc
   rules:
   - apiGroups:
