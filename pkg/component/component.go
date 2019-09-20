@@ -33,47 +33,59 @@ import (
 )
 
 var log = logf.Log.WithName("controller_alamedaservice")
+var reservedKeywords = map[string]interface{}{
+	"Namespace": nil,
+}
 
 type ComponentConfig struct {
-	NameSpace           string
-	PodTemplateConfig   PodTemplateConfig
-	FederatoraiAgentGPU FederatoraiAgentGPUConfig
+	Namespace         string
+	PodTemplateConfig PodTemplateConfig
+	// FederatoraiAgentGPU FederatoraiAgentGPUConfig
+	Args map[string]interface{}
 }
 
 func NewComponentConfig(namespace string, ptc PodTemplateConfig, alamedaService federatoraiv1alpha1.AlamedaService) *ComponentConfig {
 
 	c := ComponentConfig{
-		NameSpace:           namespace,
-		PodTemplateConfig:   ptc,
-		FederatoraiAgentGPU: NewDefaultFederatoraiAgentGPUConfig(),
+		Namespace:         namespace,
+		PodTemplateConfig: ptc,
+		// FederatoraiAgentGPU: NewDefaultFederatoraiAgentGPUConfig(),
+		Args: alamedaService.Spec.Args,
 	}
 
-	faiAgentGPUSectionSet := alamedaService.Spec.FederatoraiAgentGPUSectionSet
-	if faiAgentGPUSectionSet.Prometheus != nil {
-		c.FederatoraiAgentGPU.Datasource.Prometheus.Address = faiAgentGPUSectionSet.Prometheus.Address
-		c.FederatoraiAgentGPU.Datasource.Prometheus.Username = faiAgentGPUSectionSet.Prometheus.Username
-		c.FederatoraiAgentGPU.Datasource.Prometheus.Password = faiAgentGPUSectionSet.Prometheus.Password
-	}
-	if faiAgentGPUSectionSet.InfluxDB != nil {
-		c.FederatoraiAgentGPU.Datasource.InfluxDB.Address = faiAgentGPUSectionSet.InfluxDB.Address
-		c.FederatoraiAgentGPU.Datasource.InfluxDB.Username = faiAgentGPUSectionSet.InfluxDB.Username
-		c.FederatoraiAgentGPU.Datasource.InfluxDB.Password = faiAgentGPUSectionSet.InfluxDB.Password
-	}
+	// faiAgentGPUSectionSet := alamedaService.Spec.FederatoraiAgentGPUSectionSet
+	// if faiAgentGPUSectionSet.Prometheus != nil {
+	// 	c.FederatoraiAgentGPU.Datasource.Prometheus.Address = faiAgentGPUSectionSet.Prometheus.Address
+	// 	c.FederatoraiAgentGPU.Datasource.Prometheus.Username = faiAgentGPUSectionSet.Prometheus.Username
+	// 	c.FederatoraiAgentGPU.Datasource.Prometheus.Password = faiAgentGPUSectionSet.Prometheus.Password
+	// }
+	// if faiAgentGPUSectionSet.InfluxDB != nil {
+	// 	c.FederatoraiAgentGPU.Datasource.InfluxDB.Address = faiAgentGPUSectionSet.InfluxDB.Address
+	// 	c.FederatoraiAgentGPU.Datasource.InfluxDB.Username = faiAgentGPUSectionSet.InfluxDB.Username
+	// 	c.FederatoraiAgentGPU.Datasource.InfluxDB.Password = faiAgentGPUSectionSet.InfluxDB.Password
+	// }
 
 	return &c
 }
 
 func (c *ComponentConfig) SetNameSpace(ns string) {
-	c.NameSpace = ns
+	c.Namespace = ns
 }
 
-func (c ComponentConfig) templateAssets(data string) []byte {
-	tmpl, err := template.New("namespaceServiceToYaml").Parse(data)
+func (c ComponentConfig) templateAssets(asset string) []byte {
+	tmpl, err := template.New("temp").Parse(asset)
 	if err != nil {
 		panic(err)
 	}
 	yamlBuffer := new(bytes.Buffer)
-	if err = tmpl.Execute(yamlBuffer, c); err != nil {
+
+	data := map[string]interface{}{
+		"Namespace": c.Namespace,
+	}
+	for k, v := range c.Args {
+		data[k] = v
+	}
+	if err = tmpl.Execute(yamlBuffer, data); err != nil {
 		panic(err)
 	}
 	return yamlBuffer.Bytes()
@@ -307,7 +319,7 @@ func (c ComponentConfig) NewAdmissionControllerSecret() (*corev1.Secret, error) 
 	}
 
 	admctlCertCfg := cert.Config{
-		CommonName: fmt.Sprintf("admission-controller.%s.svc", c.NameSpace),
+		CommonName: fmt.Sprintf("admission-controller.%s.svc", c.Namespace),
 		Usages: []x509.ExtKeyUsage{
 			x509.ExtKeyUsageClientAuth,
 			x509.ExtKeyUsageServerAuth,
@@ -378,7 +390,7 @@ func (c ComponentConfig) NewfedemeterSecret() (*corev1.Secret, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to buiild fedemeter secret")
 	}
-	host := fmt.Sprintf("fedemeter-api.%s.svc", c.NameSpace)
+	host := fmt.Sprintf("fedemeter-api.%s.svc", c.Namespace)
 	crt, key, err := cert.GenerateSelfSignedCertKey(host, []net.IP{}, []string{})
 	if err != nil {
 		return nil, errors.Errorf("failed to buiild fedemeter secret: %s", err.Error())
@@ -399,7 +411,7 @@ func (c ComponentConfig) NewInfluxDBSecret() (*corev1.Secret, error) {
 		return nil, errors.Wrap(err, "failed to buiild influxdb secret")
 	}
 
-	host := fmt.Sprintf("admission-influxdb.%s.svc", c.NameSpace)
+	host := fmt.Sprintf("admission-influxdb.%s.svc", c.Namespace)
 	crt, key, err := cert.GenerateSelfSignedCertKey(host, []net.IP{}, []string{})
 	if err != nil {
 		return nil, errors.Errorf("failed to buiild influxdb secret: %s", err.Error())

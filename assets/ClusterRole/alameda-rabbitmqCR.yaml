@@ -5,6 +5,9 @@ metadata:
   labels:
     app: rabbitmq
 rules:
-- apiGroups: [""]
-  resources: ["endpoints"]
-  verbs: ["get"]
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - get

@@ -546,6 +546,7 @@ func (r *ReconcileAlamedaService) syncDaemonSet(instance *federatoraiv1alpha1.Al
 
 func (r *ReconcileAlamedaService) syncClusterRole(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, FileStr := range resource.ClusterRoleList {
+		log.Info("Newing ClusterRole from file", "file", FileStr)
 		resourceCR := componentConfig.NewClusterRole(FileStr)
 		if err := controllerutil.SetControllerReference(instance, resourceCR, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceCR SetControllerReference: %s", err.Error())
@@ -573,6 +574,7 @@ func (r *ReconcileAlamedaService) syncClusterRole(instance *federatoraiv1alpha1.
 
 func (r *ReconcileAlamedaService) syncServiceAccount(instance *federatoraiv1alpha1.AlamedaService, asp *alamedaserviceparamter.AlamedaServiceParamter, resource *alamedaserviceparamter.Resource) error {
 	for _, FileStr := range resource.ServiceAccountList {
+		log.Info("Newing ServiceAccount from file", "file", FileStr)
 		resourceSA := componentConfig.NewServiceAccount(FileStr)
 		if err := controllerutil.SetControllerReference(instance, resourceSA, r.scheme); err != nil {
 			return errors.Errorf("Fail resourceSA SetControllerReference: %s", err.Error())
