@@ -7,6 +7,14 @@ check_version()
     openshift_minor_version=`oc version 2>/dev/null|grep "oc v"|cut -d '.' -f2`
 }
 
+webhook_exist_checker()
+{
+    kubectl get alamedanotificationchannels -o 'jsonpath={.items[*].metadata.annotations.notifying\.containers\.ai\/test-channel}' 2>/dev/null | grep -q 'done'
+    if [ "$?" = "0" ];then
+        webhook_exist="y"
+    fi
+}
+
 webhook_reminder()
 {
     check_version
@@ -16,12 +24,12 @@ webhook_reminder()
         echo -e "Steps: (On every master nodes)"
         echo -e "A. Edit /etc/origin/master/master-config.yaml"
         echo -e "B. Insert following content after admissionConfig:pluginConfig:"
-        echo -e "$(tput setaf 3)     ValidatingAdmissionWebhook:"
+        echo -e "$(tput setaf 3)    ValidatingAdmissionWebhook:"
         echo -e "      configuration:"
         echo -e "        kind: DefaultAdmissionConfig"
         echo -e "        apiVersion: v1"
         echo -e "        disable: false"
-        echo -e "     MutatingAdmissionWebhook:"
+        echo -e "    MutatingAdmissionWebhook:"
         echo -e "      configuration:"
         echo -e "        kind: DefaultAdmissionConfig"
         echo -e "        apiVersion: v1"
@@ -40,8 +48,8 @@ if [ "$?" != "0" ];then
     exit
 fi
 
-test_channel_status="`kubectl get alamedanotificationchannels $default_alamedanotificationchannels -o 'jsonpath={.metadata.annotations.notifying\.containers\.ai\/test-channel}' 2>/dev/null`"
-if [ "$test_channel_status" = "" ];then
+webhook_exist_checker
+if [ "$webhook_exist" != "y" ];then
     webhook_reminder
     echo -e "\nPlease set up webhook before executing this script."
     exit

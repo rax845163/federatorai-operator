@@ -54,6 +54,14 @@ leave_prog()
     cd $current_location > /dev/null
 }
 
+webhook_exist_checker()
+{
+    kubectl get alamedanotificationchannels -o 'jsonpath={.items[*].metadata.annotations.notifying\.containers\.ai\/test-channel}' 2>/dev/null | grep -q 'done'
+    if [ "$?" = "0" ];then
+        webhook_exist="y"
+    fi
+}
+
 webhook_reminder()
 {
     if [ "$openshift_minor_version" != "" ]; then
@@ -63,12 +71,12 @@ webhook_reminder()
         echo -e "Steps: (On every master nodes)"
         echo -e "A. Edit /etc/origin/master/master-config.yaml"
         echo -e "B. Insert following content after admissionConfig:pluginConfig:"
-        echo -e "$(tput setaf 3)     ValidatingAdmissionWebhook:"
+        echo -e "$(tput setaf 3)    ValidatingAdmissionWebhook:"
         echo -e "      configuration:"
         echo -e "        kind: DefaultAdmissionConfig"
         echo -e "        apiVersion: v1"
         echo -e "        disable: false"
-        echo -e "     MutatingAdmissionWebhook:"
+        echo -e "    MutatingAdmissionWebhook:"
         echo -e "      configuration:"
         echo -e "        kind: DefaultAdmissionConfig"
         echo -e "        apiVersion: v1"
@@ -508,7 +516,12 @@ __EOF__
     echo "Processing..."
     check_alameda_datahub_tag 900 60 $install_namespace
     wait_until_pods_ready 900 60 $install_namespace 5
-    webhook_reminder
+
+    webhook_exist_checker
+    if [ "$webhook_exist" != "y" ];then
+        webhook_reminder
+    fi
+
     get_grafana_route $install_namespace
     echo -e "$(tput setaf 6)\nInstall Alameda $tag_number successfully$(tput sgr 0)"
     leave_prog
@@ -520,6 +533,9 @@ else
     fi
 fi
 
-webhook_reminder
+webhook_exist_checker
+if [ "$webhook_exist" != "y" ];then
+    webhook_reminder
+fi
 leave_prog
 exit 0
