@@ -30,9 +30,10 @@ spec:
               value: "alameda-datahub.{{.NameSpace}}.svc:50050"
             - name: ALAMEDA_AI_DISPATCHER_QUEUE_URL
               value: "amqp://admin:adminpass@alameda-rabbitmq.{{.NameSpace}}.svc:5672"
+            - name: ALAMEDA_AI_DISPATCHER_MODEL_ENABLED
+              value: "true"
           resources:
             {}
-
           readinessProbe:
             exec:
               command:
