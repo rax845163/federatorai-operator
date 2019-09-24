@@ -203,6 +203,10 @@ func SectionSetParamterToPersistentVolumeClaim(pvc *corev1.PersistentVolumeClaim
 			{
 				util.SetStorageToPersistentVolumeClaimSpec(pvc, asp.GrafanaSectionSet.Storages, pvcusage)
 			}
+		case fmt.Sprintf("federatorai-agent-%s.pvc", pvcusage):
+			{
+				util.SetStorageToPersistentVolumeClaimSpec(pvc, asp.FederatoraiAgentSectionSet.Storages, pvcusage)
+			}
 		case fmt.Sprintf("federatorai-agent-gpu-%s.pvc", pvcusage):
 			{
 				util.SetStorageToPersistentVolumeClaimSpec(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, pvcusage)

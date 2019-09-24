@@ -185,6 +185,7 @@ var (
 		"PersistentVolumeClaim/alameda-analyzer-log.yaml",
 		"PersistentVolumeClaim/alameda-dispatcher-log.yaml",
 		"PersistentVolumeClaim/fedemeter-log.yaml",
+		"PersistentVolumeClaim/federatorai-agent-log.yaml",
 		"PersistentVolumeClaim/federatorai-agent-gpu-log.yaml",
 	}
 
@@ -201,6 +202,7 @@ var (
 		"PersistentVolumeClaim/alameda-executor-data.yaml",
 		"PersistentVolumeClaim/alameda-dispatcher-data.yaml",
 		"PersistentVolumeClaim/fedemeter-data.yaml",
+		"PersistentVolumeClaim/federatorai-agent-data.yaml",
 		"PersistentVolumeClaim/federatorai-agent-gpu-data.yaml",
 	}
 )
