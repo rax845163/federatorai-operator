@@ -54,7 +54,7 @@ spec:
             value: "60"
           - name: FEDERATORAI_ANALYSIS_OUTLIER_SETTING_OBSERVED_SIZE
             value: "120"
-          - name: FEDERATORAI_ANALYSIS_OUTLIER_DETECT
+          - name: FEDERATORAI_ANALYSIS_OUTLIER_DETECT_GPU
             value: "true"
       volumes:
         - name: alameda-analyzer-data-storage
