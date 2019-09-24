@@ -17,7 +17,7 @@ data:
 
     [fedemeter]
     enabled = false
-    address = "fedemeter-api.federatorai.svc"
+    address = "fedemeter-api.{{.NameSpace}}.svc"
     port = 8888
 
     [hpa_scaling]

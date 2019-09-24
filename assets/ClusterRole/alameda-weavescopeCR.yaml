@@ -4,7 +4,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: {{.NameSpace}}-alameda-weave-scope
-  namespace: federatorai
 rules:
 - apiGroups:
   - ""
