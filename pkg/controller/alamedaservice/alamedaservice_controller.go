@@ -514,6 +514,9 @@ func (r *ReconcileAlamedaService) syncDaemonSet(instance *federatoraiv1alpha1.Al
 		}
 		//process resource DaemonSet according to AlamedaService CR
 		resourceDS = processcrdspec.ParamterToDaemonSet(resourceDS, asp)
+		if err := r.patchConfigMapResourceVersionIntoPodTemplateSpecLabel(resourceDS.Namespace, &resourceDS.Spec.Template); err != nil {
+			return errors.Wrap(err, "patch resourceVersion of mounted configMaps into PodTemplateSpec failed")
+		}
 		foundDS := &appsv1.DaemonSet{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDS.Name, Namespace: resourceDS.Namespace}, foundDS)
 
@@ -896,6 +899,10 @@ func (r *ReconcileAlamedaService) syncDeployment(instance *federatoraiv1alpha1.A
 		}
 		//process resource deployment into desire deployment
 		resourceDep = processcrdspec.ParamterToDeployment(resourceDep, asp)
+		if err := r.patchConfigMapResourceVersionIntoPodTemplateSpecLabel(resourceDep.Namespace, &resourceDep.Spec.Template); err != nil {
+			return errors.Wrap(err, "patch resourceVersion of mounted configMaps into PodTemplateSpec failed")
+		}
+
 		foundDep := &appsv1.Deployment{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceDep.Name, Namespace: resourceDep.Namespace}, foundDep)
 		if err != nil && k8sErrors.IsNotFound(err) {
@@ -973,6 +980,9 @@ func (r *ReconcileAlamedaService) syncStatefulSet(instance *federatoraiv1alpha1.
 			return errors.Errorf("Fail resourceSS SetControllerReference: %s", err.Error())
 		}
 		resourceSS = processcrdspec.ParamterToStatefulset(resourceSS, asp)
+		if err := r.patchConfigMapResourceVersionIntoPodTemplateSpecLabel(resourceSS.Namespace, &resourceSS.Spec.Template); err != nil {
+			return errors.Wrap(err, "patch resourceVersion of mounted configMaps into PodTemplateSpec failed")
+		}
 		foundSS := &appsv1.StatefulSet{}
 		err := r.client.Get(context.TODO(), types.NamespacedName{Name: resourceSS.Name, Namespace: resourceSS.Namespace}, foundSS)
 		if err != nil && k8sErrors.IsNotFound(err) {
@@ -1537,6 +1547,28 @@ func (r *ReconcileAlamedaService) deleteDeploymentWhenModifyConfigMapOrService(d
 	err := r.client.Delete(context.TODO(), dep)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (r *ReconcileAlamedaService) patchConfigMapResourceVersionIntoPodTemplateSpecLabel(namespace string, podTemplateSpec *corev1.PodTemplateSpec) error {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	for _, volume := range podTemplateSpec.Spec.Volumes {
+		if volume.ConfigMap != nil {
+			configMap := corev1.ConfigMap{}
+			err := r.client.Get(ctx, client.ObjectKey{Namespace: namespace, Name: volume.ConfigMap.Name}, &configMap)
+			if err != nil {
+				return errors.Errorf("get ConfigMap failed: %s", err.Error())
+			}
+			labels := podTemplateSpec.Labels
+			if labels == nil {
+				labels = make(map[string]string)
+			}
+			labels[volume.ConfigMap.Name] = configMap.ResourceVersion
+			podTemplateSpec.Labels = labels
+		}
 	}
 	return nil
 }
