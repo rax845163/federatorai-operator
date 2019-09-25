@@ -42,7 +42,7 @@ webhook_reminder()
 
 # Main
 
-kubectl get pod >/dev/null 2>&1
+kubectl version|grep -q "^Server"
 if [ "$?" != "0" ];then
     echo -e "\nPlease login to kubernetes first."
     exit

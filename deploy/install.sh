@@ -246,6 +246,12 @@ echo "Checking environment version..."
 check_version
 echo "...Passed"
 
+kubectl version|grep -q "^Server"
+if [ "$?" != "0" ];then
+    echo -e "\nPlease login to kubernetes first."
+    exit
+fi
+
 previous_alameda_namespace="`kubectl get pods --all-namespaces |grep "alameda-ai-"|awk '{print $1}'|head -1`"
 previous_tag="`kubectl get pods -n $previous_alameda_namespace -o custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[*].image 2>/dev/null| grep datahub | head -1 | cut -d ':' -f2`"
 previous_operator_namespace="`kubectl get pods --all-namespaces |grep "federatorai-operator-"|awk '{print $1}'`"

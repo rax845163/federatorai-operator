@@ -6,6 +6,12 @@ if [ "$?" != "0" ];then
     exit
 fi
 
+kubectl version|grep -q "^Server"
+if [ "$?" != "0" ];then
+    echo -e "\nPlease login to kubernetes first."
+    exit
+fi
+
 echo "Checking prometheus service port 9090 ..."
 while read namespace name _junk
 do
