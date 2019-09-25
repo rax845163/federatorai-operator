@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: alameda-ai-dispatcher
+  name: alameda-ai-dispatcher
+  namespace: {{.NameSpace}}
+spec:
+  selector:
+    component: alameda-ai-dispatcher
+  ports:
+  - port: 9091
+    name: metrics
