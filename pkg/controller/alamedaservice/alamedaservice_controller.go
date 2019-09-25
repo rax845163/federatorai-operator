@@ -2,6 +2,7 @@ package alamedaservice
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
@@ -1552,9 +1553,13 @@ func (r *ReconcileAlamedaService) deleteDeploymentWhenModifyConfigMapOrService(d
 }
 
 func (r *ReconcileAlamedaService) patchConfigMapResourceVersionIntoPodTemplateSpecLabel(namespace string, podTemplateSpec *corev1.PodTemplateSpec) error {
-
+	var (
+		mountedConfigMapKey         = "configmaps.volumes.federator.ai/name-resourceversion"
+		mountedConfigMapValueFormat = "%s-%s"
+	)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
+
 	for _, volume := range podTemplateSpec.Spec.Volumes {
 		if volume.ConfigMap != nil {
 			configMap := corev1.ConfigMap{}
@@ -1566,7 +1571,8 @@ func (r *ReconcileAlamedaService) patchConfigMapResourceVersionIntoPodTemplateSp
 			if labels == nil {
 				labels = make(map[string]string)
 			}
-			labels[volume.ConfigMap.Name] = configMap.ResourceVersion
+			key := mountedConfigMapKey
+			labels[key] = fmt.Sprintf(mountedConfigMapValueFormat, configMap.Name, configMap.ResourceVersion)
 			podTemplateSpec.Labels = labels
 		}
 	}
