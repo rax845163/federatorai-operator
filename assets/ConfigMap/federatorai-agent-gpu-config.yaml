@@ -97,14 +97,14 @@ data:
     [[datasource.prometheus.measurement]]
     name = "overall_gpu_memory_utilizatin"
     expr = "sum(nvidia_gpu_memory_used_bytes) / sum(nvidia_gpu_memory_total_bytes)"
-    last_seconds = "1s"
+    last_seconds = "1"
     [datasource.prometheus.measurement.element.value]
     type = "float"
 
     [[datasource.prometheus.measurement]]
     name = "nodes_of_gpu_memory_utilization"
     expr = "sum(nvidia_gpu_memory_used_bytes) by (host) / sum(nvidia_gpu_memory_total_bytes) by (host)"
-    last_seconds = "1s"
+    last_seconds = "1"
     tags = ["host"]
     [datasource.prometheus.measurement.element.value]
     type = "float"
@@ -112,7 +112,7 @@ data:
     [[datasource.prometheus.measurement]]
     name = "uuid_of_gpu_memory_utilization"
     expr = "nvidia_gpu_memory_used_bytes / nvidia_gpu_memory_total_bytes"
-    last_seconds = "1s"
+    last_seconds = "1"
     tags = ["host", "instance", "job", "name", "uuid"]
     [datasource.prometheus.measurement.element.value]
     type = "float"
