@@ -44,7 +44,9 @@ spec:
         - name: PREDICT_QUEUE_URL
           value: "amqp://admin:adminpass@alameda-rabbitmq.{{.NameSpace}}.svc:5672"
         - name: MAXIMUM_PREDICT_PROCESSES
-          value: "4"
+          value: "1"
+        - name: MAXIMUM_MODEL_PROCESSES
+          value: "3"
         readinessProbe:
           exec:
             command:
