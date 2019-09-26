@@ -10,4 +10,5 @@ spec:
     component: alameda-ai-dispatcher
   ports:
   - port: 9091
-    name: metrics
+    name: ai-dispatcher-metrics
+    targetPort: metrics

@@ -23,6 +23,10 @@ spec:
       - name:  alameda-dispatcher-log-storage
       containers:
         - name: ai-dispatcher
+          ports:
+            - containerPort: 9091
+              name: metrics
+              protocol: TCP
           image: "quay.io/prophetstor/alameda-ai-dispatcher:latest"
           imagePullPolicy: IfNotPresent
           env:
