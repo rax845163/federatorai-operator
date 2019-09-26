@@ -107,6 +107,11 @@ wait_until_namespace_removed()
   #exit 4
 }
 
+which curl > /dev/null 2>&1
+if [ "$?" != "0" ];then
+    echo -e "\n$(tput setaf 1)Abort, \"curl\" command is needed for this tool.$(tput sgr 0)"
+    exit
+fi
 
 file_folder="/tmp/install-op"
 mkdir -p $file_folder

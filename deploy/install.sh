@@ -116,6 +116,9 @@ check_version()
     elif [ "$openshift_minor_version" = "" ] && [ "$k8s_version" != "" ] && [ "$k8s_version" -lt "$k8s_required_version" ]; then
         echo -e "\n$(tput setaf 10)Error! Kubernetes version less than 1.$k8s_required_version is not supported by Federator.ai$(tput sgr 0)"
         exit 6
+    elif [ "$openshift_minor_version" = "" ] && [ "$k8s_version" = "" ]; then
+        echo -e "\n$(tput setaf 10)Error! Can't get Kubernetes or OpenShift version$(tput sgr 0)"
+        exit 5
     fi
 }
 
@@ -242,19 +245,25 @@ done
 [ "${d_arg}" != "" ] && data_size="${d_arg}"
 [ "${c_arg}" != "" ] && storage_class="${c_arg}"
 
-echo "Checking environment version..."
-check_version
-echo "...Passed"
-
 kubectl version|grep -q "^Server"
 if [ "$?" != "0" ];then
     echo -e "\nPlease login to kubernetes first."
     exit
 fi
 
+echo "Checking environment version..."
+check_version
+echo "...Passed"
+
+which curl > /dev/null 2>&1
+if [ "$?" != "0" ];then
+    echo -e "\n$(tput setaf 1)Abort, \"curl\" command is needed for this tool.$(tput sgr 0)"
+    exit
+fi
+
 previous_alameda_namespace="`kubectl get pods --all-namespaces |grep "alameda-ai-"|awk '{print $1}'|head -1`"
 previous_tag="`kubectl get pods -n $previous_alameda_namespace -o custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[*].image 2>/dev/null| grep datahub | head -1 | cut -d ':' -f2`"
-previous_operator_namespace="`kubectl get pods --all-namespaces |grep "federatorai-operator-"|awk '{print $1}'`"
+
 if [ "$previous_alameda_namespace" != "" ];then
     need_upgrade="y"
 fi
@@ -303,13 +312,6 @@ else
     echo -e "----------------------------------------\n"
 fi
 
-operator_files=( 
-    "00-namespace.yaml" "01-serviceaccount.yaml"
-    "02-alamedaservice.crd.yaml" "03-federatorai-operator.deployment.yaml"
-    "04-clusterrole.yaml" "05-clusterrolebinding.yaml"
-    "06-role.yaml" "07-rolebinding.yaml"
-)
-
 file_folder="/tmp/install-op"
 
 rm -rf $file_folder
@@ -317,7 +319,9 @@ mkdir -p $file_folder
 current_location=`pwd`
 cd $file_folder
 
-for file in "${operator_files[@]}"
+operator_files=`curl --silent https://api.github.com/repos/containers-ai/federatorai-operator/contents/deploy/upstream?ref=${tag_number} 2>&1|grep "\"name\":"|cut -d ':' -f2|cut -d '"' -f2`
+
+for file in `echo $operator_files`
 do
     echo "Downloading file $file ..."
     if ! curl -sL --fail https://raw.githubusercontent.com/containers-ai/federatorai-operator/${tag_number}/deploy/upstream/${file} -O; then
@@ -353,14 +357,16 @@ echo -e "\n$(tput setaf 2)Starting apply Federator.ai operator yaml files$(tput 
 
 if [ "$need_upgrade" = "y" ];then
     # for upgrade - delete old federatorai-operator deployment before apply new yaml(s)
-    old_deployment="`kubectl get deployment -o name -n $previous_operator_namespace 2>/dev/null|grep federatorai-operator`"
-    if [ "$old_deployment" != "" ];then
-        kubectl delete $old_deployment -n $previous_operator_namespace
+
+    while read deploy_name deploy_ns useless
+    do
+        kubectl delete deployment $deploy_name -n $deploy_ns
         if [ "$?" != "0" ]; then
-            echo -e "\n$(tput setaf 1)Error in deleting old Federator.ai operator deployment.$(tput sgr 0)"
+            echo -e "\n$(tput setaf 1)Error in deleting old Federator.ai operator deployment $deploy_name in ns $deploy_ns.$(tput sgr 0)"
             exit 8
         fi
-    fi
+    done <<< "$(kubectl get deployment --all-namespaces --output jsonpath='{range .items[*]}{"\n"}{.metadata.name}{"\t"}{.metadata.namespace}{"\t"}{range .spec.template.spec.containers[*]}{.image}{end}{end}' 2>/dev/null | grep 'federatorai-operator-ubi')"
+
 fi
 
 for yaml_fn in `ls [0-9]*.yaml | sort -n`; do
