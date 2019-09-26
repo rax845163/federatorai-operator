@@ -40,6 +40,8 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 5
         env:
+          - name: NAMESPACE_NAME
+            value: "{{.NameSpace}}"
           - name: FEDERATORAI_ANALYSIS_DATAHUB_ADDRESS
             value: "alameda-datahub.{{.NameSpace}}.svc"
           - name: FEDERATORAI_ANALYSIS_DATAHUB_PORT
