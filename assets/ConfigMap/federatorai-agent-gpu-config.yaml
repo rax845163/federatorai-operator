@@ -41,7 +41,7 @@ data:
     name = "gpu_counting_k8s"
     expr = "select * from k8s"
     last_seconds = "300"
-    tags = ["NodeName", "Poding", "PodName", "ProjCode", "ProjCreator", "ProjType", "img_type", "namespace", "prj_type", "resource", "type"]
+    tags = ["NodeName", "PodImg", "PodName", "ProjCode", "ProjCreator", "ProjType", "img_type", "namespace", "prj_type", "resource", "type"]
     [datasource.influx.measurement.element.value]
     type = "float"
 
