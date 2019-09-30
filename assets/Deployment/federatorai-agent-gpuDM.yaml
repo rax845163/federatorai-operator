@@ -34,7 +34,6 @@ spec:
           periodSeconds: 5
           successThreshold: 1
           timeoutSeconds: 10
-        name: federatorai-gpu-agent
         readinessProbe:
           exec:
             command:
