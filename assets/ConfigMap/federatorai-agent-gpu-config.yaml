@@ -116,3 +116,11 @@ data:
     tags = ["host", "instance", "job", "name", "uuid"]
     [datasource.prometheus.measurement.element.value]
     type = "float"
+
+    [[datasource.prometheus.measurement]]
+    name = "gpu_exporter"
+    expr = "up{job=\"gpu-exporter\"}"
+    last_seconds = "1"
+    tags = ["instance", "job"]
+    [datasource.prometheus.measurement.element.value]
+    type = "float"
