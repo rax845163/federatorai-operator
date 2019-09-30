@@ -23,6 +23,29 @@ spec:
       - name: federatorai-agent-gpu
         image: quay.io/prophetstor/federatorai-agent-gpu:v4.2.300
         imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - /opt/alameda/federatorai-agent/bin/transmitter
+            - probe
+            - --type=liveness
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: federatorai-gpu-agent
+        readinessProbe:
+          exec:
+            command:
+            - /opt/alameda/federatorai-agent/bin/transmitter
+            - probe
+            - --type=readiness
+          failureThreshold: 3
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
         volumeMounts:
           - name: federatorai-agent-gpu-config
             mountPath: /etc/alameda/federatorai-agent/transmitter.toml
