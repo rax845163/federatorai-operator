@@ -2,17 +2,10 @@
 
 default_alamedanotificationchannels="default"
 default_alamedanotificationtopics="default"
+
 check_version()
 {
     openshift_minor_version=`oc version 2>/dev/null|grep "oc v"|cut -d '.' -f2`
-}
-
-webhook_exist_checker()
-{
-    kubectl get alamedanotificationchannels -o 'jsonpath={.items[*].metadata.annotations.notifying\.containers\.ai\/test-channel}' 2>/dev/null | grep -q 'done'
-    if [ "$?" = "0" ];then
-        webhook_exist="y"
-    fi
 }
 
 webhook_reminder()
@@ -40,6 +33,71 @@ webhook_reminder()
     fi
 }
 
+webhook_mutation_checker()
+{
+    crname=$1
+    yamlfile=$2
+    cat > ${yamlfile} << __EOF__
+apiVersion: notifying.containers.ai/v1alpha1
+kind: AlamedaNotificationChannel
+metadata:
+  annotations: null
+  name: ${crname}
+spec:
+  type: email
+  email:
+    server: ""
+    port: 0
+    from: ""
+    username: ""
+    password: ""
+    encryption: tls
+__EOF__
+
+    echo "Doing webhook mutation test..."
+    kubectl apply -f ${yamlfile}
+    if [ "$?" -ne "0" ]; then
+        echo -e "$(tput setaf 1)Failed to apply webhook mutation testing CR$(tput sgr 0)"
+        return ${ret}
+    fi
+
+    kubectl get alamedanotificationchannels ${crname} -o 'jsonpath={.metadata.annotations.notifying\.containers\.ai\/webhook-mutation}' 2>/dev/null | grep -q 'ok'
+    if [ "$?" -eq "0" ]; then
+        echo "Detection result: webhook mutation is enabled"
+        return 0
+    else
+        echo "Detection result: webhook mutation is disabled"
+        return 14
+    fi
+}
+
+webhook_validation_checker()
+{
+    crname=$1
+    yamlfile=$2
+    if [ ! -f ${yamlfile} ]; then
+        echo "testing yaml file ${yamlfile} is not existing!"
+        return 2
+    fi
+    sed -i 's/port: 0/port: 1/g' ${yamlfile}
+
+    echo "Doing webhook validation test..."
+    kubectl apply -f ${yamlfile}
+    if [ "$?" -ne "0" ]; then
+        echo -e "$(tput setaf 1)Failed to apply webhook validation testing CR$(tput sgr 0)"
+        return ${ret}
+    fi
+
+    kubectl get alamedanotificationchannels ${crname} -o 'jsonpath={.metadata.annotations.notifying\.containers\.ai\/webhook-validation}' 2>/dev/null | grep -q 'ok'
+    if [ "$?" -eq "0" ]; then
+        echo "Detection result: webhook validation is enabled"
+        return 0
+    else
+        echo "Detection result: webhook validation is disabled"
+        return 14
+    fi
+}
+
 # Main
 
 kubectl version|grep -q "^Server"
@@ -48,8 +106,26 @@ if [ "$?" != "0" ];then
     exit
 fi
 
-webhook_exist_checker
-if [ "$webhook_exist" != "y" ];then
+test_cr_name="webhook-testing"
+test_yaml_file="/tmp/nc_webhook_checking.yaml"
+
+# clean up before testing
+kubectl delete alamedanotificationchannel ${test_cr_name} > /dev/null 2>&1
+
+# mutation test
+webhook_mutation_checker ${test_cr_name} ${test_yaml_file}
+ret_mutation=$?
+
+# validation test
+webhook_validation_checker ${test_cr_name} ${test_yaml_file}
+ret_validation=$?
+
+# clean up
+kubectl delete alamedanotificationchannel ${test_cr_name} > /dev/null 2>&1
+rm -f ${test_yaml_file} > /dev/null 2>&1
+
+# display hint if needed
+if [ "${ret_mutation}" -ne "0" ] || [ "${ret_validation}" -ne "0" ]; then
     webhook_reminder
     echo -e "\nPlease set up webhook before executing this script."
     exit
