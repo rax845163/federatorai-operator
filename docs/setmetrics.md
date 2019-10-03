@@ -2,13 +2,12 @@
 
 **setp1**
 
-install alameda-ai component
+install alameda-ai and alameda-ai-dispatcher components
 
 **setp2**
 
 alameda-ai-servicemonitoring-cr.yaml
 ```
-
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -16,7 +15,6 @@ metadata:
   namespace: openshift-monitoring
   labels:
     k8s-app: prometheus-operator
-    team: frontend
 spec:
   endpoints:
   - port: ai-metrics
@@ -24,13 +22,31 @@ spec:
     any: true
   selector:
     matchLabels:
-      app: alameda-ai
+      component: alameda-ai
+```
 
+alameda-ai-servicemonitoring-cr.yaml
+```
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: alameda-ai-dispatcher-metrics
+  namespace: openshift-monitoring
+  labels:
+    k8s-app: prometheus-operator
+spec:
+  endpoints:
+  - port: ai-dispatcher-metrics
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      component: alameda-ai-dispatcher
 ```
 
 **setp2**
 
-Add your prometheus-k8s rbac
+Update your clusterrole prometheus-k8s rbac
 
 ```
 
