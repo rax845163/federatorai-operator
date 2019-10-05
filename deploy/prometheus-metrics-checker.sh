@@ -19,8 +19,8 @@ do
     prometheus_svc_name="$name"
 done < <(kubectl get svc --all-namespaces |grep 9090|head -1)
 
+[ "${prometheus_svc_name}" = "" ] && echo -e "\n$(tput setaf 1)Error, can't find prometheus_svc_name(port 9090)!$(tput sgr 0)" && exit
 [ "${prometheus_namespace}" = "" ] && echo -e "\n$(tput setaf 1)Error, can't find prometheus_namespace!$(tput sgr 0)" && exit
-[ "${prometheus_svc_name}" = "" ] && echo -e "\n$(tput setaf 1)Error, can't find prometheus_svc_name!$(tput sgr 0)" && exit
 echo -e "\tprometheus_namespace=$prometheus_namespace"
 echo -e "\tprometheus_svc_name=$prometheus_svc_name"
 
