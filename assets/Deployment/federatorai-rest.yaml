@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: federatorai-rest
+  namespace: {{.NameSpace}}
+  labels:
+    app: alameda
+    component: federatorai-rest
+spec:
+  selector:
+    matchLabels:
+      component: federatorai-rest
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: federatorai-rest
+    spec:
+      containers:
+      - name: federatorai-rest
+        image: quay.io/prophetstor/federatorai-rest-ubi:v4.2.259
+        imagePullPolicy: Always
+      volumes:
+      - name: federatorai-rest-data-storage
+      - name: federatorai-rest-log-storage

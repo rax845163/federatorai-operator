@@ -26,6 +26,7 @@ var (
 		federatoraiAgentList,
 		fedemeterList,
 		federatoraiAgentGPUList,
+		federatoraiRESTList,
 	}
 
 	datahubList = []string{
@@ -155,6 +156,11 @@ var (
 		"Deployment/federatorai-agent-gpuDM.yaml",
 	}
 
+	federatoraiRESTList = []string{
+		"Deployment/federatorai-rest.yaml",
+		"Service/federatorai-rest.yaml ",
+	}
+
 	selfDrivingList = []string{
 		"AlamedaScaler/alamedaScaler-alameda.yaml",
 	}
@@ -188,6 +194,7 @@ var (
 		"PersistentVolumeClaim/fedemeter-log.yaml",
 		"PersistentVolumeClaim/federatorai-agent-log.yaml",
 		"PersistentVolumeClaim/federatorai-agent-gpu-log.yaml",
+		"PersistentVolumeClaim/federatorai-rest-log.yaml",
 	}
 
 	dataPVCList = []string{
@@ -205,6 +212,7 @@ var (
 		"PersistentVolumeClaim/fedemeter-data.yaml",
 		"PersistentVolumeClaim/federatorai-agent-data.yaml",
 		"PersistentVolumeClaim/federatorai-agent-gpu-data.yaml",
+		"PersistentVolumeClaim/federatorai-rest-data.yaml",
 	}
 )
 
@@ -293,6 +301,7 @@ type AlamedaServiceParamter struct {
 	AlamedaRabbitMQSectionSet     v1alpha1.AlamedaComponentSpec
 	FederatoraiAgentSectionSet    v1alpha1.AlamedaComponentSpec
 	FederatoraiAgentGPUSectionSet v1alpha1.FederatoraiAgentGPUSpec
+	FederatoraiRESTSectionSet     v1alpha1.AlamedaComponentSpec
 	CurrentCRDVersion             v1alpha1.AlamedaServiceStatusCRDVersion
 	previousCRDVersion            v1alpha1.AlamedaServiceStatusCRDVersion
 }
@@ -327,6 +336,7 @@ func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServic
 		FederatoraiAgentSectionSet:    instance.Spec.FederatoraiAgentSectionSet,
 		AlamedaNotifierSectionSet:     instance.Spec.AlamedaNotifierSectionSet,
 		FederatoraiAgentGPUSectionSet: instance.Spec.FederatoraiAgentGPUSectionSet,
+		FederatoraiRESTSectionSet:     instance.Spec.FederatoraiRESTSectionSet,
 		CurrentCRDVersion:             instance.Status.CRDVersion,
 		previousCRDVersion:            instance.Status.CRDVersion,
 	}
@@ -417,6 +427,7 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaNotifierSectionSet.Storages, "PersistentVolumeClaim/alameda-notifier-log.yaml", v1alpha1.Log)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-log.yaml", v1alpha1.Log)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-gpu-log.yaml", v1alpha1.Log)
+	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, "PersistentVolumeClaim/federatorai-rest-log.yaml", v1alpha1.Log)
 
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.InfluxdbSectionSet.Storages, "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.GrafanaSectionSet.Storages, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml", v1alpha1.Data)
@@ -434,6 +445,7 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.AlamedaNotifierSectionSet.Storages, "PersistentVolumeClaim/alameda-notifier-data.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-data.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-gpu-data.yaml", v1alpha1.Data)
+	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, "PersistentVolumeClaim/federatorai-rest-data.yaml", v1alpha1.Data)
 
 	return &Resource{
 		PersistentVolumeClaimList: pvc,
@@ -488,6 +500,7 @@ func (asp *AlamedaServiceParamter) getInstallPersistentVolumeClaimSource() []str
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AlamedaNotifierSectionSet.Storages, "PersistentVolumeClaim/alameda-notifier-log.yaml", v1alpha1.Log)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-log.yaml", v1alpha1.Log)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-gpu-log.yaml", v1alpha1.Log)
+	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, "PersistentVolumeClaim/federatorai-rest-log.yaml", v1alpha1.Log)
 	if gloabalDataFlag {
 		pvc = append(pvc, dataPVCList...)
 	}
@@ -506,6 +519,7 @@ func (asp *AlamedaServiceParamter) getInstallPersistentVolumeClaimSource() []str
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.AlamedaNotifierSectionSet.Storages, "PersistentVolumeClaim/alameda-notifier-data.yaml", v1alpha1.Data)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-data.yaml", v1alpha1.Data)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-gpu-data.yaml", v1alpha1.Data)
+	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, "PersistentVolumeClaim/federatorai-rest-data.yaml", v1alpha1.Data)
 	return pvc
 
 }

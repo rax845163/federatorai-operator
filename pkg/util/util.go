@@ -38,6 +38,7 @@ const (
 	AlamedaNotifierDPN        = "alameda-notifier"
 	FederatoraiAgentDPN       = "federatorai-agent"
 	FederatoraiAgentGPUDPN    = "federatorai-agent-gpu"
+	FederatoraiRESTDPN        = "federatorai-rest"
 	//DaemonSet name
 	AlamedaweavescopeAgentDS = "alameda-weave-scope-agent"
 	//container name
@@ -62,6 +63,7 @@ const (
 	AlamedaNofitierCTN        = "alameda-notifier"
 	FederatoraiAgentCTN       = "federatorai-agent"
 	FederatoraiAgentGPUCTN    = "federatorai-agent-gpu"
+	FederatoraiRESTCTN        = "federatorai-rest"
 	//Statefulset name
 	FedemeterInflixDBSSN = "fedemeter-influxdb"
 	//CRD NAME
