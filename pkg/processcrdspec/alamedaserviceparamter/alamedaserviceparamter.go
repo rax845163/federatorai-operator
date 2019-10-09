@@ -158,7 +158,7 @@ var (
 
 	federatoraiRESTList = []string{
 		"Deployment/federatorai-rest.yaml",
-		"Service/federatorai-rest.yaml ",
+		"Service/federatorai-rest.yaml",
 	}
 
 	selfDrivingList = []string{
