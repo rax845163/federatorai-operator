@@ -215,7 +215,7 @@ check_prometheus()
         install_prometheus_needed="n"
         echo -e "Passed. All needed metrics are found."
         # Remove color code "sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g""
-        suggest_prometheus_url=`echo "$prom_result" |awk '/Suggest to use below Prometheus/{getline; print}'|sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"`
+        suggest_prometheus_url=`echo "$prom_result" |awk '/Suggest to use below Prometheus/{getline; print}'|sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" |sed -r "s/[[:cntrl:]]\[[0-9]{1,3}m//g"`
     else
         install_prometheus_needed="y"
         echo "$prom_result"
@@ -299,6 +299,7 @@ install_prometheus()
     fi
     tar zxf prometheus_4.3.1_chart_for_openshift_3.9_prophetstor_version.tar.gz
     oc new-project $prometheus_namespace 2>/dev/null
+    oc patch namespace $prometheus_namespace -p '{"metadata": {"annotations": {"openshift.io/node-selector": ""}}}'
     echo -e "$(tput setaf 2)Installing Prometheus chart...$(tput sgr 0)"
     sleep 3
     helm install ./prometheus-operator/ --name prom --namespace $prometheus_namespace
