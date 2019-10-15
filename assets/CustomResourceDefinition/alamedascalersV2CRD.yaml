@@ -82,6 +82,19 @@ spec:
               type: object
           type: object
   version: v1alpha1
+  additionalPrinterColumns:
+  - description: The type of scaling
+    jsonPath: .spec.scalingTool.type
+    name: Type
+    type: string
+  - description: The enable of execution
+    jsonPath: .spec.enableExecution
+    name: Execution
+    type: boolean
+  - description: The match labels of selector
+    jsonPath: .spec.selector.matchLabels
+    name: Selector
+    type: string
 status:
   acceptedNames:
     kind: ""

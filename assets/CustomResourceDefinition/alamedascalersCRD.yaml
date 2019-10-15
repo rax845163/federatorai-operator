@@ -55,6 +55,15 @@ spec:
               type: object
           type: object
   version: v1alpha1
+  additionalPrinterColumns:
+  - description: The enable of execution
+    jsonPath: .spec.enableexecution
+    name: Execution
+    type: boolean
+  - description: The match labels of selector
+    jsonPath: .spec.selector.matchLabels
+    name: Selector
+    type: string
 status:
   acceptedNames:
     kind: ""
