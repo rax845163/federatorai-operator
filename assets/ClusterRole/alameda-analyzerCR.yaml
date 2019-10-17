@@ -8,4 +8,11 @@ rules:
   resources:
   - configmaps
   verbs:
-  - get 
+  - get
+- apiGroups:
+  - autoscaling.containers.ai
+  resources:
+  - "*"
+  verbs:
+  - get
+  - list
