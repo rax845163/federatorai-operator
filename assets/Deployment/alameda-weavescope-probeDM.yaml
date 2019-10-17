@@ -33,7 +33,7 @@ spec:
             - '--mode=probe'
             - '--probe-only'
             - '--probe.kubernetes.role=cluster'
-            - 'alameda-weave-scope-app.{{.NameSpace}}.cluster.local:80'
+            - 'alameda-weave-scope-app.{{.NameSpace}}.svc.cluster.local:80'
           command:
             - /home/weave/scope
           image: 'quay.io/prophetstor/scope:v4.1.113'
