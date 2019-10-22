@@ -64,6 +64,10 @@ spec:
     JSONPath: .spec.selector.matchLabels
     name: Selector
     type: string
+  - JSONPath: .metadata.creationTimestamp
+    description: The time of creation
+    name: Age
+    type: date
 status:
   acceptedNames:
     kind: ""
