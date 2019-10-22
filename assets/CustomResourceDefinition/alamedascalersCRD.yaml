@@ -57,11 +57,11 @@ spec:
   version: v1alpha1
   additionalPrinterColumns:
   - description: The enable of execution
-    jsonPath: .spec.enableexecution
+    JSONPath: .spec.enableexecution
     name: Execution
     type: boolean
   - description: The match labels of selector
-    jsonPath: .spec.selector.matchLabels
+    JSONPath: .spec.selector.matchLabels
     name: Selector
     type: string
 status:
