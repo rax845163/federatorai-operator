@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/pkg/errors"
-
-	datahubv1alpha1 "github.com/containers-ai/api/alameda_api/v1alpha1/datahub"
+	datahubv1alpha1_client "github.com/containers-ai/api/alameda_api/v1alpha1/datahub"
+	datahubv1alpha1_event "github.com/containers-ai/api/alameda_api/v1alpha1/datahub/events"
 	"github.com/containers-ai/api/datahub/keycodes"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/pkg/errors"
 	"google.golang.org/genproto/googleapis/rpc/code"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
@@ -17,7 +17,7 @@ import (
 // Client wraps datahub client
 type Client struct {
 	conn           *grpc.ClientConn
-	v1alpha1Client datahubv1alpha1.DatahubServiceClient
+	v1alpha1Client datahubv1alpha1_client.DatahubServiceClient
 	keycodesClient keycodes.KeycodesServiceClient
 }
 
@@ -25,7 +25,7 @@ type Client struct {
 func NewDatahubClient(config Config) Client {
 	dialOptions := []grpc.DialOption{grpc.WithInsecure()}
 	conn, _ := grpc.Dial(config.Address, dialOptions...)
-	v1alpha1Client := datahubv1alpha1.NewDatahubServiceClient(conn)
+	v1alpha1Client := datahubv1alpha1_client.NewDatahubServiceClient(conn)
 	keycodesClient := keycodes.NewKeycodesServiceClient(conn)
 	return Client{
 		conn:           conn,
@@ -45,10 +45,10 @@ func (d *Client) Close() error {
 }
 
 // CreateEvents creates events to Alameda-Datahub
-func (d *Client) CreateEvents(events []*datahubv1alpha1.Event) error {
+func (d *Client) CreateEvents(events []*datahubv1alpha1_event.Event) error {
 
 	ctx := context.TODO()
-	req := datahubv1alpha1.CreateEventsRequest{
+	req := datahubv1alpha1_event.CreateEventsRequest{
 		Events: events,
 	}
 	respStatus, err := d.v1alpha1Client.CreateEvents(ctx, &req)

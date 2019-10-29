@@ -8,7 +8,7 @@ import (
 	"time"
 
 	alamedautilsk8s "github.com/containers-ai/alameda/pkg/utils/kubernetes"
-	datahubv1alpha1 "github.com/containers-ai/api/alameda_api/v1alpha1/datahub"
+	datahubv1alpha1_event "github.com/containers-ai/api/alameda_api/v1alpha1/datahub/events"
 	federatoraiv1alpha1 "github.com/containers-ai/federatorai-operator/pkg/apis/federatorai/v1alpha1"
 	client_datahub "github.com/containers-ai/federatorai-operator/pkg/client/datahub"
 	"github.com/containers-ai/federatorai-operator/pkg/component"
@@ -81,7 +81,7 @@ func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 		firstRetryTimeLock:  sync.Mutex{},
 
 		clusterID:        clusterID,
-		eventChanMap:     make(map[namespace]chan datahubv1alpha1.Event),
+		eventChanMap:     make(map[namespace]chan datahubv1alpha1_event.Event),
 		eventChanMapLock: sync.Mutex{},
 
 		lastReconcileTaskMap: make(map[namespace]struct {
@@ -121,7 +121,7 @@ type ReconcileAlamedaServiceKeycode struct {
 	firstRetryTimeLock  sync.Mutex
 
 	clusterID        string
-	eventChanMap     map[namespace]chan datahubv1alpha1.Event
+	eventChanMap     map[namespace]chan datahubv1alpha1_event.Event
 	eventChanMapLock sync.Mutex
 
 	lastReconcileTaskMap map[namespace]struct {
@@ -392,7 +392,7 @@ func (r *ReconcileAlamedaServiceKeycode) handleEmptyKeycode(keycodeRepository re
 				alamedaService.Namespace,
 				fmt.Sprintf(deleteKeycodeFailedMessageTemplate, codeNumber),
 				r.clusterID,
-				datahubv1alpha1.EventLevel_EVENT_LEVEL_WARNING)
+				datahubv1alpha1_event.EventLevel_EVENT_LEVEL_WARNING)
 			r.addEvent(alamedaService.Namespace, e)
 			return errors.Wrap(err, "delete keycode failed")
 		}
@@ -400,7 +400,7 @@ func (r *ReconcileAlamedaServiceKeycode) handleEmptyKeycode(keycodeRepository re
 			alamedaService.Namespace,
 			fmt.Sprintf(deleteKeycodeSuccessMessageTemplate, codeNumber),
 			r.clusterID,
-			datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
+			datahubv1alpha1_event.EventLevel_EVENT_LEVEL_INFO)
 		r.addEvent(alamedaService.Namespace, e)
 	}
 
@@ -423,7 +423,7 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 				alamedaService.Namespace,
 				fmt.Sprintf(addKeycodeFailedMessageTemplate, keycode),
 				r.clusterID,
-				datahubv1alpha1.EventLevel_EVENT_LEVEL_WARNING)
+				datahubv1alpha1_event.EventLevel_EVENT_LEVEL_WARNING)
 			r.addEvent(alamedaService.Namespace, e)
 			return errors.Wrap(err, "send keycode to keycode repository failed")
 		}
@@ -431,7 +431,7 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 			alamedaService.Namespace,
 			fmt.Sprintf(addKeycodeSuccessMessageTemplate, keycode),
 			r.clusterID,
-			datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
+			datahubv1alpha1_event.EventLevel_EVENT_LEVEL_INFO)
 		r.addEvent(alamedaService.Namespace, e)
 		alamedaService.Status.KeycodeStatus.CodeNumber = alamedaService.Spec.Keycode.CodeNumber
 		alamedaService.Status.KeycodeStatus.State = federatoraiv1alpha1.KeycodeStatePollingRegistrationData
@@ -457,7 +457,7 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 						alamedaService.Namespace,
 						fmt.Sprintf(deleteKeycodeFailedMessageTemplate, keycode),
 						r.clusterID,
-						datahubv1alpha1.EventLevel_EVENT_LEVEL_WARNING)
+						datahubv1alpha1_event.EventLevel_EVENT_LEVEL_WARNING)
 					r.addEvent(alamedaService.Namespace, e)
 					return errors.Wrap(err, "delete keycode failed")
 				}
@@ -465,7 +465,7 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 					alamedaService.Namespace,
 					fmt.Sprintf(deleteKeycodeSuccessMessageTemplate, codeNumber),
 					r.clusterID,
-					datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
+					datahubv1alpha1_event.EventLevel_EVENT_LEVEL_INFO)
 				r.addEvent(alamedaService.Namespace, e)
 			}
 
@@ -484,7 +484,7 @@ func (r *ReconcileAlamedaServiceKeycode) handleKeycode(keycodeRepository reposit
 				alamedaService.Namespace,
 				fmt.Sprintf(addKeycodeSuccessMessageTemplate, keycode),
 				r.clusterID,
-				datahubv1alpha1.EventLevel_EVENT_LEVEL_INFO)
+				datahubv1alpha1_event.EventLevel_EVENT_LEVEL_INFO)
 			r.addEvent(alamedaService.Namespace, e)
 			alamedaService.Status.KeycodeStatus.CodeNumber = alamedaService.Spec.Keycode.CodeNumber
 			alamedaService.Status.KeycodeStatus.State = federatoraiv1alpha1.KeycodeStatePollingRegistrationData
@@ -582,13 +582,13 @@ func (r *ReconcileAlamedaServiceKeycode) deleteFirstRetryTime(namespacedName typ
 	delete(r.firstRetryTimeCache, namespacedName)
 }
 
-func (r *ReconcileAlamedaServiceKeycode) getEventChan(namespace namespace) chan datahubv1alpha1.Event {
+func (r *ReconcileAlamedaServiceKeycode) getEventChan(namespace namespace) chan datahubv1alpha1_event.Event {
 
-	var eventChan chan datahubv1alpha1.Event
+	var eventChan chan datahubv1alpha1_event.Event
 	var exist bool
 	if eventChan, exist = r.eventChanMap[namespace]; !exist {
 		r.eventChanMapLock.Lock()
-		r.eventChanMap[namespace] = make(chan datahubv1alpha1.Event, 100)
+		r.eventChanMap[namespace] = make(chan datahubv1alpha1_event.Event, 100)
 		r.eventChanMapLock.Unlock()
 	}
 	eventChan = r.eventChanMap[namespace]
@@ -602,13 +602,13 @@ func (r *ReconcileAlamedaServiceKeycode) deleteEventChan(namespace namespace) {
 	delete(r.eventChanMap, namespace)
 }
 
-func (r *ReconcileAlamedaServiceKeycode) addEvent(namespace namespace, e datahubv1alpha1.Event) {
+func (r *ReconcileAlamedaServiceKeycode) addEvent(namespace namespace, e datahubv1alpha1_event.Event) {
 
-	var eventChan chan datahubv1alpha1.Event
+	var eventChan chan datahubv1alpha1_event.Event
 	var exist bool
 	if eventChan, exist = r.eventChanMap[namespace]; !exist {
 		r.eventChanMapLock.Lock()
-		r.eventChanMap[namespace] = make(chan datahubv1alpha1.Event, 100)
+		r.eventChanMap[namespace] = make(chan datahubv1alpha1_event.Event, 100)
 		eventChan = r.eventChanMap[namespace]
 		r.eventChanMapLock.Unlock()
 	}
@@ -627,7 +627,7 @@ func (r *ReconcileAlamedaServiceKeycode) flushEvents(namespace namespace, alamed
 
 	cli := r.getOrCreateDatahubClient(datahubAddress)
 
-	var events []*datahubv1alpha1.Event
+	var events []*datahubv1alpha1_event.Event
 	eventChan := r.getEventChan(namespace)
 Loop:
 	for {

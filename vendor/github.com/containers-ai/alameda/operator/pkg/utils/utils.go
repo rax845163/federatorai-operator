@@ -2,13 +2,12 @@ package utils
 
 import (
 	"fmt"
-	"strings"
-
-	datahub_v1alpha1 "github.com/containers-ai/api/alameda_api/v1alpha1/datahub"
-
-	openshift_api_apps_v1 "github.com/openshift/api/apps"
+	ApiResources "github.com/containers-ai/api/alameda_api/v1alpha1/datahub/resources"
+	OpenshiftApiApps "github.com/openshift/api/apps"
 	"k8s.io/client-go/kubernetes"
+	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
+	"strings"
 )
 
 // GetNamespacedNameKey returns string "namespaced/name"
@@ -17,29 +16,33 @@ func GetNamespacedNameKey(namespace, name string) string {
 }
 
 //ParseResourceLinkForTopController parses resourcelink string to get top controller information
-func ParseResourceLinkForTopController(resourceLink string) (*datahub_v1alpha1.TopController, error) {
+func ParseResourceLinkForTopController(resourceLink string) (*ApiResources.TopController, error) {
 	res := strings.Split(resourceLink, "/")
 	if len(res) >= 5 {
-		kind := datahub_v1alpha1.Kind_POD
+		kind := ApiResources.Kind_POD
 		switch res[3] {
 		case "deployments":
-			kind = datahub_v1alpha1.Kind_DEPLOYMENT
+			kind = ApiResources.Kind_DEPLOYMENT
 		case "deploymentconfigs":
-			kind = datahub_v1alpha1.Kind_DEPLOYMENTCONFIG
+			kind = ApiResources.Kind_DEPLOYMENTCONFIG
 		case "statefulsets":
-			kind = datahub_v1alpha1.Kind_STATEFULSET
+			kind = ApiResources.Kind_STATEFULSET
 		default:
-			kind = datahub_v1alpha1.Kind_POD
+			kind = ApiResources.Kind_POD
 		}
-		return &datahub_v1alpha1.TopController{
-			NamespacedName: &datahub_v1alpha1.NamespacedName{
+		return &ApiResources.TopController{
+			NamespacedName: &ApiResources.NamespacedName{
 				Namespace: res[2],
 				Name:      res[4],
 			},
 			Kind: kind,
 		}, nil
 	}
-	return &datahub_v1alpha1.TopController{}, fmt.Errorf("resource link format is not correct")
+	return &ApiResources.TopController{}, fmt.Errorf("resource link format is not correct")
+}
+
+func GetNodeInfoDefaultStorageSizeBytes() string {
+	return os.Getenv("ALAMEDA_OPERATOR_DEFAULT_NODEINFO_STORAGESIZE_BYTES")
 }
 
 var (
@@ -50,7 +53,7 @@ var (
 func ServerHasOpenshiftAPIAppsV1() (bool, error) {
 
 	if hasOpenshiftAPIAppsV1 == nil {
-		if exist, err := serverHasAPIGroup(openshift_api_apps_v1.GroupName); err != nil {
+		if exist, err := serverHasAPIGroup(OpenshiftApiApps.GroupName); err != nil {
 			return false, err
 		} else {
 			hasOpenshiftAPIAppsV1 = &exist

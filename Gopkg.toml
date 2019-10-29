@@ -10,6 +10,13 @@ required = [
   "k8s.io/gengo/args",
   "sigs.k8s.io/controller-tools/pkg/crd/generator",
 ]
+[[override]]
+  name = "github.com/containers-ai/alameda"
+  revision = "909c59e56e62d1ea11861e8d5ec19f9e4e50930d"
+
+[[override]]
+  name = "github.com/containers-ai/api"
+  revision = "637bbd61fa77b3d46287fc7bdd5521c0b9ffc2b4"
 
 [[override]]
   name = "k8s.io/code-generator"
