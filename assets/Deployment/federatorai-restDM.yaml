@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: federatorai-rest
+  namespace: {{.NameSpace}}
+  labels:
+    app: alameda
+    component: federatorai-rest
+  annotations:
+    description: Defines how to deploy the application federatorai-rest
+    template.alpha.openshift.io/wait-for-ready: 'true'
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      component: federatorai-rest
+  template:
+    metadata:
+      name: federatorai-rest
+      labels:
+        app: alameda
+        component: federatorai-rest
+    spec:
+      containers:
+      - name: federatorai-rest
+        image: quay.io/prophetstor/federatorai-rest-ubi:v4.2.504
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 45m
+            memory: 75Mi
+        env:
+        - name: NAMESPACE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INFLUXDB_ADDRESS
+          value: https://alameda-influxdb.{{.NameSpace}}.svc:8086
+        - name: INFLUXDB_USERNAME
+          value: admin
+        - name: INFLUXDB_PASSWORD
+          value: adminpass
+        - name: DATAHUB_ADDRESS
+          value: alameda-datahub.{{.NameSpace}}.svc:50050
+        readinessProbe:
+          exec:
+            command:
+            - /usr/local/bin/federatorai-rest
+            - probe
+            - --type=readiness
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - /usr/local/bin/federatorai-rest
+            - probe
+            - --type=liveness
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name:  federatorai-rest-data-storage
+      - name:  federatorai-rest-log-storage
+      serviceAccount: federatorai-rest
+      serviceAccountName: federatorai-rest

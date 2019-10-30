@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: federatorai-rest
+  name: federatorai-rest
+  namespace: {{.NameSpace}}
+spec:
+  ports:
+  - name: restapi
+    port: 50055
+  selector:
+    component: federatorai-rest
