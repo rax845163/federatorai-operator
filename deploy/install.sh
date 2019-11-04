@@ -313,6 +313,7 @@ else
 fi
 
 file_folder="/tmp/install-op"
+[ "$max_wait_pods_ready_time" = "" ] && max_wait_pods_ready_time=900  # maximum wait time for pods become ready
 
 rm -rf $file_folder
 mkdir -p $file_folder
@@ -388,7 +389,7 @@ for yaml_fn in `ls [0-9]*.yaml | sort -n`; do
     fi
 done
 
-wait_until_pods_ready 600 30 $install_namespace 1
+wait_until_pods_ready $max_wait_pods_ready_time 30 $install_namespace 1
 echo -e "\n$(tput setaf 6)Install Federator.ai operator $tag_number successfully$(tput sgr 0)"
 
 alamedaservice_example="alamedaservice_sample.yaml"
@@ -526,8 +527,8 @@ __EOF__
     fi
 
     echo "Processing..."
-    check_alameda_datahub_tag 900 60 $install_namespace
-    wait_until_pods_ready 900 60 $install_namespace 5
+    check_alameda_datahub_tag $max_wait_pods_ready_time 60 $install_namespace
+    wait_until_pods_ready $max_wait_pods_ready_time 60 $install_namespace 5
 
     webhook_exist_checker
     if [ "$webhook_exist" != "y" ];then
