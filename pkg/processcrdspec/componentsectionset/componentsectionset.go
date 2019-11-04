@@ -131,6 +131,11 @@ func SectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaservicep
 		util.SetImagePullPolicy(dep, util.FederatoraiAgentGPUCTN, asp.FederatoraiAgentGPUSectionSet.ImagePullPolicy)
 		util.SetStorageToVolumeSource(dep, asp.FederatoraiAgentGPUSectionSet.Storages, "federatorai-agent-gpu-type.pvc", util.AlamedaGroup)
 		util.SetStorageToMountPath(dep, asp.FederatoraiAgentGPUSectionSet.Storages, util.FederatoraiAgentGPUCTN, "federatorai-agent-gpu-type-storage", util.AlamedaGroup)
+	case util.FederatoraiRestDPN:
+		util.SetImageStruct(dep, asp.FederatoraiRestSectionSet, util.FederatoraiRestCTN)
+		util.SetImagePullPolicy(dep, util.FederatoraiRestCTN, asp.FederatoraiRestSectionSet.ImagePullPolicy)
+		util.SetStorageToVolumeSource(dep, asp.FederatoraiRestSectionSet.Storages, "federatorai-rest-type.pvc", util.RestAPIGroup)
+		util.SetStorageToMountPath(dep, asp.FederatoraiRestSectionSet.Storages, util.FederatoraiRestCTN, "federatorai-rest-type-storage", util.RestAPIGroup)
 	}
 }
 
@@ -210,6 +215,10 @@ func SectionSetParamterToPersistentVolumeClaim(pvc *corev1.PersistentVolumeClaim
 		case fmt.Sprintf("federatorai-agent-gpu-%s.pvc", pvcusage):
 			{
 				util.SetStorageToPersistentVolumeClaimSpec(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, pvcusage)
+			}
+		case fmt.Sprintf("federatorai-rest-%s.pvc", pvcusage):
+			{
+				util.SetStorageToPersistentVolumeClaimSpec(pvc, asp.FederatoraiRestSectionSet.Storages, pvcusage)
 			}
 		}
 	}

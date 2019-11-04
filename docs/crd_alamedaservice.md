@@ -196,6 +196,9 @@ spec:
 - Field: federatoraiAgentGPU
   - type: [FederatoraiAgentGPUSpec](#federatoraiagentgpuspec)
   - description: Spec for Federatorai-Agent-GPU component. This field is optional.
+- Field: federatoraiRest
+  - type: [AlamedaComponentSpec](#alamedacomponentspec)
+  - description: Spec for Federatorai-Rest component. This field is optional.
 
 ### AlamedaServiceStatus
 

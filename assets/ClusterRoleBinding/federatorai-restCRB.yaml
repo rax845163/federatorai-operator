@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{.NameSpace}}-federatorai-rest
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{.NameSpace}}-federatorai-rest
+subjects:
+- kind: ServiceAccount
+  name: federatorai-rest
+  namespace: {{.NameSpace}}
