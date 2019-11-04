@@ -1,6 +1,6 @@
 # Metrics
 
-**setp1**
+**step1**
 
 install alameda-ai and alameda-ai-dispatcher components
 
@@ -25,7 +25,7 @@ spec:
       component: alameda-ai
 ```
 
-alameda-ai-servicemonitoring-cr.yaml
+alameda-ai-dispatcher-servicemonitoring-cr.yaml
 ```
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -44,7 +44,7 @@ spec:
       component: alameda-ai-dispatcher
 ```
 
-**setp2**
+**step2**
 
 Update your clusterrole prometheus-k8s rbac
 
