@@ -140,6 +140,7 @@ func (in *AlamedaServiceSpec) DeepCopyInto(out *AlamedaServiceSpec) {
 	in.AlamedaWeavescopeSectionSet.DeepCopyInto(&out.AlamedaWeavescopeSectionSet)
 	in.AlamedaDispatcherSectionSet.DeepCopyInto(&out.AlamedaDispatcherSectionSet)
 	in.AlamedaAnalyzerSectionSet.DeepCopyInto(&out.AlamedaAnalyzerSectionSet)
+	in.FederatoraiRestSectionSet.DeepCopyInto(&out.FederatoraiRestSectionSet)
 	return
 }
 

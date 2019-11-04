@@ -38,6 +38,7 @@ const (
 	AlamedaNotifierDPN        = "alameda-notifier"
 	FederatoraiAgentDPN       = "federatorai-agent"
 	FederatoraiAgentGPUDPN    = "federatorai-agent-gpu"
+	FederatoraiRestDPN        = "federatorai-rest"
 	//DaemonSet name
 	AlamedaweavescopeAgentDS = "alameda-weave-scope-agent"
 	//container name
@@ -62,6 +63,7 @@ const (
 	AlamedaNofitierCTN        = "alameda-notifier"
 	FederatoraiAgentCTN       = "federatorai-agent"
 	FederatoraiAgentGPUCTN    = "federatorai-agent-gpu"
+	FederatoraiRestCTN        = "federatorai-rest"
 	//Statefulset name
 	FedemeterInflixDBSSN = "fedemeter-influxdb"
 	//CRD NAME
@@ -77,6 +79,7 @@ const (
 	AlamedaWeaveScopeAppServiceName = "alameda-weave-scope-app"
 	FedemeterInfluxdbServiceName    = "fedemeter-influxdb"
 	FedemeterAPIServiceName         = "fedemeter-api"
+	FederatoraiRestServiceName      = "federatorai-rest"
 	//CRD Version
 	OriAlamedaOperatorVersion = "v0.3.8"
 	//AlamedaService modify Prometheus's var
@@ -346,6 +349,9 @@ func getVolumeLogIndex(dep *appsv1.Deployment) int {
 			if value.Name == "fedemeter-log-storage" {
 				return index
 			}
+			if value.Name == "federatorai-rest-log-storage" {
+				return index
+			}
 		}
 		return -1
 	}
@@ -390,6 +396,9 @@ func getVolumeDataIndex(dep *appsv1.Deployment) int {
 				return index
 			}
 			if value.Name == "fedemeter-data-storage" {
+				return index
+			}
+			if value.Name == "federatorai-rest-data-storage" {
 				return index
 			}
 		}
