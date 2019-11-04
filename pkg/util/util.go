@@ -19,7 +19,6 @@ const (
 	AlamedaGroup   GroupEnums = "alameda"
 	GrafanaGroup   GroupEnums = "grafana"
 	InfluxDBGroup  GroupEnums = "influxdb"
-	RestAPIGroup   GroupEnums = "federatorai-rest"
 	//deployment name
 	AlamedaaiDPN              = "alameda-ai"
 	AlamedaoperatorDPN        = "alameda-operator"

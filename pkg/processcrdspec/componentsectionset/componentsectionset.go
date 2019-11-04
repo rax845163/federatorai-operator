@@ -134,8 +134,8 @@ func SectionSetParamterToDeployment(dep *appsv1.Deployment, asp *alamedaservicep
 	case util.FederatoraiRestDPN:
 		util.SetImageStruct(dep, asp.FederatoraiRestSectionSet, util.FederatoraiRestCTN)
 		util.SetImagePullPolicy(dep, util.FederatoraiRestCTN, asp.FederatoraiRestSectionSet.ImagePullPolicy)
-		util.SetStorageToVolumeSource(dep, asp.FederatoraiRestSectionSet.Storages, "federatorai-rest-type.pvc", util.RestAPIGroup)
-		util.SetStorageToMountPath(dep, asp.FederatoraiRestSectionSet.Storages, util.FederatoraiRestCTN, "federatorai-rest-type-storage", util.RestAPIGroup)
+		util.SetStorageToVolumeSource(dep, asp.FederatoraiRestSectionSet.Storages, "federatorai-rest-type.pvc", util.AlamedaGroup)
+		util.SetStorageToMountPath(dep, asp.FederatoraiRestSectionSet.Storages, util.FederatoraiRestCTN, "federatorai-rest-type-storage", util.AlamedaGroup)
 	}
 }
 
