@@ -16,7 +16,7 @@ func GetNamespacedNameKey(namespace, name string) string {
 }
 
 //ParseResourceLinkForTopController parses resourcelink string to get top controller information
-func ParseResourceLinkForTopController(resourceLink string) (*ApiResources.TopController, error) {
+func ParseResourceLinkForTopController(resourceLink string) (*ApiResources.Controller, error) {
 	res := strings.Split(resourceLink, "/")
 	if len(res) >= 5 {
 		kind := ApiResources.Kind_POD
@@ -30,15 +30,15 @@ func ParseResourceLinkForTopController(resourceLink string) (*ApiResources.TopCo
 		default:
 			kind = ApiResources.Kind_POD
 		}
-		return &ApiResources.TopController{
-			NamespacedName: &ApiResources.NamespacedName{
+		return &ApiResources.Controller{
+			ObjectMeta: &ApiResources.ObjectMeta{
 				Namespace: res[2],
 				Name:      res[4],
 			},
 			Kind: kind,
 		}, nil
 	}
-	return &ApiResources.TopController{}, fmt.Errorf("resource link format is not correct")
+	return nil, fmt.Errorf("resource link format is not correct")
 }
 
 func GetNodeInfoDefaultStorageSizeBytes() string {
