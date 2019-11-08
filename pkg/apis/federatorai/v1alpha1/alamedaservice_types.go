@@ -27,6 +27,7 @@ type AlamedaServiceSpec struct {
 	EnableExecution   bool                  `json:"enableExecution"`
 	EnableGUI         bool                  `json:"enableGui"`
 	EnableDispatcher  *bool                 `json:"enableDispatcher"`
+	EnablePreloader   bool                  `json:"enablePreloader"`
 	SelfDriving       bool                  `json:"selfDriving"`
 	Version           string                `json:"version"`
 	PrometheusService string                `json:"prometheusService"`
@@ -35,24 +36,25 @@ type AlamedaServiceSpec struct {
 	EnableWeavescope  bool                  `json:"enableWeavescope"`
 	Keycode           KeycodeSpec           `json:"keycode"`
 	//Component Section Schema
-	InfluxdbSectionSet            AlamedaComponentSpec    `json:"alamedaInfluxdb"`
-	GrafanaSectionSet             AlamedaComponentSpec    `json:"alamedaGrafana"`
-	AlamedaAISectionSet           AlamedaComponentSpec    `json:"alamedaAi"`
-	AlamedaOperatorSectionSet     AlamedaComponentSpec    `json:"alamedaOperator"`
-	AlamedaDatahubSectionSet      AlamedaComponentSpec    `json:"alamedaDatahub"`
-	AlamedaEvictionerSectionSet   AlamedaComponentSpec    `json:"alamedaEvictioner"`
-	AdmissionControllerSectionSet AlamedaComponentSpec    `json:"alamedaAdmissionController"`
-	AlamedaRecommenderSectionSet  AlamedaComponentSpec    `json:"alamedaRecommender"`
-	AlamedaExecutorSectionSet     AlamedaComponentSpec    `json:"alamedaExecutor"`
-	AlamedaFedemeterSectionSet    AlamedaComponentSpec    `json:"fedemeter"`
-	AlamedaWeavescopeSectionSet   AlamedaComponentSpec    `json:"alameda-weavescope"`
-	AlamedaDispatcherSectionSet   AlamedaComponentSpec    `json:"alameda-dispatcher"`
-	AlamedaRabbitMQSectionSet     AlamedaComponentSpec    `json:"alamedaRabbitMQ"`
-	AlamedaAnalyzerSectionSet     AlamedaComponentSpec    `json:"alameda-analyzer"`
-	AlamedaNotifierSectionSet     AlamedaComponentSpec    `json:"alamedaNotifier"`
-	FederatoraiAgentSectionSet    AlamedaComponentSpec    `json:"federatoraiAgent"`
-	FederatoraiAgentGPUSectionSet FederatoraiAgentGPUSpec `json:"federatoraiAgentGPU"`
-	FederatoraiRestSectionSet     AlamedaComponentSpec    `json:"federatoraiRest"`
+	InfluxdbSectionSet                  AlamedaComponentSpec    `json:"alamedaInfluxdb"`
+	GrafanaSectionSet                   AlamedaComponentSpec    `json:"alamedaGrafana"`
+	AlamedaAISectionSet                 AlamedaComponentSpec    `json:"alamedaAi"`
+	AlamedaOperatorSectionSet           AlamedaComponentSpec    `json:"alamedaOperator"`
+	AlamedaDatahubSectionSet            AlamedaComponentSpec    `json:"alamedaDatahub"`
+	AlamedaEvictionerSectionSet         AlamedaComponentSpec    `json:"alamedaEvictioner"`
+	AdmissionControllerSectionSet       AlamedaComponentSpec    `json:"alamedaAdmissionController"`
+	AlamedaRecommenderSectionSet        AlamedaComponentSpec    `json:"alamedaRecommender"`
+	AlamedaExecutorSectionSet           AlamedaComponentSpec    `json:"alamedaExecutor"`
+	AlamedaFedemeterSectionSet          AlamedaComponentSpec    `json:"fedemeter"`
+	AlamedaWeavescopeSectionSet         AlamedaComponentSpec    `json:"alameda-weavescope"`
+	AlamedaDispatcherSectionSet         AlamedaComponentSpec    `json:"alameda-dispatcher"`
+	AlamedaRabbitMQSectionSet           AlamedaComponentSpec    `json:"alamedaRabbitMQ"`
+	AlamedaAnalyzerSectionSet           AlamedaComponentSpec    `json:"alameda-analyzer"`
+	AlamedaNotifierSectionSet           AlamedaComponentSpec    `json:"alamedaNotifier"`
+	FederatoraiAgentSectionSet          AlamedaComponentSpec    `json:"federatoraiAgent"`
+	FederatoraiAgentGPUSectionSet       FederatoraiAgentGPUSpec `json:"federatoraiAgentGPU"`
+	FederatoraiRestSectionSet           AlamedaComponentSpec    `json:"federatoraiRest"`
+	FederatoraiAgentPreloaderSectionSet AlamedaComponentSpec    `json:"federatoraiAgentPreloader"`
 }
 
 type AlamedaComponentSpec struct {

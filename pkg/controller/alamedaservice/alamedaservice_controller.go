@@ -266,7 +266,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	if !asp.EnableExecution {
 		log.Info("EnableExecution has been changed to false")
 		excutionResource := alamedaserviceparamter.GetExcutionResource()
-		if err := r.uninstallExecutionComponent(instance, excutionResource); err != nil {
+		if err := r.uninstallResource(*excutionResource); err != nil {
 			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
@@ -275,7 +275,7 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	if !asp.EnableGUI {
 		log.Info("EnableGUI has been changed to false")
 		guiResource := alamedaserviceparamter.GetGUIResource()
-		if err := r.uninstallGUIComponent(instance, guiResource); err != nil {
+		if err := r.uninstallResource(*guiResource); err != nil {
 			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
@@ -284,7 +284,15 @@ func (r *ReconcileAlamedaService) Reconcile(request reconcile.Request) (reconcil
 	if !asp.EnableDispatcher {
 		log.Info("EnableDispatcher has been changed to false")
 		dispatcherResource := alamedaserviceparamter.GetDispatcherResource()
-		if err := r.uninstallExecutionComponent(instance, dispatcherResource); err != nil {
+		if err := r.uninstallResource(*dispatcherResource); err != nil {
+			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
+			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
+		}
+	}
+	if !asp.EnablePreloader {
+		log.Info("EnablePreloader has been changed to false")
+		resource := alamedaserviceparamter.GetPreloaderResource()
+		if err := r.uninstallResource(*resource); err != nil {
 			log.V(-1).Info("retry reconciling AlamedaService", "AlamedaService.Namespace", instance.Namespace, "AlamedaService.Name", instance.Name, "msg", err.Error())
 			return reconcile.Result{Requeue: true, RequeueAfter: 1 * time.Second}, nil
 		}
@@ -1194,75 +1202,6 @@ func (r *ReconcileAlamedaService) uninstallValidatingWebhookConfiguration(instan
 func (r *ReconcileAlamedaService) uninstallScalerforAlameda(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
 	if err := r.uninstallAlamedaScaler(instance, resource); err != nil {
 		return errors.Wrapf(err, "uninstall selfDriving scaler failed")
-	}
-	return nil
-}
-
-func (r *ReconcileAlamedaService) uninstallGUIComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-	if err := r.uninstallRoute(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall gui component failed")
-	}
-	if err := r.uninstallDeployment(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall gui component failed")
-	}
-	if err := r.uninstallService(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall gui component failed")
-	}
-	if err := r.uninstallConfigMap(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall gui component failed")
-	}
-	if err := r.uninstallServiceAccount(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall gui component failed")
-	}
-	if err := r.uninstallClusterRole(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall gui component failed")
-	}
-	if err := r.uninstallClusterRoleBinding(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall gui component failed")
-	}
-	return nil
-}
-
-func (r *ReconcileAlamedaService) uninstallExecutionComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-	if err := r.uninstallDeployment(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall execution component failed")
-	}
-	if err := r.uninstallService(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall execution component failed")
-	}
-	if err := r.uninstallSecret(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall gui component failed")
-	}
-	if err := r.uninstallServiceAccount(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall gui component failed")
-	}
-	if err := r.uninstallClusterRole(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall gui component failed")
-	}
-	if err := r.uninstallClusterRoleBinding(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall gui component failed")
-	}
-	return nil
-}
-
-func (r *ReconcileAlamedaService) uninstallFedemeterComponent(instance *federatoraiv1alpha1.AlamedaService, resource *alamedaserviceparamter.Resource) error {
-	if err := r.uninstallIngress(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall Fedemeter component failed")
-	}
-	if err := r.uninstallDeployment(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall Fedemeter component failed")
-	}
-	if err := r.uninstallService(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall Fedemeter component failed")
-	}
-	if err := r.uninstallSecret(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall Fedemeter component failed")
-	}
-	if err := r.uninstallConfigMap(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall Fedemeter component failed")
-	}
-	if err := r.uninstallStatefulSet(instance, resource); err != nil {
-		return errors.Wrapf(err, "uninstall Fedemeter component failed")
 	}
 	return nil
 }

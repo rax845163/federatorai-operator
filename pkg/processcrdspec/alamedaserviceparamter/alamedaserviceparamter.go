@@ -164,6 +164,11 @@ var (
 		"Deployment/federatorai-restDM.yaml",
 	}
 
+	federatoraiAgentPreloaderList = []string{
+		"ConfigMap/federatorai-agent-preloader-config.yaml",
+		"Deployment/federatorai-agent-preloaderDM.yaml",
+	}
+
 	selfDrivingList = []string{
 		"AlamedaScaler/alamedaScaler-alameda.yaml",
 	}
@@ -198,6 +203,7 @@ var (
 		"PersistentVolumeClaim/federatorai-agent-log.yaml",
 		"PersistentVolumeClaim/federatorai-agent-gpu-log.yaml",
 		"PersistentVolumeClaim/federatorai-rest-log.yaml",
+		"PersistentVolumeClaim/federatorai-agent-preloader-log.yaml",
 	}
 
 	dataPVCList = []string{
@@ -216,12 +222,19 @@ var (
 		"PersistentVolumeClaim/federatorai-agent-data.yaml",
 		"PersistentVolumeClaim/federatorai-agent-gpu-data.yaml",
 		"PersistentVolumeClaim/federatorai-rest-data.yaml",
+		"PersistentVolumeClaim/federatorai-agent-preloader-data.yaml",
 	}
 )
 
 // GetDispatcherResource returns resource that needs to be installed for Alameda-Dispathcer
 func GetDispatcherResource() *Resource {
 	r, _ := getResourceFromList(aiDispatcherList)
+	return &r
+}
+
+// GetPreloaderResource returns resource that needs to be installed for Federatorai-Agent-Preloader
+func GetPreloaderResource() *Resource {
+	r, _ := getResourceFromList(federatoraiAgentPreloaderList)
 	return &r
 }
 
@@ -281,72 +294,76 @@ func GetCustomResourceDefinitions() []string {
 }
 
 type AlamedaServiceParamter struct {
-	NameSpace                     string
-	SelfDriving                   bool
-	Platform                      string
-	EnableExecution               bool
-	EnableGUI                     bool
-	EnableDispatcher              bool
-	EnableWeavescope              bool
-	Version                       string
-	PrometheusService             string
-	Storages                      []v1alpha1.StorageSpec
-	ServiceExposures              []v1alpha1.ServiceExposureSpec
-	InfluxdbSectionSet            v1alpha1.AlamedaComponentSpec
-	GrafanaSectionSet             v1alpha1.AlamedaComponentSpec
-	AlamedaAISectionSet           v1alpha1.AlamedaComponentSpec
-	AlamedaOperatorSectionSet     v1alpha1.AlamedaComponentSpec
-	AlamedaDatahubSectionSet      v1alpha1.AlamedaComponentSpec
-	AlamedaEvictionerSectionSet   v1alpha1.AlamedaComponentSpec
-	AdmissionControllerSectionSet v1alpha1.AlamedaComponentSpec
-	AlamedaRecommenderSectionSet  v1alpha1.AlamedaComponentSpec
-	AlamedaExecutorSectionSet     v1alpha1.AlamedaComponentSpec
-	AlamedaDispatcherSectionSet   v1alpha1.AlamedaComponentSpec
-	AlamedaFedemeterSectionSet    v1alpha1.AlamedaComponentSpec
-	AlamedaWeavescopeSectionSet   v1alpha1.AlamedaComponentSpec
-	AlamedaAnalyzerSectionSet     v1alpha1.AlamedaComponentSpec
-	AlamedaNotifierSectionSet     v1alpha1.AlamedaComponentSpec
-	AlamedaRabbitMQSectionSet     v1alpha1.AlamedaComponentSpec
-	FederatoraiAgentSectionSet    v1alpha1.AlamedaComponentSpec
-	FederatoraiAgentGPUSectionSet v1alpha1.FederatoraiAgentGPUSpec
-	FederatoraiRestSectionSet     v1alpha1.AlamedaComponentSpec
-	CurrentCRDVersion             v1alpha1.AlamedaServiceStatusCRDVersion
-	previousCRDVersion            v1alpha1.AlamedaServiceStatusCRDVersion
+	NameSpace                           string
+	SelfDriving                         bool
+	Platform                            string
+	EnableExecution                     bool
+	EnableGUI                           bool
+	EnableDispatcher                    bool
+	EnablePreloader                     bool
+	EnableWeavescope                    bool
+	Version                             string
+	PrometheusService                   string
+	Storages                            []v1alpha1.StorageSpec
+	ServiceExposures                    []v1alpha1.ServiceExposureSpec
+	InfluxdbSectionSet                  v1alpha1.AlamedaComponentSpec
+	GrafanaSectionSet                   v1alpha1.AlamedaComponentSpec
+	AlamedaAISectionSet                 v1alpha1.AlamedaComponentSpec
+	AlamedaOperatorSectionSet           v1alpha1.AlamedaComponentSpec
+	AlamedaDatahubSectionSet            v1alpha1.AlamedaComponentSpec
+	AlamedaEvictionerSectionSet         v1alpha1.AlamedaComponentSpec
+	AdmissionControllerSectionSet       v1alpha1.AlamedaComponentSpec
+	AlamedaRecommenderSectionSet        v1alpha1.AlamedaComponentSpec
+	AlamedaExecutorSectionSet           v1alpha1.AlamedaComponentSpec
+	AlamedaDispatcherSectionSet         v1alpha1.AlamedaComponentSpec
+	AlamedaFedemeterSectionSet          v1alpha1.AlamedaComponentSpec
+	AlamedaWeavescopeSectionSet         v1alpha1.AlamedaComponentSpec
+	AlamedaAnalyzerSectionSet           v1alpha1.AlamedaComponentSpec
+	AlamedaNotifierSectionSet           v1alpha1.AlamedaComponentSpec
+	AlamedaRabbitMQSectionSet           v1alpha1.AlamedaComponentSpec
+	FederatoraiAgentSectionSet          v1alpha1.AlamedaComponentSpec
+	FederatoraiAgentGPUSectionSet       v1alpha1.FederatoraiAgentGPUSpec
+	FederatoraiRestSectionSet           v1alpha1.AlamedaComponentSpec
+	FederatoraiAgentPreloaderSectionSet v1alpha1.AlamedaComponentSpec
+	CurrentCRDVersion                   v1alpha1.AlamedaServiceStatusCRDVersion
+	previousCRDVersion                  v1alpha1.AlamedaServiceStatusCRDVersion
 }
 
 func NewAlamedaServiceParamter(instance *v1alpha1.AlamedaService) *AlamedaServiceParamter {
 	asp := &AlamedaServiceParamter{
-		NameSpace:                     instance.Namespace,
-		SelfDriving:                   instance.Spec.SelfDriving,
-		Platform:                      instance.Spec.Platform,
-		EnableExecution:               instance.Spec.EnableExecution,
-		EnableGUI:                     instance.Spec.EnableGUI,
-		EnableDispatcher:              *instance.Spec.EnableDispatcher,
-		EnableWeavescope:              instance.Spec.EnableWeavescope,
-		Version:                       instance.Spec.Version,
-		PrometheusService:             instance.Spec.PrometheusService,
-		Storages:                      instance.Spec.Storages,
-		ServiceExposures:              instance.Spec.ServiceExposures,
-		InfluxdbSectionSet:            instance.Spec.InfluxdbSectionSet,
-		GrafanaSectionSet:             instance.Spec.GrafanaSectionSet,
-		AlamedaAISectionSet:           instance.Spec.AlamedaAISectionSet,
-		AlamedaOperatorSectionSet:     instance.Spec.AlamedaOperatorSectionSet,
-		AlamedaDatahubSectionSet:      instance.Spec.AlamedaDatahubSectionSet,
-		AlamedaEvictionerSectionSet:   instance.Spec.AlamedaEvictionerSectionSet,
-		AdmissionControllerSectionSet: instance.Spec.AdmissionControllerSectionSet,
-		AlamedaRecommenderSectionSet:  instance.Spec.AlamedaRecommenderSectionSet,
-		AlamedaExecutorSectionSet:     instance.Spec.AlamedaExecutorSectionSet,
-		AlamedaDispatcherSectionSet:   instance.Spec.AlamedaDispatcherSectionSet,
-		AlamedaRabbitMQSectionSet:     instance.Spec.AlamedaRabbitMQSectionSet,
-		AlamedaAnalyzerSectionSet:     instance.Spec.AlamedaAnalyzerSectionSet,
-		AlamedaFedemeterSectionSet:    instance.Spec.AlamedaFedemeterSectionSet,
-		AlamedaWeavescopeSectionSet:   instance.Spec.AlamedaWeavescopeSectionSet,
-		FederatoraiAgentSectionSet:    instance.Spec.FederatoraiAgentSectionSet,
-		AlamedaNotifierSectionSet:     instance.Spec.AlamedaNotifierSectionSet,
-		FederatoraiAgentGPUSectionSet: instance.Spec.FederatoraiAgentGPUSectionSet,
-		FederatoraiRestSectionSet:     instance.Spec.FederatoraiRestSectionSet,
-		CurrentCRDVersion:             instance.Status.CRDVersion,
-		previousCRDVersion:            instance.Status.CRDVersion,
+		NameSpace:                           instance.Namespace,
+		SelfDriving:                         instance.Spec.SelfDriving,
+		Platform:                            instance.Spec.Platform,
+		EnableExecution:                     instance.Spec.EnableExecution,
+		EnableGUI:                           instance.Spec.EnableGUI,
+		EnableDispatcher:                    *instance.Spec.EnableDispatcher,
+		EnablePreloader:                     instance.Spec.EnablePreloader,
+		EnableWeavescope:                    instance.Spec.EnableWeavescope,
+		Version:                             instance.Spec.Version,
+		PrometheusService:                   instance.Spec.PrometheusService,
+		Storages:                            instance.Spec.Storages,
+		ServiceExposures:                    instance.Spec.ServiceExposures,
+		InfluxdbSectionSet:                  instance.Spec.InfluxdbSectionSet,
+		GrafanaSectionSet:                   instance.Spec.GrafanaSectionSet,
+		AlamedaAISectionSet:                 instance.Spec.AlamedaAISectionSet,
+		AlamedaOperatorSectionSet:           instance.Spec.AlamedaOperatorSectionSet,
+		AlamedaDatahubSectionSet:            instance.Spec.AlamedaDatahubSectionSet,
+		AlamedaEvictionerSectionSet:         instance.Spec.AlamedaEvictionerSectionSet,
+		AdmissionControllerSectionSet:       instance.Spec.AdmissionControllerSectionSet,
+		AlamedaRecommenderSectionSet:        instance.Spec.AlamedaRecommenderSectionSet,
+		AlamedaExecutorSectionSet:           instance.Spec.AlamedaExecutorSectionSet,
+		AlamedaDispatcherSectionSet:         instance.Spec.AlamedaDispatcherSectionSet,
+		AlamedaRabbitMQSectionSet:           instance.Spec.AlamedaRabbitMQSectionSet,
+		AlamedaAnalyzerSectionSet:           instance.Spec.AlamedaAnalyzerSectionSet,
+		AlamedaFedemeterSectionSet:          instance.Spec.AlamedaFedemeterSectionSet,
+		AlamedaWeavescopeSectionSet:         instance.Spec.AlamedaWeavescopeSectionSet,
+		FederatoraiAgentSectionSet:          instance.Spec.FederatoraiAgentSectionSet,
+		AlamedaNotifierSectionSet:           instance.Spec.AlamedaNotifierSectionSet,
+		FederatoraiAgentGPUSectionSet:       instance.Spec.FederatoraiAgentGPUSectionSet,
+		FederatoraiRestSectionSet:           instance.Spec.FederatoraiRestSectionSet,
+		FederatoraiAgentPreloaderSectionSet: instance.Spec.FederatoraiAgentPreloaderSectionSet,
+		CurrentCRDVersion:                   instance.Status.CRDVersion,
+		previousCRDVersion:                  instance.Status.CRDVersion,
 	}
 	asp.changeScalerCRDVersion()
 	return asp
@@ -380,6 +397,10 @@ func (asp *AlamedaServiceParamter) GetInstallResource() *Resource {
 	}
 	if asp.EnableDispatcher {
 		r := GetDispatcherResource()
+		resource.add(*r)
+	}
+	if asp.EnablePreloader {
+		r := GetPreloaderResource()
 		resource.add(*r)
 	}
 	if asp.EnableWeavescope {
@@ -436,6 +457,7 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-log.yaml", v1alpha1.Log)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-gpu-log.yaml", v1alpha1.Log)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiRestSectionSet.Storages, "PersistentVolumeClaim/federatorai-rest-log.yaml", v1alpha1.Log)
+	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentPreloaderSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-preloader-log.yaml", v1alpha1.Log)
 
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.InfluxdbSectionSet.Storages, "PersistentVolumeClaim/my-alamedainfluxdbPVC.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.GrafanaSectionSet.Storages, "PersistentVolumeClaim/my-alamedagrafanaPVC.yaml", v1alpha1.Data)
@@ -454,6 +476,7 @@ func (asp *AlamedaServiceParamter) GetUninstallPersistentVolumeClaimSource() *Re
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-data.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-gpu-data.yaml", v1alpha1.Data)
 	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiRestSectionSet.Storages, "PersistentVolumeClaim/federatorai-rest-data.yaml", v1alpha1.Data)
+	pvc = sectionUninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentPreloaderSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-preloader-data.yaml", v1alpha1.Data)
 
 	return &Resource{
 		PersistentVolumeClaimList: pvc,
@@ -509,6 +532,7 @@ func (asp *AlamedaServiceParamter) getInstallPersistentVolumeClaimSource() []str
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-log.yaml", v1alpha1.Log)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-gpu-log.yaml", v1alpha1.Log)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiRestSectionSet.Storages, "PersistentVolumeClaim/federatorai-rest-log.yaml", v1alpha1.Log)
+	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentPreloaderSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-preloader-log.yaml", v1alpha1.Log)
 	if gloabalDataFlag {
 		pvc = append(pvc, dataPVCList...)
 	}
@@ -528,6 +552,7 @@ func (asp *AlamedaServiceParamter) getInstallPersistentVolumeClaimSource() []str
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-data.yaml", v1alpha1.Data)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentGPUSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-gpu-data.yaml", v1alpha1.Data)
 	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiRestSectionSet.Storages, "PersistentVolumeClaim/federatorai-rest-data.yaml", v1alpha1.Data)
+	pvc = sectioninstallPersistentVolumeClaimSource(pvc, asp.FederatoraiAgentPreloaderSectionSet.Storages, "PersistentVolumeClaim/federatorai-agent-preloader-data.yaml", v1alpha1.Data)
 	return pvc
 
 }

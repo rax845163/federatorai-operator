@@ -136,6 +136,9 @@ spec:
 - Field: enableDispatcher
   - type: boolean
   - description: Federator.ai Operator will deploy alameda-dispatcher and rabittmq to sent predict job to alameda-ai if this field is set to _true_. Default is _true_.
+- Field: enablePreloader
+  - type: boolean
+  - description: Federator.ai Operator will deploy federatorai-agent-preloader if this field is set to _true_. Default is _false_.
 - Field: enableWeavescope
   - type: boolean
   - description: Federator.ai Operator will deploy weavescope to monitor containerized application if this field is set to _true_. Default is _false_.
@@ -199,6 +202,9 @@ spec:
 - Field: federatoraiRest
   - type: [AlamedaComponentSpec](#alamedacomponentspec)
   - description: Spec for Federatorai-Rest component. This field is optional.
+- Field: federatoraiAgentPreloader
+  - type: [AlamedaComponentSpec](#alamedacomponentspec)
+  - description: Spec for Federatorai-Agent-Preloader component. This field is optional.
 
 ### AlamedaServiceStatus
 

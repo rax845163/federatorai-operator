@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: federatorai-agent-preloader
+  namespace: {{.NameSpace}}
+  labels:
+    app: alameda
+    component: federatorai-agent-preloader
+spec:
+  selector:
+    matchLabels:
+      app: alameda
+      component: federatorai-agent-preloader
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: alameda
+        component: federatorai-agent-preloader
+    spec:
+      containers:
+      - name: federatorai-agent-preloader
+        image: quay.io/prophetstor/federatorai-agent-preloader:v4.2.512
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: federatorai-agent-preloader-config
+            mountPath: /etc/alameda/federatorai-agent/transmitter.toml
+            subPath: transmitter.toml
+          - name: federatorai-agent-preloader-config
+            mountPath: /etc/alameda/federatorai-agent/input/alameda_preloader.toml
+            subPath: alameda_preloader.toml
+      volumes:
+      - name: federatorai-agent-preloader-data-storage
+      - name: federatorai-agent-preloader-log-storage
+      - name: federatorai-agent-preloader-config
+        configMap:
+          name: federatorai-agent-preloader-config

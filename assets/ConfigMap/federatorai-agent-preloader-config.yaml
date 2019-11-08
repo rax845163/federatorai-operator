@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: federatorai-agent-preloader-config
+  namespace: {{.NameSpace}}
+data:
+  transmitter.toml: |-
+    [log]
+     set-logcallers = false
+     output-level = "info" # debug, info, warn, error, fatal, none
+
+    [input_jobs]
+      [input_jobs.preloader]
+      name = "alameda_preloader"
+      lib-path = "/lib/inputlib/alamedapreloader.so"
+      lib-configuration = "/etc/alameda/federatorai-agent/input/alameda_preloader.toml"
+
+  alameda_preloader.toml: |
+    [global]
+    enable = false
+    target_database = ""
+    target_address = "alameda-datahub:50050"
+    target_user = ""
+    target_password = ""
+
+    [source]
+    address = "alameda-datahub:50050"
+    user = ""
+    password = ""
+
+    [preloader]
+    cpu_metrics_file = "/etc/alameda/federatorai-agent/csv/container_cpu.csv"
+    cpu_metrics_file_granularity = 30
+    mem_metrics_file = "/etc/alameda/federatorai-agent/csv/container_memory.csv"
+    mem_metrics_file_granularity = 30
+    node_cpu_metrics_file = "/etc/alameda/federatorai-agent/csv/node_metric_cpu.csv"
+    node_cpu_metrics_file_granularity = 30
+    node_mem_metrics_file = "/etc/alameda/federatorai-agent/csv/node_metric_memory.csv"
+    node_mem_metrics_file_granularity = 30
+    granularity = 30
+    preload_month = 5
