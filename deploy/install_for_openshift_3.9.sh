@@ -115,10 +115,11 @@ check_alameda_datahub_tag()
     for ((i=0; i<$period; i+=$interval)); do
          current_tag="`kubectl get pod -n $namespace -o custom-columns=NAME:.metadata.name,IMAGE:.spec.containers[*].image | grep datahub | head -1 | cut -d ':' -f2`"
         if [ "$current_tag" = "$tag_number" ]; then
-            echo -e "\ndatahub pod is there.\n"
+            echo -e "\ndatahub pod is running.\n"
             return 0
         fi
-        echo "Waiting for datahub pod with current tag number shows up as $tag_number ..."
+        # echo "Waiting for datahub pod with current tag number shows up as $tag_number ..."
+        echo "Waiting for datahub($tag_number) pod to be ready ..."
         sleep "$interval"
     done
     echo -e "\n$(tput setaf 1)Warning!! Waited for $period seconds, but datahub pod doesn't show up. Please check $namespace namespace$(tput sgr 0)"
@@ -170,7 +171,7 @@ get_grafana_route()
         echo -e "\n========================================"
         echo "You can now access GUI through $(tput setaf 6)http://${link} $(tput sgr 0)"
         echo "Default login credential is $(tput setaf 6)admin/admin$(tput sgr 0)"
-        echo -e "\nAlso, you can start to apply alamedascaler CR for namespace you would like to monitor."
+        echo -e "\nAlso, you can start to apply alamedascaler CR for the namespace you would like to monitor."
         echo "$(tput setaf 6)Review administration guide for further details.$(tput sgr 0)"
         echo "========================================"
         else
@@ -227,12 +228,12 @@ check_prometheus()
         svc_found=$?
         if [ "$script_found" = "0" ] || [ "$pod_found" = "0" ] || [ "$svc_found" = "0" ];then
             # prometheus exists but not all needed metrics are found
-            echo -e "\n$(tput setaf 1)Found following existing prometheus info:$(tput sgr 0)"
+            echo -e "\n$(tput setaf 1)Found following existing Prometheus info:$(tput sgr 0)"
             echo -e "-----------------------------------------------"
-            echo -e "prometheus pod:"
+            echo -e "Prometheus pod:"
             echo -e "$(tput setaf 11)$pod_result$(tput sgr 0)"
             echo -e "-----------------------------------------------"
-            echo -e "prometheus svc:"
+            echo -e "Prometheus svc:"
             echo -e "$(tput setaf 11)$svc_result$(tput sgr 0)"
             echo -e "-----------------------------------------------"
             echo -e "\n$(tput setaf 1)Please fix Prometheus metrics missing issue before running installation script.$(tput sgr 0)"
@@ -342,7 +343,7 @@ if [ "$helm_client_ready" = "n" ] && [ "$install_prometheus_needed" = "y" ];then
         install_helm_client
     else
         echo -e "\n$(tput setaf 1)Abort installation."
-        echo -e "Please manually configure prometheus rules to meet Alameda requirement and rerun the installation script$(tput sgr 0)"
+        echo -e "Please manually configure Prometheus rules to meet Alameda requirement and rerun the installation script$(tput sgr 0)"
         leave_prog
         exit 11
     fi
@@ -358,7 +359,7 @@ if [ "$helm_server_ready" = "n" ] && [ "$install_prometheus_needed" = "y" ];then
         install_helm_server
     else
         echo -e "\n$(tput setaf 1)Abort installation."
-        echo -e "Please manually configure prometheus rules to meet Alameda requirement and rerun the installation script$(tput sgr 0)"
+        echo -e "Please manually configure Prometheus rules to meet Alameda requirement and rerun the installation script$(tput sgr 0)"
         leave_prog
         exit 11
     fi
@@ -536,7 +537,7 @@ if [[ "$install_alameda" == "y" ]]; then
             default="https://prometheus-k8s.openshift-monitoring:9091"
         fi
 
-        echo "$(tput setaf 127)Enter the prometheus service address"
+        echo "$(tput setaf 127)Enter the Prometheus service address"
         read -r -p "[default: ${default}]: $(tput sgr 0)" prometheus_address </dev/tty
         prometheus_address=${prometheus_address:-$default}
 

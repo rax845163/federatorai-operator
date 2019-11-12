@@ -97,7 +97,7 @@ wait_until_namespace_removed()
         echo -e "\nNamespace $installed_namespace is removed successfully."
         return 0
     else
-        echo "Waiting for namespace to be removed..."
+        echo "Waiting for the namespace to be removed..."
     fi
 
     sleep "$interval"
