@@ -44,6 +44,8 @@ spec:
           value: adminpass
         - name: DATAHUB_ADDRESS
           value: alameda-datahub.{{.NameSpace}}.svc:50050
+        - name: BINDADDRESS
+          value: ":5055"
         readinessProbe:
           exec:
             command:

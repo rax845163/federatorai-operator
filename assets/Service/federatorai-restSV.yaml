@@ -8,6 +8,6 @@ metadata:
 spec:
   ports:
   - name: restapi
-    port: 50055
+    port: 5055
   selector:
     component: federatorai-rest

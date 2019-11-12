@@ -162,6 +162,7 @@ var (
 		"ServiceAccount/federatorai-restSA.yaml",
 		"Service/federatorai-restSV.yaml",
 		"Deployment/federatorai-restDM.yaml",
+		"Route/federatorai-restRT.yaml",
 	}
 
 	federatoraiAgentPreloaderList = []string{
