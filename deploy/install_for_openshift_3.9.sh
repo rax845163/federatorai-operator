@@ -642,6 +642,7 @@ __EOF__
     fi
 
     get_grafana_route $install_namespace
+    get_restapi_route $install_namespace
     echo -e "$(tput setaf 6)\nInstall Alameda $tag_number successfully$(tput sgr 0)"
     leave_prog
     exit 0
