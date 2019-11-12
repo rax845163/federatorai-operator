@@ -38,7 +38,7 @@ func ParseResourceLinkForTopController(resourceLink string) (*ApiResources.Contr
 			Kind: kind,
 		}, nil
 	}
-	return nil, fmt.Errorf("resource link format is not correct")
+	return &ApiResources.Controller{}, fmt.Errorf("resource link format is not correct")
 }
 
 func GetNodeInfoDefaultStorageSizeBytes() string {

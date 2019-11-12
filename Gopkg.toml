@@ -94,7 +94,3 @@ required = [
 [[constraint]]
   branch = "master"
   name = "k8s.io/kube-aggregator"
-
-[[override]]
-  name= "github.com/containers-ai/api"
-  branch= "prototype"
