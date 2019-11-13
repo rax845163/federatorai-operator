@@ -42,84 +42,123 @@ func init() {
 }
 
 var fileDescriptor_debe19e3ad2e68a0 = []byte{
-	// 1221 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x99, 0xcd, 0x8b, 0xe4, 0x44,
-	0x18, 0xc6, 0xb7, 0x40, 0x44, 0xcb, 0x65, 0x5d, 0xa3, 0xee, 0x8c, 0x23, 0xcb, 0xc2, 0x80, 0x07,
-	0x0f, 0x56, 0xb3, 0x5f, 0xca, 0x3a, 0x07, 0xb7, 0x7b, 0x7a, 0xb6, 0x67, 0xdc, 0x99, 0xb1, 0xed,
-	0x5e, 0x5d, 0xf0, 0x03, 0xa9, 0x49, 0xde, 0xc9, 0x44, 0xd2, 0x49, 0x4c, 0x2a, 0xbd, 0x0c, 0x88,
-	0x17, 0x15, 0xbc, 0x78, 0x10, 0x64, 0x3d, 0x0a, 0x0a, 0xc2, 0x22, 0x88, 0x20, 0x7a, 0x10, 0xd1,
-	0xa3, 0xe0, 0xc9, 0x3f, 0xc0, 0x3f, 0x46, 0xd2, 0xa9, 0xaa, 0x7c, 0x74, 0xba, 0x3a, 0x5f, 0x42,
-	0x7b, 0xd3, 0x49, 0x3f, 0xbf, 0xe7, 0xa9, 0xb7, 0xde, 0xaa, 0x4a, 0x65, 0xf1, 0xf3, 0xd4, 0xa6,
-	0x13, 0x30, 0xe8, 0x7b, 0xd4, 0xb3, 0x3a, 0xd3, 0xcb, 0xd4, 0xf6, 0x4e, 0xe8, 0xe5, 0x8e, 0x41,
-	0x19, 0x3d, 0x09, 0x8f, 0x3a, 0x01, 0xf8, 0x53, 0xf0, 0x89, 0xe7, 0xbb, 0xcc, 0xd5, 0x9e, 0xd3,
-	0x5d, 0x87, 0x51, 0xcb, 0x01, 0x3f, 0xa0, 0x16, 0xe1, 0x3a, 0x22, 0x34, 0x84, 0x6b, 0x36, 0xae,
-	0x28, 0x89, 0x30, 0x05, 0x87, 0x05, 0x33, 0xb0, 0xa5, 0x43, 0x10, 0xa3, 0x37, 0x3a, 0x4a, 0x8d,
-	0xe9, 0x85, 0x79, 0xc1, 0x35, 0xa5, 0xc0, 0xb6, 0x74, 0x70, 0x02, 0x98, 0xb3, 0xb9, 0xaa, 0x54,
-	0x4d, 0x80, 0xf9, 0x96, 0x3e, 0x27, 0xba, 0xae, 0x14, 0x79, 0x36, 0x75, 0x1c, 0xcb, 0x31, 0xe7,
-	0x64, 0x2f, 0xa9, 0x65, 0x3e, 0x18, 0x96, 0xce, 0x2c, 0xd7, 0xa9, 0x18, 0xd2, 0xa7, 0xf7, 0xa2,
-	0xff, 0xcc, 0x8b, 0xb6, 0xd4, 0x22, 0xd0, 0xdd, 0xc9, 0x04, 0x1c, 0x83, 0x16, 0x3a, 0x5e, 0x5f,
-	0x22, 0x0e, 0xdc, 0xd0, 0xd7, 0xe7, 0xab, 0xa9, 0x9e, 0xe8, 0x40, 0x77, 0xfd, 0x79, 0xcd, 0x8b,
-	0x4a, 0xcd, 0x3d, 0xa0, 0x53, 0x08, 0x74, 0xd7, 0x83, 0xbc, 0xee, 0x59, 0xd3, 0x75, 0x4d, 0x1b,
-	0x3a, 0xb3, 0xff, 0x3b, 0x0a, 0x8f, 0x3b, 0x30, 0xf1, 0xd8, 0x29, 0x7f, 0xb8, 0xc6, 0x1f, 0xfa,
-	0x9e, 0xde, 0x09, 0x18, 0x65, 0x21, 0x57, 0x5d, 0xf9, 0xf8, 0x06, 0x3e, 0xd7, 0x8f, 0xd9, 0xe3,
-	0x98, 0xa7, 0x99, 0xf8, 0xec, 0xb6, 0x0f, 0x94, 0xc1, 0xce, 0xac, 0x11, 0xb5, 0x2e, 0x29, 0xd5,
-	0xd5, 0x24, 0xee, 0x5b, 0x92, 0xd6, 0x8e, 0xe0, 0x83, 0x10, 0x02, 0xb6, 0xa1, 0x91, 0xd8, 0x9f,
-	0xf8, 0x9e, 0x4e, 0xc6, 0x33, 0xff, 0xcd, 0x33, 0xda, 0x17, 0x08, 0xe3, 0x7d, 0x2b, 0x60, 0xdc,
-	0xe7, 0x95, 0x6a, 0x3e, 0x89, 0x52, 0xb8, 0xdc, 0xac, 0x0f, 0x08, 0x3c, 0xd7, 0x09, 0x60, 0xf3,
-	0x8c, 0xc6, 0xf0, 0x53, 0xf1, 0x00, 0x06, 0x5e, 0x38, 0x4c, 0x3a, 0x50, 0xbb, 0x55, 0x92, 0x6d,
-	0x7a, 0x21, 0x29, 0x02, 0xa8, 0x2b, 0xf1, 0x29, 0xc2, 0x8f, 0x44, 0x71, 0x06, 0x5e, 0x18, 0x68,
-	0x2f, 0x57, 0xb0, 0x12, 0x22, 0x81, 0xdf, 0xaa, 0xa5, 0x95, 0xa3, 0xff, 0x0a, 0xe1, 0x73, 0xfc,
-	0xcf, 0x07, 0xf1, 0x52, 0xd7, 0x6e, 0x56, 0x27, 0x72, 0xa9, 0xc8, 0xd4, 0x6d, 0x40, 0x90, 0xc9,
-	0xbe, 0x45, 0x58, 0xe3, 0x0f, 0xd3, 0xd3, 0xd2, 0xaf, 0xce, 0x2e, 0x98, 0x94, 0x9d, 0x86, 0x14,
-	0x99, 0xf2, 0x7d, 0x8c, 0x07, 0xc0, 0xf6, 0xe3, 0xbd, 0x55, 0xbb, 0x20, 0xe6, 0x5a, 0x2c, 0x49,
-	0xb2, 0x13, 0x2d, 0xc9, 0x8d, 0x5e, 0x49, 0x3b, 0xb1, 0x47, 0x93, 0x84, 0x99, 0xf2, 0xf2, 0xf0,
-	0xf9, 0xb8, 0xd1, 0x86, 0xae, 0x21, 0x26, 0xab, 0x6c, 0x97, 0xf2, 0x7d, 0x9c, 0xe4, 0x01, 0xea,
-	0x2e, 0xf5, 0xf1, 0x13, 0xb1, 0xe0, 0xd0, 0x35, 0x40, 0x58, 0x0e, 0x6a, 0x59, 0xa6, 0x08, 0x6a,
-	0xcf, 0xaf, 0x79, 0x47, 0xa6, 0x06, 0xd9, 0xaf, 0xe8, 0x98, 0x95, 0x57, 0x9d, 0xf3, 0x45, 0x14,
-	0x39, 0x0f, 0xdf, 0x20, 0xfc, 0x78, 0xf4, 0x30, 0x5d, 0x94, 0x3a, 0xf0, 0x82, 0x92, 0xdc, 0x6a,
-	0x8a, 0x91, 0x21, 0xaf, 0xe1, 0x87, 0x86, 0x96, 0x63, 0x2e, 0x6c, 0xc9, 0xe2, 0xe2, 0x4f, 0xb1,
-	0x26, 0x3b, 0x64, 0x28, 0x4e, 0x71, 0xed, 0xd5, 0x92, 0xa9, 0xe4, 0xb9, 0x4f, 0xe6, 0x21, 0xea,
-	0x49, 0xff, 0x04, 0xe1, 0x67, 0x62, 0xcd, 0xb6, 0xeb, 0x30, 0xdf, 0xb5, 0x6d, 0xf0, 0x13, 0xff,
-	0xd7, 0x6b, 0xfa, 0x17, 0xb0, 0xd4, 0x31, 0x1e, 0x20, 0x7c, 0x9e, 0x4f, 0x7b, 0xe2, 0xbe, 0x5b,
-	0xd9, 0x3d, 0x8f, 0x10, 0xa6, 0x7b, 0x2d, 0x90, 0xe4, 0x04, 0xff, 0x8e, 0xf0, 0x5a, 0xf4, 0xb8,
-	0xa8, 0x60, 0xaf, 0xd5, 0x32, 0x52, 0x94, 0x6b, 0xd8, 0x1e, 0x50, 0x0e, 0xe0, 0x23, 0xfc, 0x74,
-	0xb2, 0x35, 0xa4, 0xb7, 0xf8, 0xd2, 0xe9, 0x13, 0x0d, 0x29, 0x24, 0xa9, 0x27, 0xfb, 0x43, 0x71,
-	0xf0, 0x47, 0x05, 0x4e, 0xd9, 0x1f, 0xd6, 0xb6, 0xcf, 0x82, 0xd4, 0xee, 0xbf, 0x20, 0xfc, 0xa4,
-	0x58, 0xbd, 0x69, 0xf7, 0x83, 0x1a, 0xee, 0x05, 0x1c, 0x61, 0x7e, 0xd8, 0x16, 0x4e, 0x4e, 0xdb,
-	0x4f, 0xfc, 0x5c, 0xce, 0x55, 0x6d, 0xbf, 0xa6, 0x51, 0x71, 0xcd, 0x0e, 0x5a, 0xa2, 0xc9, 0xd4,
-	0xf7, 0x11, 0x7e, 0x6c, 0x04, 0xd4, 0x18, 0xc5, 0x57, 0x85, 0xd2, 0xaf, 0xb8, 0xfc, 0x6a, 0x41,
-	0x52, 0x5a, 0x91, 0xb1, 0xd7, 0x04, 0x21, 0x83, 0x9d, 0xe0, 0xb3, 0x77, 0x7d, 0x8b, 0x81, 0x08,
-	0x56, 0x95, 0x9a, 0x16, 0xab, 0x3b, 0xee, 0x33, 0x84, 0xd7, 0x65, 0x9f, 0x8e, 0xb2, 0xb7, 0x1f,
-	0xed, 0xcd, 0xb2, 0xb6, 0x59, 0x1d, 0x59, 0x04, 0x54, 0x47, 0xb9, 0x8f, 0xf0, 0xa5, 0xfc, 0x16,
-	0x9d, 0x4f, 0xf4, 0x6e, 0xa3, 0x44, 0x0b, 0xb9, 0xea, 0x60, 0x7f, 0x22, 0x7c, 0x81, 0xf7, 0x51,
-	0x3e, 0xcf, 0x9d, 0x9a, 0x79, 0x8a, 0x71, 0x22, 0xc6, 0x1b, 0x2d, 0x53, 0x65, 0x5f, 0xfd, 0x8d,
-	0xf0, 0xa5, 0xe8, 0x47, 0xdd, 0x29, 0xb5, 0x6c, 0x7a, 0x64, 0xc3, 0xff, 0x7f, 0x48, 0xff, 0x20,
-	0x7c, 0x31, 0x7b, 0xac, 0xe4, 0x07, 0xf4, 0x76, 0x03, 0xeb, 0xa5, 0x1d, 0xf3, 0xce, 0x7f, 0x03,
-	0x97, 0xc3, 0xfb, 0x8b, 0x0f, 0x6f, 0x6c, 0x4d, 0x42, 0x9b, 0x32, 0x30, 0xc6, 0xfa, 0x09, 0x18,
-	0xa1, 0x6d, 0x39, 0xe6, 0x78, 0xf6, 0xdd, 0x40, 0x1b, 0x95, 0x4c, 0x10, 0x7f, 0x66, 0x20, 0x4a,
-	0x98, 0x18, 0xd5, 0xb8, 0x55, 0xa6, 0x1c, 0xcc, 0x31, 0xc6, 0x72, 0x6b, 0x08, 0xca, 0x6f, 0x6a,
-	0xe2, 0xb3, 0x4a, 0xb2, 0xaf, 0x2c, 0x59, 0xb0, 0x4c, 0xdc, 0x50, 0x92, 0x0a, 0x07, 0xda, 0x5e,
-	0x4d, 0xbb, 0x14, 0x43, 0xed, 0x2a, 0x5f, 0x93, 0xbb, 0x31, 0x3a, 0x3a, 0x2d, 0xcb, 0xbf, 0x26,
-	0xe7, 0x6d, 0xd3, 0x90, 0xa5, 0x77, 0xa3, 0xd9, 0xcd, 0x83, 0x2b, 0x66, 0xb5, 0x1d, 0x54, 0x76,
-	0xcd, 0x11, 0xaa, 0xde, 0xda, 0xb3, 0xa0, 0x98, 0x90, 0xbe, 0x1b, 0x9d, 0x4f, 0xf1, 0xe3, 0xc2,
-	0xec, 0x36, 0x89, 0x98, 0x29, 0x4b, 0xaf, 0x16, 0x89, 0x23, 0x64, 0xc8, 0x2f, 0x11, 0x7e, 0x54,
-	0xfe, 0x5d, 0xeb, 0x36, 0x61, 0xb6, 0x19, 0xeb, 0x3b, 0x3e, 0xbb, 0xe9, 0x56, 0xae, 0x37, 0xbb,
-	0x05, 0x8d, 0xbc, 0xdb, 0x1c, 0x94, 0x0e, 0x2a, 0x5e, 0x01, 0x83, 0xde, 0x69, 0x34, 0x8c, 0x43,
-	0x3a, 0x01, 0xed, 0x76, 0xed, 0x06, 0x4a, 0x20, 0xed, 0x76, 0xe3, 0x31, 0xc6, 0x7d, 0xb0, 0xa1,
-	0xf6, 0x2e, 0x94, 0x88, 0x97, 0xee, 0x42, 0xf1, 0x4f, 0x9b, 0xed, 0x42, 0x73, 0x8c, 0xa5, 0xbb,
-	0x50, 0xac, 0x68, 0xb8, 0x0b, 0xcd, 0x43, 0xd4, 0xbe, 0x9f, 0xcb, 0xb7, 0xb7, 0xc5, 0x47, 0xd5,
-	0x9d, 0x6a, 0xc7, 0xca, 0x12, 0x9c, 0x3a, 0xcf, 0xf7, 0xfc, 0x2a, 0x75, 0x17, 0xe8, 0x14, 0xc6,
-	0xba, 0xeb, 0xc1, 0xae, 0x1b, 0xb0, 0xf2, 0x57, 0x92, 0xe4, 0x0b, 0x3b, 0x29, 0xc0, 0x08, 0xef,
-	0x7e, 0x75, 0x5a, 0x42, 0x4a, 0xf5, 0xe4, 0x8f, 0x08, 0xaf, 0x0f, 0x20, 0xe7, 0xd2, 0x07, 0x46,
-	0x2d, 0x7b, 0x55, 0x23, 0x3f, 0xe0, 0xeb, 0x3d, 0x79, 0x38, 0x5b, 0x4f, 0xb7, 0x9b, 0x86, 0x4d,
-	0x2f, 0xac, 0xb6, 0xb2, 0xfe, 0x80, 0xf0, 0x5a, 0xa6, 0xbc, 0x43, 0xd7, 0x10, 0xd5, 0x5d, 0xc9,
-	0xc0, 0x3f, 0x23, 0xbc, 0x9e, 0x75, 0xd9, 0x96, 0xdc, 0xd2, 0x5f, 0xbe, 0x16, 0x26, 0x4e, 0x58,
-	0x6d, 0xe7, 0xfe, 0x03, 0xe1, 0xcd, 0x45, 0x5e, 0xbd, 0xd3, 0xa8, 0x0f, 0x9d, 0xe8, 0x50, 0x58,
-	0xe1, 0x11, 0xfc, 0xc6, 0xaf, 0x48, 0xc5, 0x23, 0xd8, 0x9b, 0x50, 0x73, 0xa5, 0xe3, 0xff, 0x8a,
-	0xf0, 0xc5, 0x4c, 0xa7, 0x4b, 0x2b, 0xd1, 0xef, 0xab, 0x1b, 0xbe, 0xb7, 0xf5, 0xd6, 0x0d, 0xd3,
-	0x62, 0xd1, 0x2f, 0x75, 0x77, 0xd2, 0x49, 0x98, 0x2f, 0x50, 0xab, 0x43, 0x3d, 0x4b, 0xf9, 0x6f,
-	0xdf, 0x47, 0x0f, 0xcf, 0xbe, 0x65, 0x5f, 0xfd, 0x37, 0x00, 0x00, 0xff, 0xff, 0x2b, 0x09, 0xd9,
-	0x0e, 0xa8, 0x1f, 0x00, 0x00,
+	// 1848 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x9b, 0xdd, 0x8b, 0xdc, 0x54,
+	0x1f, 0xc7, 0x7b, 0xe0, 0xe1, 0xa1, 0x9e, 0x96, 0xb5, 0x9d, 0xb6, 0xbb, 0xdb, 0xed, 0x9b, 0x14,
+	0xbc, 0xf0, 0xc2, 0x0c, 0x7d, 0x53, 0xb4, 0x17, 0xb6, 0xfb, 0xd2, 0xd9, 0x76, 0x5f, 0x3a, 0x9d,
+	0x69, 0xbb, 0xda, 0x17, 0x25, 0x9b, 0x39, 0x9d, 0x8d, 0x64, 0x92, 0x98, 0x64, 0xa6, 0x16, 0x8a,
+	0x88, 0xa8, 0x88, 0x28, 0x28, 0x94, 0xea, 0x8d, 0x08, 0x0a, 0x42, 0x51, 0x44, 0xd1, 0x2a, 0xa8,
+	0x58, 0xbc, 0x10, 0xa5, 0xde, 0x08, 0x5e, 0x09, 0x82, 0xff, 0x86, 0x97, 0x32, 0x93, 0xf3, 0x96,
+	0x93, 0xe4, 0x24, 0x39, 0xc9, 0xc2, 0x7a, 0xd7, 0x76, 0xe6, 0xf7, 0xf9, 0x7e, 0xcf, 0xe4, 0xf7,
+	0x72, 0x92, 0x9c, 0xc2, 0x47, 0x74, 0x4b, 0xef, 0xa1, 0x8e, 0xfe, 0x9c, 0xee, 0x9a, 0xf5, 0xc1,
+	0x21, 0xdd, 0x72, 0xd7, 0xf4, 0x43, 0xf5, 0x8e, 0x1e, 0xe8, 0x6b, 0xfd, 0xd5, 0xba, 0x8f, 0xbc,
+	0x01, 0xf2, 0x34, 0xd7, 0x73, 0x02, 0xa7, 0xf6, 0xb0, 0xe1, 0xd8, 0x81, 0x6e, 0xda, 0xc8, 0xf3,
+	0x75, 0x53, 0xc3, 0x71, 0x1a, 0x89, 0xd1, 0x70, 0xcc, 0xd4, 0x61, 0x29, 0x11, 0x0d, 0x90, 0x1d,
+	0xf8, 0x23, 0xb0, 0x69, 0x20, 0x3f, 0x44, 0x4f, 0xd5, 0xa5, 0x31, 0x5d, 0xb7, 0x2f, 0x06, 0x1c,
+	0x95, 0x06, 0x58, 0xa6, 0x81, 0x6c, 0x1f, 0xc5, 0x64, 0x8e, 0x48, 0xa3, 0x7a, 0x28, 0xf0, 0x4c,
+	0x23, 0x16, 0x74, 0x4c, 0x1a, 0xe4, 0x5a, 0xba, 0x6d, 0x9b, 0x76, 0x37, 0x16, 0xf6, 0xb8, 0x3c,
+	0xcc, 0x43, 0x1d, 0xd3, 0x08, 0x4c, 0xc7, 0x2e, 0x68, 0xd2, 0xd3, 0xaf, 0x0f, 0xff, 0x28, 0x06,
+	0x1d, 0x97, 0x07, 0x21, 0xc3, 0xe9, 0xf5, 0x90, 0xdd, 0xd1, 0x13, 0x15, 0x8f, 0x65, 0x04, 0xfb,
+	0x4e, 0xdf, 0x33, 0xe2, 0xbf, 0xa6, 0xfc, 0x42, 0xfb, 0x86, 0xe3, 0xc5, 0x63, 0x1e, 0x93, 0xc6,
+	0x5c, 0x47, 0xfa, 0x00, 0xf9, 0x86, 0xe3, 0x22, 0x31, 0x6e, 0x4f, 0xd7, 0x71, 0xba, 0x16, 0xaa,
+	0x8f, 0xfe, 0xb6, 0xda, 0xbf, 0x56, 0x47, 0x3d, 0x37, 0xb8, 0x81, 0x3f, 0x9c, 0xc0, 0x1f, 0x7a,
+	0xae, 0x51, 0xf7, 0x03, 0x3d, 0xe8, 0xe3, 0xa8, 0xc3, 0xff, 0xac, 0xc1, 0xb1, 0xd9, 0x90, 0xdd,
+	0x0e, 0x79, 0xb5, 0x2e, 0xdc, 0x3a, 0xe3, 0x21, 0x3d, 0x40, 0x73, 0xa3, 0x44, 0xac, 0x9d, 0xd4,
+	0x72, 0x65, 0xb5, 0x16, 0xe6, 0xad, 0xc6, 0xc7, 0xb6, 0xd0, 0x0b, 0x7d, 0xe4, 0x07, 0x53, 0x35,
+	0x2d, 0xd4, 0xd7, 0x3c, 0xd7, 0xd0, 0xda, 0x23, 0xfd, 0x83, 0x9b, 0x6a, 0xef, 0x02, 0x08, 0x17,
+	0x4d, 0x3f, 0xc0, 0x3a, 0x4f, 0x15, 0xd3, 0x61, 0x91, 0x44, 0xe5, 0x84, 0x3a, 0xc0, 0x77, 0x1d,
+	0xdb, 0x47, 0x07, 0x37, 0xd5, 0x02, 0xb8, 0x33, 0x5c, 0x40, 0xc3, 0xed, 0x37, 0x59, 0x06, 0xd6,
+	0x4e, 0xe5, 0x64, 0x77, 0xdd, 0xbe, 0x96, 0x04, 0x90, 0xff, 0x12, 0xaf, 0x01, 0xb8, 0x79, 0x68,
+	0xa7, 0xe1, 0xf6, 0xfd, 0xda, 0x93, 0x05, 0xa4, 0x48, 0x10, 0xc1, 0x1f, 0x57, 0x8a, 0xa5, 0xab,
+	0x7f, 0x0f, 0xc0, 0x31, 0xfc, 0xcf, 0x4b, 0x61, 0xa9, 0xd7, 0x4e, 0x14, 0x27, 0xe2, 0x50, 0xe2,
+	0xe9, 0x64, 0x09, 0x02, 0x75, 0xf6, 0x31, 0x80, 0x35, 0xfc, 0x21, 0x7f, 0x59, 0x66, 0x8b, 0xb3,
+	0x13, 0x2e, 0xca, 0x5c, 0x49, 0x0a, 0x75, 0xf9, 0x3c, 0x84, 0x0d, 0x14, 0x2c, 0x86, 0xbd, 0xb5,
+	0x36, 0x4e, 0xae, 0x35, 0x29, 0x49, 0x6d, 0x6e, 0x58, 0x92, 0x53, 0xd3, 0x39, 0xe5, 0x48, 0x8f,
+	0xd6, 0x18, 0x93, 0xd3, 0x72, 0xe1, 0xb6, 0x30, 0xd1, 0x9a, 0x4e, 0x87, 0x5c, 0xac, 0xbc, 0x59,
+	0x8a, 0xfb, 0xb8, 0x26, 0x02, 0xe4, 0x59, 0xfa, 0x12, 0x9c, 0x08, 0x03, 0x66, 0x1c, 0x3b, 0xf0,
+	0x1c, 0xcb, 0x42, 0x1e, 0x11, 0x5e, 0x52, 0x12, 0x8e, 0x71, 0xe4, 0xfa, 0x2f, 0x03, 0x38, 0x19,
+	0x06, 0x9e, 0x74, 0x5d, 0xcb, 0x34, 0x46, 0xad, 0x9a, 0x38, 0x58, 0x56, 0x72, 0x10, 0x07, 0xc9,
+	0x2d, 0xdc, 0x84, 0xe3, 0x61, 0xe0, 0xb2, 0xde, 0x43, 0xbe, 0xab, 0x1b, 0x88, 0xe8, 0x2f, 0x2a,
+	0xe9, 0x8b, 0x18, 0xb9, 0xba, 0x07, 0xb7, 0xe3, 0x30, 0xa7, 0x43, 0x85, 0x1b, 0x6a, 0xc2, 0x8c,
+	0x20, 0xd7, 0x7c, 0x91, 0x34, 0xc4, 0x19, 0xab, 0xef, 0x07, 0xec, 0x8a, 0x9f, 0x51, 0xbb, 0xe2,
+	0x11, 0x88, 0x5c, 0xf9, 0x43, 0xdc, 0x8c, 0xb8, 0xfc, 0x9e, 0x2d, 0x28, 0x1a, 0x0d, 0x2f, 0x5a,
+	0xee, 0x69, 0x14, 0x5a, 0x82, 0x5f, 0x03, 0xb8, 0x6b, 0xf8, 0x61, 0xbc, 0x1e, 0x16, 0x14, 0x24,
+	0x52, 0xab, 0x61, 0xb1, 0x1a, 0x18, 0xb5, 0xfd, 0x2d, 0x80, 0xe3, 0xc3, 0xef, 0x24, 0x54, 0x91,
+	0x8a, 0x54, 0x7a, 0x0d, 0x2d, 0x55, 0x44, 0xa3, 0xce, 0xbf, 0x04, 0x70, 0xe7, 0xf0, 0x4b, 0xb1,
+	0xea, 0x3b, 0xa3, 0xa0, 0x94, 0x56, 0x7b, 0x0b, 0x95, 0xb0, 0xa8, 0xe7, 0x8f, 0x00, 0x7c, 0x70,
+	0xf4, 0x15, 0xae, 0x66, 0x55, 0x32, 0x30, 0xa1, 0x62, 0x4f, 0x95, 0xc5, 0x50, 0x93, 0x9f, 0xe2,
+	0xf1, 0x2a, 0x14, 0xf9, 0xbc, 0x4a, 0xe6, 0x25, 0x96, 0xf8, 0xe9, 0x0a, 0x48, 0xd4, 0xed, 0x51,
+	0xf8, 0xbf, 0xa6, 0x69, 0x77, 0x53, 0x07, 0x6c, 0x72, 0x3f, 0x19, 0xc0, 0x1a, 0x9d, 0x77, 0x4d,
+	0x72, 0x4f, 0x92, 0x3b, 0x73, 0xe8, 0x5d, 0x8c, 0x16, 0x87, 0xc8, 0xfb, 0xd8, 0xab, 0x00, 0xee,
+	0x16, 0xe7, 0x1d, 0xd3, 0x3f, 0xa7, 0xa8, 0x9f, 0xc0, 0x92, 0xdb, 0x78, 0x1d, 0xc0, 0xa9, 0xd8,
+	0xd0, 0x63, 0x3e, 0x5a, 0x8a, 0x3e, 0x92, 0x60, 0x72, 0x23, 0xaf, 0xd0, 0x31, 0x4e, 0xab, 0x86,
+	0xd9, 0x68, 0x2a, 0xda, 0x88, 0xa3, 0xb2, 0xc6, 0xda, 0x0e, 0x36, 0x08, 0x99, 0xfc, 0x82, 0xaa,
+	0x3c, 0x4f, 0xc9, 0xda, 0x45, 0x8d, 0x47, 0x66, 0x21, 0x13, 0x5f, 0x56, 0x4d, 0x05, 0x01, 0x24,
+	0xd7, 0xbf, 0x03, 0xe0, 0x36, 0x3c, 0xd1, 0x98, 0xf4, 0x7c, 0x61, 0x69, 0x11, 0x51, 0xb4, 0xd0,
+	0x65, 0x24, 0x5a, 0xe8, 0x3f, 0x02, 0x38, 0x11, 0x9d, 0x66, 0xcc, 0xf2, 0x59, 0x25, 0x21, 0x49,
+	0xd9, 0x34, 0xab, 0x03, 0xd2, 0x05, 0xfc, 0x04, 0xe0, 0xa4, 0x30, 0xd5, 0xca, 0xe4, 0x7a, 0x1a,
+	0x8a, 0x2c, 0xe1, 0x5c, 0x85, 0x44, 0xba, 0x86, 0xef, 0xf1, 0x76, 0x21, 0xa1, 0x5a, 0x97, 0x95,
+	0xf4, 0xd2, 0x6b, 0xf5, 0x6c, 0x65, 0x3c, 0xea, 0xfe, 0x33, 0x00, 0xb7, 0x93, 0xb9, 0xc7, 0x8c,
+	0xab, 0x65, 0x69, 0x62, 0x95, 0x9f, 0xa9, 0x02, 0x45, 0xed, 0xde, 0xc5, 0x3b, 0x9c, 0x58, 0x73,
+	0x58, 0x54, 0xcb, 0xce, 0x94, 0xd6, 0xb0, 0x54, 0x11, 0x8d, 0xfa, 0xbe, 0x49, 0x6e, 0x13, 0x86,
+	0x95, 0xcc, 0xdd, 0xa0, 0xe7, 0xce, 0x10, 0x16, 0xa3, 0x25, 0x81, 0xe4, 0x3d, 0xed, 0x4d, 0x00,
+	0xf7, 0xc4, 0xc6, 0x22, 0xe7, 0xe2, 0x82, 0xb2, 0x8b, 0x44, 0x9e, 0xdc, 0xcc, 0x5b, 0x00, 0xee,
+	0x8d, 0xcf, 0x46, 0xce, 0xcd, 0x45, 0x65, 0x37, 0xc9, 0x40, 0xb9, 0x9d, 0x37, 0xe8, 0xdc, 0x67,
+	0x75, 0xc2, 0x99, 0x39, 0xaf, 0x6c, 0x26, 0x09, 0x97, 0x35, 0xfa, 0x76, 0x71, 0xe3, 0x92, 0x33,
+	0x71, 0x56, 0xdd, 0x44, 0x94, 0x94, 0xb9, 0x13, 0x9b, 0x8c, 0x8e, 0x4c, 0xce, 0x43, 0x4b, 0x3d,
+	0x47, 0x62, 0x30, 0xb9, 0x8d, 0xaf, 0xf0, 0x66, 0x5b, 0x28, 0x95, 0x45, 0x05, 0x03, 0x71, 0x4c,
+	0xe1, 0x0a, 0xcf, 0xa0, 0xd1, 0x0a, 0xff, 0x15, 0xc0, 0xdd, 0xc2, 0xc0, 0xe3, 0xcc, 0xb7, 0x15,
+	0xe5, 0xa4, 0xf5, 0x75, 0xbe, 0x5a, 0x28, 0x5d, 0xca, 0x6f, 0x00, 0x4e, 0x89, 0x83, 0xaf, 0x64,
+	0x49, 0xa4, 0xe3, 0xc8, 0x62, 0x2e, 0x54, 0x4c, 0xa5, 0xab, 0xf9, 0x19, 0xef, 0x31, 0x12, 0xcb,
+	0xbb, 0xa5, 0xa8, 0x2a, 0x2b, 0xee, 0x76, 0xa5, 0x4c, 0xba, 0x8e, 0x6f, 0x00, 0xdc, 0x41, 0x47,
+	0x23, 0xb7, 0x04, 0xd5, 0x4c, 0x4e, 0x69, 0x0d, 0xcb, 0x55, 0xe1, 0xa8, 0xf1, 0x7b, 0x78, 0x83,
+	0x94, 0xd0, 0x54, 0x9a, 0xaa, 0x19, 0x9c, 0xda, 0x52, 0xce, 0x55, 0x48, 0xa4, 0x2b, 0xb8, 0x0d,
+	0xe0, 0x96, 0x16, 0xd2, 0x3b, 0xad, 0xf0, 0xd5, 0x59, 0xee, 0x57, 0x3e, 0xf8, 0x55, 0x9b, 0xc6,
+	0xc5, 0x12, 0x9f, 0xd3, 0x65, 0x10, 0xd4, 0xd8, 0x1a, 0xdc, 0xba, 0xe2, 0x99, 0x01, 0x22, 0xc6,
+	0x8a, 0x52, 0xf9, 0xe0, 0xcc, 0x31, 0x39, 0x49, 0x37, 0x1e, 0xad, 0xe8, 0xdb, 0xc0, 0xdc, 0x13,
+	0x5b, 0x78, 0x8b, 0xa8, 0xa5, 0x01, 0xe5, 0x56, 0x6e, 0x03, 0x78, 0x40, 0xdc, 0x7d, 0x88, 0x8e,
+	0xae, 0x96, 0x72, 0x94, 0xca, 0x95, 0x1b, 0x7b, 0x1f, 0xc0, 0x87, 0x62, 0x1b, 0x11, 0xd1, 0xd9,
+	0xb3, 0xa5, 0x9c, 0xa5, 0x83, 0xe5, 0xd6, 0x6e, 0x01, 0xb8, 0x5f, 0xd8, 0x96, 0x88, 0xc6, 0xae,
+	0x94, 0x32, 0x96, 0x86, 0xcd, 0xdc, 0x98, 0xee, 0x66, 0x1b, 0x15, 0xd1, 0xd1, 0x4a, 0x39, 0x47,
+	0x71, 0xa2, 0xdc, 0xcc, 0x3b, 0x74, 0x63, 0x8a, 0x9b, 0x81, 0xe8, 0xe7, 0x52, 0xb9, 0xa4, 0x4a,
+	0x84, 0xca, 0x2d, 0xfd, 0x82, 0x5b, 0x67, 0x42, 0xcd, 0x9d, 0x57, 0x34, 0x93, 0x8c, 0x2b, 0x3a,
+	0x85, 0xf3, 0x52, 0x69, 0xa7, 0xfa, 0x1d, 0xc0, 0x03, 0xa3, 0x71, 0x3d, 0xd0, 0x4d, 0x4b, 0x5f,
+	0xb5, 0xd0, 0x7f, 0x7f, 0x49, 0x7f, 0x01, 0xb8, 0x2f, 0xba, 0x9d, 0x12, 0x17, 0x74, 0xb9, 0x84,
+	0x74, 0x66, 0x0f, 0xba, 0xb2, 0x3e, 0x70, 0xba, 0xbc, 0xbf, 0x01, 0xdc, 0x2f, 0x6c, 0xb0, 0xaa,
+	0x6a, 0x19, 0x72, 0x2c, 0x59, 0xe0, 0xd5, 0x75, 0xa2, 0xd3, 0x15, 0xfe, 0x09, 0xe0, 0xde, 0xc8,
+	0xc6, 0xab, 0xaa, 0x82, 0x97, 0x41, 0xc9, 0xea, 0x2e, 0xaf, 0x0b, 0x9b, 0xae, 0xed, 0x3e, 0x7e,
+	0x34, 0x98, 0xd4, 0x57, 0xcb, 0x54, 0x84, 0xa4, 0xab, 0x5e, 0xac, 0x1a, 0x4b, 0x17, 0xf3, 0x07,
+	0xbe, 0x21, 0x49, 0xe9, 0xcb, 0x4f, 0x97, 0xa9, 0x04, 0x69, 0x57, 0x7e, 0x66, 0x1d, 0xc8, 0x74,
+	0x55, 0xd7, 0x20, 0xa4, 0x1b, 0x20, 0x3f, 0xff, 0xd6, 0x8d, 0x1c, 0xa6, 0x62, 0xbb, 0xa7, 0x8c,
+	0x21, 0x12, 0x90, 0xd7, 0xe2, 0xac, 0xea, 0xf3, 0x3f, 0xe1, 0x13, 0xe5, 0x38, 0x86, 0x5c, 0x95,
+	0xbe, 0x4e, 0xe2, 0x4a, 0x31, 0xff, 0xeb, 0x24, 0x51, 0x96, 0x87, 0x64, 0x1d, 0x02, 0xd8, 0x26,
+	0xec, 0x48, 0xf2, 0x3f, 0xbe, 0x17, 0x55, 0x19, 0x42, 0xae, 0xb9, 0x06, 0xb7, 0xb0, 0x3d, 0x87,
+	0x5f, 0x9b, 0x51, 0x95, 0x1b, 0x46, 0xcb, 0x95, 0x6c, 0x38, 0x16, 0xd9, 0x4d, 0xe4, 0x3f, 0xd3,
+	0x12, 0xbb, 0x90, 0x18, 0x90, 0x79, 0x06, 0x6d, 0x33, 0x1e, 0x84, 0xf9, 0xcf, 0x3a, 0x31, 0x29,
+	0x12, 0x5a, 0xf4, 0xac, 0x53, 0x12, 0x81, 0xd6, 0xcd, 0x27, 0xf8, 0x8d, 0x31, 0x9f, 0xce, 0x0d,
+	0x25, 0x70, 0x42, 0x32, 0xcf, 0x97, 0x07, 0x51, 0xa3, 0xe4, 0x55, 0x52, 0xa4, 0x02, 0xd4, 0x04,
+	0x92, 0xf2, 0xff, 0x74, 0x05, 0x24, 0xfe, 0x00, 0xd9, 0x58, 0x64, 0xb4, 0xa8, 0x64, 0x56, 0x14,
+	0x40, 0x7c, 0x36, 0x4a, 0x73, 0xa8, 0xcb, 0x5b, 0x00, 0x3e, 0x40, 0xc6, 0x45, 0xfe, 0x93, 0x97,
+	0x02, 0x98, 0xaf, 0xb2, 0xe9, 0x32, 0x08, 0x6a, 0xeb, 0x03, 0x00, 0xb7, 0x72, 0x2d, 0x3f, 0xff,
+	0x41, 0x1c, 0x21, 0x8b, 0x84, 0x92, 0x9c, 0x2b, 0x49, 0xe1, 0x27, 0xcd, 0x2c, 0xb2, 0x90, 0xf2,
+	0xa4, 0x61, 0xc1, 0x99, 0x93, 0x26, 0xfc, 0x6a, 0xb9, 0x49, 0x13, 0x63, 0x64, 0x4e, 0x9a, 0x30,
+	0xa2, 0xe4, 0xa4, 0x89, 0x43, 0x32, 0x27, 0x4d, 0x18, 0x52, 0x6a, 0xd2, 0x88, 0x88, 0xcc, 0x49,
+	0x83, 0x03, 0x14, 0x27, 0x0d, 0x17, 0x9d, 0x39, 0x69, 0xf0, 0x75, 0x50, 0x9f, 0x34, 0x51, 0x80,
+	0x5c, 0xef, 0x6d, 0xfa, 0x54, 0xa7, 0x6d, 0xf6, 0xfa, 0x96, 0x1e, 0xa0, 0x4e, 0xdb, 0x58, 0x43,
+	0x9d, 0xbe, 0x65, 0xda, 0xdd, 0xf6, 0xe8, 0x28, 0x78, 0xee, 0x1b, 0xc4, 0xf0, 0xe4, 0xb8, 0x96,
+	0x81, 0x93, 0xfb, 0xb9, 0x8f, 0xef, 0xee, 0xd2, 0xdd, 0xb4, 0x8a, 0xb9, 0x91, 0xc2, 0x8a, 0x3e,
+	0x3b, 0xce, 0xc7, 0xe4, 0xcf, 0x2f, 0x8d, 0x9e, 0x1d, 0xaf, 0x20, 0x7d, 0x80, 0xda, 0x86, 0xe3,
+	0xa2, 0x79, 0xc7, 0x0f, 0xf2, 0xbf, 0x53, 0x61, 0xc7, 0xea, 0xb5, 0x04, 0x0c, 0x31, 0x3f, 0x5b,
+	0x9c, 0xc6, 0x48, 0x9c, 0xdb, 0x2f, 0x00, 0x9c, 0x6c, 0x20, 0x41, 0x65, 0x16, 0x05, 0xba, 0x69,
+	0x6d, 0x54, 0xcb, 0x77, 0xf0, 0x3b, 0x2b, 0xf6, 0xe1, 0xa8, 0xd5, 0x2e, 0x94, 0x35, 0xcb, 0xf7,
+	0xdc, 0xaa, 0xbc, 0x7e, 0x0e, 0xe0, 0x44, 0xe4, 0xe7, 0x6d, 0x3a, 0x1d, 0xf2, 0xeb, 0x6e, 0x48,
+	0xc3, 0x77, 0xf1, 0x1b, 0x1c, 0xf6, 0xe1, 0x0c, 0xe5, 0xe6, 0x3e, 0x20, 0x96, 0xea, 0x98, 0xb1,
+	0xaa, 0xf6, 0x7d, 0x0f, 0xc0, 0x83, 0x69, 0x5a, 0xd3, 0x37, 0x86, 0x79, 0x68, 0xeb, 0x3d, 0xb4,
+	0x91, 0x57, 0xf0, 0x03, 0x7e, 0x6a, 0x97, 0xbc, 0x82, 0xd3, 0x3d, 0xbd, 0xbb, 0xa1, 0xed, 0x7f,
+	0x07, 0xe0, 0xbe, 0x48, 0xa6, 0x53, 0x29, 0x92, 0xef, 0x1b, 0xd7, 0xfc, 0xf4, 0xf1, 0x4b, 0x4f,
+	0x74, 0xcd, 0x60, 0xf8, 0x4d, 0xc3, 0xe9, 0xd5, 0x19, 0xf3, 0x51, 0xdd, 0xac, 0xeb, 0xae, 0x29,
+	0xfd, 0x0f, 0x6f, 0xab, 0xff, 0x1f, 0x1d, 0xf9, 0x3c, 0xf2, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff,
+	0x44, 0x2c, 0x23, 0x26, 0x9d, 0x37, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -146,54 +185,94 @@ type DatahubServiceClient interface {
 	GetLicense(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*licenses.GetLicenseResponse, error)
 	// Metrics --------------------------------------------------
 	CreatePodMetrics(ctx context.Context, in *metrics.CreatePodMetricsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateControllerMetrics(ctx context.Context, in *metrics.CreateControllerMetricsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateApplicationMetrics(ctx context.Context, in *metrics.CreateApplicationMetricsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateNamespaceMetrics(ctx context.Context, in *metrics.CreateNamespaceMetricsRequest, opts ...grpc.CallOption) (*status.Status, error)
 	CreateNodeMetrics(ctx context.Context, in *metrics.CreateNodeMetricsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateClusterMetrics(ctx context.Context, in *metrics.CreateClusterMetricsRequest, opts ...grpc.CallOption) (*status.Status, error)
 	ListPodMetrics(ctx context.Context, in *metrics.ListPodMetricsRequest, opts ...grpc.CallOption) (*metrics.ListPodMetricsResponse, error)
+	ListControllerMetrics(ctx context.Context, in *metrics.ListControllerMetricsRequest, opts ...grpc.CallOption) (*metrics.ListControllerMetricsResponse, error)
+	ListApplicationMetrics(ctx context.Context, in *metrics.ListApplicationMetricsRequest, opts ...grpc.CallOption) (*metrics.ListApplicationMetricsResponse, error)
+	ListNamespaceMetrics(ctx context.Context, in *metrics.ListNamespaceMetricsRequest, opts ...grpc.CallOption) (*metrics.ListNamespaceMetricsResponse, error)
 	ListNodeMetrics(ctx context.Context, in *metrics.ListNodeMetricsRequest, opts ...grpc.CallOption) (*metrics.ListNodeMetricsResponse, error)
+	ListClusterMetrics(ctx context.Context, in *metrics.ListClusterMetricsRequest, opts ...grpc.CallOption) (*metrics.ListClusterMetricsResponse, error)
 	// Ping --------------------------------------------------
 	Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*status.Status, error)
 	// Plannings --------------------------------------------------
 	CreatePodPlannings(ctx context.Context, in *plannings.CreatePodPlanningsRequest, opts ...grpc.CallOption) (*status.Status, error)
 	CreateControllerPlannings(ctx context.Context, in *plannings.CreateControllerPlanningsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateApplicationPlannings(ctx context.Context, in *plannings.CreateApplicationPlanningsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateNamespacePlannings(ctx context.Context, in *plannings.CreateNamespacePlanningsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateNodePlannings(ctx context.Context, in *plannings.CreateNodePlanningsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateClusterPlannings(ctx context.Context, in *plannings.CreateClusterPlanningsRequest, opts ...grpc.CallOption) (*status.Status, error)
 	ListPodPlannings(ctx context.Context, in *plannings.ListPodPlanningsRequest, opts ...grpc.CallOption) (*plannings.ListPodPlanningsResponse, error)
 	ListControllerPlannings(ctx context.Context, in *plannings.ListControllerPlanningsRequest, opts ...grpc.CallOption) (*plannings.ListControllerPlanningsResponse, error)
+	ListApplicationPlannings(ctx context.Context, in *plannings.ListApplicationPlanningsRequest, opts ...grpc.CallOption) (*plannings.ListApplicationPlanningsResponse, error)
+	ListNamespacePlannings(ctx context.Context, in *plannings.ListNamespacePlanningsRequest, opts ...grpc.CallOption) (*plannings.ListNamespacePlanningsResponse, error)
+	ListNodePlannings(ctx context.Context, in *plannings.ListNodePlanningsRequest, opts ...grpc.CallOption) (*plannings.ListNodePlanningsResponse, error)
+	ListClusterPlannings(ctx context.Context, in *plannings.ListClusterPlanningsRequest, opts ...grpc.CallOption) (*plannings.ListClusterPlanningsResponse, error)
 	// Predictions --------------------------------------------------
-	CreateNodePredictions(ctx context.Context, in *predictions.CreateNodePredictionsRequest, opts ...grpc.CallOption) (*status.Status, error)
 	CreatePodPredictions(ctx context.Context, in *predictions.CreatePodPredictionsRequest, opts ...grpc.CallOption) (*status.Status, error)
-	ListNodePredictions(ctx context.Context, in *predictions.ListNodePredictionsRequest, opts ...grpc.CallOption) (*predictions.ListNodePredictionsResponse, error)
+	CreateControllerPredictions(ctx context.Context, in *predictions.CreateControllerPredictionsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateApplicationPredictions(ctx context.Context, in *predictions.CreateApplicationPredictionsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateNamespacePredictions(ctx context.Context, in *predictions.CreateNamespacePredictionsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateNodePredictions(ctx context.Context, in *predictions.CreateNodePredictionsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateClusterPredictions(ctx context.Context, in *predictions.CreateClusterPredictionsRequest, opts ...grpc.CallOption) (*status.Status, error)
 	ListPodPredictions(ctx context.Context, in *predictions.ListPodPredictionsRequest, opts ...grpc.CallOption) (*predictions.ListPodPredictionsResponse, error)
+	ListControllerPredictions(ctx context.Context, in *predictions.ListControllerPredictionsRequest, opts ...grpc.CallOption) (*predictions.ListControllerPredictionsResponse, error)
+	ListApplicationPredictions(ctx context.Context, in *predictions.ListApplicationPredictionsRequest, opts ...grpc.CallOption) (*predictions.ListApplicationPredictionsResponse, error)
+	ListNamespacePredictions(ctx context.Context, in *predictions.ListNamespacePredictionsRequest, opts ...grpc.CallOption) (*predictions.ListNamespacePredictionsResponse, error)
+	ListNodePredictions(ctx context.Context, in *predictions.ListNodePredictionsRequest, opts ...grpc.CallOption) (*predictions.ListNodePredictionsResponse, error)
+	ListClusterPredictions(ctx context.Context, in *predictions.ListClusterPredictionsRequest, opts ...grpc.CallOption) (*predictions.ListClusterPredictionsResponse, error)
 	// Rawdata --------------------------------------------------
 	ReadRawdata(ctx context.Context, in *rawdata.ReadRawdataRequest, opts ...grpc.CallOption) (*rawdata.ReadRawdataResponse, error)
 	WriteRawdata(ctx context.Context, in *rawdata.WriteRawdataRequest, opts ...grpc.CallOption) (*status.Status, error)
 	// Recommendations --------------------------------------------------
 	CreatePodRecommendations(ctx context.Context, in *recommendations.CreatePodRecommendationsRequest, opts ...grpc.CallOption) (*status.Status, error)
 	CreateControllerRecommendations(ctx context.Context, in *recommendations.CreateControllerRecommendationsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateApplicationRecommendations(ctx context.Context, in *recommendations.CreateApplicationRecommendationsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateNamespaceRecommendations(ctx context.Context, in *recommendations.CreateNamespaceRecommendationsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateNodeRecommendations(ctx context.Context, in *recommendations.CreateNodeRecommendationsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateClusterRecommendations(ctx context.Context, in *recommendations.CreateClusterRecommendationsRequest, opts ...grpc.CallOption) (*status.Status, error)
 	ListPodRecommendations(ctx context.Context, in *recommendations.ListPodRecommendationsRequest, opts ...grpc.CallOption) (*recommendations.ListPodRecommendationsResponse, error)
 	ListAvailablePodRecommendations(ctx context.Context, in *recommendations.ListPodRecommendationsRequest, opts ...grpc.CallOption) (*recommendations.ListPodRecommendationsResponse, error)
 	ListControllerRecommendations(ctx context.Context, in *recommendations.ListControllerRecommendationsRequest, opts ...grpc.CallOption) (*recommendations.ListControllerRecommendationsResponse, error)
+	ListApplicationRecommendations(ctx context.Context, in *recommendations.ListApplicationRecommendationsRequest, opts ...grpc.CallOption) (*recommendations.ListApplicationRecommendationsResponse, error)
+	ListNamespaceRecommendations(ctx context.Context, in *recommendations.ListNamespaceRecommendationsRequest, opts ...grpc.CallOption) (*recommendations.ListNamespaceRecommendationsResponse, error)
+	ListNodeRecommendations(ctx context.Context, in *recommendations.ListNodeRecommendationsRequest, opts ...grpc.CallOption) (*recommendations.ListNodeRecommendationsResponse, error)
+	ListClusterRecommendations(ctx context.Context, in *recommendations.ListClusterRecommendationsRequest, opts ...grpc.CallOption) (*recommendations.ListClusterRecommendationsResponse, error)
 	// Resources --------------------------------------------------
-	// Used to list system scores
-	ListSimulatedSchedulingScores(ctx context.Context, in *scores.ListSimulatedSchedulingScoresRequest, opts ...grpc.CallOption) (*scores.ListSimulatedSchedulingScoresResponse, error)
 	// Used to add pods that need to be predicted
 	CreatePods(ctx context.Context, in *resources.CreatePodsRequest, opts ...grpc.CallOption) (*status.Status, error)
 	CreateControllers(ctx context.Context, in *resources.CreateControllersRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateApplications(ctx context.Context, in *resources.CreateApplicationsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateNamespaces(ctx context.Context, in *resources.CreateNamespacesRequest, opts ...grpc.CallOption) (*status.Status, error)
 	// Used to add nodes that need to be predicted
-	CreateAlamedaNodes(ctx context.Context, in *resources.CreateAlamedaNodesRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateNodes(ctx context.Context, in *resources.CreateNodesRequest, opts ...grpc.CallOption) (*status.Status, error)
+	CreateClusters(ctx context.Context, in *resources.CreateClustersRequest, opts ...grpc.CallOption) (*status.Status, error)
 	// Used to list pods need to be predicted
-	ListAlamedaPods(ctx context.Context, in *resources.ListAlamedaPodsRequest, opts ...grpc.CallOption) (*resources.ListPodsResponse, error)
-	// Used to list nodes need to be predicted
-	ListAlamedaNodes(ctx context.Context, in *resources.ListAlamedaNodesRequest, opts ...grpc.CallOption) (*resources.ListNodesResponse, error)
+	ListPods(ctx context.Context, in *resources.ListPodsRequest, opts ...grpc.CallOption) (*resources.ListPodsResponse, error)
+	ListControllers(ctx context.Context, in *resources.ListControllersRequest, opts ...grpc.CallOption) (*resources.ListControllersResponse, error)
+	// Application
+	ListApplications(ctx context.Context, in *resources.ListApplicationsRequest, opts ...grpc.CallOption) (*resources.ListApplicationsResponse, error)
+	// Namespace
+	ListNamespaces(ctx context.Context, in *resources.ListNamespacesRequest, opts ...grpc.CallOption) (*resources.ListNamespacesResponse, error)
 	// Used to list nodes' information
 	ListNodes(ctx context.Context, in *resources.ListNodesRequest, opts ...grpc.CallOption) (*resources.ListNodesResponse, error)
-	ListControllers(ctx context.Context, in *resources.ListControllersRequest, opts ...grpc.CallOption) (*resources.ListControllersResponse, error)
-	// Used to list pods by a node name
-	ListPodsByNodeName(ctx context.Context, in *resources.ListPodsByNodeNamesRequest, opts ...grpc.CallOption) (*resources.ListPodsResponse, error)
+	// Cluster
+	ListClusters(ctx context.Context, in *resources.ListClustersRequest, opts ...grpc.CallOption) (*resources.ListClustersResponse, error)
 	// Used to delete info of pods
 	DeletePods(ctx context.Context, in *resources.DeletePodsRequest, opts ...grpc.CallOption) (*status.Status, error)
 	DeleteControllers(ctx context.Context, in *resources.DeleteControllersRequest, opts ...grpc.CallOption) (*status.Status, error)
+	DeleteApplications(ctx context.Context, in *resources.DeleteApplicationsRequest, opts ...grpc.CallOption) (*status.Status, error)
+	DeleteNamespaces(ctx context.Context, in *resources.DeleteNamespacesRequest, opts ...grpc.CallOption) (*status.Status, error)
 	// Used to stop generating predictions for the nodes
-	DeleteAlamedaNodes(ctx context.Context, in *resources.DeleteAlamedaNodesRequest, opts ...grpc.CallOption) (*status.Status, error)
+	DeleteNodes(ctx context.Context, in *resources.DeleteNodesRequest, opts ...grpc.CallOption) (*status.Status, error)
+	DeleteClusters(ctx context.Context, in *resources.DeleteClustersRequest, opts ...grpc.CallOption) (*status.Status, error)
 	// Scores --------------------------------------------------
 	CreateSimulatedSchedulingScores(ctx context.Context, in *scores.CreateSimulatedSchedulingScoresRequest, opts ...grpc.CallOption) (*status.Status, error)
+	// Used to list system scores
+	ListSimulatedSchedulingScores(ctx context.Context, in *scores.ListSimulatedSchedulingScoresRequest, opts ...grpc.CallOption) (*scores.ListSimulatedSchedulingScoresResponse, error)
 	// weave scope --------------------------------------------------
 	ListWeaveScopeHosts(ctx context.Context, in *weavescope.ListWeaveScopeHostsRequest, opts ...grpc.CallOption) (*weavescope.WeaveScopeResponse, error)
 	GetWeaveScopeHostDetails(ctx context.Context, in *weavescope.ListWeaveScopeHostsRequest, opts ...grpc.CallOption) (*weavescope.WeaveScopeResponse, error)
@@ -285,9 +364,45 @@ func (c *datahubServiceClient) CreatePodMetrics(ctx context.Context, in *metrics
 	return out, nil
 }
 
+func (c *datahubServiceClient) CreateControllerMetrics(ctx context.Context, in *metrics.CreateControllerMetricsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateControllerMetrics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateApplicationMetrics(ctx context.Context, in *metrics.CreateApplicationMetricsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateApplicationMetrics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateNamespaceMetrics(ctx context.Context, in *metrics.CreateNamespaceMetricsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNamespaceMetrics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *datahubServiceClient) CreateNodeMetrics(ctx context.Context, in *metrics.CreateNodeMetricsRequest, opts ...grpc.CallOption) (*status.Status, error) {
 	out := new(status.Status)
 	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNodeMetrics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateClusterMetrics(ctx context.Context, in *metrics.CreateClusterMetricsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateClusterMetrics", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -303,9 +418,45 @@ func (c *datahubServiceClient) ListPodMetrics(ctx context.Context, in *metrics.L
 	return out, nil
 }
 
+func (c *datahubServiceClient) ListControllerMetrics(ctx context.Context, in *metrics.ListControllerMetricsRequest, opts ...grpc.CallOption) (*metrics.ListControllerMetricsResponse, error) {
+	out := new(metrics.ListControllerMetricsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListControllerMetrics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListApplicationMetrics(ctx context.Context, in *metrics.ListApplicationMetricsRequest, opts ...grpc.CallOption) (*metrics.ListApplicationMetricsResponse, error) {
+	out := new(metrics.ListApplicationMetricsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListApplicationMetrics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListNamespaceMetrics(ctx context.Context, in *metrics.ListNamespaceMetricsRequest, opts ...grpc.CallOption) (*metrics.ListNamespaceMetricsResponse, error) {
+	out := new(metrics.ListNamespaceMetricsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNamespaceMetrics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *datahubServiceClient) ListNodeMetrics(ctx context.Context, in *metrics.ListNodeMetricsRequest, opts ...grpc.CallOption) (*metrics.ListNodeMetricsResponse, error) {
 	out := new(metrics.ListNodeMetricsResponse)
 	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodeMetrics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListClusterMetrics(ctx context.Context, in *metrics.ListClusterMetricsRequest, opts ...grpc.CallOption) (*metrics.ListClusterMetricsResponse, error) {
+	out := new(metrics.ListClusterMetricsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListClusterMetrics", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -339,6 +490,42 @@ func (c *datahubServiceClient) CreateControllerPlannings(ctx context.Context, in
 	return out, nil
 }
 
+func (c *datahubServiceClient) CreateApplicationPlannings(ctx context.Context, in *plannings.CreateApplicationPlanningsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateApplicationPlannings", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateNamespacePlannings(ctx context.Context, in *plannings.CreateNamespacePlanningsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNamespacePlannings", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateNodePlannings(ctx context.Context, in *plannings.CreateNodePlanningsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNodePlannings", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateClusterPlannings(ctx context.Context, in *plannings.CreateClusterPlanningsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateClusterPlannings", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *datahubServiceClient) ListPodPlannings(ctx context.Context, in *plannings.ListPodPlanningsRequest, opts ...grpc.CallOption) (*plannings.ListPodPlanningsResponse, error) {
 	out := new(plannings.ListPodPlanningsResponse)
 	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListPodPlannings", in, out, opts...)
@@ -357,9 +544,36 @@ func (c *datahubServiceClient) ListControllerPlannings(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *datahubServiceClient) CreateNodePredictions(ctx context.Context, in *predictions.CreateNodePredictionsRequest, opts ...grpc.CallOption) (*status.Status, error) {
-	out := new(status.Status)
-	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNodePredictions", in, out, opts...)
+func (c *datahubServiceClient) ListApplicationPlannings(ctx context.Context, in *plannings.ListApplicationPlanningsRequest, opts ...grpc.CallOption) (*plannings.ListApplicationPlanningsResponse, error) {
+	out := new(plannings.ListApplicationPlanningsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListApplicationPlannings", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListNamespacePlannings(ctx context.Context, in *plannings.ListNamespacePlanningsRequest, opts ...grpc.CallOption) (*plannings.ListNamespacePlanningsResponse, error) {
+	out := new(plannings.ListNamespacePlanningsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNamespacePlannings", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListNodePlannings(ctx context.Context, in *plannings.ListNodePlanningsRequest, opts ...grpc.CallOption) (*plannings.ListNodePlanningsResponse, error) {
+	out := new(plannings.ListNodePlanningsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodePlannings", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListClusterPlannings(ctx context.Context, in *plannings.ListClusterPlanningsRequest, opts ...grpc.CallOption) (*plannings.ListClusterPlanningsResponse, error) {
+	out := new(plannings.ListClusterPlanningsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListClusterPlannings", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -375,9 +589,45 @@ func (c *datahubServiceClient) CreatePodPredictions(ctx context.Context, in *pre
 	return out, nil
 }
 
-func (c *datahubServiceClient) ListNodePredictions(ctx context.Context, in *predictions.ListNodePredictionsRequest, opts ...grpc.CallOption) (*predictions.ListNodePredictionsResponse, error) {
-	out := new(predictions.ListNodePredictionsResponse)
-	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodePredictions", in, out, opts...)
+func (c *datahubServiceClient) CreateControllerPredictions(ctx context.Context, in *predictions.CreateControllerPredictionsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateControllerPredictions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateApplicationPredictions(ctx context.Context, in *predictions.CreateApplicationPredictionsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateApplicationPredictions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateNamespacePredictions(ctx context.Context, in *predictions.CreateNamespacePredictionsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNamespacePredictions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateNodePredictions(ctx context.Context, in *predictions.CreateNodePredictionsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNodePredictions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateClusterPredictions(ctx context.Context, in *predictions.CreateClusterPredictionsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateClusterPredictions", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -387,6 +637,51 @@ func (c *datahubServiceClient) ListNodePredictions(ctx context.Context, in *pred
 func (c *datahubServiceClient) ListPodPredictions(ctx context.Context, in *predictions.ListPodPredictionsRequest, opts ...grpc.CallOption) (*predictions.ListPodPredictionsResponse, error) {
 	out := new(predictions.ListPodPredictionsResponse)
 	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListPodPredictions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListControllerPredictions(ctx context.Context, in *predictions.ListControllerPredictionsRequest, opts ...grpc.CallOption) (*predictions.ListControllerPredictionsResponse, error) {
+	out := new(predictions.ListControllerPredictionsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListControllerPredictions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListApplicationPredictions(ctx context.Context, in *predictions.ListApplicationPredictionsRequest, opts ...grpc.CallOption) (*predictions.ListApplicationPredictionsResponse, error) {
+	out := new(predictions.ListApplicationPredictionsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListApplicationPredictions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListNamespacePredictions(ctx context.Context, in *predictions.ListNamespacePredictionsRequest, opts ...grpc.CallOption) (*predictions.ListNamespacePredictionsResponse, error) {
+	out := new(predictions.ListNamespacePredictionsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNamespacePredictions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListNodePredictions(ctx context.Context, in *predictions.ListNodePredictionsRequest, opts ...grpc.CallOption) (*predictions.ListNodePredictionsResponse, error) {
+	out := new(predictions.ListNodePredictionsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodePredictions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListClusterPredictions(ctx context.Context, in *predictions.ListClusterPredictionsRequest, opts ...grpc.CallOption) (*predictions.ListClusterPredictionsResponse, error) {
+	out := new(predictions.ListClusterPredictionsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListClusterPredictions", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -429,6 +724,42 @@ func (c *datahubServiceClient) CreateControllerRecommendations(ctx context.Conte
 	return out, nil
 }
 
+func (c *datahubServiceClient) CreateApplicationRecommendations(ctx context.Context, in *recommendations.CreateApplicationRecommendationsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateApplicationRecommendations", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateNamespaceRecommendations(ctx context.Context, in *recommendations.CreateNamespaceRecommendationsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNamespaceRecommendations", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateNodeRecommendations(ctx context.Context, in *recommendations.CreateNodeRecommendationsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNodeRecommendations", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateClusterRecommendations(ctx context.Context, in *recommendations.CreateClusterRecommendationsRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateClusterRecommendations", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *datahubServiceClient) ListPodRecommendations(ctx context.Context, in *recommendations.ListPodRecommendationsRequest, opts ...grpc.CallOption) (*recommendations.ListPodRecommendationsResponse, error) {
 	out := new(recommendations.ListPodRecommendationsResponse)
 	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListPodRecommendations", in, out, opts...)
@@ -456,9 +787,36 @@ func (c *datahubServiceClient) ListControllerRecommendations(ctx context.Context
 	return out, nil
 }
 
-func (c *datahubServiceClient) ListSimulatedSchedulingScores(ctx context.Context, in *scores.ListSimulatedSchedulingScoresRequest, opts ...grpc.CallOption) (*scores.ListSimulatedSchedulingScoresResponse, error) {
-	out := new(scores.ListSimulatedSchedulingScoresResponse)
-	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListSimulatedSchedulingScores", in, out, opts...)
+func (c *datahubServiceClient) ListApplicationRecommendations(ctx context.Context, in *recommendations.ListApplicationRecommendationsRequest, opts ...grpc.CallOption) (*recommendations.ListApplicationRecommendationsResponse, error) {
+	out := new(recommendations.ListApplicationRecommendationsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListApplicationRecommendations", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListNamespaceRecommendations(ctx context.Context, in *recommendations.ListNamespaceRecommendationsRequest, opts ...grpc.CallOption) (*recommendations.ListNamespaceRecommendationsResponse, error) {
+	out := new(recommendations.ListNamespaceRecommendationsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNamespaceRecommendations", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListNodeRecommendations(ctx context.Context, in *recommendations.ListNodeRecommendationsRequest, opts ...grpc.CallOption) (*recommendations.ListNodeRecommendationsResponse, error) {
+	out := new(recommendations.ListNodeRecommendationsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodeRecommendations", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListClusterRecommendations(ctx context.Context, in *recommendations.ListClusterRecommendationsRequest, opts ...grpc.CallOption) (*recommendations.ListClusterRecommendationsResponse, error) {
+	out := new(recommendations.ListClusterRecommendationsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListClusterRecommendations", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -483,36 +841,45 @@ func (c *datahubServiceClient) CreateControllers(ctx context.Context, in *resour
 	return out, nil
 }
 
-func (c *datahubServiceClient) CreateAlamedaNodes(ctx context.Context, in *resources.CreateAlamedaNodesRequest, opts ...grpc.CallOption) (*status.Status, error) {
+func (c *datahubServiceClient) CreateApplications(ctx context.Context, in *resources.CreateApplicationsRequest, opts ...grpc.CallOption) (*status.Status, error) {
 	out := new(status.Status)
-	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateAlamedaNodes", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateApplications", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *datahubServiceClient) ListAlamedaPods(ctx context.Context, in *resources.ListAlamedaPodsRequest, opts ...grpc.CallOption) (*resources.ListPodsResponse, error) {
+func (c *datahubServiceClient) CreateNamespaces(ctx context.Context, in *resources.CreateNamespacesRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNamespaces", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateNodes(ctx context.Context, in *resources.CreateNodesRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNodes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) CreateClusters(ctx context.Context, in *resources.CreateClustersRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateClusters", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListPods(ctx context.Context, in *resources.ListPodsRequest, opts ...grpc.CallOption) (*resources.ListPodsResponse, error) {
 	out := new(resources.ListPodsResponse)
-	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListAlamedaPods", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *datahubServiceClient) ListAlamedaNodes(ctx context.Context, in *resources.ListAlamedaNodesRequest, opts ...grpc.CallOption) (*resources.ListNodesResponse, error) {
-	out := new(resources.ListNodesResponse)
-	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListAlamedaNodes", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *datahubServiceClient) ListNodes(ctx context.Context, in *resources.ListNodesRequest, opts ...grpc.CallOption) (*resources.ListNodesResponse, error) {
-	out := new(resources.ListNodesResponse)
-	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodes", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListPods", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -528,9 +895,36 @@ func (c *datahubServiceClient) ListControllers(ctx context.Context, in *resource
 	return out, nil
 }
 
-func (c *datahubServiceClient) ListPodsByNodeName(ctx context.Context, in *resources.ListPodsByNodeNamesRequest, opts ...grpc.CallOption) (*resources.ListPodsResponse, error) {
-	out := new(resources.ListPodsResponse)
-	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListPodsByNodeName", in, out, opts...)
+func (c *datahubServiceClient) ListApplications(ctx context.Context, in *resources.ListApplicationsRequest, opts ...grpc.CallOption) (*resources.ListApplicationsResponse, error) {
+	out := new(resources.ListApplicationsResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListApplications", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListNamespaces(ctx context.Context, in *resources.ListNamespacesRequest, opts ...grpc.CallOption) (*resources.ListNamespacesResponse, error) {
+	out := new(resources.ListNamespacesResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNamespaces", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListNodes(ctx context.Context, in *resources.ListNodesRequest, opts ...grpc.CallOption) (*resources.ListNodesResponse, error) {
+	out := new(resources.ListNodesResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListClusters(ctx context.Context, in *resources.ListClustersRequest, opts ...grpc.CallOption) (*resources.ListClustersResponse, error) {
+	out := new(resources.ListClustersResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListClusters", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -555,9 +949,36 @@ func (c *datahubServiceClient) DeleteControllers(ctx context.Context, in *resour
 	return out, nil
 }
 
-func (c *datahubServiceClient) DeleteAlamedaNodes(ctx context.Context, in *resources.DeleteAlamedaNodesRequest, opts ...grpc.CallOption) (*status.Status, error) {
+func (c *datahubServiceClient) DeleteApplications(ctx context.Context, in *resources.DeleteApplicationsRequest, opts ...grpc.CallOption) (*status.Status, error) {
 	out := new(status.Status)
-	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/DeleteAlamedaNodes", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/DeleteApplications", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) DeleteNamespaces(ctx context.Context, in *resources.DeleteNamespacesRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/DeleteNamespaces", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) DeleteNodes(ctx context.Context, in *resources.DeleteNodesRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/DeleteNodes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) DeleteClusters(ctx context.Context, in *resources.DeleteClustersRequest, opts ...grpc.CallOption) (*status.Status, error) {
+	out := new(status.Status)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/DeleteClusters", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -567,6 +988,15 @@ func (c *datahubServiceClient) DeleteAlamedaNodes(ctx context.Context, in *resou
 func (c *datahubServiceClient) CreateSimulatedSchedulingScores(ctx context.Context, in *scores.CreateSimulatedSchedulingScoresRequest, opts ...grpc.CallOption) (*status.Status, error) {
 	out := new(status.Status)
 	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateSimulatedSchedulingScores", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *datahubServiceClient) ListSimulatedSchedulingScores(ctx context.Context, in *scores.ListSimulatedSchedulingScoresRequest, opts ...grpc.CallOption) (*scores.ListSimulatedSchedulingScoresResponse, error) {
+	out := new(scores.ListSimulatedSchedulingScoresResponse)
+	err := c.cc.Invoke(ctx, "/containersai.alameda.v1alpha1.datahub.DatahubService/ListSimulatedSchedulingScores", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -659,54 +1089,94 @@ type DatahubServiceServer interface {
 	GetLicense(context.Context, *empty.Empty) (*licenses.GetLicenseResponse, error)
 	// Metrics --------------------------------------------------
 	CreatePodMetrics(context.Context, *metrics.CreatePodMetricsRequest) (*status.Status, error)
+	CreateControllerMetrics(context.Context, *metrics.CreateControllerMetricsRequest) (*status.Status, error)
+	CreateApplicationMetrics(context.Context, *metrics.CreateApplicationMetricsRequest) (*status.Status, error)
+	CreateNamespaceMetrics(context.Context, *metrics.CreateNamespaceMetricsRequest) (*status.Status, error)
 	CreateNodeMetrics(context.Context, *metrics.CreateNodeMetricsRequest) (*status.Status, error)
+	CreateClusterMetrics(context.Context, *metrics.CreateClusterMetricsRequest) (*status.Status, error)
 	ListPodMetrics(context.Context, *metrics.ListPodMetricsRequest) (*metrics.ListPodMetricsResponse, error)
+	ListControllerMetrics(context.Context, *metrics.ListControllerMetricsRequest) (*metrics.ListControllerMetricsResponse, error)
+	ListApplicationMetrics(context.Context, *metrics.ListApplicationMetricsRequest) (*metrics.ListApplicationMetricsResponse, error)
+	ListNamespaceMetrics(context.Context, *metrics.ListNamespaceMetricsRequest) (*metrics.ListNamespaceMetricsResponse, error)
 	ListNodeMetrics(context.Context, *metrics.ListNodeMetricsRequest) (*metrics.ListNodeMetricsResponse, error)
+	ListClusterMetrics(context.Context, *metrics.ListClusterMetricsRequest) (*metrics.ListClusterMetricsResponse, error)
 	// Ping --------------------------------------------------
 	Ping(context.Context, *empty.Empty) (*status.Status, error)
 	// Plannings --------------------------------------------------
 	CreatePodPlannings(context.Context, *plannings.CreatePodPlanningsRequest) (*status.Status, error)
 	CreateControllerPlannings(context.Context, *plannings.CreateControllerPlanningsRequest) (*status.Status, error)
+	CreateApplicationPlannings(context.Context, *plannings.CreateApplicationPlanningsRequest) (*status.Status, error)
+	CreateNamespacePlannings(context.Context, *plannings.CreateNamespacePlanningsRequest) (*status.Status, error)
+	CreateNodePlannings(context.Context, *plannings.CreateNodePlanningsRequest) (*status.Status, error)
+	CreateClusterPlannings(context.Context, *plannings.CreateClusterPlanningsRequest) (*status.Status, error)
 	ListPodPlannings(context.Context, *plannings.ListPodPlanningsRequest) (*plannings.ListPodPlanningsResponse, error)
 	ListControllerPlannings(context.Context, *plannings.ListControllerPlanningsRequest) (*plannings.ListControllerPlanningsResponse, error)
+	ListApplicationPlannings(context.Context, *plannings.ListApplicationPlanningsRequest) (*plannings.ListApplicationPlanningsResponse, error)
+	ListNamespacePlannings(context.Context, *plannings.ListNamespacePlanningsRequest) (*plannings.ListNamespacePlanningsResponse, error)
+	ListNodePlannings(context.Context, *plannings.ListNodePlanningsRequest) (*plannings.ListNodePlanningsResponse, error)
+	ListClusterPlannings(context.Context, *plannings.ListClusterPlanningsRequest) (*plannings.ListClusterPlanningsResponse, error)
 	// Predictions --------------------------------------------------
-	CreateNodePredictions(context.Context, *predictions.CreateNodePredictionsRequest) (*status.Status, error)
 	CreatePodPredictions(context.Context, *predictions.CreatePodPredictionsRequest) (*status.Status, error)
-	ListNodePredictions(context.Context, *predictions.ListNodePredictionsRequest) (*predictions.ListNodePredictionsResponse, error)
+	CreateControllerPredictions(context.Context, *predictions.CreateControllerPredictionsRequest) (*status.Status, error)
+	CreateApplicationPredictions(context.Context, *predictions.CreateApplicationPredictionsRequest) (*status.Status, error)
+	CreateNamespacePredictions(context.Context, *predictions.CreateNamespacePredictionsRequest) (*status.Status, error)
+	CreateNodePredictions(context.Context, *predictions.CreateNodePredictionsRequest) (*status.Status, error)
+	CreateClusterPredictions(context.Context, *predictions.CreateClusterPredictionsRequest) (*status.Status, error)
 	ListPodPredictions(context.Context, *predictions.ListPodPredictionsRequest) (*predictions.ListPodPredictionsResponse, error)
+	ListControllerPredictions(context.Context, *predictions.ListControllerPredictionsRequest) (*predictions.ListControllerPredictionsResponse, error)
+	ListApplicationPredictions(context.Context, *predictions.ListApplicationPredictionsRequest) (*predictions.ListApplicationPredictionsResponse, error)
+	ListNamespacePredictions(context.Context, *predictions.ListNamespacePredictionsRequest) (*predictions.ListNamespacePredictionsResponse, error)
+	ListNodePredictions(context.Context, *predictions.ListNodePredictionsRequest) (*predictions.ListNodePredictionsResponse, error)
+	ListClusterPredictions(context.Context, *predictions.ListClusterPredictionsRequest) (*predictions.ListClusterPredictionsResponse, error)
 	// Rawdata --------------------------------------------------
 	ReadRawdata(context.Context, *rawdata.ReadRawdataRequest) (*rawdata.ReadRawdataResponse, error)
 	WriteRawdata(context.Context, *rawdata.WriteRawdataRequest) (*status.Status, error)
 	// Recommendations --------------------------------------------------
 	CreatePodRecommendations(context.Context, *recommendations.CreatePodRecommendationsRequest) (*status.Status, error)
 	CreateControllerRecommendations(context.Context, *recommendations.CreateControllerRecommendationsRequest) (*status.Status, error)
+	CreateApplicationRecommendations(context.Context, *recommendations.CreateApplicationRecommendationsRequest) (*status.Status, error)
+	CreateNamespaceRecommendations(context.Context, *recommendations.CreateNamespaceRecommendationsRequest) (*status.Status, error)
+	CreateNodeRecommendations(context.Context, *recommendations.CreateNodeRecommendationsRequest) (*status.Status, error)
+	CreateClusterRecommendations(context.Context, *recommendations.CreateClusterRecommendationsRequest) (*status.Status, error)
 	ListPodRecommendations(context.Context, *recommendations.ListPodRecommendationsRequest) (*recommendations.ListPodRecommendationsResponse, error)
 	ListAvailablePodRecommendations(context.Context, *recommendations.ListPodRecommendationsRequest) (*recommendations.ListPodRecommendationsResponse, error)
 	ListControllerRecommendations(context.Context, *recommendations.ListControllerRecommendationsRequest) (*recommendations.ListControllerRecommendationsResponse, error)
+	ListApplicationRecommendations(context.Context, *recommendations.ListApplicationRecommendationsRequest) (*recommendations.ListApplicationRecommendationsResponse, error)
+	ListNamespaceRecommendations(context.Context, *recommendations.ListNamespaceRecommendationsRequest) (*recommendations.ListNamespaceRecommendationsResponse, error)
+	ListNodeRecommendations(context.Context, *recommendations.ListNodeRecommendationsRequest) (*recommendations.ListNodeRecommendationsResponse, error)
+	ListClusterRecommendations(context.Context, *recommendations.ListClusterRecommendationsRequest) (*recommendations.ListClusterRecommendationsResponse, error)
 	// Resources --------------------------------------------------
-	// Used to list system scores
-	ListSimulatedSchedulingScores(context.Context, *scores.ListSimulatedSchedulingScoresRequest) (*scores.ListSimulatedSchedulingScoresResponse, error)
 	// Used to add pods that need to be predicted
 	CreatePods(context.Context, *resources.CreatePodsRequest) (*status.Status, error)
 	CreateControllers(context.Context, *resources.CreateControllersRequest) (*status.Status, error)
+	CreateApplications(context.Context, *resources.CreateApplicationsRequest) (*status.Status, error)
+	CreateNamespaces(context.Context, *resources.CreateNamespacesRequest) (*status.Status, error)
 	// Used to add nodes that need to be predicted
-	CreateAlamedaNodes(context.Context, *resources.CreateAlamedaNodesRequest) (*status.Status, error)
+	CreateNodes(context.Context, *resources.CreateNodesRequest) (*status.Status, error)
+	CreateClusters(context.Context, *resources.CreateClustersRequest) (*status.Status, error)
 	// Used to list pods need to be predicted
-	ListAlamedaPods(context.Context, *resources.ListAlamedaPodsRequest) (*resources.ListPodsResponse, error)
-	// Used to list nodes need to be predicted
-	ListAlamedaNodes(context.Context, *resources.ListAlamedaNodesRequest) (*resources.ListNodesResponse, error)
+	ListPods(context.Context, *resources.ListPodsRequest) (*resources.ListPodsResponse, error)
+	ListControllers(context.Context, *resources.ListControllersRequest) (*resources.ListControllersResponse, error)
+	// Application
+	ListApplications(context.Context, *resources.ListApplicationsRequest) (*resources.ListApplicationsResponse, error)
+	// Namespace
+	ListNamespaces(context.Context, *resources.ListNamespacesRequest) (*resources.ListNamespacesResponse, error)
 	// Used to list nodes' information
 	ListNodes(context.Context, *resources.ListNodesRequest) (*resources.ListNodesResponse, error)
-	ListControllers(context.Context, *resources.ListControllersRequest) (*resources.ListControllersResponse, error)
-	// Used to list pods by a node name
-	ListPodsByNodeName(context.Context, *resources.ListPodsByNodeNamesRequest) (*resources.ListPodsResponse, error)
+	// Cluster
+	ListClusters(context.Context, *resources.ListClustersRequest) (*resources.ListClustersResponse, error)
 	// Used to delete info of pods
 	DeletePods(context.Context, *resources.DeletePodsRequest) (*status.Status, error)
 	DeleteControllers(context.Context, *resources.DeleteControllersRequest) (*status.Status, error)
+	DeleteApplications(context.Context, *resources.DeleteApplicationsRequest) (*status.Status, error)
+	DeleteNamespaces(context.Context, *resources.DeleteNamespacesRequest) (*status.Status, error)
 	// Used to stop generating predictions for the nodes
-	DeleteAlamedaNodes(context.Context, *resources.DeleteAlamedaNodesRequest) (*status.Status, error)
+	DeleteNodes(context.Context, *resources.DeleteNodesRequest) (*status.Status, error)
+	DeleteClusters(context.Context, *resources.DeleteClustersRequest) (*status.Status, error)
 	// Scores --------------------------------------------------
 	CreateSimulatedSchedulingScores(context.Context, *scores.CreateSimulatedSchedulingScoresRequest) (*status.Status, error)
+	// Used to list system scores
+	ListSimulatedSchedulingScores(context.Context, *scores.ListSimulatedSchedulingScoresRequest) (*scores.ListSimulatedSchedulingScoresResponse, error)
 	// weave scope --------------------------------------------------
 	ListWeaveScopeHosts(context.Context, *weavescope.ListWeaveScopeHostsRequest) (*weavescope.WeaveScopeResponse, error)
 	GetWeaveScopeHostDetails(context.Context, *weavescope.ListWeaveScopeHostsRequest) (*weavescope.WeaveScopeResponse, error)
@@ -746,14 +1216,38 @@ func (*UnimplementedDatahubServiceServer) GetLicense(ctx context.Context, req *e
 func (*UnimplementedDatahubServiceServer) CreatePodMetrics(ctx context.Context, req *metrics.CreatePodMetricsRequest) (*status.Status, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreatePodMetrics not implemented")
 }
+func (*UnimplementedDatahubServiceServer) CreateControllerMetrics(ctx context.Context, req *metrics.CreateControllerMetricsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateControllerMetrics not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateApplicationMetrics(ctx context.Context, req *metrics.CreateApplicationMetricsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateApplicationMetrics not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateNamespaceMetrics(ctx context.Context, req *metrics.CreateNamespaceMetricsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateNamespaceMetrics not implemented")
+}
 func (*UnimplementedDatahubServiceServer) CreateNodeMetrics(ctx context.Context, req *metrics.CreateNodeMetricsRequest) (*status.Status, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateNodeMetrics not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateClusterMetrics(ctx context.Context, req *metrics.CreateClusterMetricsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateClusterMetrics not implemented")
 }
 func (*UnimplementedDatahubServiceServer) ListPodMetrics(ctx context.Context, req *metrics.ListPodMetricsRequest) (*metrics.ListPodMetricsResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListPodMetrics not implemented")
 }
+func (*UnimplementedDatahubServiceServer) ListControllerMetrics(ctx context.Context, req *metrics.ListControllerMetricsRequest) (*metrics.ListControllerMetricsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListControllerMetrics not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListApplicationMetrics(ctx context.Context, req *metrics.ListApplicationMetricsRequest) (*metrics.ListApplicationMetricsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListApplicationMetrics not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListNamespaceMetrics(ctx context.Context, req *metrics.ListNamespaceMetricsRequest) (*metrics.ListNamespaceMetricsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListNamespaceMetrics not implemented")
+}
 func (*UnimplementedDatahubServiceServer) ListNodeMetrics(ctx context.Context, req *metrics.ListNodeMetricsRequest) (*metrics.ListNodeMetricsResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListNodeMetrics not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListClusterMetrics(ctx context.Context, req *metrics.ListClusterMetricsRequest) (*metrics.ListClusterMetricsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListClusterMetrics not implemented")
 }
 func (*UnimplementedDatahubServiceServer) Ping(ctx context.Context, req *empty.Empty) (*status.Status, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method Ping not implemented")
@@ -764,23 +1258,71 @@ func (*UnimplementedDatahubServiceServer) CreatePodPlannings(ctx context.Context
 func (*UnimplementedDatahubServiceServer) CreateControllerPlannings(ctx context.Context, req *plannings.CreateControllerPlanningsRequest) (*status.Status, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateControllerPlannings not implemented")
 }
+func (*UnimplementedDatahubServiceServer) CreateApplicationPlannings(ctx context.Context, req *plannings.CreateApplicationPlanningsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateApplicationPlannings not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateNamespacePlannings(ctx context.Context, req *plannings.CreateNamespacePlanningsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateNamespacePlannings not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateNodePlannings(ctx context.Context, req *plannings.CreateNodePlanningsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateNodePlannings not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateClusterPlannings(ctx context.Context, req *plannings.CreateClusterPlanningsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateClusterPlannings not implemented")
+}
 func (*UnimplementedDatahubServiceServer) ListPodPlannings(ctx context.Context, req *plannings.ListPodPlanningsRequest) (*plannings.ListPodPlanningsResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListPodPlannings not implemented")
 }
 func (*UnimplementedDatahubServiceServer) ListControllerPlannings(ctx context.Context, req *plannings.ListControllerPlanningsRequest) (*plannings.ListControllerPlanningsResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListControllerPlannings not implemented")
 }
-func (*UnimplementedDatahubServiceServer) CreateNodePredictions(ctx context.Context, req *predictions.CreateNodePredictionsRequest) (*status.Status, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method CreateNodePredictions not implemented")
+func (*UnimplementedDatahubServiceServer) ListApplicationPlannings(ctx context.Context, req *plannings.ListApplicationPlanningsRequest) (*plannings.ListApplicationPlanningsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListApplicationPlannings not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListNamespacePlannings(ctx context.Context, req *plannings.ListNamespacePlanningsRequest) (*plannings.ListNamespacePlanningsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListNamespacePlannings not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListNodePlannings(ctx context.Context, req *plannings.ListNodePlanningsRequest) (*plannings.ListNodePlanningsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListNodePlannings not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListClusterPlannings(ctx context.Context, req *plannings.ListClusterPlanningsRequest) (*plannings.ListClusterPlanningsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListClusterPlannings not implemented")
 }
 func (*UnimplementedDatahubServiceServer) CreatePodPredictions(ctx context.Context, req *predictions.CreatePodPredictionsRequest) (*status.Status, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreatePodPredictions not implemented")
 }
-func (*UnimplementedDatahubServiceServer) ListNodePredictions(ctx context.Context, req *predictions.ListNodePredictionsRequest) (*predictions.ListNodePredictionsResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method ListNodePredictions not implemented")
+func (*UnimplementedDatahubServiceServer) CreateControllerPredictions(ctx context.Context, req *predictions.CreateControllerPredictionsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateControllerPredictions not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateApplicationPredictions(ctx context.Context, req *predictions.CreateApplicationPredictionsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateApplicationPredictions not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateNamespacePredictions(ctx context.Context, req *predictions.CreateNamespacePredictionsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateNamespacePredictions not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateNodePredictions(ctx context.Context, req *predictions.CreateNodePredictionsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateNodePredictions not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateClusterPredictions(ctx context.Context, req *predictions.CreateClusterPredictionsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateClusterPredictions not implemented")
 }
 func (*UnimplementedDatahubServiceServer) ListPodPredictions(ctx context.Context, req *predictions.ListPodPredictionsRequest) (*predictions.ListPodPredictionsResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListPodPredictions not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListControllerPredictions(ctx context.Context, req *predictions.ListControllerPredictionsRequest) (*predictions.ListControllerPredictionsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListControllerPredictions not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListApplicationPredictions(ctx context.Context, req *predictions.ListApplicationPredictionsRequest) (*predictions.ListApplicationPredictionsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListApplicationPredictions not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListNamespacePredictions(ctx context.Context, req *predictions.ListNamespacePredictionsRequest) (*predictions.ListNamespacePredictionsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListNamespacePredictions not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListNodePredictions(ctx context.Context, req *predictions.ListNodePredictionsRequest) (*predictions.ListNodePredictionsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListNodePredictions not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListClusterPredictions(ctx context.Context, req *predictions.ListClusterPredictionsRequest) (*predictions.ListClusterPredictionsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListClusterPredictions not implemented")
 }
 func (*UnimplementedDatahubServiceServer) ReadRawdata(ctx context.Context, req *rawdata.ReadRawdataRequest) (*rawdata.ReadRawdataResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ReadRawdata not implemented")
@@ -794,6 +1336,18 @@ func (*UnimplementedDatahubServiceServer) CreatePodRecommendations(ctx context.C
 func (*UnimplementedDatahubServiceServer) CreateControllerRecommendations(ctx context.Context, req *recommendations.CreateControllerRecommendationsRequest) (*status.Status, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateControllerRecommendations not implemented")
 }
+func (*UnimplementedDatahubServiceServer) CreateApplicationRecommendations(ctx context.Context, req *recommendations.CreateApplicationRecommendationsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateApplicationRecommendations not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateNamespaceRecommendations(ctx context.Context, req *recommendations.CreateNamespaceRecommendationsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateNamespaceRecommendations not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateNodeRecommendations(ctx context.Context, req *recommendations.CreateNodeRecommendationsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateNodeRecommendations not implemented")
+}
+func (*UnimplementedDatahubServiceServer) CreateClusterRecommendations(ctx context.Context, req *recommendations.CreateClusterRecommendationsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateClusterRecommendations not implemented")
+}
 func (*UnimplementedDatahubServiceServer) ListPodRecommendations(ctx context.Context, req *recommendations.ListPodRecommendationsRequest) (*recommendations.ListPodRecommendationsResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListPodRecommendations not implemented")
 }
@@ -803,8 +1357,17 @@ func (*UnimplementedDatahubServiceServer) ListAvailablePodRecommendations(ctx co
 func (*UnimplementedDatahubServiceServer) ListControllerRecommendations(ctx context.Context, req *recommendations.ListControllerRecommendationsRequest) (*recommendations.ListControllerRecommendationsResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListControllerRecommendations not implemented")
 }
-func (*UnimplementedDatahubServiceServer) ListSimulatedSchedulingScores(ctx context.Context, req *scores.ListSimulatedSchedulingScoresRequest) (*scores.ListSimulatedSchedulingScoresResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method ListSimulatedSchedulingScores not implemented")
+func (*UnimplementedDatahubServiceServer) ListApplicationRecommendations(ctx context.Context, req *recommendations.ListApplicationRecommendationsRequest) (*recommendations.ListApplicationRecommendationsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListApplicationRecommendations not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListNamespaceRecommendations(ctx context.Context, req *recommendations.ListNamespaceRecommendationsRequest) (*recommendations.ListNamespaceRecommendationsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListNamespaceRecommendations not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListNodeRecommendations(ctx context.Context, req *recommendations.ListNodeRecommendationsRequest) (*recommendations.ListNodeRecommendationsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListNodeRecommendations not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListClusterRecommendations(ctx context.Context, req *recommendations.ListClusterRecommendationsRequest) (*recommendations.ListClusterRecommendationsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListClusterRecommendations not implemented")
 }
 func (*UnimplementedDatahubServiceServer) CreatePods(ctx context.Context, req *resources.CreatePodsRequest) (*status.Status, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreatePods not implemented")
@@ -812,23 +1375,35 @@ func (*UnimplementedDatahubServiceServer) CreatePods(ctx context.Context, req *r
 func (*UnimplementedDatahubServiceServer) CreateControllers(ctx context.Context, req *resources.CreateControllersRequest) (*status.Status, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateControllers not implemented")
 }
-func (*UnimplementedDatahubServiceServer) CreateAlamedaNodes(ctx context.Context, req *resources.CreateAlamedaNodesRequest) (*status.Status, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method CreateAlamedaNodes not implemented")
+func (*UnimplementedDatahubServiceServer) CreateApplications(ctx context.Context, req *resources.CreateApplicationsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateApplications not implemented")
 }
-func (*UnimplementedDatahubServiceServer) ListAlamedaPods(ctx context.Context, req *resources.ListAlamedaPodsRequest) (*resources.ListPodsResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method ListAlamedaPods not implemented")
+func (*UnimplementedDatahubServiceServer) CreateNamespaces(ctx context.Context, req *resources.CreateNamespacesRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateNamespaces not implemented")
 }
-func (*UnimplementedDatahubServiceServer) ListAlamedaNodes(ctx context.Context, req *resources.ListAlamedaNodesRequest) (*resources.ListNodesResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method ListAlamedaNodes not implemented")
+func (*UnimplementedDatahubServiceServer) CreateNodes(ctx context.Context, req *resources.CreateNodesRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateNodes not implemented")
 }
-func (*UnimplementedDatahubServiceServer) ListNodes(ctx context.Context, req *resources.ListNodesRequest) (*resources.ListNodesResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method ListNodes not implemented")
+func (*UnimplementedDatahubServiceServer) CreateClusters(ctx context.Context, req *resources.CreateClustersRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method CreateClusters not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListPods(ctx context.Context, req *resources.ListPodsRequest) (*resources.ListPodsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListPods not implemented")
 }
 func (*UnimplementedDatahubServiceServer) ListControllers(ctx context.Context, req *resources.ListControllersRequest) (*resources.ListControllersResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListControllers not implemented")
 }
-func (*UnimplementedDatahubServiceServer) ListPodsByNodeName(ctx context.Context, req *resources.ListPodsByNodeNamesRequest) (*resources.ListPodsResponse, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method ListPodsByNodeName not implemented")
+func (*UnimplementedDatahubServiceServer) ListApplications(ctx context.Context, req *resources.ListApplicationsRequest) (*resources.ListApplicationsResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListApplications not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListNamespaces(ctx context.Context, req *resources.ListNamespacesRequest) (*resources.ListNamespacesResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListNamespaces not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListNodes(ctx context.Context, req *resources.ListNodesRequest) (*resources.ListNodesResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListNodes not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListClusters(ctx context.Context, req *resources.ListClustersRequest) (*resources.ListClustersResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListClusters not implemented")
 }
 func (*UnimplementedDatahubServiceServer) DeletePods(ctx context.Context, req *resources.DeletePodsRequest) (*status.Status, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeletePods not implemented")
@@ -836,11 +1411,23 @@ func (*UnimplementedDatahubServiceServer) DeletePods(ctx context.Context, req *r
 func (*UnimplementedDatahubServiceServer) DeleteControllers(ctx context.Context, req *resources.DeleteControllersRequest) (*status.Status, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteControllers not implemented")
 }
-func (*UnimplementedDatahubServiceServer) DeleteAlamedaNodes(ctx context.Context, req *resources.DeleteAlamedaNodesRequest) (*status.Status, error) {
-	return nil, status1.Errorf(codes.Unimplemented, "method DeleteAlamedaNodes not implemented")
+func (*UnimplementedDatahubServiceServer) DeleteApplications(ctx context.Context, req *resources.DeleteApplicationsRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method DeleteApplications not implemented")
+}
+func (*UnimplementedDatahubServiceServer) DeleteNamespaces(ctx context.Context, req *resources.DeleteNamespacesRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method DeleteNamespaces not implemented")
+}
+func (*UnimplementedDatahubServiceServer) DeleteNodes(ctx context.Context, req *resources.DeleteNodesRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method DeleteNodes not implemented")
+}
+func (*UnimplementedDatahubServiceServer) DeleteClusters(ctx context.Context, req *resources.DeleteClustersRequest) (*status.Status, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method DeleteClusters not implemented")
 }
 func (*UnimplementedDatahubServiceServer) CreateSimulatedSchedulingScores(ctx context.Context, req *scores.CreateSimulatedSchedulingScoresRequest) (*status.Status, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateSimulatedSchedulingScores not implemented")
+}
+func (*UnimplementedDatahubServiceServer) ListSimulatedSchedulingScores(ctx context.Context, req *scores.ListSimulatedSchedulingScoresRequest) (*scores.ListSimulatedSchedulingScoresResponse, error) {
+	return nil, status1.Errorf(codes.Unimplemented, "method ListSimulatedSchedulingScores not implemented")
 }
 func (*UnimplementedDatahubServiceServer) ListWeaveScopeHosts(ctx context.Context, req *weavescope.ListWeaveScopeHostsRequest) (*weavescope.WeaveScopeResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListWeaveScopeHosts not implemented")
@@ -1015,6 +1602,60 @@ func _DatahubService_CreatePodMetrics_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatahubService_CreateControllerMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(metrics.CreateControllerMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateControllerMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateControllerMetrics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateControllerMetrics(ctx, req.(*metrics.CreateControllerMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateApplicationMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(metrics.CreateApplicationMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateApplicationMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateApplicationMetrics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateApplicationMetrics(ctx, req.(*metrics.CreateApplicationMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateNamespaceMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(metrics.CreateNamespaceMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateNamespaceMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNamespaceMetrics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateNamespaceMetrics(ctx, req.(*metrics.CreateNamespaceMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DatahubService_CreateNodeMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(metrics.CreateNodeMetricsRequest)
 	if err := dec(in); err != nil {
@@ -1029,6 +1670,24 @@ func _DatahubService_CreateNodeMetrics_Handler(srv interface{}, ctx context.Cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DatahubServiceServer).CreateNodeMetrics(ctx, req.(*metrics.CreateNodeMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateClusterMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(metrics.CreateClusterMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateClusterMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateClusterMetrics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateClusterMetrics(ctx, req.(*metrics.CreateClusterMetricsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1051,6 +1710,60 @@ func _DatahubService_ListPodMetrics_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatahubService_ListControllerMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(metrics.ListControllerMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListControllerMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListControllerMetrics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListControllerMetrics(ctx, req.(*metrics.ListControllerMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListApplicationMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(metrics.ListApplicationMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListApplicationMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListApplicationMetrics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListApplicationMetrics(ctx, req.(*metrics.ListApplicationMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListNamespaceMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(metrics.ListNamespaceMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListNamespaceMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNamespaceMetrics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListNamespaceMetrics(ctx, req.(*metrics.ListNamespaceMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DatahubService_ListNodeMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(metrics.ListNodeMetricsRequest)
 	if err := dec(in); err != nil {
@@ -1065,6 +1778,24 @@ func _DatahubService_ListNodeMetrics_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DatahubServiceServer).ListNodeMetrics(ctx, req.(*metrics.ListNodeMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListClusterMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(metrics.ListClusterMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListClusterMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListClusterMetrics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListClusterMetrics(ctx, req.(*metrics.ListClusterMetricsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1123,6 +1854,78 @@ func _DatahubService_CreateControllerPlannings_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatahubService_CreateApplicationPlannings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(plannings.CreateApplicationPlanningsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateApplicationPlannings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateApplicationPlannings",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateApplicationPlannings(ctx, req.(*plannings.CreateApplicationPlanningsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateNamespacePlannings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(plannings.CreateNamespacePlanningsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateNamespacePlannings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNamespacePlannings",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateNamespacePlannings(ctx, req.(*plannings.CreateNamespacePlanningsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateNodePlannings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(plannings.CreateNodePlanningsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateNodePlannings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNodePlannings",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateNodePlannings(ctx, req.(*plannings.CreateNodePlanningsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateClusterPlannings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(plannings.CreateClusterPlanningsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateClusterPlannings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateClusterPlannings",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateClusterPlannings(ctx, req.(*plannings.CreateClusterPlanningsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DatahubService_ListPodPlannings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(plannings.ListPodPlanningsRequest)
 	if err := dec(in); err != nil {
@@ -1159,20 +1962,74 @@ func _DatahubService_ListControllerPlannings_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DatahubService_CreateNodePredictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(predictions.CreateNodePredictionsRequest)
+func _DatahubService_ListApplicationPlannings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(plannings.ListApplicationPlanningsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DatahubServiceServer).CreateNodePredictions(ctx, in)
+		return srv.(DatahubServiceServer).ListApplicationPlannings(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNodePredictions",
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListApplicationPlannings",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatahubServiceServer).CreateNodePredictions(ctx, req.(*predictions.CreateNodePredictionsRequest))
+		return srv.(DatahubServiceServer).ListApplicationPlannings(ctx, req.(*plannings.ListApplicationPlanningsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListNamespacePlannings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(plannings.ListNamespacePlanningsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListNamespacePlannings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNamespacePlannings",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListNamespacePlannings(ctx, req.(*plannings.ListNamespacePlanningsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListNodePlannings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(plannings.ListNodePlanningsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListNodePlannings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodePlannings",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListNodePlannings(ctx, req.(*plannings.ListNodePlanningsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListClusterPlannings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(plannings.ListClusterPlanningsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListClusterPlannings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListClusterPlannings",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListClusterPlannings(ctx, req.(*plannings.ListClusterPlanningsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1195,20 +2052,92 @@ func _DatahubService_CreatePodPredictions_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DatahubService_ListNodePredictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(predictions.ListNodePredictionsRequest)
+func _DatahubService_CreateControllerPredictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(predictions.CreateControllerPredictionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DatahubServiceServer).ListNodePredictions(ctx, in)
+		return srv.(DatahubServiceServer).CreateControllerPredictions(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodePredictions",
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateControllerPredictions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatahubServiceServer).ListNodePredictions(ctx, req.(*predictions.ListNodePredictionsRequest))
+		return srv.(DatahubServiceServer).CreateControllerPredictions(ctx, req.(*predictions.CreateControllerPredictionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateApplicationPredictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(predictions.CreateApplicationPredictionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateApplicationPredictions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateApplicationPredictions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateApplicationPredictions(ctx, req.(*predictions.CreateApplicationPredictionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateNamespacePredictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(predictions.CreateNamespacePredictionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateNamespacePredictions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNamespacePredictions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateNamespacePredictions(ctx, req.(*predictions.CreateNamespacePredictionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateNodePredictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(predictions.CreateNodePredictionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateNodePredictions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNodePredictions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateNodePredictions(ctx, req.(*predictions.CreateNodePredictionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateClusterPredictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(predictions.CreateClusterPredictionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateClusterPredictions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateClusterPredictions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateClusterPredictions(ctx, req.(*predictions.CreateClusterPredictionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1227,6 +2156,96 @@ func _DatahubService_ListPodPredictions_Handler(srv interface{}, ctx context.Con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DatahubServiceServer).ListPodPredictions(ctx, req.(*predictions.ListPodPredictionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListControllerPredictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(predictions.ListControllerPredictionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListControllerPredictions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListControllerPredictions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListControllerPredictions(ctx, req.(*predictions.ListControllerPredictionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListApplicationPredictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(predictions.ListApplicationPredictionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListApplicationPredictions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListApplicationPredictions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListApplicationPredictions(ctx, req.(*predictions.ListApplicationPredictionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListNamespacePredictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(predictions.ListNamespacePredictionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListNamespacePredictions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNamespacePredictions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListNamespacePredictions(ctx, req.(*predictions.ListNamespacePredictionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListNodePredictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(predictions.ListNodePredictionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListNodePredictions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodePredictions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListNodePredictions(ctx, req.(*predictions.ListNodePredictionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListClusterPredictions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(predictions.ListClusterPredictionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListClusterPredictions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListClusterPredictions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListClusterPredictions(ctx, req.(*predictions.ListClusterPredictionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1303,6 +2322,78 @@ func _DatahubService_CreateControllerRecommendations_Handler(srv interface{}, ct
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatahubService_CreateApplicationRecommendations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(recommendations.CreateApplicationRecommendationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateApplicationRecommendations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateApplicationRecommendations",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateApplicationRecommendations(ctx, req.(*recommendations.CreateApplicationRecommendationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateNamespaceRecommendations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(recommendations.CreateNamespaceRecommendationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateNamespaceRecommendations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNamespaceRecommendations",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateNamespaceRecommendations(ctx, req.(*recommendations.CreateNamespaceRecommendationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateNodeRecommendations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(recommendations.CreateNodeRecommendationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateNodeRecommendations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNodeRecommendations",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateNodeRecommendations(ctx, req.(*recommendations.CreateNodeRecommendationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_CreateClusterRecommendations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(recommendations.CreateClusterRecommendationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).CreateClusterRecommendations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateClusterRecommendations",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).CreateClusterRecommendations(ctx, req.(*recommendations.CreateClusterRecommendationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _DatahubService_ListPodRecommendations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(recommendations.ListPodRecommendationsRequest)
 	if err := dec(in); err != nil {
@@ -1357,20 +2448,74 @@ func _DatahubService_ListControllerRecommendations_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DatahubService_ListSimulatedSchedulingScores_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(scores.ListSimulatedSchedulingScoresRequest)
+func _DatahubService_ListApplicationRecommendations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(recommendations.ListApplicationRecommendationsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DatahubServiceServer).ListSimulatedSchedulingScores(ctx, in)
+		return srv.(DatahubServiceServer).ListApplicationRecommendations(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListSimulatedSchedulingScores",
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListApplicationRecommendations",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatahubServiceServer).ListSimulatedSchedulingScores(ctx, req.(*scores.ListSimulatedSchedulingScoresRequest))
+		return srv.(DatahubServiceServer).ListApplicationRecommendations(ctx, req.(*recommendations.ListApplicationRecommendationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListNamespaceRecommendations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(recommendations.ListNamespaceRecommendationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListNamespaceRecommendations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNamespaceRecommendations",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListNamespaceRecommendations(ctx, req.(*recommendations.ListNamespaceRecommendationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListNodeRecommendations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(recommendations.ListNodeRecommendationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListNodeRecommendations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodeRecommendations",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListNodeRecommendations(ctx, req.(*recommendations.ListNodeRecommendationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListClusterRecommendations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(recommendations.ListClusterRecommendationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListClusterRecommendations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListClusterRecommendations",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListClusterRecommendations(ctx, req.(*recommendations.ListClusterRecommendationsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1411,74 +2556,92 @@ func _DatahubService_CreateControllers_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DatahubService_CreateAlamedaNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(resources.CreateAlamedaNodesRequest)
+func _DatahubService_CreateApplications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.CreateApplicationsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DatahubServiceServer).CreateAlamedaNodes(ctx, in)
+		return srv.(DatahubServiceServer).CreateApplications(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateAlamedaNodes",
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateApplications",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatahubServiceServer).CreateAlamedaNodes(ctx, req.(*resources.CreateAlamedaNodesRequest))
+		return srv.(DatahubServiceServer).CreateApplications(ctx, req.(*resources.CreateApplicationsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DatahubService_ListAlamedaPods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(resources.ListAlamedaPodsRequest)
+func _DatahubService_CreateNamespaces_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.CreateNamespacesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DatahubServiceServer).ListAlamedaPods(ctx, in)
+		return srv.(DatahubServiceServer).CreateNamespaces(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListAlamedaPods",
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNamespaces",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatahubServiceServer).ListAlamedaPods(ctx, req.(*resources.ListAlamedaPodsRequest))
+		return srv.(DatahubServiceServer).CreateNamespaces(ctx, req.(*resources.CreateNamespacesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DatahubService_ListAlamedaNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(resources.ListAlamedaNodesRequest)
+func _DatahubService_CreateNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.CreateNodesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DatahubServiceServer).ListAlamedaNodes(ctx, in)
+		return srv.(DatahubServiceServer).CreateNodes(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListAlamedaNodes",
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateNodes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatahubServiceServer).ListAlamedaNodes(ctx, req.(*resources.ListAlamedaNodesRequest))
+		return srv.(DatahubServiceServer).CreateNodes(ctx, req.(*resources.CreateNodesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DatahubService_ListNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(resources.ListNodesRequest)
+func _DatahubService_CreateClusters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.CreateClustersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DatahubServiceServer).ListNodes(ctx, in)
+		return srv.(DatahubServiceServer).CreateClusters(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodes",
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/CreateClusters",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatahubServiceServer).ListNodes(ctx, req.(*resources.ListNodesRequest))
+		return srv.(DatahubServiceServer).CreateClusters(ctx, req.(*resources.CreateClustersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListPods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.ListPodsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListPods(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListPods",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListPods(ctx, req.(*resources.ListPodsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1501,20 +2664,74 @@ func _DatahubService_ListControllers_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DatahubService_ListPodsByNodeName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(resources.ListPodsByNodeNamesRequest)
+func _DatahubService_ListApplications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.ListApplicationsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DatahubServiceServer).ListPodsByNodeName(ctx, in)
+		return srv.(DatahubServiceServer).ListApplications(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListPodsByNodeName",
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListApplications",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatahubServiceServer).ListPodsByNodeName(ctx, req.(*resources.ListPodsByNodeNamesRequest))
+		return srv.(DatahubServiceServer).ListApplications(ctx, req.(*resources.ListApplicationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListNamespaces_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.ListNamespacesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListNamespaces(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNamespaces",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListNamespaces(ctx, req.(*resources.ListNamespacesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.ListNodesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListNodes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListNodes",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListNodes(ctx, req.(*resources.ListNodesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListClusters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.ListClustersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListClusters(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListClusters",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListClusters(ctx, req.(*resources.ListClustersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1555,20 +2772,74 @@ func _DatahubService_DeleteControllers_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DatahubService_DeleteAlamedaNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(resources.DeleteAlamedaNodesRequest)
+func _DatahubService_DeleteApplications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.DeleteApplicationsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DatahubServiceServer).DeleteAlamedaNodes(ctx, in)
+		return srv.(DatahubServiceServer).DeleteApplications(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/DeleteAlamedaNodes",
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/DeleteApplications",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatahubServiceServer).DeleteAlamedaNodes(ctx, req.(*resources.DeleteAlamedaNodesRequest))
+		return srv.(DatahubServiceServer).DeleteApplications(ctx, req.(*resources.DeleteApplicationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_DeleteNamespaces_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.DeleteNamespacesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).DeleteNamespaces(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/DeleteNamespaces",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).DeleteNamespaces(ctx, req.(*resources.DeleteNamespacesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_DeleteNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.DeleteNodesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).DeleteNodes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/DeleteNodes",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).DeleteNodes(ctx, req.(*resources.DeleteNodesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_DeleteClusters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(resources.DeleteClustersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).DeleteClusters(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/DeleteClusters",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).DeleteClusters(ctx, req.(*resources.DeleteClustersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1587,6 +2858,24 @@ func _DatahubService_CreateSimulatedSchedulingScores_Handler(srv interface{}, ct
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DatahubServiceServer).CreateSimulatedSchedulingScores(ctx, req.(*scores.CreateSimulatedSchedulingScoresRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatahubService_ListSimulatedSchedulingScores_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(scores.ListSimulatedSchedulingScoresRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatahubServiceServer).ListSimulatedSchedulingScores(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/containersai.alameda.v1alpha1.datahub.DatahubService/ListSimulatedSchedulingScores",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatahubServiceServer).ListSimulatedSchedulingScores(ctx, req.(*scores.ListSimulatedSchedulingScoresRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1772,16 +3061,48 @@ var _DatahubService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _DatahubService_CreatePodMetrics_Handler,
 		},
 		{
+			MethodName: "CreateControllerMetrics",
+			Handler:    _DatahubService_CreateControllerMetrics_Handler,
+		},
+		{
+			MethodName: "CreateApplicationMetrics",
+			Handler:    _DatahubService_CreateApplicationMetrics_Handler,
+		},
+		{
+			MethodName: "CreateNamespaceMetrics",
+			Handler:    _DatahubService_CreateNamespaceMetrics_Handler,
+		},
+		{
 			MethodName: "CreateNodeMetrics",
 			Handler:    _DatahubService_CreateNodeMetrics_Handler,
+		},
+		{
+			MethodName: "CreateClusterMetrics",
+			Handler:    _DatahubService_CreateClusterMetrics_Handler,
 		},
 		{
 			MethodName: "ListPodMetrics",
 			Handler:    _DatahubService_ListPodMetrics_Handler,
 		},
 		{
+			MethodName: "ListControllerMetrics",
+			Handler:    _DatahubService_ListControllerMetrics_Handler,
+		},
+		{
+			MethodName: "ListApplicationMetrics",
+			Handler:    _DatahubService_ListApplicationMetrics_Handler,
+		},
+		{
+			MethodName: "ListNamespaceMetrics",
+			Handler:    _DatahubService_ListNamespaceMetrics_Handler,
+		},
+		{
 			MethodName: "ListNodeMetrics",
 			Handler:    _DatahubService_ListNodeMetrics_Handler,
+		},
+		{
+			MethodName: "ListClusterMetrics",
+			Handler:    _DatahubService_ListClusterMetrics_Handler,
 		},
 		{
 			MethodName: "Ping",
@@ -1796,6 +3117,22 @@ var _DatahubService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _DatahubService_CreateControllerPlannings_Handler,
 		},
 		{
+			MethodName: "CreateApplicationPlannings",
+			Handler:    _DatahubService_CreateApplicationPlannings_Handler,
+		},
+		{
+			MethodName: "CreateNamespacePlannings",
+			Handler:    _DatahubService_CreateNamespacePlannings_Handler,
+		},
+		{
+			MethodName: "CreateNodePlannings",
+			Handler:    _DatahubService_CreateNodePlannings_Handler,
+		},
+		{
+			MethodName: "CreateClusterPlannings",
+			Handler:    _DatahubService_CreateClusterPlannings_Handler,
+		},
+		{
 			MethodName: "ListPodPlannings",
 			Handler:    _DatahubService_ListPodPlannings_Handler,
 		},
@@ -1804,20 +3141,68 @@ var _DatahubService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _DatahubService_ListControllerPlannings_Handler,
 		},
 		{
-			MethodName: "CreateNodePredictions",
-			Handler:    _DatahubService_CreateNodePredictions_Handler,
+			MethodName: "ListApplicationPlannings",
+			Handler:    _DatahubService_ListApplicationPlannings_Handler,
+		},
+		{
+			MethodName: "ListNamespacePlannings",
+			Handler:    _DatahubService_ListNamespacePlannings_Handler,
+		},
+		{
+			MethodName: "ListNodePlannings",
+			Handler:    _DatahubService_ListNodePlannings_Handler,
+		},
+		{
+			MethodName: "ListClusterPlannings",
+			Handler:    _DatahubService_ListClusterPlannings_Handler,
 		},
 		{
 			MethodName: "CreatePodPredictions",
 			Handler:    _DatahubService_CreatePodPredictions_Handler,
 		},
 		{
-			MethodName: "ListNodePredictions",
-			Handler:    _DatahubService_ListNodePredictions_Handler,
+			MethodName: "CreateControllerPredictions",
+			Handler:    _DatahubService_CreateControllerPredictions_Handler,
+		},
+		{
+			MethodName: "CreateApplicationPredictions",
+			Handler:    _DatahubService_CreateApplicationPredictions_Handler,
+		},
+		{
+			MethodName: "CreateNamespacePredictions",
+			Handler:    _DatahubService_CreateNamespacePredictions_Handler,
+		},
+		{
+			MethodName: "CreateNodePredictions",
+			Handler:    _DatahubService_CreateNodePredictions_Handler,
+		},
+		{
+			MethodName: "CreateClusterPredictions",
+			Handler:    _DatahubService_CreateClusterPredictions_Handler,
 		},
 		{
 			MethodName: "ListPodPredictions",
 			Handler:    _DatahubService_ListPodPredictions_Handler,
+		},
+		{
+			MethodName: "ListControllerPredictions",
+			Handler:    _DatahubService_ListControllerPredictions_Handler,
+		},
+		{
+			MethodName: "ListApplicationPredictions",
+			Handler:    _DatahubService_ListApplicationPredictions_Handler,
+		},
+		{
+			MethodName: "ListNamespacePredictions",
+			Handler:    _DatahubService_ListNamespacePredictions_Handler,
+		},
+		{
+			MethodName: "ListNodePredictions",
+			Handler:    _DatahubService_ListNodePredictions_Handler,
+		},
+		{
+			MethodName: "ListClusterPredictions",
+			Handler:    _DatahubService_ListClusterPredictions_Handler,
 		},
 		{
 			MethodName: "ReadRawdata",
@@ -1836,6 +3221,22 @@ var _DatahubService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _DatahubService_CreateControllerRecommendations_Handler,
 		},
 		{
+			MethodName: "CreateApplicationRecommendations",
+			Handler:    _DatahubService_CreateApplicationRecommendations_Handler,
+		},
+		{
+			MethodName: "CreateNamespaceRecommendations",
+			Handler:    _DatahubService_CreateNamespaceRecommendations_Handler,
+		},
+		{
+			MethodName: "CreateNodeRecommendations",
+			Handler:    _DatahubService_CreateNodeRecommendations_Handler,
+		},
+		{
+			MethodName: "CreateClusterRecommendations",
+			Handler:    _DatahubService_CreateClusterRecommendations_Handler,
+		},
+		{
 			MethodName: "ListPodRecommendations",
 			Handler:    _DatahubService_ListPodRecommendations_Handler,
 		},
@@ -1848,8 +3249,20 @@ var _DatahubService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _DatahubService_ListControllerRecommendations_Handler,
 		},
 		{
-			MethodName: "ListSimulatedSchedulingScores",
-			Handler:    _DatahubService_ListSimulatedSchedulingScores_Handler,
+			MethodName: "ListApplicationRecommendations",
+			Handler:    _DatahubService_ListApplicationRecommendations_Handler,
+		},
+		{
+			MethodName: "ListNamespaceRecommendations",
+			Handler:    _DatahubService_ListNamespaceRecommendations_Handler,
+		},
+		{
+			MethodName: "ListNodeRecommendations",
+			Handler:    _DatahubService_ListNodeRecommendations_Handler,
+		},
+		{
+			MethodName: "ListClusterRecommendations",
+			Handler:    _DatahubService_ListClusterRecommendations_Handler,
 		},
 		{
 			MethodName: "CreatePods",
@@ -1860,28 +3273,44 @@ var _DatahubService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _DatahubService_CreateControllers_Handler,
 		},
 		{
-			MethodName: "CreateAlamedaNodes",
-			Handler:    _DatahubService_CreateAlamedaNodes_Handler,
+			MethodName: "CreateApplications",
+			Handler:    _DatahubService_CreateApplications_Handler,
 		},
 		{
-			MethodName: "ListAlamedaPods",
-			Handler:    _DatahubService_ListAlamedaPods_Handler,
+			MethodName: "CreateNamespaces",
+			Handler:    _DatahubService_CreateNamespaces_Handler,
 		},
 		{
-			MethodName: "ListAlamedaNodes",
-			Handler:    _DatahubService_ListAlamedaNodes_Handler,
+			MethodName: "CreateNodes",
+			Handler:    _DatahubService_CreateNodes_Handler,
 		},
 		{
-			MethodName: "ListNodes",
-			Handler:    _DatahubService_ListNodes_Handler,
+			MethodName: "CreateClusters",
+			Handler:    _DatahubService_CreateClusters_Handler,
+		},
+		{
+			MethodName: "ListPods",
+			Handler:    _DatahubService_ListPods_Handler,
 		},
 		{
 			MethodName: "ListControllers",
 			Handler:    _DatahubService_ListControllers_Handler,
 		},
 		{
-			MethodName: "ListPodsByNodeName",
-			Handler:    _DatahubService_ListPodsByNodeName_Handler,
+			MethodName: "ListApplications",
+			Handler:    _DatahubService_ListApplications_Handler,
+		},
+		{
+			MethodName: "ListNamespaces",
+			Handler:    _DatahubService_ListNamespaces_Handler,
+		},
+		{
+			MethodName: "ListNodes",
+			Handler:    _DatahubService_ListNodes_Handler,
+		},
+		{
+			MethodName: "ListClusters",
+			Handler:    _DatahubService_ListClusters_Handler,
 		},
 		{
 			MethodName: "DeletePods",
@@ -1892,12 +3321,28 @@ var _DatahubService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _DatahubService_DeleteControllers_Handler,
 		},
 		{
-			MethodName: "DeleteAlamedaNodes",
-			Handler:    _DatahubService_DeleteAlamedaNodes_Handler,
+			MethodName: "DeleteApplications",
+			Handler:    _DatahubService_DeleteApplications_Handler,
+		},
+		{
+			MethodName: "DeleteNamespaces",
+			Handler:    _DatahubService_DeleteNamespaces_Handler,
+		},
+		{
+			MethodName: "DeleteNodes",
+			Handler:    _DatahubService_DeleteNodes_Handler,
+		},
+		{
+			MethodName: "DeleteClusters",
+			Handler:    _DatahubService_DeleteClusters_Handler,
 		},
 		{
 			MethodName: "CreateSimulatedSchedulingScores",
 			Handler:    _DatahubService_CreateSimulatedSchedulingScores_Handler,
+		},
+		{
+			MethodName: "ListSimulatedSchedulingScores",
+			Handler:    _DatahubService_ListSimulatedSchedulingScores_Handler,
 		},
 		{
 			MethodName: "ListWeaveScopeHosts",

@@ -15,10 +15,6 @@ required = [
   revision = "909c59e56e62d1ea11861e8d5ec19f9e4e50930d"
 
 [[override]]
-  name = "github.com/containers-ai/api"
-  revision = "637bbd61fa77b3d46287fc7bdd5521c0b9ffc2b4"
-
-[[override]]
   name = "k8s.io/code-generator"
   # revision for tag "kubernetes-1.13.1"
   revision = "c2090bec4d9b1fb25de3812f868accc2bc9ecbae"

@@ -101,44 +101,225 @@ func (m *CreateControllersRequest) GetControllers() []*Controller {
 	return nil
 }
 
+type CreateApplicationsRequest struct {
+	Applications         []*Application `protobuf:"bytes,1,rep,name=applications,proto3" json:"applications,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *CreateApplicationsRequest) Reset()         { *m = CreateApplicationsRequest{} }
+func (m *CreateApplicationsRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateApplicationsRequest) ProtoMessage()    {}
+func (*CreateApplicationsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{2}
+}
+
+func (m *CreateApplicationsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateApplicationsRequest.Unmarshal(m, b)
+}
+func (m *CreateApplicationsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateApplicationsRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateApplicationsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateApplicationsRequest.Merge(m, src)
+}
+func (m *CreateApplicationsRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateApplicationsRequest.Size(m)
+}
+func (m *CreateApplicationsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateApplicationsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateApplicationsRequest proto.InternalMessageInfo
+
+func (m *CreateApplicationsRequest) GetApplications() []*Application {
+	if m != nil {
+		return m.Applications
+	}
+	return nil
+}
+
+type CreateNamespacesRequest struct {
+	Namespaces           []*Namespace `protobuf:"bytes,1,rep,name=namespaces,proto3" json:"namespaces,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *CreateNamespacesRequest) Reset()         { *m = CreateNamespacesRequest{} }
+func (m *CreateNamespacesRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateNamespacesRequest) ProtoMessage()    {}
+func (*CreateNamespacesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{3}
+}
+
+func (m *CreateNamespacesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateNamespacesRequest.Unmarshal(m, b)
+}
+func (m *CreateNamespacesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateNamespacesRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateNamespacesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateNamespacesRequest.Merge(m, src)
+}
+func (m *CreateNamespacesRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateNamespacesRequest.Size(m)
+}
+func (m *CreateNamespacesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateNamespacesRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateNamespacesRequest proto.InternalMessageInfo
+
+func (m *CreateNamespacesRequest) GetNamespaces() []*Namespace {
+	if m != nil {
+		return m.Namespaces
+	}
+	return nil
+}
+
 // Represents a request for adding nodes that need to be predicted
-type CreateAlamedaNodesRequest struct {
-	AlamedaNodes         []*Node  `protobuf:"bytes,1,rep,name=alameda_nodes,json=alamedaNodes,proto3" json:"alameda_nodes,omitempty"`
+type CreateNodesRequest struct {
+	Nodes                []*Node  `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CreateAlamedaNodesRequest) Reset()         { *m = CreateAlamedaNodesRequest{} }
-func (m *CreateAlamedaNodesRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateAlamedaNodesRequest) ProtoMessage()    {}
-func (*CreateAlamedaNodesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_081eed3a684e3192, []int{2}
+func (m *CreateNodesRequest) Reset()         { *m = CreateNodesRequest{} }
+func (m *CreateNodesRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateNodesRequest) ProtoMessage()    {}
+func (*CreateNodesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{4}
 }
 
-func (m *CreateAlamedaNodesRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateAlamedaNodesRequest.Unmarshal(m, b)
+func (m *CreateNodesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateNodesRequest.Unmarshal(m, b)
 }
-func (m *CreateAlamedaNodesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateAlamedaNodesRequest.Marshal(b, m, deterministic)
+func (m *CreateNodesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateNodesRequest.Marshal(b, m, deterministic)
 }
-func (m *CreateAlamedaNodesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateAlamedaNodesRequest.Merge(m, src)
+func (m *CreateNodesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateNodesRequest.Merge(m, src)
 }
-func (m *CreateAlamedaNodesRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateAlamedaNodesRequest.Size(m)
+func (m *CreateNodesRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateNodesRequest.Size(m)
 }
-func (m *CreateAlamedaNodesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateAlamedaNodesRequest.DiscardUnknown(m)
+func (m *CreateNodesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateNodesRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateAlamedaNodesRequest proto.InternalMessageInfo
+var xxx_messageInfo_CreateNodesRequest proto.InternalMessageInfo
 
-func (m *CreateAlamedaNodesRequest) GetAlamedaNodes() []*Node {
+func (m *CreateNodesRequest) GetNodes() []*Node {
 	if m != nil {
-		return m.AlamedaNodes
+		return m.Nodes
 	}
 	return nil
+}
+
+type CreateClustersRequest struct {
+	Clusters             []*Cluster `protobuf:"bytes,1,rep,name=clusters,proto3" json:"clusters,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
+}
+
+func (m *CreateClustersRequest) Reset()         { *m = CreateClustersRequest{} }
+func (m *CreateClustersRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateClustersRequest) ProtoMessage()    {}
+func (*CreateClustersRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{5}
+}
+
+func (m *CreateClustersRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateClustersRequest.Unmarshal(m, b)
+}
+func (m *CreateClustersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateClustersRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateClustersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateClustersRequest.Merge(m, src)
+}
+func (m *CreateClustersRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateClustersRequest.Size(m)
+}
+func (m *CreateClustersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateClustersRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateClustersRequest proto.InternalMessageInfo
+
+func (m *CreateClustersRequest) GetClusters() []*Cluster {
+	if m != nil {
+		return m.Clusters
+	}
+	return nil
+}
+
+// Represents a request for listing pods that need to be predicted
+type ListPodsRequest struct {
+	QueryCondition       *common.QueryCondition `protobuf:"bytes,1,opt,name=query_condition,json=queryCondition,proto3" json:"query_condition,omitempty"`
+	ObjectMeta           []*ObjectMeta          `protobuf:"bytes,2,rep,name=object_meta,json=objectMeta,proto3" json:"object_meta,omitempty"`
+	Kind                 Kind                   `protobuf:"varint,3,opt,name=kind,proto3,enum=containersai.alameda.v1alpha1.datahub.resources.Kind" json:"kind,omitempty"`
+	ScalingTool          ScalingTool            `protobuf:"varint,4,opt,name=scaling_tool,json=scalingTool,proto3,enum=containersai.alameda.v1alpha1.datahub.resources.ScalingTool" json:"scaling_tool,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
+}
+
+func (m *ListPodsRequest) Reset()         { *m = ListPodsRequest{} }
+func (m *ListPodsRequest) String() string { return proto.CompactTextString(m) }
+func (*ListPodsRequest) ProtoMessage()    {}
+func (*ListPodsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{6}
+}
+
+func (m *ListPodsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListPodsRequest.Unmarshal(m, b)
+}
+func (m *ListPodsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListPodsRequest.Marshal(b, m, deterministic)
+}
+func (m *ListPodsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListPodsRequest.Merge(m, src)
+}
+func (m *ListPodsRequest) XXX_Size() int {
+	return xxx_messageInfo_ListPodsRequest.Size(m)
+}
+func (m *ListPodsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListPodsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListPodsRequest proto.InternalMessageInfo
+
+func (m *ListPodsRequest) GetQueryCondition() *common.QueryCondition {
+	if m != nil {
+		return m.QueryCondition
+	}
+	return nil
+}
+
+func (m *ListPodsRequest) GetObjectMeta() []*ObjectMeta {
+	if m != nil {
+		return m.ObjectMeta
+	}
+	return nil
+}
+
+func (m *ListPodsRequest) GetKind() Kind {
+	if m != nil {
+		return m.Kind
+	}
+	return Kind_POD
+}
+
+func (m *ListPodsRequest) GetScalingTool() ScalingTool {
+	if m != nil {
+		return m.ScalingTool
+	}
+	return ScalingTool_SCALING_TOOL_UNDEFINED
 }
 
 // Represents a response for a listing pods request
@@ -154,7 +335,7 @@ func (m *ListPodsResponse) Reset()         { *m = ListPodsResponse{} }
 func (m *ListPodsResponse) String() string { return proto.CompactTextString(m) }
 func (*ListPodsResponse) ProtoMessage()    {}
 func (*ListPodsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_081eed3a684e3192, []int{3}
+	return fileDescriptor_081eed3a684e3192, []int{7}
 }
 
 func (m *ListPodsResponse) XXX_Unmarshal(b []byte) error {
@@ -189,193 +370,10 @@ func (m *ListPodsResponse) GetPods() []*Pod {
 	return nil
 }
 
-// Represents a request for listing pods that need to be predicted
-type ListAlamedaPodsRequest struct {
-	NamespacedName       *NamespacedName   `protobuf:"bytes,1,opt,name=namespaced_name,json=namespacedName,proto3" json:"namespaced_name,omitempty"`
-	Kind                 Kind              `protobuf:"varint,2,opt,name=kind,proto3,enum=containersai.alameda.v1alpha1.datahub.resources.Kind" json:"kind,omitempty"`
-	TimeRange            *common.TimeRange `protobuf:"bytes,3,opt,name=time_range,json=timeRange,proto3" json:"time_range,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
-}
-
-func (m *ListAlamedaPodsRequest) Reset()         { *m = ListAlamedaPodsRequest{} }
-func (m *ListAlamedaPodsRequest) String() string { return proto.CompactTextString(m) }
-func (*ListAlamedaPodsRequest) ProtoMessage()    {}
-func (*ListAlamedaPodsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_081eed3a684e3192, []int{4}
-}
-
-func (m *ListAlamedaPodsRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListAlamedaPodsRequest.Unmarshal(m, b)
-}
-func (m *ListAlamedaPodsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListAlamedaPodsRequest.Marshal(b, m, deterministic)
-}
-func (m *ListAlamedaPodsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListAlamedaPodsRequest.Merge(m, src)
-}
-func (m *ListAlamedaPodsRequest) XXX_Size() int {
-	return xxx_messageInfo_ListAlamedaPodsRequest.Size(m)
-}
-func (m *ListAlamedaPodsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListAlamedaPodsRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListAlamedaPodsRequest proto.InternalMessageInfo
-
-func (m *ListAlamedaPodsRequest) GetNamespacedName() *NamespacedName {
-	if m != nil {
-		return m.NamespacedName
-	}
-	return nil
-}
-
-func (m *ListAlamedaPodsRequest) GetKind() Kind {
-	if m != nil {
-		return m.Kind
-	}
-	return Kind_POD
-}
-
-func (m *ListAlamedaPodsRequest) GetTimeRange() *common.TimeRange {
-	if m != nil {
-		return m.TimeRange
-	}
-	return nil
-}
-
-// Represents a request for listing nodes that need to be predicted
-type ListAlamedaNodesRequest struct {
-	TimeRange            *common.TimeRange `protobuf:"bytes,1,opt,name=time_range,json=timeRange,proto3" json:"time_range,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
-}
-
-func (m *ListAlamedaNodesRequest) Reset()         { *m = ListAlamedaNodesRequest{} }
-func (m *ListAlamedaNodesRequest) String() string { return proto.CompactTextString(m) }
-func (*ListAlamedaNodesRequest) ProtoMessage()    {}
-func (*ListAlamedaNodesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_081eed3a684e3192, []int{5}
-}
-
-func (m *ListAlamedaNodesRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListAlamedaNodesRequest.Unmarshal(m, b)
-}
-func (m *ListAlamedaNodesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListAlamedaNodesRequest.Marshal(b, m, deterministic)
-}
-func (m *ListAlamedaNodesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListAlamedaNodesRequest.Merge(m, src)
-}
-func (m *ListAlamedaNodesRequest) XXX_Size() int {
-	return xxx_messageInfo_ListAlamedaNodesRequest.Size(m)
-}
-func (m *ListAlamedaNodesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListAlamedaNodesRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListAlamedaNodesRequest proto.InternalMessageInfo
-
-func (m *ListAlamedaNodesRequest) GetTimeRange() *common.TimeRange {
-	if m != nil {
-		return m.TimeRange
-	}
-	return nil
-}
-
-// Represents a request for listing nodes' information
-type ListNodesRequest struct {
-	NodeNames            []string `protobuf:"bytes,1,rep,name=node_names,json=nodeNames,proto3" json:"node_names,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ListNodesRequest) Reset()         { *m = ListNodesRequest{} }
-func (m *ListNodesRequest) String() string { return proto.CompactTextString(m) }
-func (*ListNodesRequest) ProtoMessage()    {}
-func (*ListNodesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_081eed3a684e3192, []int{6}
-}
-
-func (m *ListNodesRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListNodesRequest.Unmarshal(m, b)
-}
-func (m *ListNodesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListNodesRequest.Marshal(b, m, deterministic)
-}
-func (m *ListNodesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListNodesRequest.Merge(m, src)
-}
-func (m *ListNodesRequest) XXX_Size() int {
-	return xxx_messageInfo_ListNodesRequest.Size(m)
-}
-func (m *ListNodesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListNodesRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListNodesRequest proto.InternalMessageInfo
-
-func (m *ListNodesRequest) GetNodeNames() []string {
-	if m != nil {
-		return m.NodeNames
-	}
-	return nil
-}
-
-// Represents a response for a listing nodes request
-type ListNodesResponse struct {
-	Status               *status.Status `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
-	Nodes                []*Node        `protobuf:"bytes,2,rep,name=nodes,proto3" json:"nodes,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
-	XXX_unrecognized     []byte         `json:"-"`
-	XXX_sizecache        int32          `json:"-"`
-}
-
-func (m *ListNodesResponse) Reset()         { *m = ListNodesResponse{} }
-func (m *ListNodesResponse) String() string { return proto.CompactTextString(m) }
-func (*ListNodesResponse) ProtoMessage()    {}
-func (*ListNodesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_081eed3a684e3192, []int{7}
-}
-
-func (m *ListNodesResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListNodesResponse.Unmarshal(m, b)
-}
-func (m *ListNodesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListNodesResponse.Marshal(b, m, deterministic)
-}
-func (m *ListNodesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListNodesResponse.Merge(m, src)
-}
-func (m *ListNodesResponse) XXX_Size() int {
-	return xxx_messageInfo_ListNodesResponse.Size(m)
-}
-func (m *ListNodesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListNodesResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListNodesResponse proto.InternalMessageInfo
-
-func (m *ListNodesResponse) GetStatus() *status.Status {
-	if m != nil {
-		return m.Status
-	}
-	return nil
-}
-
-func (m *ListNodesResponse) GetNodes() []*Node {
-	if m != nil {
-		return m.Nodes
-	}
-	return nil
-}
-
 type ListControllersRequest struct {
 	QueryCondition       *common.QueryCondition `protobuf:"bytes,1,opt,name=query_condition,json=queryCondition,proto3" json:"query_condition,omitempty"`
-	NamespacedName       *NamespacedName        `protobuf:"bytes,2,opt,name=namespaced_name,json=namespacedName,proto3" json:"namespaced_name,omitempty"`
+	ObjectMeta           []*ObjectMeta          `protobuf:"bytes,2,rep,name=object_meta,json=objectMeta,proto3" json:"object_meta,omitempty"`
+	Kind                 Kind                   `protobuf:"varint,3,opt,name=kind,proto3,enum=containersai.alameda.v1alpha1.datahub.resources.Kind" json:"kind,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
 	XXX_unrecognized     []byte                 `json:"-"`
 	XXX_sizecache        int32                  `json:"-"`
@@ -413,11 +411,18 @@ func (m *ListControllersRequest) GetQueryCondition() *common.QueryCondition {
 	return nil
 }
 
-func (m *ListControllersRequest) GetNamespacedName() *NamespacedName {
+func (m *ListControllersRequest) GetObjectMeta() []*ObjectMeta {
 	if m != nil {
-		return m.NamespacedName
+		return m.ObjectMeta
 	}
 	return nil
+}
+
+func (m *ListControllersRequest) GetKind() Kind {
+	if m != nil {
+		return m.Kind
+	}
+	return Kind_POD
 }
 
 type ListControllersResponse struct {
@@ -467,59 +472,373 @@ func (m *ListControllersResponse) GetControllers() []*Controller {
 	return nil
 }
 
-// Represents a request for listing pods by nodes' name
-type ListPodsByNodeNamesRequest struct {
-	NodeNames            []string `protobuf:"bytes,1,rep,name=node_names,json=nodeNames,proto3" json:"node_names,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+type ListApplicationsRequest struct {
+	ObjectMeta           []*ObjectMeta `protobuf:"bytes,1,rep,name=object_meta,json=objectMeta,proto3" json:"object_meta,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
 }
 
-func (m *ListPodsByNodeNamesRequest) Reset()         { *m = ListPodsByNodeNamesRequest{} }
-func (m *ListPodsByNodeNamesRequest) String() string { return proto.CompactTextString(m) }
-func (*ListPodsByNodeNamesRequest) ProtoMessage()    {}
-func (*ListPodsByNodeNamesRequest) Descriptor() ([]byte, []int) {
+func (m *ListApplicationsRequest) Reset()         { *m = ListApplicationsRequest{} }
+func (m *ListApplicationsRequest) String() string { return proto.CompactTextString(m) }
+func (*ListApplicationsRequest) ProtoMessage()    {}
+func (*ListApplicationsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_081eed3a684e3192, []int{10}
 }
 
-func (m *ListPodsByNodeNamesRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListPodsByNodeNamesRequest.Unmarshal(m, b)
+func (m *ListApplicationsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListApplicationsRequest.Unmarshal(m, b)
 }
-func (m *ListPodsByNodeNamesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListPodsByNodeNamesRequest.Marshal(b, m, deterministic)
+func (m *ListApplicationsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListApplicationsRequest.Marshal(b, m, deterministic)
 }
-func (m *ListPodsByNodeNamesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListPodsByNodeNamesRequest.Merge(m, src)
+func (m *ListApplicationsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListApplicationsRequest.Merge(m, src)
 }
-func (m *ListPodsByNodeNamesRequest) XXX_Size() int {
-	return xxx_messageInfo_ListPodsByNodeNamesRequest.Size(m)
+func (m *ListApplicationsRequest) XXX_Size() int {
+	return xxx_messageInfo_ListApplicationsRequest.Size(m)
 }
-func (m *ListPodsByNodeNamesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListPodsByNodeNamesRequest.DiscardUnknown(m)
+func (m *ListApplicationsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListApplicationsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ListPodsByNodeNamesRequest proto.InternalMessageInfo
+var xxx_messageInfo_ListApplicationsRequest proto.InternalMessageInfo
 
-func (m *ListPodsByNodeNamesRequest) GetNodeNames() []string {
+func (m *ListApplicationsRequest) GetObjectMeta() []*ObjectMeta {
 	if m != nil {
-		return m.NodeNames
+		return m.ObjectMeta
+	}
+	return nil
+}
+
+type ListApplicationsResponse struct {
+	Status               *status.Status `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Applications         []*Application `protobuf:"bytes,2,rep,name=applications,proto3" json:"applications,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *ListApplicationsResponse) Reset()         { *m = ListApplicationsResponse{} }
+func (m *ListApplicationsResponse) String() string { return proto.CompactTextString(m) }
+func (*ListApplicationsResponse) ProtoMessage()    {}
+func (*ListApplicationsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{11}
+}
+
+func (m *ListApplicationsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListApplicationsResponse.Unmarshal(m, b)
+}
+func (m *ListApplicationsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListApplicationsResponse.Marshal(b, m, deterministic)
+}
+func (m *ListApplicationsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListApplicationsResponse.Merge(m, src)
+}
+func (m *ListApplicationsResponse) XXX_Size() int {
+	return xxx_messageInfo_ListApplicationsResponse.Size(m)
+}
+func (m *ListApplicationsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListApplicationsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListApplicationsResponse proto.InternalMessageInfo
+
+func (m *ListApplicationsResponse) GetStatus() *status.Status {
+	if m != nil {
+		return m.Status
+	}
+	return nil
+}
+
+func (m *ListApplicationsResponse) GetApplications() []*Application {
+	if m != nil {
+		return m.Applications
+	}
+	return nil
+}
+
+type ListNamespacesRequest struct {
+	ObjectMeta           []*ObjectMeta `protobuf:"bytes,1,rep,name=object_meta,json=objectMeta,proto3" json:"object_meta,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *ListNamespacesRequest) Reset()         { *m = ListNamespacesRequest{} }
+func (m *ListNamespacesRequest) String() string { return proto.CompactTextString(m) }
+func (*ListNamespacesRequest) ProtoMessage()    {}
+func (*ListNamespacesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{12}
+}
+
+func (m *ListNamespacesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListNamespacesRequest.Unmarshal(m, b)
+}
+func (m *ListNamespacesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListNamespacesRequest.Marshal(b, m, deterministic)
+}
+func (m *ListNamespacesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListNamespacesRequest.Merge(m, src)
+}
+func (m *ListNamespacesRequest) XXX_Size() int {
+	return xxx_messageInfo_ListNamespacesRequest.Size(m)
+}
+func (m *ListNamespacesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListNamespacesRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListNamespacesRequest proto.InternalMessageInfo
+
+func (m *ListNamespacesRequest) GetObjectMeta() []*ObjectMeta {
+	if m != nil {
+		return m.ObjectMeta
+	}
+	return nil
+}
+
+type ListNamespacesResponse struct {
+	Status               *status.Status `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Namespaces           []*Namespace   `protobuf:"bytes,2,rep,name=namespaces,proto3" json:"namespaces,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *ListNamespacesResponse) Reset()         { *m = ListNamespacesResponse{} }
+func (m *ListNamespacesResponse) String() string { return proto.CompactTextString(m) }
+func (*ListNamespacesResponse) ProtoMessage()    {}
+func (*ListNamespacesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{13}
+}
+
+func (m *ListNamespacesResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListNamespacesResponse.Unmarshal(m, b)
+}
+func (m *ListNamespacesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListNamespacesResponse.Marshal(b, m, deterministic)
+}
+func (m *ListNamespacesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListNamespacesResponse.Merge(m, src)
+}
+func (m *ListNamespacesResponse) XXX_Size() int {
+	return xxx_messageInfo_ListNamespacesResponse.Size(m)
+}
+func (m *ListNamespacesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListNamespacesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListNamespacesResponse proto.InternalMessageInfo
+
+func (m *ListNamespacesResponse) GetStatus() *status.Status {
+	if m != nil {
+		return m.Status
+	}
+	return nil
+}
+
+func (m *ListNamespacesResponse) GetNamespaces() []*Namespace {
+	if m != nil {
+		return m.Namespaces
+	}
+	return nil
+}
+
+// Represents a request for listing nodes that need to be predicted
+type ListNodesRequest struct {
+	QueryCondition       *common.QueryCondition `protobuf:"bytes,1,opt,name=query_condition,json=queryCondition,proto3" json:"query_condition,omitempty"`
+	ObjectMeta           []*ObjectMeta          `protobuf:"bytes,2,rep,name=object_meta,json=objectMeta,proto3" json:"object_meta,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
+}
+
+func (m *ListNodesRequest) Reset()         { *m = ListNodesRequest{} }
+func (m *ListNodesRequest) String() string { return proto.CompactTextString(m) }
+func (*ListNodesRequest) ProtoMessage()    {}
+func (*ListNodesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{14}
+}
+
+func (m *ListNodesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListNodesRequest.Unmarshal(m, b)
+}
+func (m *ListNodesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListNodesRequest.Marshal(b, m, deterministic)
+}
+func (m *ListNodesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListNodesRequest.Merge(m, src)
+}
+func (m *ListNodesRequest) XXX_Size() int {
+	return xxx_messageInfo_ListNodesRequest.Size(m)
+}
+func (m *ListNodesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListNodesRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListNodesRequest proto.InternalMessageInfo
+
+func (m *ListNodesRequest) GetQueryCondition() *common.QueryCondition {
+	if m != nil {
+		return m.QueryCondition
+	}
+	return nil
+}
+
+func (m *ListNodesRequest) GetObjectMeta() []*ObjectMeta {
+	if m != nil {
+		return m.ObjectMeta
+	}
+	return nil
+}
+
+// Represents a response for a listing nodes request
+type ListNodesResponse struct {
+	Status               *status.Status `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Nodes                []*Node        `protobuf:"bytes,2,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *ListNodesResponse) Reset()         { *m = ListNodesResponse{} }
+func (m *ListNodesResponse) String() string { return proto.CompactTextString(m) }
+func (*ListNodesResponse) ProtoMessage()    {}
+func (*ListNodesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{15}
+}
+
+func (m *ListNodesResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListNodesResponse.Unmarshal(m, b)
+}
+func (m *ListNodesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListNodesResponse.Marshal(b, m, deterministic)
+}
+func (m *ListNodesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListNodesResponse.Merge(m, src)
+}
+func (m *ListNodesResponse) XXX_Size() int {
+	return xxx_messageInfo_ListNodesResponse.Size(m)
+}
+func (m *ListNodesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListNodesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListNodesResponse proto.InternalMessageInfo
+
+func (m *ListNodesResponse) GetStatus() *status.Status {
+	if m != nil {
+		return m.Status
+	}
+	return nil
+}
+
+func (m *ListNodesResponse) GetNodes() []*Node {
+	if m != nil {
+		return m.Nodes
+	}
+	return nil
+}
+
+type ListClustersRequest struct {
+	ObjectMeta           []*ObjectMeta `protobuf:"bytes,1,rep,name=object_meta,json=objectMeta,proto3" json:"object_meta,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *ListClustersRequest) Reset()         { *m = ListClustersRequest{} }
+func (m *ListClustersRequest) String() string { return proto.CompactTextString(m) }
+func (*ListClustersRequest) ProtoMessage()    {}
+func (*ListClustersRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{16}
+}
+
+func (m *ListClustersRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListClustersRequest.Unmarshal(m, b)
+}
+func (m *ListClustersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListClustersRequest.Marshal(b, m, deterministic)
+}
+func (m *ListClustersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListClustersRequest.Merge(m, src)
+}
+func (m *ListClustersRequest) XXX_Size() int {
+	return xxx_messageInfo_ListClustersRequest.Size(m)
+}
+func (m *ListClustersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListClustersRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListClustersRequest proto.InternalMessageInfo
+
+func (m *ListClustersRequest) GetObjectMeta() []*ObjectMeta {
+	if m != nil {
+		return m.ObjectMeta
+	}
+	return nil
+}
+
+type ListClustersResponse struct {
+	Status               *status.Status `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	Clusters             []*Cluster     `protobuf:"bytes,2,rep,name=clusters,proto3" json:"clusters,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *ListClustersResponse) Reset()         { *m = ListClustersResponse{} }
+func (m *ListClustersResponse) String() string { return proto.CompactTextString(m) }
+func (*ListClustersResponse) ProtoMessage()    {}
+func (*ListClustersResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{17}
+}
+
+func (m *ListClustersResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListClustersResponse.Unmarshal(m, b)
+}
+func (m *ListClustersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListClustersResponse.Marshal(b, m, deterministic)
+}
+func (m *ListClustersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListClustersResponse.Merge(m, src)
+}
+func (m *ListClustersResponse) XXX_Size() int {
+	return xxx_messageInfo_ListClustersResponse.Size(m)
+}
+func (m *ListClustersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListClustersResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListClustersResponse proto.InternalMessageInfo
+
+func (m *ListClustersResponse) GetStatus() *status.Status {
+	if m != nil {
+		return m.Status
+	}
+	return nil
+}
+
+func (m *ListClustersResponse) GetClusters() []*Cluster {
+	if m != nil {
+		return m.Clusters
 	}
 	return nil
 }
 
 // Represents a request for deleting pods data
 type DeletePodsRequest struct {
-	Pods                 []*Pod   `protobuf:"bytes,1,rep,name=pods,proto3" json:"pods,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	ObjectMeta           []*ObjectMeta `protobuf:"bytes,1,rep,name=object_meta,json=objectMeta,proto3" json:"object_meta,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
 }
 
 func (m *DeletePodsRequest) Reset()         { *m = DeletePodsRequest{} }
 func (m *DeletePodsRequest) String() string { return proto.CompactTextString(m) }
 func (*DeletePodsRequest) ProtoMessage()    {}
 func (*DeletePodsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_081eed3a684e3192, []int{11}
+	return fileDescriptor_081eed3a684e3192, []int{18}
 }
 
 func (m *DeletePodsRequest) XXX_Unmarshal(b []byte) error {
@@ -540,15 +859,16 @@ func (m *DeletePodsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DeletePodsRequest proto.InternalMessageInfo
 
-func (m *DeletePodsRequest) GetPods() []*Pod {
+func (m *DeletePodsRequest) GetObjectMeta() []*ObjectMeta {
 	if m != nil {
-		return m.Pods
+		return m.ObjectMeta
 	}
 	return nil
 }
 
 type DeleteControllersRequest struct {
-	Controllers          []*Controller `protobuf:"bytes,1,rep,name=controllers,proto3" json:"controllers,omitempty"`
+	ObjectMeta           []*ObjectMeta `protobuf:"bytes,1,rep,name=object_meta,json=objectMeta,proto3" json:"object_meta,omitempty"`
+	Kind                 Kind          `protobuf:"varint,2,opt,name=kind,proto3,enum=containersai.alameda.v1alpha1.datahub.resources.Kind" json:"kind,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
 	XXX_unrecognized     []byte        `json:"-"`
 	XXX_sizecache        int32         `json:"-"`
@@ -558,7 +878,7 @@ func (m *DeleteControllersRequest) Reset()         { *m = DeleteControllersReque
 func (m *DeleteControllersRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteControllersRequest) ProtoMessage()    {}
 func (*DeleteControllersRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_081eed3a684e3192, []int{12}
+	return fileDescriptor_081eed3a684e3192, []int{19}
 }
 
 func (m *DeleteControllersRequest) XXX_Unmarshal(b []byte) error {
@@ -579,49 +899,173 @@ func (m *DeleteControllersRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DeleteControllersRequest proto.InternalMessageInfo
 
-func (m *DeleteControllersRequest) GetControllers() []*Controller {
+func (m *DeleteControllersRequest) GetObjectMeta() []*ObjectMeta {
 	if m != nil {
-		return m.Controllers
+		return m.ObjectMeta
 	}
 	return nil
 }
 
-// Represents a request for stoping predicting nodes
-type DeleteAlamedaNodesRequest struct {
-	AlamedaNodes         []*Node  `protobuf:"bytes,1,rep,name=alameda_nodes,json=alamedaNodes,proto3" json:"alameda_nodes,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteAlamedaNodesRequest) Reset()         { *m = DeleteAlamedaNodesRequest{} }
-func (m *DeleteAlamedaNodesRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteAlamedaNodesRequest) ProtoMessage()    {}
-func (*DeleteAlamedaNodesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_081eed3a684e3192, []int{13}
-}
-
-func (m *DeleteAlamedaNodesRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteAlamedaNodesRequest.Unmarshal(m, b)
-}
-func (m *DeleteAlamedaNodesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteAlamedaNodesRequest.Marshal(b, m, deterministic)
-}
-func (m *DeleteAlamedaNodesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteAlamedaNodesRequest.Merge(m, src)
-}
-func (m *DeleteAlamedaNodesRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteAlamedaNodesRequest.Size(m)
-}
-func (m *DeleteAlamedaNodesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteAlamedaNodesRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteAlamedaNodesRequest proto.InternalMessageInfo
-
-func (m *DeleteAlamedaNodesRequest) GetAlamedaNodes() []*Node {
+func (m *DeleteControllersRequest) GetKind() Kind {
 	if m != nil {
-		return m.AlamedaNodes
+		return m.Kind
+	}
+	return Kind_POD
+}
+
+type DeleteApplicationsRequest struct {
+	ObjectMeta           []*ObjectMeta `protobuf:"bytes,1,rep,name=object_meta,json=objectMeta,proto3" json:"object_meta,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *DeleteApplicationsRequest) Reset()         { *m = DeleteApplicationsRequest{} }
+func (m *DeleteApplicationsRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteApplicationsRequest) ProtoMessage()    {}
+func (*DeleteApplicationsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{20}
+}
+
+func (m *DeleteApplicationsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteApplicationsRequest.Unmarshal(m, b)
+}
+func (m *DeleteApplicationsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteApplicationsRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteApplicationsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteApplicationsRequest.Merge(m, src)
+}
+func (m *DeleteApplicationsRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteApplicationsRequest.Size(m)
+}
+func (m *DeleteApplicationsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteApplicationsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteApplicationsRequest proto.InternalMessageInfo
+
+func (m *DeleteApplicationsRequest) GetObjectMeta() []*ObjectMeta {
+	if m != nil {
+		return m.ObjectMeta
+	}
+	return nil
+}
+
+type DeleteNamespacesRequest struct {
+	ObjectMeta           []*ObjectMeta `protobuf:"bytes,1,rep,name=object_meta,json=objectMeta,proto3" json:"object_meta,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *DeleteNamespacesRequest) Reset()         { *m = DeleteNamespacesRequest{} }
+func (m *DeleteNamespacesRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteNamespacesRequest) ProtoMessage()    {}
+func (*DeleteNamespacesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{21}
+}
+
+func (m *DeleteNamespacesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteNamespacesRequest.Unmarshal(m, b)
+}
+func (m *DeleteNamespacesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteNamespacesRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteNamespacesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteNamespacesRequest.Merge(m, src)
+}
+func (m *DeleteNamespacesRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteNamespacesRequest.Size(m)
+}
+func (m *DeleteNamespacesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteNamespacesRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteNamespacesRequest proto.InternalMessageInfo
+
+func (m *DeleteNamespacesRequest) GetObjectMeta() []*ObjectMeta {
+	if m != nil {
+		return m.ObjectMeta
+	}
+	return nil
+}
+
+// Represents a request for stopping predicting nodes
+type DeleteNodesRequest struct {
+	ObjectMeta           []*ObjectMeta `protobuf:"bytes,1,rep,name=object_meta,json=objectMeta,proto3" json:"object_meta,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *DeleteNodesRequest) Reset()         { *m = DeleteNodesRequest{} }
+func (m *DeleteNodesRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteNodesRequest) ProtoMessage()    {}
+func (*DeleteNodesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{22}
+}
+
+func (m *DeleteNodesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteNodesRequest.Unmarshal(m, b)
+}
+func (m *DeleteNodesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteNodesRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteNodesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteNodesRequest.Merge(m, src)
+}
+func (m *DeleteNodesRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteNodesRequest.Size(m)
+}
+func (m *DeleteNodesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteNodesRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteNodesRequest proto.InternalMessageInfo
+
+func (m *DeleteNodesRequest) GetObjectMeta() []*ObjectMeta {
+	if m != nil {
+		return m.ObjectMeta
+	}
+	return nil
+}
+
+type DeleteClustersRequest struct {
+	ObjectMeta           []*ObjectMeta `protobuf:"bytes,1,rep,name=object_meta,json=objectMeta,proto3" json:"object_meta,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *DeleteClustersRequest) Reset()         { *m = DeleteClustersRequest{} }
+func (m *DeleteClustersRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteClustersRequest) ProtoMessage()    {}
+func (*DeleteClustersRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_081eed3a684e3192, []int{23}
+}
+
+func (m *DeleteClustersRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteClustersRequest.Unmarshal(m, b)
+}
+func (m *DeleteClustersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteClustersRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteClustersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteClustersRequest.Merge(m, src)
+}
+func (m *DeleteClustersRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteClustersRequest.Size(m)
+}
+func (m *DeleteClustersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteClustersRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteClustersRequest proto.InternalMessageInfo
+
+func (m *DeleteClustersRequest) GetObjectMeta() []*ObjectMeta {
+	if m != nil {
+		return m.ObjectMeta
 	}
 	return nil
 }
@@ -629,18 +1073,28 @@ func (m *DeleteAlamedaNodesRequest) GetAlamedaNodes() []*Node {
 func init() {
 	proto.RegisterType((*CreatePodsRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.CreatePodsRequest")
 	proto.RegisterType((*CreateControllersRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.CreateControllersRequest")
-	proto.RegisterType((*CreateAlamedaNodesRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.CreateAlamedaNodesRequest")
+	proto.RegisterType((*CreateApplicationsRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.CreateApplicationsRequest")
+	proto.RegisterType((*CreateNamespacesRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.CreateNamespacesRequest")
+	proto.RegisterType((*CreateNodesRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.CreateNodesRequest")
+	proto.RegisterType((*CreateClustersRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.CreateClustersRequest")
+	proto.RegisterType((*ListPodsRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListPodsRequest")
 	proto.RegisterType((*ListPodsResponse)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListPodsResponse")
-	proto.RegisterType((*ListAlamedaPodsRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListAlamedaPodsRequest")
-	proto.RegisterType((*ListAlamedaNodesRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListAlamedaNodesRequest")
-	proto.RegisterType((*ListNodesRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListNodesRequest")
-	proto.RegisterType((*ListNodesResponse)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListNodesResponse")
 	proto.RegisterType((*ListControllersRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListControllersRequest")
 	proto.RegisterType((*ListControllersResponse)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListControllersResponse")
-	proto.RegisterType((*ListPodsByNodeNamesRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListPodsByNodeNamesRequest")
+	proto.RegisterType((*ListApplicationsRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListApplicationsRequest")
+	proto.RegisterType((*ListApplicationsResponse)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListApplicationsResponse")
+	proto.RegisterType((*ListNamespacesRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListNamespacesRequest")
+	proto.RegisterType((*ListNamespacesResponse)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListNamespacesResponse")
+	proto.RegisterType((*ListNodesRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListNodesRequest")
+	proto.RegisterType((*ListNodesResponse)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListNodesResponse")
+	proto.RegisterType((*ListClustersRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListClustersRequest")
+	proto.RegisterType((*ListClustersResponse)(nil), "containersai.alameda.v1alpha1.datahub.resources.ListClustersResponse")
 	proto.RegisterType((*DeletePodsRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.DeletePodsRequest")
 	proto.RegisterType((*DeleteControllersRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.DeleteControllersRequest")
-	proto.RegisterType((*DeleteAlamedaNodesRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.DeleteAlamedaNodesRequest")
+	proto.RegisterType((*DeleteApplicationsRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.DeleteApplicationsRequest")
+	proto.RegisterType((*DeleteNamespacesRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.DeleteNamespacesRequest")
+	proto.RegisterType((*DeleteNodesRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.DeleteNodesRequest")
+	proto.RegisterType((*DeleteClustersRequest)(nil), "containersai.alameda.v1alpha1.datahub.resources.DeleteClustersRequest")
 }
 
 func init() {
@@ -648,42 +1102,51 @@ func init() {
 }
 
 var fileDescriptor_081eed3a684e3192 = []byte{
-	// 591 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x56, 0xd1, 0x6e, 0xd3, 0x3c,
-	0x18, 0x55, 0xb2, 0xfd, 0x93, 0xe6, 0xfe, 0x74, 0x34, 0x17, 0xac, 0x54, 0x42, 0xaa, 0x72, 0x55,
-	0x21, 0x91, 0xa8, 0x85, 0xc1, 0xc5, 0x90, 0x10, 0x2b, 0x48, 0xa0, 0xa1, 0x69, 0x18, 0xc4, 0xc5,
-	0xa4, 0xaa, 0xf2, 0x92, 0x4f, 0xad, 0x45, 0x62, 0xa7, 0xb6, 0x3b, 0xd4, 0x37, 0xe0, 0x82, 0xc7,
-	0x80, 0x87, 0xe3, 0x2d, 0x90, 0x63, 0x27, 0x4b, 0xd0, 0x84, 0xd2, 0x6e, 0x83, 0x3b, 0xc7, 0xe9,
-	0x39, 0xe7, 0xeb, 0xf1, 0xf1, 0xf7, 0x05, 0x1d, 0x90, 0x84, 0xa4, 0x10, 0x93, 0x29, 0xc9, 0x68,
-	0x78, 0x31, 0x24, 0x49, 0x36, 0x27, 0xc3, 0x30, 0x26, 0x8a, 0xcc, 0x97, 0xe7, 0xa1, 0x00, 0xc9,
-	0x97, 0x22, 0x02, 0x19, 0x4a, 0x10, 0x17, 0x34, 0x02, 0x19, 0x64, 0x82, 0x2b, 0xee, 0x85, 0x11,
-	0x67, 0x8a, 0x50, 0x06, 0x42, 0x12, 0x1a, 0x58, 0x8e, 0xa0, 0xc0, 0x07, 0x16, 0x1f, 0x94, 0xf8,
-	0xde, 0xf0, 0x8f, 0x3a, 0x11, 0x4f, 0x53, 0xce, 0xc2, 0xc5, 0x12, 0x04, 0x2d, 0x34, 0x7a, 0x4d,
-	0x4b, 0x4b, 0x41, 0x11, 0xbd, 0x6b, 0x61, 0x4f, 0x1b, 0xc2, 0xca, 0x95, 0xc5, 0x8d, 0x1a, 0xe2,
-	0xd4, 0x2a, 0x2b, 0x31, 0xfb, 0x33, 0xce, 0x67, 0x09, 0x84, 0x22, 0x8b, 0x42, 0xa9, 0x88, 0x5a,
-	0xda, 0x17, 0xfe, 0x04, 0x75, 0xc6, 0x02, 0x88, 0x82, 0x53, 0x1e, 0x4b, 0x0c, 0x8b, 0x25, 0x48,
-	0xe5, 0xbd, 0x41, 0xdb, 0x19, 0x8f, 0x65, 0xd7, 0xe9, 0x6f, 0x0d, 0x5a, 0xa3, 0x27, 0xc1, 0x9a,
-	0x1e, 0x06, 0xa7, 0x3c, 0xc6, 0x39, 0x83, 0xbf, 0x42, 0x5d, 0x43, 0x3f, 0xe6, 0x4c, 0x09, 0x9e,
-	0x24, 0x20, 0x4a, 0x95, 0x09, 0x6a, 0x45, 0x97, 0xbb, 0x56, 0xec, 0x70, 0x6d, 0xb1, 0x4b, 0x66,
-	0x5c, 0xe5, 0xf3, 0xbf, 0xa0, 0xfb, 0x46, 0xfa, 0xa5, 0xe1, 0x38, 0xe1, 0x31, 0x94, 0xda, 0x67,
-	0xe8, 0x4e, 0xe1, 0x22, 0xd3, 0xfb, 0x56, 0xfd, 0x60, 0x6d, 0x75, 0xcd, 0x8a, 0xff, 0x27, 0x15,
-	0x09, 0xff, 0xab, 0x83, 0xee, 0xbe, 0xa3, 0x52, 0x19, 0x47, 0x65, 0xc6, 0x99, 0x04, 0xef, 0x21,
-	0xda, 0x31, 0xbe, 0x77, 0x9d, 0xbe, 0x33, 0x68, 0x8d, 0xbc, 0xc0, 0x9c, 0x48, 0x20, 0xb2, 0x28,
-	0xf8, 0x90, 0xbf, 0xc1, 0xf6, 0x17, 0xa5, 0xfd, 0xee, 0xb5, 0xed, 0xff, 0xe1, 0xa2, 0x7b, 0xba,
-	0x14, 0x6b, 0x41, 0xf5, 0x8c, 0xe7, 0x68, 0x8f, 0x91, 0x14, 0x64, 0x46, 0x22, 0x88, 0xa7, 0x7a,
-	0x69, 0x2b, 0x7b, 0xb1, 0xbe, 0x07, 0x25, 0x8f, 0x5e, 0xe1, 0x36, 0xab, 0x3d, 0x7b, 0x6f, 0xd1,
-	0xf6, 0x67, 0xca, 0xe2, 0xae, 0xdb, 0x77, 0x06, 0xed, 0x0d, 0x2c, 0x3e, 0xa6, 0x2c, 0xc6, 0x39,
-	0x85, 0xf7, 0x09, 0x21, 0x45, 0x53, 0x98, 0x0a, 0xc2, 0x66, 0xd0, 0xdd, 0xca, 0xeb, 0x7d, 0xd6,
-	0x90, 0xd0, 0x5c, 0xdd, 0xe0, 0x23, 0x4d, 0x01, 0x6b, 0x38, 0xde, 0x55, 0xc5, 0xd2, 0x5f, 0xa0,
-	0xfd, 0x8a, 0x4d, 0xb5, 0xa4, 0xd4, 0x25, 0x9d, 0x1b, 0x93, 0x1c, 0x9a, 0x90, 0xd4, 0xb4, 0x1e,
-	0x20, 0xa4, 0xd3, 0x98, 0x9f, 0x86, 0x89, 0xe4, 0x2e, 0xde, 0xd5, 0x3b, 0xb9, 0xc3, 0xfe, 0x37,
-	0x07, 0x75, 0x2a, 0x98, 0x0d, 0x92, 0x75, 0x8c, 0xfe, 0x33, 0x71, 0x77, 0xaf, 0x13, 0x77, 0xc3,
-	0xe1, 0xff, 0x74, 0x4c, 0xb8, 0xae, 0xb8, 0xda, 0x80, 0xf6, 0x74, 0x8b, 0x5c, 0x4d, 0x23, 0xce,
-	0x62, 0xaa, 0x28, 0x67, 0xb6, 0xb8, 0xe7, 0xeb, 0x39, 0xf7, 0x5e, 0x93, 0x8c, 0x0b, 0x0e, 0xdc,
-	0x5e, 0xd4, 0x9e, 0xaf, 0xca, 0xb0, 0x7b, 0x2b, 0x19, 0xf6, 0xbf, 0x3b, 0x26, 0x21, 0xb5, 0xff,
-	0xba, 0xc1, 0x01, 0xfc, 0xd6, 0xf3, 0xdc, 0x1b, 0xee, 0x79, 0x87, 0xa8, 0x57, 0x74, 0x9e, 0xa3,
-	0xd5, 0x49, 0x11, 0x9c, 0x86, 0xf1, 0x9a, 0xa0, 0xce, 0x2b, 0x48, 0xe0, 0x16, 0x47, 0x81, 0xa1,
-	0xff, 0x27, 0xa3, 0xc0, 0x48, 0xff, 0xe5, 0x51, 0x70, 0xf4, 0xfa, 0x6c, 0x3c, 0xa3, 0xca, 0x06,
-	0xba, 0xf2, 0x29, 0xf2, 0x88, 0xd0, 0x50, 0x4f, 0xef, 0x66, 0x93, 0xfc, 0x7c, 0x27, 0x9f, 0xd5,
-	0x8f, 0x7f, 0x05, 0x00, 0x00, 0xff, 0xff, 0x26, 0x5d, 0xd1, 0x44, 0x04, 0x09, 0x00, 0x00,
+	// 734 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x97, 0xcf, 0x4f, 0xd4, 0x40,
+	0x14, 0xc7, 0xd3, 0x82, 0xc4, 0xbc, 0x25, 0x20, 0x55, 0xdc, 0xc2, 0x89, 0xf4, 0x44, 0x4c, 0x6c,
+	0x83, 0x8a, 0x31, 0xea, 0x45, 0x57, 0x13, 0x0d, 0xfe, 0xc0, 0xc2, 0x89, 0x48, 0xd6, 0x61, 0x3a,
+	0x59, 0x46, 0xbb, 0x7d, 0xdd, 0xce, 0x14, 0xc2, 0xc1, 0x8b, 0x27, 0x0f, 0xfe, 0x01, 0x1e, 0x3d,
+	0x78, 0xe0, 0xff, 0xf0, 0x8f, 0xf0, 0xdf, 0x31, 0xed, 0x0c, 0xdd, 0x76, 0x21, 0x86, 0x96, 0x5d,
+	0x0e, 0xc6, 0xdb, 0x76, 0xba, 0xf3, 0xfd, 0x4c, 0xdf, 0x7b, 0xf3, 0x7d, 0x33, 0xb0, 0x4e, 0x42,
+	0xd2, 0x67, 0x01, 0xe9, 0x92, 0x98, 0x7b, 0x07, 0x6b, 0x24, 0x8c, 0xf7, 0xc9, 0x9a, 0x17, 0x10,
+	0x49, 0xf6, 0xd3, 0x3d, 0x2f, 0x61, 0x02, 0xd3, 0x84, 0x32, 0xe1, 0x09, 0x96, 0x1c, 0x70, 0xca,
+	0x84, 0x1b, 0x27, 0x28, 0xd1, 0xf2, 0x28, 0x46, 0x92, 0xf0, 0x88, 0x25, 0x82, 0x70, 0x57, 0x6b,
+	0xb8, 0x27, 0xf3, 0x5d, 0x3d, 0xdf, 0x2d, 0xe6, 0x2f, 0xaf, 0xfd, 0x95, 0x43, 0xb1, 0xdf, 0xc7,
+	0xc8, 0x1b, 0xa4, 0x2c, 0xe1, 0x27, 0x8c, 0xe5, 0xf3, 0x2e, 0xad, 0xcf, 0x24, 0xc9, 0x46, 0xf5,
+	0xb4, 0xfb, 0xe7, 0x9c, 0x56, 0xfc, 0xd2, 0xf3, 0xda, 0x3d, 0xc4, 0x5e, 0xc8, 0xbc, 0x24, 0xa6,
+	0x9e, 0x90, 0x44, 0xa6, 0xfa, 0x85, 0xb3, 0x0b, 0x0b, 0x9d, 0x84, 0x11, 0xc9, 0x36, 0x31, 0x10,
+	0x3e, 0x1b, 0xa4, 0x4c, 0x48, 0xeb, 0x05, 0x4c, 0xc7, 0x18, 0x08, 0xdb, 0x58, 0x99, 0x5a, 0x6d,
+	0xdd, 0xb9, 0xe7, 0xd6, 0x8c, 0x87, 0xbb, 0x89, 0x81, 0x9f, 0x2b, 0x38, 0x47, 0x60, 0x2b, 0xf9,
+	0x0e, 0x46, 0x32, 0xc1, 0x30, 0x64, 0x49, 0x41, 0xd9, 0x85, 0x16, 0x1d, 0x8e, 0x6a, 0xd8, 0xa3,
+	0xda, 0xb0, 0xa1, 0xb2, 0x5f, 0xd6, 0x73, 0x3e, 0xc3, 0x92, 0x42, 0x3f, 0x89, 0xe3, 0x90, 0x53,
+	0x22, 0x39, 0x46, 0x05, 0xfb, 0x03, 0xcc, 0x92, 0xd2, 0xb0, 0x86, 0x3f, 0xae, 0x0d, 0x2f, 0x69,
+	0xfb, 0x15, 0x45, 0x27, 0x85, 0xb6, 0xc2, 0xbf, 0x21, 0x7d, 0x26, 0x62, 0x42, 0x59, 0x01, 0xdf,
+	0x01, 0x88, 0x8a, 0x41, 0x8d, 0x7e, 0x58, 0x1b, 0x5d, 0xe8, 0xfa, 0x25, 0x35, 0x87, 0x80, 0xa5,
+	0xb1, 0x18, 0x0c, 0x89, 0x1b, 0x70, 0x25, 0xca, 0x9e, 0x35, 0x6c, 0xbd, 0x3e, 0x0c, 0x03, 0xe6,
+	0x2b, 0x0d, 0xa7, 0x0f, 0x8b, 0x3a, 0xa7, 0x61, 0x2a, 0x64, 0x29, 0xa1, 0xdb, 0x70, 0x95, 0xea,
+	0x21, 0x0d, 0x7a, 0x50, 0x3f, 0x9b, 0x4a, 0xc0, 0x2f, 0x94, 0x9c, 0x2f, 0x53, 0x30, 0xff, 0x8a,
+	0x0b, 0x59, 0x2e, 0x50, 0x06, 0xf3, 0xd9, 0x76, 0x3a, 0xea, 0x52, 0x8c, 0x02, 0x9e, 0x05, 0xdc,
+	0x36, 0x56, 0x8c, 0x1a, 0x19, 0x54, 0x7b, 0xd2, 0x7d, 0x97, 0x89, 0x74, 0x4e, 0x34, 0xfc, 0xb9,
+	0x41, 0xe5, 0xd9, 0x7a, 0x0f, 0x2d, 0xdc, 0xfb, 0xc8, 0xa8, 0xec, 0x66, 0xdb, 0xd0, 0x36, 0x1b,
+	0x56, 0xe8, 0xdb, 0x5c, 0xe3, 0x35, 0x93, 0xc4, 0x07, 0x2c, 0x7e, 0x5b, 0x2f, 0x61, 0xfa, 0x13,
+	0x8f, 0x02, 0x7b, 0x6a, 0xc5, 0x58, 0x9d, 0x6b, 0x90, 0x93, 0x0d, 0x1e, 0x05, 0x7e, 0x2e, 0x61,
+	0x75, 0x61, 0x56, 0x50, 0x12, 0xf2, 0xa8, 0xd7, 0x95, 0x88, 0xa1, 0x3d, 0x9d, 0x4b, 0xd6, 0x2f,
+	0xe7, 0x2d, 0x25, 0xb2, 0x8d, 0x18, 0xfa, 0x2d, 0x31, 0x7c, 0x70, 0xbe, 0x1a, 0x70, 0x6d, 0x98,
+	0x04, 0x11, 0x63, 0x24, 0x98, 0x75, 0x0b, 0x66, 0x94, 0x97, 0xe8, 0xe0, 0x5b, 0xae, 0x72, 0x19,
+	0x37, 0x89, 0xa9, 0xbb, 0x95, 0xbf, 0xf1, 0xf5, 0x3f, 0x0a, 0x4b, 0x31, 0x2f, 0x6c, 0x29, 0xc7,
+	0x26, 0xdc, 0xcc, 0x96, 0x72, 0x86, 0xa3, 0xfc, 0x2f, 0x8b, 0x4a, 0x59, 0x38, 0x3f, 0x0d, 0x68,
+	0x9f, 0x0a, 0x55, 0x83, 0xe4, 0x8d, 0x38, 0xb5, 0x39, 0x66, 0xa7, 0x3e, 0x54, 0xab, 0x3c, 0xcb,
+	0xa7, 0x47, 0x42, 0x6d, 0x8c, 0x35, 0xd4, 0xce, 0xb1, 0x01, 0xf6, 0x69, 0x72, 0x83, 0x00, 0x8d,
+	0xb6, 0x13, 0x73, 0x02, 0xed, 0x64, 0x31, 0x5b, 0xe9, 0xe9, 0x66, 0x32, 0xd9, 0x08, 0xfd, 0x30,
+	0xd4, 0x66, 0x2b, 0x73, 0x1b, 0xc4, 0xa7, 0xda, 0xf1, 0xcc, 0xb1, 0x76, 0xbc, 0xdf, 0xda, 0x9a,
+	0x2a, 0x0d, 0xef, 0x5f, 0x70, 0x02, 0xe7, 0x9b, 0x01, 0x0b, 0xa5, 0x2f, 0x6b, 0x10, 0xf7, 0xa2,
+	0xef, 0x9b, 0x63, 0xe8, 0xfb, 0x02, 0xae, 0xe7, 0x66, 0x32, 0xd2, 0xf5, 0x27, 0x5b, 0x80, 0xdf,
+	0x0d, 0xb8, 0x51, 0xa5, 0x36, 0x08, 0x43, 0xf9, 0x60, 0x62, 0x8e, 0xed, 0x60, 0x32, 0x80, 0x85,
+	0x67, 0x2c, 0x64, 0xd5, 0xa3, 0xf3, 0x64, 0xa3, 0xf1, 0xcb, 0x00, 0x5b, 0x31, 0xcf, 0xe8, 0x7e,
+	0x13, 0x45, 0x17, 0x6d, 0xc9, 0xbc, 0x78, 0x5b, 0x3a, 0x82, 0x25, 0xf5, 0x11, 0x97, 0xef, 0xf8,
+	0x87, 0xd0, 0x56, 0xe8, 0xcb, 0x36, 0xd2, 0x04, 0x2c, 0x0d, 0x2e, 0xdb, 0xd4, 0x64, 0x99, 0x29,
+	0x2c, 0xea, 0x62, 0xb9, 0xcc, 0x2d, 0xfb, 0xf4, 0xf9, 0x4e, 0xa7, 0xc7, 0xa5, 0x36, 0xd1, 0xd2,
+	0x5d, 0xfa, 0x36, 0xe1, 0x5e, 0x76, 0x6d, 0x3d, 0xdf, 0x15, 0x76, 0x6f, 0x26, 0xbf, 0xa0, 0xde,
+	0xfd, 0x13, 0x00, 0x00, 0xff, 0xff, 0x44, 0x41, 0xe9, 0xb1, 0xc5, 0x0f, 0x00, 0x00,
 }
