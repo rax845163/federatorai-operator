@@ -42,7 +42,8 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:8948e1c0411b46a7f05594f83b266f540a03024a39db785a13b56ad9518f6989"
+  branch = "master"
+  digest = "1:12f3083f563b99987bd39ffca13dbc5c04f64c731dd0afd384df5c37be869b4e"
   name = "github.com/containers-ai/alameda"
   packages = [
     "admission-controller",
@@ -56,11 +57,11 @@
     "pkg/utils/log",
   ]
   pruneopts = "UT"
-  revision = "909c59e56e62d1ea11861e8d5ec19f9e4e50930d"
+  revision = "08b5d524a3c706fb7085a2fb83cc715378273cfd"
 
 [[projects]]
   branch = "master"
-  digest = "1:7d32ef77f888700d2f4eda48966b8e646bb9be0ea5dc96cc1137cc2ba2ce2835"
+  digest = "1:7d9f3de20b3e213b5fd8e30a7d09ccc685c5fdd9fee215fc8c8a2f36288f2286"
   name = "github.com/containers-ai/api"
   packages = [
     "alameda_api/v1alpha1/datahub",
@@ -80,7 +81,7 @@
     "datahub/keycodes",
   ]
   pruneopts = "NT"
-  revision = "676f06a7190395b8ba72f9696a8f12214b6bffb3"
+  revision = "45ffb581ad63cfc538757b7922f77a5e57f3544e"
 
 [[projects]]
   digest = "1:c61f4f97321a37adcb5b4fd4fd61209cd553e46c99ee606c465553541b12a229"

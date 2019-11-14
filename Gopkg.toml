@@ -12,7 +12,7 @@ required = [
 ]
 [[override]]
   name = "github.com/containers-ai/alameda"
-  revision = "909c59e56e62d1ea11861e8d5ec19f9e4e50930d"
+  branch = "master"
 
 [[override]]
   name = "k8s.io/code-generator"
